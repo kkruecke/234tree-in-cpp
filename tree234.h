@@ -170,7 +170,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234<K> *&location, in
 }
 /* 
  * Precondition: assumes node is not empty, not full, not a leaf
- *
+ * Returns next descendent. 
  */
 template<typename K> inline Node234<K> *Tree234<K>::getNextChild(Node234<K> *current, K key)
 {
