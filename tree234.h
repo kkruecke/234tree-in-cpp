@@ -1,5 +1,6 @@
 #ifndef  TREE23_H
 #define	TREE23_H
+// TODO: insertItem() is differs from java source. connectChild() is missing. 
 /*
  * Based on http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  * See also: http://grail.cba.csuohio.edu/~lin/cis506/Chapt10.pdf
@@ -268,9 +269,57 @@ Node234<K> *current = root;
 
     current->insertItem(key); // insert new DataItem
 } // end insert()
-
-template<typename K> void split(Node234<K> *current)
+/*
+ * Preconditions: node is full and must be split
+ */
+template<typename K> void split(Node234<K> *node)
 {
+    K  temB, itemC;
 
+    Node234<K> *parent, *child2, *child3;
+
+    int itemIndex;
+    
+    itemC = node.removeItem(); // remove items from node
+    
+    itemB = node.removeItem(); 
+    
+    child2 = node.disconnectChild(2); // remove children
+    
+    child3 = node.disconnectChild(3); // from this node
+    
+    Node newRight = new Node(); // make new node
+
+    if(node == root) { // if this is the root,
+
+	root = new Node(); // make new root
+	parent = root;     // root is our parent
+	root->connectChild(0, node); // connect to parent
+
+    } else {    // this node not the root, get parent 
+	parent = node->getParent(); 
+    }
+
+    // deal with parent
+    itemIndex = parent->insertItem(itemB); // item B to parent
+    
+    int total = parent->totalItems; // total items?
+    
+    for(int j=total - 1; j > itemIndex; j--)  {// move parent's connections
+
+        Node234<K> *temp = parent->disconnectChild(j); // one child
+
+        parent->connectChild(j + 1, temp); // to the right
+    }
+
+    // connect newRight to parent
+    parent->connectChild(itemIndex + 1, newRight);
+
+    // deal with newRight
+    newRight->insertItem(itemC); // item C to newRight
+
+    newRight->connectChild(0, child2); // connect to 0 and 1
+
+    newRight->connectChild(1, child3); // on newRight
 }
 #endif
