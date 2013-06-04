@@ -26,28 +26,23 @@ template<typename K> class Node234 {
        Node234(K small);
        Node234(K small, K middle);
        Node234(K small, K middle, K large);
-       bool isLeafNode(); 
+       bool isLeaf(); 
 
-       Node234<K> *parent,
-       /*
-        * If maxIndex is 0, then two node; if 1, then three node, if 2, then four node.
-        */
+       Node234<K> *parent;
+       /*  If maxIndex is 0, then two node; if 1, then three node, if 2, then four node. */
  
        int maxIndex;    
 
        K values[3];
-       enum  indecies {leftChild = 0, leftmidChild = 1, rightmidChild = 2 , rightChild =3}; 
-       Node234<K> *leftChild();
-       Node234<K> *leftCenterChild();
-       Node234<K> *rightCenterChild();
-       Node234<K> *rightChild();
+          
        Node234<K> *children[3];
-       bool find(K key, Node234<K>*pnode, int& index);
+       bool find(K key, int& index);
 };  
 
-template<typename K> inline  bool Node234<K>::isLeafNode()  
+template<typename K> inline  bool Node234<K>::isLeaf()  
 { 
-   return  !leftChild; 
+   !children[0] ? true : false;
+   
 }
 
 template<typename K> inline Node234<K>::Node234(K small) : maxIndex(0)
@@ -67,7 +62,7 @@ template<typename K> inline Node234<K>::Node234(K small, K middle, K large) : ma
    values[3] = large; 
 }
 
-template<typename K> inline bool Node234<K>::find(K key, int& index);
+template<typename K> inline bool Node234<K>::find(K key, int& index)
 { 
    for(int i =0; i <= maxIndex; i++) {
    
@@ -86,7 +81,8 @@ template<typename K> class Tree234 {
     Node234<K> *root; 
     
     bool DoSearch(K key, Node234<K> *&location, int& index);
-    Node234<K> *getNextChild(Node234<K> *current);
+    template<typename Functor> void DoTraverse(Functor f, Node234<K> *root);
+    Node234<K> *getNextChild(Node234<K> *current, K key);
 
   public:    
      Tree234() { root = 0; } 
@@ -102,8 +98,7 @@ template<typename K> bool Tree234<K>::search(K key)
     // make sure tree has at least one element    
     if (root == 0) {
     
-        location = 0;
-        return false;
+       return false;
         
     } else {
         int index;  
@@ -142,10 +137,12 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234<K> *&location, in
  */
 template<typename K> inline Node234<K> *Tree234<K>::getNextChild(Node234<K> *current, K key)
 {
-  for(int i = 0; j <= maxIndex; i++) {        
+  int i = 0;
+  
+  for(; i <= current->maxIndex; i++) {        
 
      // Are we less?
-     if( theValue < current->values[i]) {
+     if (key < current->values[i]) {
 
            return current->children[i];  
      }
@@ -170,39 +167,39 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
    switch (current->maxIndex) {
 
         case 0: // two node
-                 DoTraverse(current->children[0];
+                 DoTraverse(f, current->children[0]);
 
                  f(current->values[0]);
 
-                 DoTraverse(current->children[1];
+                 DoTraverse(f, current->children[1]);
                  break;
 
         case 1: // three node
-                 DoTraverse(current->children[0];
+                 DoTraverse(f, current->children[0]);
 
                  f(current->values[0]);
 
-                 DoTraverse(current->children[1];
+                 DoTraverse(f, current->children[1]);
  
                  f(current->values[1]);
 
-                 DoTraverse(current->children[2];
+                 DoTraverse(f, current->children[2]);
                  break;
 
         case 2: // four node
-                 DoTraverse(current->children[0];
+                 DoTraverse(f, current->children[0]);
 
                  f(current->values[0]);
 
-                 DoTraverse(current->children[1];
+                 DoTraverse(f, current->children[1]);
  
                  f(current->values[1]);
 
-                 DoTraverse(current->children[2];
+                 DoTraverse(f, current->children[2]);
 
                  f(current->values[2]);
 
-                 DoTraverse(current->children[3];
+                 DoTraverse(f, current->children[3]);
  
                  break;
 
