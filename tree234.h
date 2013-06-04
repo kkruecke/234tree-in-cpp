@@ -38,15 +38,39 @@ template<typename K> class Node234 {
           
        Node234<K> *children[3];
        bool find(K key, int& index);
-       void insertItem(K key);
+       int insertItem(K key);
        bool isFull();
        Node234<K> *getParent();
 };  
-
-template<typename K> inline void Node234<K>::insertItem(K key)
+/*
+ * preconditions: node is not full. key is not already in node.
+ * shifts values in node as needed so that key will be inserted in sorted position
+ */
+template<typename K> inline int Node234<K>::insertItem(K key)
 { 
-  ++totalItems;
-  values[totalItems] = key;
+  // assumes node is not full will add new item
+  numItems++;
+
+  K  newKey =  key;
+
+  // start on right, examine items
+  for(int i = totalItems; i >=0 ; i--) {
+
+        if(key < values[i]) { // if it's bigger
+
+            itemArray[i + 1] = itemArray[i]; // shift value[i] right
+
+        } else {
+
+            itemArray[i + 1] = key; // insert new item
+
+            return i + 1; // return index to
+        } 
+    } // end for // shifted all items,
+
+    itemArray[0] = newItem; // insert new item
+  ++totalItems; // increase the total item count
+    return 0;
 
   //TODO: shift pointers appropriately
 }
