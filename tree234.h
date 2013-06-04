@@ -29,9 +29,9 @@ template<typename K> class Node234 {
        bool isLeaf(); 
 
        Node234<K> *parent;
-       /*  If maxIndex is 0, then two node; if 1, then three node, if 2, then four node. */
+       /*  If totalItems is 1, then two node; if 2, then three node, if 3, then four node. */
  
-       int maxIndex;    
+       int totalItems;    
 
        K values[3];
           
@@ -45,17 +45,17 @@ template<typename K> inline  bool Node234<K>::isLeaf()
    
 }
 
-template<typename K> inline Node234<K>::Node234(K small) : maxIndex(0)
+template<typename K> inline Node234<K>::Node234(K small) : totalItems(1)
 { 
    values[0] = small; 
 }
 
-template<typename K> inline Node234<K>::Node234(K small, K middle) : maxIndex(1)
+template<typename K> inline Node234<K>::Node234(K small, K middle) : totalItems(2)
 { 
    values[0] = small; 
    values[1] = middle; 
 }
-template<typename K> inline Node234<K>::Node234(K small, K middle, K large) : maxIndex(2)
+template<typename K> inline Node234<K>::Node234(K small, K middle, K large) : totalItems(3)
 { 
    values[0] = small; 
    values[1] = middle; 
@@ -64,7 +64,7 @@ template<typename K> inline Node234<K>::Node234(K small, K middle, K large) : ma
 
 template<typename K> inline bool Node234<K>::find(K key, int& index)
 { 
-   for(int i =0; i <= maxIndex; i++) {
+   for(int i =0; i < totalItems; i++) {
    
            if (values[i] == key) {
                    index = i;
@@ -139,7 +139,7 @@ template<typename K> inline Node234<K> *Tree234<K>::getNextChild(Node234<K> *cur
 {
   int i = 0;
   
-  for(; i <= current->maxIndex; i++) {        
+  for(; i < current->totalItems; i++) {        
 
      // Are we less?
      if (key < current->values[i]) {
@@ -164,9 +164,9 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
 	return;
    }
 
-   switch (current->maxIndex) {
+   switch (current->totalItems) {
 
-        case 0: // two node
+        case 1: // two node
                  DoTraverse(f, current->children[0]);
 
                  f(current->values[0]);
@@ -174,7 +174,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
                  DoTraverse(f, current->children[1]);
                  break;
 
-        case 1: // three node
+        case 2: // three node
                  DoTraverse(f, current->children[0]);
 
                  f(current->values[0]);
@@ -186,7 +186,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
                  DoTraverse(f, current->children[2]);
                  break;
 
-        case 2: // four node
+        case 3: // four node
                  DoTraverse(f, current->children[0]);
 
                  f(current->values[0]);
@@ -202,7 +202,6 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
                  DoTraverse(f, current->children[3]);
  
                  break;
-
    }
 }
 #endif
