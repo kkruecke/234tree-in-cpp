@@ -27,48 +27,41 @@ template<typename K> class Node234 {
        Node234(K small);
        Node234(K small, K middle);
        Node234(K small, K middle, K large);
-       bool isLeaf(); 
 
        Node234<K> *parent;
-       /*  If totalItems is 1, then two node; if 2, then three node, if 3, then four node. */
- 
-       int totalItems;    
-
-       K values[3];
-          
+       
+       int totalItems; /* If totalItems is 1, then two node; if 2, then three node, if 3, then four node. */   
+       K keys[3];
        Node234<K> *children[3];
+
        bool find(K key, int& index);
        int insertItem(K key);
        bool isFull();
        Node234<K> *getParent();
+       bool isLeaf(); 
 };  
 /*
  * preconditions: node is not full. key is not already in node.
- * shifts values in node as needed so that key will be inserted in sorted position
+ * shifts keys in node as needed so that key will be inserted in sorted position
  */
 template<typename K> inline int Node234<K>::insertItem(K key)
 { 
-  // assumes node is not full will add new item
-  numItems++;
-
-  K  newKey =  key;
-
   // start on right, examine items
   for(int i = totalItems; i >=0 ; i--) {
 
-        if(key < values[i]) { // if it's bigger
+        if(key < keys[i]) { // if it's bigger
 
-            itemArray[i + 1] = itemArray[i]; // shift value[i] right
+            keys[i + 1] = keys[i]; // shift value[i] right
 
         } else {
 
-            itemArray[i + 1] = key; // insert new item
+            keys[i + 1] = key; // insert new item
 
             return i + 1; // return index to
         } 
     } // end for // shifted all items,
 
-    itemArray[0] = newItem; // insert new item
+    keys[0] = key; // insert new item
   ++totalItems; // increase the total item count
     return 0;
 
@@ -91,26 +84,26 @@ template<typename K> inline  bool Node234<K>::isLeaf()
 
 template<typename K> inline Node234<K>::Node234(K small) : totalItems(1)
 { 
-   values[0] = small; 
+   keys[0] = small; 
 }
 
 template<typename K> inline Node234<K>::Node234(K small, K middle) : totalItems(2)
 { 
-   values[0] = small; 
-   values[1] = middle; 
+   keys[0] = small; 
+   keys[1] = middle; 
 }
 template<typename K> inline Node234<K>::Node234(K small, K middle, K large) : totalItems(3)
 { 
-   values[0] = small; 
-   values[1] = middle; 
-   values[3] = large; 
+   keys[0] = small; 
+   keys[1] = middle; 
+   keys[3] = large; 
 }
 
 template<typename K> inline bool Node234<K>::find(K key, int& index)
 { 
    for(int i =0; i < totalItems; i++) {
    
-           if (values[i] == key) {
+           if (keys[i] == key) {
                    index = i;
                    return true;
            }
@@ -186,7 +179,7 @@ template<typename K> inline Node234<K> *Tree234<K>::getNextChild(Node234<K> *cur
   for(; i < current->totalItems; i++) {        
 
      // Are we less?
-     if (key < current->values[i]) {
+     if (key < current->keys[i]) {
 
            return current->children[i];  
      }
@@ -213,7 +206,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
         case 1: // two node
                  DoTraverse(f, current->children[0]);
 
-                 f(current->values[0]);
+                 f(current->keys[0]);
 
                  DoTraverse(f, current->children[1]);
                  break;
@@ -221,11 +214,11 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
         case 2: // three node
                  DoTraverse(f, current->children[0]);
 
-                 f(current->values[0]);
+                 f(current->keys[0]);
 
                  DoTraverse(f, current->children[1]);
  
-                 f(current->values[1]);
+                 f(current->keys[1]);
 
                  DoTraverse(f, current->children[2]);
                  break;
@@ -233,15 +226,15 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
         case 3: // four node
                  DoTraverse(f, current->children[0]);
 
-                 f(current->values[0]);
+                 f(current->keys[0]);
 
                  DoTraverse(f, current->children[1]);
  
-                 f(current->values[1]);
+                 f(current->keys[1]);
 
                  DoTraverse(f, current->children[2]);
 
-                 f(current->values[2]);
+                 f(current->keys[2]);
 
                  DoTraverse(f, current->children[3]);
  
