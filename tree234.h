@@ -29,9 +29,18 @@ template<typename K> class Node234 {
        bool isLeafNode(); 
 
        Node234<K> *parent,
-           
+       /*
+        * If maxIndex is 0, then two node; if 1, then three node, if 2, then four node.
+        */
+ 
+       int maxIndex;    
+
        K values[3];
-     // enum  indecies {leftChild = 0, leftmidChild = 1, rightmidChild = 2 , rightChild =3}; 
+       enum  indecies {leftChild = 0, leftmidChild = 1, rightmidChild = 2 , rightChild =3}; 
+       Node234<K> *leftChild();
+       Node234<K> *leftCenterChild();
+       Node234<K> *rightCenterChild();
+       Node234<K> *rightChild();
        Node234<K> *children[3];
        bool find(K key, Node234<K>*pnode, int& index);
 };  
@@ -83,6 +92,7 @@ template<typename K> class Tree234 {
      Tree234() { root = 0; } 
      bool search(K key);
      bool remove(K key, Node234<K> *location=0);
+     template<typename Functor> void traverse(Functor f);
      Node234<K> *insert(K key, Node234<K> *location=0) throw(duplicatekey);
 };
 	
@@ -143,5 +153,59 @@ template<typename K> inline Node234<K> *Tree234<K>::getNextChild(Node234<K> *cur
 
   // we're greater, so return right-most child
   return current->children[i];   
+}
+
+template<typename K> template<typename Functor> inline void Tree234<K>::traverse(Functor f)
+{     
+  DoTraverse(f, root);    
+}
+
+template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Functor f, Node234<K> *current)
+{     
+   if (current->isLeaf()) {
+
+	return;
+   }
+
+   switch (current->maxIndex) {
+
+        case 0: // two node
+                 DoTraverse(current->children[0];
+
+                 f(current->values[0]);
+
+                 DoTraverse(current->children[1];
+                 break;
+
+        case 1: // three node
+                 DoTraverse(current->children[0];
+
+                 f(current->values[0]);
+
+                 DoTraverse(current->children[1];
+ 
+                 f(current->values[1]);
+
+                 DoTraverse(current->children[2];
+                 break;
+
+        case 2: // four node
+                 DoTraverse(current->children[0];
+
+                 f(current->values[0]);
+
+                 DoTraverse(current->children[1];
+ 
+                 f(current->values[1]);
+
+                 DoTraverse(current->children[2];
+
+                 f(current->values[2]);
+
+                 DoTraverse(current->children[3];
+ 
+                 break;
+
+   }
 }
 #endif
