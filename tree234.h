@@ -2,6 +2,7 @@
 #define	TREE23_H
 /*
  * Based on http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
+ * See also: http://grail.cba.csuohio.edu/~lin/cis506/Chapt10.pdf
  */
 #include <utility>
 #include <iostream>
@@ -37,6 +38,7 @@ template<typename K> class Node234 {
           
        Node234<K> *children[3];
        bool find(K key, int& index);
+       void insertItem(K key);
 };  
 
 template<typename K> inline  bool Node234<K>::isLeaf()  
@@ -203,5 +205,37 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
  
                  break;
    }
+}
+
+template<typename K> void Tree234<K>::insert(K key)
+{
+Node234<K> *current = root;
+/* loop until a leaf node is found, splitting four nodes as we descend */
+    while(true) {
+
+        if( current.isFull() )  {// if node full,
+
+            split(current); // split it
+
+            current = current.getParent(); // back up
+
+            // search once again
+            current = getNextChild(current, dValue);
+        } 
+        else if(current->isLeaf()) {
+
+	        break; 
+	} else { 
+            /* node is not full, not a leaf; so go to lower level else */
+            current = getNextChild(current, dValue);
+        }
+    } // end while
+
+    current.insertItem(key); // insert new DataItem
+} // end insert()
+
+template<typename K> void split(Node234<K> *current)
+{
+
 }
 #endif
