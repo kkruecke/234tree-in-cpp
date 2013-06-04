@@ -39,12 +39,30 @@ template<typename K> class Node234 {
        Node234<K> *children[3];
        bool find(K key, int& index);
        void insertItem(K key);
+       bool isFull();
+       Node234<K> *getParent();
 };  
 
+template<typename K> inline void Node234<K>::insertItem(K key)
+{ 
+  ++totalItems;
+  values[totalItems] = key;
+
+  //TODO: shift pointers appropriately
+}
+
+template<typename K> inline  bool Node234<K>::isFull()  
+{ 
+   return totalItems == 3;
+}
+
+template<typename K> inline  Node234<K> *Node234<K>::getParent()  
+{ 
+   return parent;
+}
 template<typename K> inline  bool Node234<K>::isLeaf()  
 { 
-   !children[0] ? true : false;
-   
+   return !children[0] ? true : false;
 }
 
 template<typename K> inline Node234<K>::Node234(K small) : totalItems(1)
@@ -91,7 +109,7 @@ template<typename K> class Tree234 {
      bool search(K key);
      bool remove(K key, Node234<K> *location=0);
      template<typename Functor> void traverse(Functor f);
-     Node234<K> *insert(K key, Node234<K> *location=0) throw(duplicatekey);
+     void insert(K key); // throw(duplicatekey) 
 };
 	
 
@@ -213,25 +231,25 @@ Node234<K> *current = root;
 /* loop until a leaf node is found, splitting four nodes as we descend */
     while(true) {
 
-        if( current.isFull() )  {// if node full,
+        if( current->isFull() )  {// if node full,
 
             split(current); // split it
 
-            current = current.getParent(); // back up
+            current = current->getParent(); // back up
 
             // search once again
-            current = getNextChild(current, dValue);
+            current = getNextChild(current, key);
         } 
         else if(current->isLeaf()) {
 
 	        break; 
 	} else { 
             /* node is not full, not a leaf; so go to lower level else */
-            current = getNextChild(current, dValue);
+            current = getNextChild(current, key);
         }
     } // end while
 
-    current.insertItem(key); // insert new DataItem
+    current->insertItem(key); // insert new DataItem
 } // end insert()
 
 template<typename K> void split(Node234<K> *current)
