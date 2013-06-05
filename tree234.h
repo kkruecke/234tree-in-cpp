@@ -25,8 +25,9 @@ public:
 template<typename K> class Node234 {
    private: 
        friend class Tree234<K>;             
+       static int MAX;   
        Node234(K small);
-       Node234(K small, K middle);
+       Node234(K small, K larger);
        Node234(K small, K middle, K large);
 
        Node234<K> *parent;
@@ -41,17 +42,19 @@ template<typename K> class Node234 {
        Node234<K> *getParent();
        bool isLeaf(); 
 };  
+
+int Node234<K>::MAX = 3;
 /*
- * preconditions: node is not full. key is not already in node.
+ * preconditions: node is not full, not a four node (full), and key is not already in node.
  * shifts keys in node as needed so that key will be inserted in sorted position
  */
 template<typename K> inline int Node234<K>::insertItem(K key)
 { 
   // start on right, examine items
 
-  for(int i = totalItems; i >=0 ; i--) {
+  for(int i = totalItems - 1; i >= 0 ; i--) {
 
-/* java code has a check for null evidently bc of the way removeItem() works
+/* java code had a check for 'null' evidently bc of the way Node234<K>::removeItem() works
         if (values[i] == null) {
 
             continue;
@@ -59,21 +62,26 @@ template<typename K> inline int Node234<K>::insertItem(K key)
 */
         if(key < keys[i]) { // if it's bigger
 
-            keys[i + 1] = keys[i]; // shift value[i] right
+            keys[i + 1] = keys[i]; // shift keys[i] right
 
         } else {
 
             keys[i + 1] = key; // insert new item
 
-            return i + 1; // return index to
+            return i + 1; // return index to inserted key.
         } 
-    } // end for // shifted all items,
+    } 
 
-    keys[0] = key; // insert new item
+    // shifted all items, insert new item
+
+    keys[0] = key;  
   ++totalItems; // increase the total item count
     return 0;
 
-  //TODO: shift pointers appropriately
+  /*
+   * TODO: shift pointers appropriately?
+   * A: I believe we are inserting into a leaf, so that is not needed?
+   */
 }
 
 template<typename K> inline  bool Node234<K>::isFull()  
@@ -93,18 +101,32 @@ template<typename K> inline  bool Node234<K>::isLeaf()
 template<typename K> inline Node234<K>::Node234(K small) : totalItems(1)
 { 
    keys[0] = small; 
+
+   // We only really need to set children[0] to indicated that a node is a leaf, but we set all the children to zero.
+   for (int i = 0; i < MAX; i++) {		
+       children[i] = 0;
+    }
 }
 
 template<typename K> inline Node234<K>::Node234(K small, K middle) : totalItems(2)
 { 
    keys[0] = small; 
    keys[1] = middle; 
+
+   // We only really need to set children[0] to indicated that a node is a leaf, but we set all the children to zero.
+   for (int i = 0; i < MAX; i++) {		
+       children[i] = 0;
+    }
 }
 template<typename K> inline Node234<K>::Node234(K small, K middle, K large) : totalItems(3)
 { 
    keys[0] = small; 
    keys[1] = middle; 
    keys[3] = large; 
+   // We only really need to set children[0] to indicated that a node is a leaf, but we set all the children to zero.
+   for (int i = 0; i < MAX; i++) {		
+       children[i] = 0;
+    }
 }
 
 template<typename K> inline bool Node234<K>::find(K key, int& index)
@@ -152,23 +174,29 @@ template<typename K> bool Tree234<K>::search(K key)
     }
 }   
 /*
- * Precondition: current is initially root
- * returns true if found and sets location and index within location
+ * Precondition: current is initially root.
+ * Descends tree getting next child until key found or leaf encountered.
+ * If key is found, additionally returns node and index within node
  */
 template<typename K>  bool Tree234<K>::DoSearch(K key, Node234<K> *&location, int& index)
 {
   Node234<K> *current = root;
 
-    while(true) {
+  if (root == 0) {
+
+     return false;
+  }
+
+  while(true) {
  
-        if (current->isLeaf()) {
-
-            return false;
-
-        } else if (current->find(key, index)) {
+        if (current->find(key, index)) {
 
             location = current;
             return true; 
+
+        } else if (current->isLeaf()) {
+
+            return false;
 
         } else {
 
@@ -178,7 +206,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234<K> *&location, in
 }
 /* 
  * Precondition: assumes node is not empty, not full, not a leaf
- * Returns next descendent. 
+ * Returns next child
  */
 template<typename K> inline Node234<K> *Tree234<K>::getNextChild(Node234<K> *current, K key)
 {
@@ -204,7 +232,7 @@ template<typename K> template<typename Functor> inline void Tree234<K>::traverse
 
 template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Functor f, Node234<K> *current)
 {     
-   if (current->isLeaf()) {
+   if (current == 0) {
 
 	return;
    }
@@ -253,31 +281,62 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
 template<typename K> void Tree234<K>::insert(K key)
 {
 Node234<K> *current = root;
-/* loop until a leaf node is found, splitting four nodes as we descend */
+
+   /* Descend until a leaf node is found, splitting four nodes as they are encountered */
+
     while(true) {
 
-        if( current->isFull() )  {// if node full,
+        if( current->isFull() )  {// if four node, split it, moving a value up to parent.
 
-            split(current); // split it
+            split(current); 
+      
+            // resume search with parent.
+            current = current->getParent(); //Q: is current correct here?
 
-            current = current->getParent(); // back up
-
-            // search once again
             current = getNextChild(current, key);
-        } 
-        else if(current->isLeaf()) {
 
+        } else if(current->isLeaf()) {
+
+                /* done descending. */
 	        break; 
 	} else { 
-            /* node is not full, not a leaf; so go to lower level else */
+
+            /* node is internal but not full, so descend, getting next in-order child. */ 
+                              
             current = getNextChild(current, key);
         }
-    } // end while
+    } 
 
-    current->insertItem(key); // insert new DataItem
-} // end insert()
+    // current is now a leaf and not full.
+    current->insertItem(key); 
+} 
 /*
- * Preconditions: node is full and must be split
+ * Preconditions: node is full, a four node.
+ *
+ * Pseudo code: The four node can be either: 
+ * 1. root
+ * 2. have a two node parent
+ * 3. have a three node parent
+ * 
+ * If (node is root) { 
+ *   put middle value in a new parent two node.
+ *   save the large value temporarily.
+ *   convert node into a two node, holding the samll value
+ *   allocate a new two node to hold the large value. 
+ *   set the node as left child of new parent. set the newly allocated node as the right child
+ *   return 
+ * } 
+ * parent = parent of node
+ *
+ * if (parent is two node) {
+ *
+ *
+ * } else { // parent is three node
+ *
+ *
+ *
+ * }
+ *
  */
 template<typename K> void split(Node234<K> *node)
 {
