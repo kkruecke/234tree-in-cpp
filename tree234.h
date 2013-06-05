@@ -77,7 +77,7 @@ template<typename K> inline Node234<K>::Node234(K small, K middle, K large) : to
  * precondition: childNum is with the range for the type of node.
  * child is not 0.
  */
-template<typename K> inline int Node234<K>::connectChild(int childNum, Node234<K> *child)
+template<typename K> inline void Node234<K>::connectChild(int childNum, Node234<K> *child)
 {
   children[childNum] = child;
   child->parent = this;
@@ -124,7 +124,7 @@ template<typename K> inline int Node234<K>::insertItem(K key)
 
 template<typename K> inline  bool Node234<K>::isFull()  
 { 
-   return totalItems == 3;
+   return totalItems == MAX;
 }
 
 template<typename K> inline  Node234<K> *Node234<K>::getParent()  
@@ -158,6 +158,7 @@ template<typename K> class Tree234 {
     bool DoSearch(K key, Node234<K> *&location, int& index);
     template<typename Functor> void DoTraverse(Functor f, Node234<K> *root);
     Node234<K> *getNextChild(Node234<K> *current, K key);
+    void split(Node234<K> *node);
 
   public:    
      Tree234() { root = 0; } 
@@ -356,7 +357,7 @@ Node234<K> *current = root;
  * }
  *
  */
-template<typename K> void split(Node234<K> *node)
+template<typename K> void Tree234<K>::split(Node234<K> *node)
 {
     K  itemB, itemC;
 
@@ -386,7 +387,7 @@ template<typename K> void split(Node234<K> *node)
     node->children[2] = 0; 
     node->children[3] = 0; 
     
-    Node newRight = new Node(itemC); // make new right child node
+    Node234<K> *newRight = new Node234<K>(itemC); // make new right child node
 
     /* set its left and right children to be the two right most children of node */
     newRight->connectChild(0, child2); // connect to 0 and 1
@@ -396,7 +397,7 @@ template<typename K> void split(Node234<K> *node)
     // if this is the root,
     if(node == root) { 
         /* make new root two node using node's middle value */  
-	root = new Node(itemB); 
+	root = new Node234<K>(itemB); 
 	parent = root;          // root is parent of node
 	root->connectChild(0, node); // connect node to root as left child
         root->connectChild(1, newRight);
@@ -430,11 +431,11 @@ template<typename K> void split(Node234<K> *node)
     
     int total = parent->totalItems; // total items?
     
-    for(int j=total - 1; j > itemIndex; j--)  {// move parent's connections
+    for(int i = total - 1; i > itemIndex; i--)  {// move parent's connections
 
-        Node234<K> *temp = parent->disconnectChild(j); // one child
-
-        parent->connectChild(j + 1, temp); // to the right
+        //--Node234<K> *temp = parent->disconnectChild(j); // one child
+        Node234<K> *temp = parent->children[i]; // one child
+        parent->connectChild(i + 1, temp); // to the right
     }
 
     // connect newRight to parent
@@ -449,7 +450,7 @@ template<typename K> void split(Node234<K> *node)
     newRight->connectChild(1, child3); // on newRight
     */
 }
-
+/*
 template<typename K> void splitjava(Node234<K> *node)
 {
     K  temB, itemC;
@@ -503,4 +504,5 @@ template<typename K> void splitjava(Node234<K> *node)
 
     newRight->connectChild(1, child3); // on newRight
 }
+*/
 #endif
