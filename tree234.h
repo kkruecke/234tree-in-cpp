@@ -414,15 +414,33 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
     // deal with parent, moving itemB middle value to parent.
 
     int insertIndex = parent->insertItem(itemB);
+    
+    for(int i = total - 1; i > itemIndex; i--)  {// move parent's connections right, from new total up to insertIndex
+
+        Node234<K> *temp = parent->children[i]; // one child
+        parent->connectChild(i + 1, temp); // to the right
+    }
 
     if (bParentWas2Node) { // parent was two node, now is three node
 
-        // move parent's connections
+        // set parent's other child(ren) connections
+        if (insertIndex == 1) {
+
+        } else { // it is 0
+
+
+        }
 
     } else { // parent was three node, now is a four node
+         
+        // set parent's other child(ren) connections
+         if (insertIndex == 2) {
 
-        // move parent's connections
+         } else if (insertIndex == 1) {
 
+         } else { // it is 0
+
+         }   
     }
 
     return;
@@ -431,9 +449,8 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
     
     int total = parent->totalItems; // total items?
     
-    for(int i = total - 1; i > itemIndex; i--)  {// move parent's connections
+    for(int i = total - 1; i > itemIndex; i--)  {// move parent's connections right, from new total up to insertIndex
 
-        //--Node234<K> *temp = parent->disconnectChild(j); // one child
         Node234<K> *temp = parent->children[i]; // one child
         parent->connectChild(i + 1, temp); // to the right
     }
