@@ -1,5 +1,5 @@
-#ifndef  TREE23_H
-#define	TREE23_H
+#ifndef  TREE234_H
+#define	TREE234_H
 /*
  * Based on http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  * See also: http://grail.cba.csuohio.edu/~lin/cis506/Chapt10.pdf
