@@ -1,6 +1,6 @@
 #ifndef  TREE23_H
 #define	TREE23_H
-// TODO: insertItem() is differs from java source. connectChild() is missing. 
+// TODO: insertItem() is differs slightly from java source. Also, connectChild() is missing. 
 /*
  * Based on http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  * See also: http://grail.cba.csuohio.edu/~lin/cis506/Chapt10.pdf
@@ -48,8 +48,15 @@ template<typename K> class Node234 {
 template<typename K> inline int Node234<K>::insertItem(K key)
 { 
   // start on right, examine items
+
   for(int i = totalItems; i >=0 ; i--) {
 
+/* java code has a check for null evidently bc of the way removeItem() works
+        if (values[i] == null) {
+
+            continue;
+        } else if (key < keys[i]) { // if it's bigger  
+*/
         if(key < keys[i]) { // if it's bigger
 
             keys[i + 1] = keys[i]; // shift value[i] right
