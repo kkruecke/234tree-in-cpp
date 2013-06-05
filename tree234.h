@@ -1,4 +1,4 @@
-#ifndef  TREE234_H
+#ifndef TREE234_H
 #define	TREE234_H
 /*
  * Based on http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
@@ -327,36 +327,7 @@ Node234<K> *current = root;
  * 1. the root
  * 2. has a two node parent
  * 3. has a three node parent
- * 
- * If (node is root) { 
- *   put middle value in a new parent two node.
- *   save the large value temporarily.
- *   convert node into a two node, holding the small value, use the left most child as its left child, set its next left most child as its right child.
- *   allocate a new two node to hold the large value. 
- *   set the converted node as left child of new parent. set the other allocated node as the right child
- *   return 
- * } 
- *
- * parent = parent of node
- *
- * if (parent is two node) {
- *
- *   if (parent's left child == node) {
- *           
- *
- *
- *   } else { // node is right child
- *
- *
- *
- *   }
- * } else { // parent is three node, and node is either left, middle or right child.
- *
- *
- *
- * }
- *
- */
+ */ 
 template<typename K> void Tree234<K>::split(Node234<K> *node)
 {
     K  itemB, itemC;
@@ -365,22 +336,13 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
 
     int itemIndex;
 
-    // remove two largest (of three total) keys 
-    /*
-    itemC = node.removeItem(); 
-    
-    itemB = node.removeItem(); 
-    */
-
+    // remove two largest (of three total) keys...
+        
     itemC = node->keys[2];
     itemB = node->keys[1]; 
+    node->totalItems = 1; // ...by setting totalItems to 1. 
 
     // Remove two right-most children from this node. 
-    /*
-    child2 = node.disconnectChild(2); 
-    
-    child3 = node.disconnectChild(3);
-    */
     child2 = node->children[2]; 
     child3 = node->children[3]; 
 
@@ -396,23 +358,19 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
        This occurs by default. We only need adjust totalItems  */
     node->children[2] = 0; 
     node->children[3] = 0; 
-    node->totalItems = 1; 
 
 
     // if this is the root,
     if(node == root) { 
         /* make new root two node using node's middle value */  
-	root = new Node234<K>(itemB); 
-	parent = root;          // root is parent of node
-	root->connectChild(0, node); // connect node to root as left child
+        root = new Node234<K>(itemB); 
+        parent = root;          // root is parent of node
+        root->connectChild(0, node); // connect node to root as left child
         root->connectChild(1, newRight);
         return;
 
-    } /*else {    
-        // node is not the root, get parent 
-	parent = node->getParent(); 
-    } */
-    
+    }         
+
     parent = node->getParent(); 
     bool bParentWas2Node = parent->totalItems == 1;
 
