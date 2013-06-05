@@ -110,7 +110,7 @@ template<typename K> inline int Node234<K>::insertItem(K key)
         } 
     } 
 
-    // shifted all items, insert new item
+    // shifted all items, insert new item at position 0
 
     keys[0] = key;  
   ++totalItems; // increase the total item count
@@ -384,15 +384,20 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
     child2 = node->children[2]; 
     child3 = node->children[3]; 
 
-    node->children[2] = 0; 
-    node->children[3] = 0; 
-    
-    Node234<K> *newRight = new Node234<K>(itemC); // make new right child node
+    Node234<K> *newRight = new Node234<K>(itemC); // make new right child node from largest item
 
-    /* set its left and right children to be the two right most children of node */
+    /* set its left and right children to be the two right-most children of node */
+
     newRight->connectChild(0, child2); // connect to 0 and 1
 
     newRight->connectChild(1, child3); // on newRight
+
+    /* we will covert node into a two node whose left and right children will be the two left most children
+       This occurs by default. We only need adjust totalItems  */
+    node->children[2] = 0; 
+    node->children[3] = 0; 
+    node->totalItems = 1; 
+
 
     // if this is the root,
     if(node == root) { 
@@ -413,113 +418,20 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
 
     // deal with parent, moving itemB middle value to parent.
 
-    int insertIndex = parent->insertItem(itemB);
+    int insert_index = parent->insertItem(itemB);
+    int last_index = parent->totalItems - 1;
     
-    for(int i = total - 1; i > itemIndex; i--)  {// move parent's connections right, from new total up to insertIndex
+    for(int i = last_index; i > insert_index; i--)  {// move parent's connections right, from new last index up to insertIndex
 
         Node234<K> *temp = parent->children[i]; // one child
         parent->connectChild(i + 1, temp); // to the right
     }
 
-    if (bParentWas2Node) { // parent was two node, now is three node
-
-        // set parent's other child(ren) connections
-        if (insertIndex == 1) {
-
-        } else { // it is 0
-
-
-        }
-
-    } else { // parent was three node, now is a four node
-         
-        // set parent's other child(ren) connections
-         if (insertIndex == 2) {
-
-         } else if (insertIndex == 1) {
-
-         } else { // it is 0
-
-         }   
-    }
-
-    return;
-
-    itemIndex = parent->insertItem(itemB); // item B to parent
-    
-    int total = parent->totalItems; // total items?
-    
-    for(int i = total - 1; i > itemIndex; i--)  {// move parent's connections right, from new total up to insertIndex
-
-        Node234<K> *temp = parent->children[i]; // one child
-        parent->connectChild(i + 1, temp); // to the right
-    }
-
-    // connect newRight to parent
-    parent->connectChild(itemIndex + 1, newRight);
-
-    // deal with newRight
-    /*
-    newRight->insertItem(itemC); // item C to newRight
-
-    newRight->connectChild(0, child2); // connect to 0 and 1
-
-    newRight->connectChild(1, child3); // on newRight
+    parent->connectChild(insert_index + 1,  newRight);
+    /* By default, we do not need to insert node. It will be at the correct position. So we do not need to do:
+    parent->connectChild(insert_index, node); 
     */
+  
+    return;
 }
-/*
-template<typename K> void splitjava(Node234<K> *node)
-{
-    K  temB, itemC;
-
-    Node234<K> *parent, *child2, *child3;
-
-    int itemIndex;
-
-    // remove two largest (of three total) keys 
-    itemC = node.removeItem(); 
-    
-    itemB = node.removeItem(); 
-
-    // Remove two right-most children from this node. 
-    child2 = node.disconnectChild(2); 
-    
-    child3 = node.disconnectChild(3);
-    
-    Node newRight = new Node(); // make new node
-
-    // if this is the root,
-    if(node == root) { 
-
-	root = new Node(); // make new root
-	parent = root;     // root is our parent
-	root->connectChild(0, node); // connect to parent
-
-    } else {    // this node not the root, get parent 
-	parent = node->getParent(); 
-    }
-
-    // deal with parent
-    itemIndex = parent->insertItem(itemB); // item B to parent
-    
-    int total = parent->totalItems; // total items?
-    
-    for(int j=total - 1; j > itemIndex; j--)  {// move parent's connections
-
-        Node234<K> *temp = parent->disconnectChild(j); // one child
-
-        parent->connectChild(j + 1, temp); // to the right
-    }
-
-    // connect newRight to parent
-    parent->connectChild(itemIndex + 1, newRight);
-
-    // deal with newRight
-    newRight->insertItem(itemC); // item C to newRight
-
-    newRight->connectChild(0, child2); // connect to 0 and 1
-
-    newRight->connectChild(1, child3); // on newRight
-}
-*/
 #endif
