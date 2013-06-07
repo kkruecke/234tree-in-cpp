@@ -33,7 +33,7 @@ template<typename K> class Node234 {
        
        int totalItems; /* If totalItems is 1, then two node; if 2, then three node, if 3, then four node. */   
        K keys[3];
-       Node234<K> *children[3];
+       Node234<K> *children[4];
 
        bool find(K key, int& index);
        int insertItem(K key);
