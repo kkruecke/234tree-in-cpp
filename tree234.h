@@ -300,7 +300,7 @@ Node234<K> *current = root;
             split(current); 
       
             // resume search with parent.
-            current = current->getParent(); //Q: is current correct here?
+            current = current->getParent(); 
 
             current = getNextChild(current, key);
 
@@ -315,6 +315,28 @@ Node234<K> *current = root;
             current = getNextChild(current, key);
         }
     } 
+    while(true) {
+
+        if( current->isLeaf() )  {
+
+            /* done descending. */
+            break;
+
+        } else if(current->isFull()) {// if four node, split it, moving a value up to parent.
+
+            split(current); 
+      
+            // resume search with parent.
+            current = current->getParent(); 
+
+            current = getNextChild(current, key);
+
+	} else { 
+
+            /* node is internal but not full, so descend, getting next in-order child. */ 
+                              
+            current = getNextChild(current, key);
+        }
 
     // current is now a leaf and not full.
     current->insertItem(key); 
@@ -379,10 +401,10 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
     int insert_index = parent->insertItem(itemB);
     int last_index = parent->totalItems - 1;
     
-    for(int i = last_index; i > insert_index; i--)  {// move parent's connections right, from new last index up to insertIndex
+    for(int i = last_index; i > insert_index; i--)  {// move parent's connections right, start from new last index up to insert_index
 
-        Node234<K> *temp = parent->children[i]; // one child
-        parent->connectChild(i + 1, temp); // to the right
+        Node234<K> *temp = parent->children[i];  // one child
+        parent->connectChild(i + 1, temp);       // to the right
     }
 
     parent->connectChild(insert_index + 1,  newRight);
