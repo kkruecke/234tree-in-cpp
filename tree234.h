@@ -415,11 +415,10 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
     return;
 }
 /*
- * 2 3 4 delete alogithm depicted at: http://www.cs.mtsu.edu/~jhankins/files/3110/presentations/2-3Trees.ppt 
- * pseudo code at: http://www.usna.edu/Users/cs/taylor/courses/ic312/class/class23.shtml
- * and at: http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf
- *
- *
+ * The delete alogithm is depicted at: http://www.cs.mtsu.edu/~jhankins/files/3110/presentations/2-3Trees.ppt 
+ * The startegy is to turn two nodes on the way down into three or four nodes. These two sites give pseudo code:
+ * http://www.usna.edu/Users/cs/taylor/courses/ic312/class/class23.shtml
+ * http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf
  */
 template<typename K> bool Tree234<K>::remove(K key, Node234<K> *location=0)
 {
