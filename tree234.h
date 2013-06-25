@@ -2,7 +2,6 @@
 #define	TREE234_H
 /*
  * Based on http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
- * See also: http://grail.cba.csuohio.edu/~lin/cis506/Chapt10.pdf
  */
 #include <utility>
 #include <iostream>
@@ -293,29 +292,7 @@ Node234<K> *current = root;
 
    /* Descend until a leaf node is found, splitting four nodes as they are encountered */
 
-    while(true) {
-
-        if( current->isFull() )  {// if four node, split it, moving a value up to parent.
-
-            split(current); 
-      
-            // resume search with parent.
-            current = current->getParent(); 
-
-            current = getNextChild(current, key);
-
-        } else if(current->isLeaf()) {
-
-                /* done descending. */
-	        break; 
-	} else { 
-
-            /* node is internal but not full, so descend, getting next in-order child. */ 
-                              
-            current = getNextChild(current, key);
-        }
-    } 
-    while(true) {
+   while(true) {
 
         if( current->isLeaf() )  {
 
@@ -337,6 +314,7 @@ Node234<K> *current = root;
                               
             current = getNextChild(current, key);
         }
+    }
 
     // current is now a leaf and not full.
     current->insertItem(key); 
@@ -416,10 +394,12 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
 }
 /*
  * The delete alogithm is depicted at: http://www.cs.mtsu.edu/~jhankins/files/3110/presentations/2-3Trees.ppt 
- * The startegy is to turn two nodes on the way down into three or four nodes. These two sites give pseudo code:
+ * The startegy is to turn two nodes on the way down into three or four nodes. Pseudo code:
+ * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt
  * http://www.usna.edu/Users/cs/taylor/courses/ic312/class/class23.shtml
- * http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf  <-- very good
  * http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html
+
+  
  */
 template<typename K> bool Tree234<K>::remove(K key, Node234<K> *location=0)
 {
