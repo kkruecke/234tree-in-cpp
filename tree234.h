@@ -192,8 +192,6 @@ template<typename K> void Tree234<K>::DestroyTree(Node234<K> *current)
 
             delete current;
 
-            current = 0;
-
             break;
 
       case 2: // three node
@@ -204,8 +202,6 @@ template<typename K> void Tree234<K>::DestroyTree(Node234<K> *current)
             DestroyTree(current->children[2]);
 
             delete current;
-
-            current = 0;
 
             break;
 
@@ -220,8 +216,6 @@ template<typename K> void Tree234<K>::DestroyTree(Node234<K> *current)
 
             delete current;
  
-            current = 0;
-
             break;
    }
   
