@@ -158,15 +158,74 @@ template<typename K> class Tree234 {
     template<typename Functor> void DoTraverse(Functor f, Node234<K> *root);
     Node234<K> *getNextChild(Node234<K> *current, K key);
     void split(Node234<K> *node);
-
+    void DestroyTree(Node234<K> *root);
   public:    
      Tree234() { root = 0; } 
+     ~Tree234(); 
      bool search(K key);
      bool remove(K key, Node234<K> *location=0);
      template<typename Functor> void traverse(Functor f);
      void insert(K key); // throw(duplicatekey) 
 };
 	
+template<typename K> inline Tree234<K>::~Tree234()
+{
+   DestroyTree(root);
+}
+
+/*
+ * Post order traversal, deleting nodes
+ */
+template<typename K> void Tree234<K>::DestroyTree(Node234<K> *current)
+{
+  if (current == 0) {
+
+	return;
+   }
+
+   switch (current->totalItems) {
+
+      case 1: // two node
+            DestroyTree(current->children[0]);
+
+            DestroyTree(current->children[1]);
+
+            delete current;
+
+            current = 0;
+
+            break;
+
+      case 2: // three node
+            DestroyTree(current->children[0]);
+
+            DestroyTree(current->children[1]);
+ 
+            DestroyTree(current->children[2]);
+
+            delete current;
+
+            current = 0;
+
+            break;
+
+      case 3: // four node
+            DestroyTree(current->children[0]);
+
+            DestroyTree(current->children[1]);
+ 
+            DestroyTree(current->children[2]);
+
+            DestroyTree(current->children[3]);
+
+            delete current;
+ 
+            current = 0;
+
+            break;
+   }
+  
+}
 
 template<typename K> bool Tree234<K>::search(K key)
 {
@@ -237,7 +296,9 @@ template<typename K> template<typename Functor> inline void Tree234<K>::traverse
 {     
   DoTraverse(f, root);    
 }
-
+/*
+ * In order traversal
+ */
 template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Functor f, Node234<K> *current)
 {     
    if (current == 0) {
@@ -288,18 +349,19 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
 
 template<typename K> void Tree234<K>::insert(K key)
 {
-Node234<K> *current = root;
+    if (root == 0) {
+
+       root =  new Node234<K>(key); 
+       return; 
+    } 
+
+   Node234<K> *current = root;
 
    /* Descend until a leaf node is found, splitting four nodes as they are encountered */
 
    while(true) {
-
-        if( current->isLeaf() )  {
-
-            /* done descending. */
-            break;
-
-        } else if(current->isFull()) {// if four node, split it, moving a value up to parent.
+       
+       if(current->isFull()) {// if four node, split it, moving a value up to parent.
 
             split(current); 
       
@@ -308,7 +370,12 @@ Node234<K> *current = root;
 
             current = getNextChild(current, key);
 
-	} else { 
+       }  else if( current->isLeaf() )  {
+
+            /* done descending. */
+            break;
+
+        } else { 
 
             /* node is internal but not full, so descend, getting next in-order child. */ 
                               
@@ -401,7 +468,7 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
 
   
  */
-template<typename K> bool Tree234<K>::remove(K key, Node234<K> *location=0)
+template<typename K> bool Tree234<K>::remove(K key, Node234<K> *location)
 {
   return true;
 }
