@@ -8,11 +8,12 @@
 #include <cstdlib>
 #include "tree234.h"
 #include <iostream>
-
 using namespace std;
 
-void print_int(int x)
-{ cout << x << ' '; }
+/* Use this code if you get compile error about lambda
+ void print_int(int x)
+ { cout << x << ' '; } 
+ */
 
 int main(int argc, char** argv) 
 {
@@ -27,8 +28,8 @@ int main(int argc, char** argv)
     }
     
     tree.search(80);
-   
-    tree.traverse(print_int); 
+    /* alternately, tree.traverse(print_int);*/
+    tree.traverse([](int x){ cout << x << ' '; }); 
     cout << endl;
        
     return 0;
