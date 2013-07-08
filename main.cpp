@@ -7,10 +7,12 @@
 
 #include <cstdlib>
 #include "tree234.h"
-#include "TreePrinter.h"
 #include <iostream>
 
 using namespace std;
+
+void print_int(int x)
+{ cout << x << ' '; }
 
 int main(int argc, char** argv) 
 {
@@ -19,12 +21,14 @@ int main(int argc, char** argv)
     int size = sizeof(v)/sizeof(int);
     
     Tree234<int> tree;
+    for (int i =0; i < size; i++)     {
         
+        tree.insert(i);
+    }
     
-    tree.search(800);
-    
-    TreePrinter tree_printer(cout);
-    tree.traverse(tree_printer); 
+    tree.search(80);
+   
+    tree.traverse(print_int); 
     cout << endl;
        
     return 0;
