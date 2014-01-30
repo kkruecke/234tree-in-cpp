@@ -73,7 +73,7 @@ template<typename K> inline Node234<K>::Node234(K small, K middle, K large) : to
     }
 }
 /*
- * precondition: childNum is with the range for the type of node.
+ * precondition: childNum is within the range for the type of node.
  * child is not 0.
  */
 template<typename K> inline void Node234<K>::connectChild(int childNum, Node234<K> *child)
@@ -97,15 +97,15 @@ template<typename K> inline int Node234<K>::insertItem(K key)
             continue;
         } else if (key < keys[i]) { // if it's bigger  
 */
-        if (key < keys[i]) { // if it's bigger
+        if (key < keys[i]) { // if key[i] is bigger
 
-            keys[i + 1] = keys[i]; // shift keys[i] right
+            keys[i + 1] = keys[i]; // shift it right
 
         } else {
 
             keys[i + 1] = key; // insert new item
-
-            return i + 1; // return index to inserted key.
+          ++totalItems;        // increase the total item count
+            return i + 1;      // return index to inserted key.
         } 
     } 
 
@@ -410,10 +410,12 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
     Node234<K> *newRight = new Node234<K>(itemC); // make new right child node from largest item
 
     /* set its left and right children to be the two right-most children of node */
+    if (child2 && child3) { // patch: that is, if they are not zero
+        
+        newRight->connectChild(0, child2); // connect to 0 and 1
 
-    newRight->connectChild(0, child2); // connect to 0 and 1
-
-    newRight->connectChild(1, child3); // on newRight
+        newRight->connectChild(1, child3); // on newRight
+    }
 
     /* we will covert node into a two node whose left and right children will be the two left most children
        This occurs by default. We only need adjust totalItems  */
