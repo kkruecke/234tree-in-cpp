@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     Tree234<int> tree;
     for (int i =0; i < size; i++)     {
         
-        tree.insert(i);
+        tree.insert(v[i]);
     }
     
     tree.search(80);

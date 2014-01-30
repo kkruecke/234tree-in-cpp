@@ -20,31 +20,57 @@ public:
   }
 };
 
-template<typename K> class Node234 {
-   private: 
+template<typename K> class Tree234 {
+  public:
+  class Node234; // forward declaration of nested class.
+      
+  protected:
+
+    Node234 *root; 
+    
+    bool DoSearch(K key, Node234 *&location, int& index);
+    template<typename Functor> void DoTraverse(Functor f, Node234 *root);
+    Node234 *getNextChild(Node234 *current, K key);
+    void split(Node234 *node);
+    void DestroyTree(Node234 *root);
+
+  public:
+
+   
+   class Node234 {
+      private: 
        friend class Tree234<K>;             
        static int MAX;   
        Node234(K small);
        Node234(K small, K larger);
        Node234(K small, K middle, K large);
 
-       Node234<K> *parent;
+       Node234 *parent;
        
        int totalItems; /* If totalItems is 1, then two node; if 2, then three node, if 3, then four node. */   
        K keys[3];
-       Node234<K> *children[4];
+       Node234 *children[4];
 
        bool find(K key, int& index);
        int insertItem(K key);
        bool isFull();
-       Node234<K> *getParent();
+       Node234 *getParent();
        bool isLeaf(); 
-       void connectChild(int childNum, Node234<K> *child);
-};  
+       void connectChild(int childNum, Node234 *child);
+    };  
+    typedef Node234 Node;
 
-template<typename K> int Node234<K>::MAX = 3;
+     Tree234() { root = 0; } 
+     ~Tree234(); 
+     bool search(K key);
+     bool remove(K key, Node234 *location=0);
+     template<typename Functor> void traverse(Functor f);
+     void insert(K key); // throw(duplicatekey) 
+};
 
-template<typename K> inline Node234<K>::Node234(K small) : totalItems(1)
+template<typename K> int  Tree234<K>::Node234::MAX = 3;
+
+template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(1)
 { 
    keys[0] = small; 
 
@@ -53,7 +79,7 @@ template<typename K> inline Node234<K>::Node234(K small) : totalItems(1)
     }
 }
 
-template<typename K> inline Node234<K>::Node234(K small, K middle) : totalItems(2)
+template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : totalItems(2)
 { 
    keys[0] = small; 
    keys[1] = middle; 
@@ -62,7 +88,7 @@ template<typename K> inline Node234<K>::Node234(K small, K middle) : totalItems(
        children[i] = 0;
     }
 }
-template<typename K> inline Node234<K>::Node234(K small, K middle, K large) : totalItems(3)
+template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large) : totalItems(3)
 { 
    keys[0] = small; 
    keys[1] = middle; 
@@ -76,7 +102,7 @@ template<typename K> inline Node234<K>::Node234(K small, K middle, K large) : to
  * precondition: childNum is within the range for the type of node.
  * child is not 0.
  */
-template<typename K> inline void Node234<K>::connectChild(int childNum, Node234<K> *child)
+template<typename K> inline void  Tree234<K>::Node234::connectChild(int childNum, Node234 *child)
 {
   children[childNum] = child;
   child->parent = this;
@@ -85,13 +111,13 @@ template<typename K> inline void Node234<K>::connectChild(int childNum, Node234<
  * preconditions: node is not full, not a four node (full), and key is not already in node. It may or may not be a leaf.
  * shifts keys in node as needed so that key will be inserted in sorted position
  */
-template<typename K> inline int Node234<K>::insertItem(K key)
+template<typename K> inline int  Tree234<K>::Node234::insertItem(K key)
 { 
   // start on right, examine items
 
   for(int i = totalItems - 1; i >= 0 ; i--) {
 
-/* java code had a check for 'null' evidently bc of the way Node234<K>::removeItem() works
+/* java code had a check for 'null' evidently bc of the way  Tree234<K>::Node234::removeItem() works
         if (values[i] == null) {
 
             continue;
@@ -121,21 +147,21 @@ template<typename K> inline int Node234<K>::insertItem(K key)
    */
 }
 
-template<typename K> inline  bool Node234<K>::isFull()  
+template<typename K> inline  bool Tree234<K>::Node234::isFull()  
 { 
    return totalItems == MAX;
 }
 
-template<typename K> inline  Node234<K> *Node234<K>::getParent()  
+template<typename K> inline  typename Tree234<K>::Node234 *Tree234<K>::Node234::getParent()  
 { 
    return parent;
 }
-template<typename K> inline  bool Node234<K>::isLeaf()  
+template<typename K> inline  bool Tree234<K>::Node234::isLeaf()  
 { 
    return !children[0] ? true : false;
 }
 
-template<typename K> inline bool Node234<K>::find(K key, int& index)
+template<typename K> inline bool Tree234<K>::Node234::find(K key, int& index)
 { 
    for(int i =0; i < totalItems; i++) {
    
@@ -148,26 +174,6 @@ template<typename K> inline bool Node234<K>::find(K key, int& index)
    return false;
 }
 
-template<typename K> class Tree234 {
-          
-  protected:
-
-    Node234<K> *root; 
-    
-    bool DoSearch(K key, Node234<K> *&location, int& index);
-    template<typename Functor> void DoTraverse(Functor f, Node234<K> *root);
-    Node234<K> *getNextChild(Node234<K> *current, K key);
-    void split(Node234<K> *node);
-    void DestroyTree(Node234<K> *root);
-  public:    
-     Tree234() { root = 0; } 
-     ~Tree234(); 
-     bool search(K key);
-     bool remove(K key, Node234<K> *location=0);
-     template<typename Functor> void traverse(Functor f);
-     void insert(K key); // throw(duplicatekey) 
-};
-	
 template<typename K> inline Tree234<K>::~Tree234()
 {
    DestroyTree(root);
@@ -176,7 +182,7 @@ template<typename K> inline Tree234<K>::~Tree234()
 /*
  * Post order traversal, deleting nodes
  */
-template<typename K> void Tree234<K>::DestroyTree(Node234<K> *current)
+template<typename K> void Tree234<K>::DestroyTree(Node234 *current)
 {
   if (current == 0) {
 
@@ -230,7 +236,7 @@ template<typename K> bool Tree234<K>::search(K key)
         
     } else {
         int index;  
-        Node234<K> *location;
+        Node234 *location;
         return DoSearch(key, location, index);
     }
 }   
@@ -239,9 +245,9 @@ template<typename K> bool Tree234<K>::search(K key)
  * Descends tree getting next child until key found or leaf encountered.
  * If key is found, additionally returns node and index within node
  */
-template<typename K>  bool Tree234<K>::DoSearch(K key, Node234<K> *&location, int& index)
+template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& index)
 {
-  Node234<K> *current = root;
+  Node234 *current = root;
 
   if (root == 0) {
 
@@ -269,7 +275,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234<K> *&location, in
  * Precondition: assumes node is not empty, not full, not a leaf
  * Returns next child (there could be up to three children)
  */
-template<typename K> inline Node234<K> *Tree234<K>::getNextChild(Node234<K> *current, K key)
+template<typename K> inline  typename Tree234<K>::Node234 *Tree234<K>::getNextChild(Node234 *current, K key)
 {
   int i = 0;
   
@@ -293,7 +299,7 @@ template<typename K> template<typename Functor> inline void Tree234<K>::traverse
 /*
  * In order traversal
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Functor f, Node234<K> *current)
+template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Functor f, Node234 *current)
 {     
    if (current == 0) {
 
@@ -345,11 +351,11 @@ template<typename K> void Tree234<K>::insert(K key)
 {
     if (root == 0) {
 
-       root =  new Node234<K>(key); 
+       root =  new Node234(key); 
        return; 
     } 
 
-   Node234<K> *current = root;
+   Node234 *current = root;
 
    /* Descend until a leaf node is found, splitting four nodes as they are encountered */
 
@@ -380,7 +386,7 @@ template<typename K> void Tree234<K>::insert(K key)
     // current is now a leaf and not full.
     current->insertItem(key); 
 } 
-/* split(Node234<K> *nod)
+/* split(Node234 *nod)
  * Preconditions: node is full, a four node.
  *
  * Pseudo code
@@ -389,11 +395,11 @@ template<typename K> void Tree234<K>::insert(K key)
  * 2. has a two node parent
  * 3. has a three node parent
  */ 
-template<typename K> void Tree234<K>::split(Node234<K> *node)
+template<typename K> void Tree234<K>::split(Node234 *node)
 {
     K  itemB, itemC;
 
-    Node234<K> *parent, *child2, *child3;
+    Node234 *parent, *child2, *child3;
 
     int itemIndex;
 
@@ -407,7 +413,7 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
     child2 = node->children[2]; 
     child3 = node->children[3]; 
 
-    Node234<K> *newRight = new Node234<K>(itemC); // make new right child node from largest item
+    Node234 *newRight = new Node234(itemC); // make new right child node from largest item
 
     /* set its left and right children to be the two right-most children of node */
     if (child2 && child3) { // patch: that is, if they are not zero
@@ -426,7 +432,7 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
     // if this is the root,
     if(node == root) { 
         /* make new root two node using node's middle value */  
-        root = new Node234<K>(itemB); 
+        root = new Node234(itemB); 
         parent = root;          // root is parent of node
         root->connectChild(0, node); // connect node to root as left child
         root->connectChild(1, newRight);
@@ -444,7 +450,7 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
     
     for(int i = last_index; i > insert_index; i--)  {// move parent's connections right, start from new last index up to insert_index
 
-        Node234<K> *temp = parent->children[i];  // one child
+        Node234 *temp = parent->children[i];  // one child
         parent->connectChild(i + 1, temp);       // to the right
     }
 
@@ -464,7 +470,7 @@ template<typename K> void Tree234<K>::split(Node234<K> *node)
 
   
  */
-template<typename K> bool Tree234<K>::remove(K key, Node234<K> *location)
+template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
 {
   return true;
 }
