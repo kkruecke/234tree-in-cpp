@@ -11,8 +11,7 @@
 using namespace std;
 
 /* Use this code if you get compile error about lambda
- void print_int(int x)
- { cout << x << ' '; } 
+
  */
 
 int main(int argc, char** argv) 
@@ -22,13 +21,20 @@ int main(int argc, char** argv)
     int size = sizeof(v)/sizeof(int);
     
     Tree234<int> tree;
+
     for (int i =0; i < size; i++)     {
         
         tree.insert(v[i]);
     }
-    
+        
     tree.search(80);
-    /* alternately, tree.traverse(print_int);*/
+
+    /* Using a lambda below is equivalent to doing 
+
+        void print_int(int x)  { cout << x << ' '; } 
+        tree.traverse(print_int); 
+    */
+
     tree.traverse([](int x){ cout << x << ' '; }); 
     cout << endl;
        

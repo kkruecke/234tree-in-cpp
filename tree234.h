@@ -88,6 +88,7 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : t
        children[i] = 0;
     }
 }
+
 template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large) : totalItems(3)
 { 
    keys[0] = small; 
@@ -111,6 +112,7 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childNum
  * preconditions: node is not full, not a four node (full), and key is not already in node. It may or may not be a leaf.
  * shifts keys in node as needed so that key will be inserted in sorted position
  */
+
 template<typename K> inline int  Tree234<K>::Node234::insertItem(K key)
 { 
   // start on right, examine items
