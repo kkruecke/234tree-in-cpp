@@ -70,6 +70,12 @@ template<typename K> class Tree234 {
        Node234 *getParent();
        bool isLeaf(); 
        void connectChild(int childNum, Node234 *child);
+
+       /*
+        * Returns true if found with hit_index set
+        */
+       bool searchNode(K key, int& hit_index);
+
     };  
     typedef Node234 Node;
 
@@ -82,6 +88,20 @@ template<typename K> class Tree234 {
 };
 
 template<typename K> int  Tree234<K>::Node234::MAX = 3;
+
+template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& hit_index)
+{
+  for(auto i = 0; i < totalItems; ++i) {
+    
+     if (keys[i] == value) {
+
+         return true;
+      }  
+
+  } 
+
+  return false;
+}
 
 template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(1)
 { 
@@ -482,10 +502,10 @@ template<typename K> bool Tree234<K>::remove(K key)
 
        return false; 
 
-   } else if (root->isLeaf()) { 
+   } else if (root->isLeaf()) { // <-- make this part of the general case of remove(K key, Node234 *location);
                      
          bool found = root->searchNode(key);
-         
+         // . . . to be continued 
 
 
    } else {
