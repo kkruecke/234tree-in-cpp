@@ -29,7 +29,9 @@ template<typename K> class Tree234 {
     Node234 *root; 
     
     bool DoSearch(K key, Node234 *&location, int& index);
+
     template<typename Functor> void DoTraverse(Functor f, Node234 *root);
+
     Node234 *getNextChild(Node234 *current, K key);
 
     void split(Node234 *node);
@@ -38,6 +40,7 @@ template<typename K> class Tree234 {
 
     void DestroyTree(Node234 *root);
 
+    bool remove(K key, Node234 *location=0);
   public:
 
    
@@ -73,9 +76,9 @@ template<typename K> class Tree234 {
      Tree234() { root = nullptr; } 
      ~Tree234(); 
      bool search(K key);
-     bool remove(K key, Node234 *location=0);
      template<typename Functor> void traverse(Functor f);
      void insert(K key); // throw(duplicatekey) 
+     bool remove(K key);
 };
 
 template<typename K> int  Tree234<K>::Node234::MAX = 3;
@@ -472,14 +475,30 @@ template<typename K> void Tree234<K>::split(Node234 *node)
   
     return;
 }
+
+template<typename K> bool Tree234<K>::remove(K key)
+{
+   if (root == nullptr) {
+
+       return false; 
+
+   } else if (root->isLeaf()) { 
+                     
+         bool found = root->searchNode(key);
+         
+
+
+   } else {
+ 
+       return remove(k, root); 
+  }
+}
 /*
  * The delete alogithm is depicted at: http://www.cs.mtsu.edu/~jhankins/files/3110/presentations/2-3Trees.ppt 
  * The startegy is to turn two nodes on the way down into three or four nodes. Pseudo code:
  * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt
- * http://www.usna.edu/Users/cs/taylor/courses/ic312/class/class23.shtml
  * http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html
-
-  
+ * http://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree
  */
 template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
 {
@@ -511,15 +530,18 @@ Consequently when you get to the leaf where the deletion will be performed, the 
 
    while(true) {
        
-       if(current->totalItems == 1) {// if two node, convert it to 3- or 4-node
+       if (current->totalItems == 1 && !current->isLeaf()) {// if two node, convert it to 3- or 4-node
 
             convert(current); 
       
             // resume search with parent.
             current = current->getParent(); 
 
-       } else if (found ....) 
+       } else if (current->serachNode(found ....) {
 
+           // if root 
+
+           // not root
     }
 
     // current is now a leaf and not full (because we split all four nodes while descending).
