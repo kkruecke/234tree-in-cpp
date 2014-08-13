@@ -90,29 +90,32 @@ template<typename K> class Tree234 {
 template<typename K> int  Tree234<K>::Node234::MAX = 3;
 
 /*
- * Returns: true if found with hit_index set; false if not found with next set
+ * Returns: true if found with i set to index of item; false if not found, with next set to next link to descend.
  *           
  */
 
-template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& hit_index, Tree234<K> *&next)
+template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i, Tree234<K> *&next)
 {
+ bool hit = false;
 
   for(auto i = 0; i < totalItems; ++i) {
 
      if (value < keys[i]) {
             
-           next = children[i]; // ?
+           next = children[i]; 
+           break;
 
      } else if (keys[i] == value) {
 
-         return true;
+         hit = true;
+         
+         break;
 
-     } else {
+     } else if (i == totalItems - 1) { // it is greater than
 
-        // value > key[i]
-          
+          // value is greater than key[i]
+          next = children[totalItems]; 
      }
-
   } 
 
   return false;
@@ -167,12 +170,6 @@ template<typename K> inline int  Tree234<K>::Node234::insertItem(K key)
 
   for(int i = totalItems - 1; i >= 0 ; i--) {
 
-/* java code had a check for 'null' evidently bc of the way  Tree234<K>::Node234::removeItem() works
-        if (values[i] == null) {
-
-            continue;
-        } else if (key < keys[i]) { // if it's bigger  
-*/
         if (key < keys[i]) { // if key[i] is bigger
 
             keys[i + 1] = keys[i]; // shift it right
@@ -327,9 +324,8 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
  */
 template<typename K> inline  typename Tree234<K>::Node234 *Tree234<K>::getNextChild(Node234 *current, K key)
 {
-  int i = 0;
   
-  for(; i < current->totalItems; i++) {        
+  for(auto i = 0; i < current->totalItems; i++) {        
 
      // Are we less?
      if (key < current->keys[i]) {
@@ -337,6 +333,7 @@ template<typename K> inline  typename Tree234<K>::Node234 *Tree234<K>::getNextCh
            return current->children[i];  
      }
   }
+  // <--- TODO(Bug): There is no test for equality, so we could be equal!
 
   // we're greater, so return right-most child
   return current->children[i];   
@@ -417,22 +414,32 @@ template<typename K> void Tree234<K>::insert(K key)
       
             // resume search with parent.
             current = current->getParent(); 
-
-            current = getNextChild(current, key);
-
+            
        }  else if( current->isLeaf() )  {
 
             /* done descending. */
             break;
 
-        } else { 
+       } else { // internal node
 
-            /* node is internal but not full, so descend, getting next in-order child. */ 
-                              
-            current = getNextChild(current, key);
-        }
+            Node234 *next;
+
+            if (current->searchNode(key, i, next) ) {
+
+                // return if already in tree
+                return;
+            } 
+
+            current = next;  
+       }
     }
 
+    // Make sure it is not in the leaf node.
+    if (current->keys[0] == key || (current->totalItems == 2 && current->keys[1] == key)) {
+
+        return;
+    } 
+ 
     // current is now a leaf and not full (because we split all four nodes while descending).
     current->insertItem(key); 
 } 
