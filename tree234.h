@@ -31,7 +31,11 @@ template<typename K> class Tree234 {
     bool DoSearch(K key, Node234 *&location, int& index);
     template<typename Functor> void DoTraverse(Functor f, Node234 *root);
     Node234 *getNextChild(Node234 *current, K key);
+
     void split(Node234 *node);
+
+    void convert(Node234 *node);
+
     void DestroyTree(Node234 *root);
 
   public:
@@ -49,6 +53,12 @@ template<typename K> class Tree234 {
        
        int totalItems; /* If totalItems is 1, then two node; if 2, then three node, if 3, then four node. */   
        K keys[3];
+
+       /* Note:
+        * For two node, children[0] is left pointer and children[1] is right pointer.
+        * For three node, children[0] is left pointer and children[1] is middle pointer and children[2] is right pointer.
+        * For four node, obviously we use all four children.
+        */
        Node234 *children[4];
 
        bool find(K key, int& index);
@@ -385,7 +395,7 @@ template<typename K> void Tree234<K>::insert(K key)
         }
     }
 
-    // current is now a leaf and not full.
+    // current is now a leaf and not full (because we split all four nodes while descending).
     current->insertItem(key); 
 } 
 /* split(Node234 *nod)
@@ -430,7 +440,6 @@ template<typename K> void Tree234<K>::split(Node234 *node)
     node->children[2] = nullptr; 
     node->children[3] = nullptr; 
 
-
     // if this is the root,
     if(node == root) { 
         /* make new root two node using node's middle value */  
@@ -456,7 +465,7 @@ template<typename K> void Tree234<K>::split(Node234 *node)
         parent->connectChild(i + 1, temp);       // to the right
     }
 
-    parent->connectChild(insert_index + 1,  newRight);
+    phitarent->connectChild(insert_index + 1,  newRight);
     /* By default, we do not need to insert node. It will be at the correct position. So we do not need to do:
     parent->connectChild(insert_index, node); 
     */
@@ -474,6 +483,50 @@ template<typename K> void Tree234<K>::split(Node234 *node)
  */
 template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
 {
+
   return true;
+/*
+Deletion — Avoid Parent Corrections
+
+At each step of the traversal to delete (either to find the value or, for interior nodes, to find the in-order successor to replace that value), if you encounter
+a 2-node, amplify it to a 3-node or a 4-node:
+
+    If an adjacent sibling is a 3-node or a 4-node, redistribute values so the the present 2-node becomes a 3-node.
+
+    If an adjacent sibling is a 2-node, merge the two nodes:  generate a 4-node by bringing down the key value from the parent — which is know to be either a
+     3-node or a 4-node, and consequently can lose a key and a child without becoming illegal.
+
+Consequently when you get to the leaf where the deletion will be performed, the value can be deleting and leave a valid node.
+ */
+
+   if (root == nullptr) {
+
+       return; 
+   } 
+
+   Node234 *current = root;
+
+   /* Descend, looking for value or, if value is an interior node, its in-order successor leaf node. Convert two nodes as they are encountered to either 3-nodes
+      or 4-nodes */
+
+   while(true) {
+       
+       if(current->totalItems == 1) {// if two node, convert it to 3- or 4-node
+
+            convert(current); 
+      
+            // resume search with parent.
+            current = current->getParent(); 
+
+            current = getNextChild(current, key);    <--- change to search for in-order successor
+
+       }  
+
+    }
+
+    // current is now a leaf and not full (because we split all four nodes while descending).
+    current->insertItem(key); 
+
+  
 }
 #endif
