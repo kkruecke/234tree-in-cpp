@@ -4,7 +4,6 @@
  * Based on http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  */
 #include <utility>
-#include <iostream>
 #include <exception>
 
 // fwd declarations
@@ -72,9 +71,9 @@ template<typename K> class Tree234 {
        void connectChild(int childNum, Node234 *child);
 
        /*
-        * Returns true if found with hit_index set
+        * Returns true if found with hit_index set; if not found, next points to next child to traverse.
         */
-       bool searchNode(K key, int& hit_index);
+       bool searchNode(K key, int& hit_index, Node234 *&next);
 
     };  
     typedef Node234 Node;
@@ -94,7 +93,7 @@ template<typename K> int  Tree234<K>::Node234::MAX = 3;
  *           
  */
 
-template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i, Tree234<K> *&next)
+template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i, Node234 *&next)
 {
  bool hit = false;
 
@@ -324,8 +323,8 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
  */
 template<typename K> inline  typename Tree234<K>::Node234 *Tree234<K>::getNextChild(Node234 *current, K key)
 {
-  
-  for(auto i = 0; i < current->totalItems; i++) {        
+ int i = 0;  
+  for (; i < current->totalItems; i++) {        
 
      // Are we less?
      if (key < current->keys[i]) {
@@ -423,18 +422,19 @@ template<typename K> void Tree234<K>::insert(K key)
        } else { // internal node
 
             Node234 *next;
-
+            int i;
             if (current->searchNode(key, i, next) ) {
 
                 // return if already in tree
                 return;
             } 
 
+            // set current to next   
             current = next;  
        }
     }
 
-    // Make sure it is not in the leaf node.
+    // Make sure it is not in the leaf node, which is 2- or 3-node.
     if (current->keys[0] == key || (current->totalItems == 2 && current->keys[1] == key)) {
 
         return;
@@ -487,6 +487,7 @@ template<typename K> void Tree234<K>::split(Node234 *node)
 
     // if this is the root,
     if(node == root) { 
+
         /* make new root two node using node's middle value */  
         root = new Node234(itemB); 
         parent = root;          // root is parent of node
@@ -510,7 +511,7 @@ template<typename K> void Tree234<K>::split(Node234 *node)
         parent->connectChild(i + 1, temp);       // to the right
     }
 
-    phitarent->connectChild(insert_index + 1,  newRight);
+    parent->connectChild(insert_index + 1,  newRight);
     /* By default, we do not need to insert node. It will be at the correct position. So we do not need to do:
     parent->connectChild(insert_index, node); 
     */
@@ -532,7 +533,7 @@ template<typename K> bool Tree234<K>::remove(K key)
 
    } else {
  
-       return remove(k, root); 
+       return remove(key, root); 
   }
 }
 /*
@@ -562,14 +563,14 @@ Consequently when you get to the leaf where the deletion will be performed, the 
 
    if (root == nullptr) {
 
-       return; 
+       return false; 
    } 
 
    Node234 *current = root;
 
    /* Descend, looking for value or, if value is an interior node, its in-order successor leaf node. Convert two nodes as they are encountered to either 3-nodes
       or 4-nodes */
-
+   /* TODO: Finish  
    while(true) {
        
        if (current->totalItems == 1 && !current->isLeaf()) {// if two node, convert it to 3- or 4-node
@@ -579,16 +580,14 @@ Consequently when you get to the leaf where the deletion will be performed, the 
             // resume search with parent.
             current = current->getParent(); 
 
-       } else if (current->serachNode(found ....) {
+       } else if (current->searchNode(found ....) {
 
-           // if root 
+    
 
            // not root
     }
-
+    */
     // current is now a leaf and not full (because we split all four nodes while descending).
-    current->insertItem(key); 
-
-  
+      
 }
 #endif
