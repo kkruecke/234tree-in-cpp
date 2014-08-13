@@ -89,14 +89,29 @@ template<typename K> class Tree234 {
 
 template<typename K> int  Tree234<K>::Node234::MAX = 3;
 
-template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& hit_index)
+/*
+ * Returns: true if found with hit_index set; false if not found with next set
+ *           
+ */
+
+template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& hit_index, Tree234<K> *&next)
 {
+
   for(auto i = 0; i < totalItems; ++i) {
-    
-     if (keys[i] == value) {
+
+     if (value < keys[i]) {
+            
+           next = children[i]; // ?
+
+     } else if (keys[i] == value) {
 
          return true;
-      }  
+
+     } else {
+
+        // value > key[i]
+          
+     }
 
   } 
 
