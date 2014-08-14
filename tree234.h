@@ -417,8 +417,8 @@ template<typename K> void Tree234<K>::insert(K key)
        } else { // internal node
 
             Node234 *next;
-            int i;
-            if (current->searchNode(key, i, next) ) {
+            
+            if (current->searchNode(key, next) ) {
 
                 // return if already in tree
                 return;
