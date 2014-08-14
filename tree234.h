@@ -40,6 +40,8 @@ template<typename K> class Tree234 {
     void DestroyTree(Node234 *root);
 
     bool remove(K key, Node234 *location);
+ 
+    void fixUp(Node234 *current, int hit_index); 
   public:
 
    
@@ -70,7 +72,6 @@ template<typename K> class Tree234 {
        bool isLeaf(); 
        void connectChild(int childNum, Node234 *child);
        bool isTwoNode();
-       void removeItem(int index); 
        /*
         * Returns true if found with hit_index set; if not found, next points to next child to traverse.
         */
@@ -93,15 +94,7 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode()
 {
    return (totalItems == 1) ? true : false;
 }
-/*
- * preconditions: node is not a 2-node
- * index is keys array index of the value to be removed.
- */       
-
-template<typename K> inline void Tree234<K>::Node234::removeItem(int index)
-{
-  // not done.
-} 
+ 
 /*
  * Returns: true if found with i set to index of item; false if not found, with next set to next link to descend.
  *           
@@ -452,7 +445,17 @@ template<typename K> void Tree234<K>::insert(K key)
  
     // current is now a leaf and not full (because we split all four nodes while descending).
     current->insertItem(key); 
-} 
+}
+ 
+/*
+ * preconditions: current is 2-node.
+ * output: current is 3- or 4-node.
+ *
+ */
+template<typename K> void Tree234<K>::convert(Node234 *node)
+{
+
+}
 /* split(Node234 *nod)
  * Preconditions: node is full, a four node.
  *
@@ -548,6 +551,29 @@ template<typename K> bool Tree234<K>::remove(K key)
   }
 }
 /*
+ * preconditions: current is not a 2-node. current->keys[hit_index] is the value to remove from the node.
+ *
+ *
+ */
+template<typename K> void Tree234<K>::fixUp(Node234 *current, int hit_index)
+{
+    // We know current is in a 3- or 4-node.
+
+    current->totalItems--; // adjust totalItems
+ 
+    for(; hit_index < current->totalItems; ++hit_index)  { // shift all keys[] values to the right of hit_index, left
+            
+         current->keys[hit_index] = current->keys[hit_index + 1];
+    }
+    
+    if (current->isLeaf()) { // if leaf, done
+
+        return;
+    } 
+    // adjust the children, too
+    // ... not done
+}
+/*
  * The delete alogithm is depicted at: http://www.cs.mtsu.edu/~jhankins/files/3110/presentations/2-3Trees.ppt 
  * The startegy is to turn two nodes on the way down into three or four nodes. Pseudo code:
  * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt
@@ -557,7 +583,7 @@ template<typename K> bool Tree234<K>::remove(K key)
 template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
 {
 
-  return true;
+ // return true;
 /*
 Deletion — Avoid Parent Corrections
 
@@ -579,7 +605,7 @@ Consequently when you get to the leaf where the deletion will be performed, the 
 
    Node234 *current = root;
    Node234 *next = nullptr;
-   int index;
+   int hit_index;
 
    /* Descend, looking for value or, if value is an interior node, its in-order successor leaf node. Convert two nodes as
       they are encountered to either 3-nodes or 4-nodes */
@@ -594,11 +620,11 @@ Consequently when you get to the leaf where the deletion will be performed, the 
             // resume search with parent.
             current = current->getParent(); 
            
-       } else if (current->searchNode(key, index, next)) { // ...search for item in current node. 
+       } else if (current->searchNode(key, hit_index, next)) { // ...search for item in current node. 
 
               break; // we found it.  
 
-       } else if (current->isLeaf()) { // done. Not found.
+       } else if (current->isLeaf()) { // done searching, not found.
 
              return false; 
           
@@ -608,8 +634,9 @@ Consequently when you get to the leaf where the deletion will be performed, the 
        }
     }
 
-    // was found. We know it is in a 3- or 4-node, so we can simply remove it and adjusted child pointers.
-    current->removeItem(index);    
-      
+    fixUp(current);
+
+   
+    return true;  
 }
 #endif
