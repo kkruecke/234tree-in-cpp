@@ -53,13 +53,13 @@ template<typename K> class Tree234 {
 
        Node234 *parent;
        
-       int totalItems; /* If totalItems is 1, then two node; if 2, then three node, if 3, then four node. */   
+       int totalItems; /* If totalItems is 1, then two node; if 2, three node, if 3, four node. */   
        K keys[3];
 
        /* Note:
         * For two node, children[0] is left pointer and children[1] is right pointer.
         * For three node, children[0] is left pointer and children[1] is middle pointer and children[2] is right pointer.
-        * For four node, obviously we use all four children.
+        * Likewise for four nodes.
         */
        Node234 *children[4];
 
@@ -69,6 +69,7 @@ template<typename K> class Tree234 {
        Node234 *getParent();
        bool isLeaf(); 
        void connectChild(int childNum, Node234 *child);
+       bool isTwoNode();
 
        /*
         * Returns true if found with hit_index set; if not found, next points to next child to traverse.
@@ -88,6 +89,10 @@ template<typename K> class Tree234 {
 
 template<typename K> int  Tree234<K>::Node234::MAX = 3;
 
+template<typename K> inline bool Tree234<K>::Node234::isTwoNode()
+{
+   return (totalItems == 1) : true : false;
+}
 /*
  * Returns: true if found with i set to index of item; false if not found, with next set to next link to descend.
  *           
@@ -562,27 +567,36 @@ Consequently when you get to the leaf where the deletion will be performed, the 
    } 
 
    Node234 *current = root;
+   Node234 *next = nullptr;
 
-   /* Descend, looking for value or, if value is an interior node, its in-order successor leaf node. Convert two nodes as they are encountered to either 3-nodes
-      or 4-nodes */
-   /* TODO: Finish  
+   /* Descend, looking for value or, if value is an interior node, its in-order successor leaf node. Convert two nodes as
+      they are encountered to either 3-nodes or 4-nodes */
+
    while(true) {
        
-       if (current->totalItems == 1 && !current->isLeaf()) {// if two node, convert it to 3- or 4-node
+       if (current->isTwoNode() && !current->isLeaf()) {
 
+            // convert 2-node into 3- or 4-node 
             convert(current); 
       
             // resume search with parent.
             current = current->getParent(); 
+           
+       } else if (current->searchNode(found, next) { // ...search for item in current node. 
 
-       } else if (current->searchNode(found ....) {
+              break; // we found it.  
 
-    
+       } else if (current->isLeaf()) { // done. Not found.
 
-           // not root
+             return false; 
+          
+       } else { // ... If not found, continue to descend. 
+
+         current = next; 
+       }
     }
-    */
-    // current is now a leaf and not full (because we split all four nodes while descending).
+
+    // was found .... remaining code not finished. 
       
 }
 #endif
