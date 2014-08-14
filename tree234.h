@@ -70,11 +70,11 @@ template<typename K> class Tree234 {
        bool isLeaf(); 
        void connectChild(int childNum, Node234 *child);
        bool isTwoNode();
-
+       void removeItem(int index); 
        /*
         * Returns true if found with hit_index set; if not found, next points to next child to traverse.
         */
-       bool searchNode(K key, Node234 *&next);
+       bool searchNode(K key, int& index, Node234 *&next);
 
     };  
     typedef Node234 Node;
@@ -91,14 +91,23 @@ template<typename K> int  Tree234<K>::Node234::MAX = 3;
 
 template<typename K> inline bool Tree234<K>::Node234::isTwoNode()
 {
-   return (totalItems == 1) : true : false;
+   return (totalItems == 1) ? true : false;
 }
+/*
+ * preconditions: node is not a 2-node
+ * index is keys array index of the value to be removed.
+ */       
+
+template<typename K> inline void Tree234<K>::Node234::removeItem(int index)
+{
+  // not done.
+} 
 /*
  * Returns: true if found with i set to index of item; false if not found, with next set to next link to descend.
  *           
  */
 
-template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, Node234 *&next)
+template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& index, Node234 *&next)
 {
  bool hit = false;
 
@@ -112,7 +121,7 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, Node23
      } else if (keys[i] == value) {
 
          hit = true;
-         
+         index = i;
          break;
 
      } else if (i == totalItems - 1) { // it is greater than the last key
@@ -122,7 +131,7 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, Node23
      }
   } 
 
-  return false;
+  return hit;
 }
 
 template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(1)
@@ -422,8 +431,9 @@ template<typename K> void Tree234<K>::insert(K key)
        } else { // internal node
 
             Node234 *next;
+            int index;
             
-            if (current->searchNode(key, next) ) {
+            if (current->searchNode(key, index, next) ) {
 
                 // return if already in tree
                 return;
@@ -568,6 +578,7 @@ Consequently when you get to the leaf where the deletion will be performed, the 
 
    Node234 *current = root;
    Node234 *next = nullptr;
+   int index;
 
    /* Descend, looking for value or, if value is an interior node, its in-order successor leaf node. Convert two nodes as
       they are encountered to either 3-nodes or 4-nodes */
@@ -582,7 +593,7 @@ Consequently when you get to the leaf where the deletion will be performed, the 
             // resume search with parent.
             current = current->getParent(); 
            
-       } else if (current->searchNode(found, next) { // ...search for item in current node. 
+       } else if (current->searchNode(key, index, next)) { // ...search for item in current node. 
 
               break; // we found it.  
 
@@ -596,7 +607,8 @@ Consequently when you get to the leaf where the deletion will be performed, the 
        }
     }
 
-    // was found .... remaining code not finished. 
+    // was found. We know it is in a 3- or 4-node, so we can simply remove it and adjusted child pointers.
+    current->removeItem(index);    
       
 }
 #endif
