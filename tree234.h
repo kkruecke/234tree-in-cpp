@@ -634,7 +634,7 @@ Consequently when you get to the leaf where the deletion will be performed, the 
        }
     }
 
-    fixUp(current);
+    fixUp(current, hit_index);
 
    
     return true;  
