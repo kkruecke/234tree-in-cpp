@@ -73,7 +73,7 @@ template<typename K> class Tree234 {
        /*
         * Returns true if found with hit_index set; if not found, next points to next child to traverse.
         */
-       bool searchNode(K key, int& hit_index, Node234 *&next);
+       bool searchNode(K key, Node234 *&next);
 
     };  
     typedef Node234 Node;
@@ -93,7 +93,7 @@ template<typename K> int  Tree234<K>::Node234::MAX = 3;
  *           
  */
 
-template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i, Node234 *&next)
+template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, Node234 *&next)
 {
  bool hit = false;
 
@@ -110,7 +110,7 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
          
          break;
 
-     } else if (i == totalItems - 1) { // it is greater than
+     } else if (i == totalItems - 1) { // it is greater than the last key
 
           // value is greater than key[i]
           next = children[totalItems]; 
@@ -159,7 +159,7 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childNum
   child->parent = this;
 }
 /*
- * preconditions: node is not full, not a four node (full), and key is not already in node. It may or may not be a leaf.
+ * preconditions: node is not full, i.e., not a four node (full), and key is not already in node. It may or may not be a leaf.
  * shifts keys in node as needed so that key will be inserted in sorted position
  */
 
@@ -186,11 +186,6 @@ template<typename K> inline int  Tree234<K>::Node234::insertItem(K key)
     keys[0] = key;  
   ++totalItems; // increase the total item count
     return 0;
-
-  /*
-   * TODO: shift pointers appropriately? This seems to be handled separately by the calling code.
-   * A: Also, I believe we are inserting into a leaf, so that is not needed?
-   */
 }
 
 template<typename K> inline  bool Tree234<K>::Node234::isFull()  
@@ -494,7 +489,6 @@ template<typename K> void Tree234<K>::split(Node234 *node)
         root->connectChild(0, node); // connect node to root as left child
         root->connectChild(1, newRight);
         return;
-
     }         
 
     parent = node->getParent(); 
@@ -512,8 +506,9 @@ template<typename K> void Tree234<K>::split(Node234 *node)
     }
 
     parent->connectChild(insert_index + 1,  newRight);
-    /* By default, we do not need to insert node. It will be at the correct position. So we do not need to do:
-    parent->connectChild(insert_index, node); 
+    /* 
+     * By default, we do not need to insert node. It will be at the correct position. So we do not need to do:
+     *     parent->connectChild(insert_index, node); 
     */
   
     return;
