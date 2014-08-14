@@ -9,4 +9,5 @@ Code was compiled with clang++ compiler using **-std=c11++** option. If you enco
 you use this code instead
     TreePrinter tree_printer;
     tree.traverse(tree_printer);
- 
+
+The insert() code has been tested. The delete() code is not yet fully implemented. 
