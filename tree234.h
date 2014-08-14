@@ -73,7 +73,7 @@ template<typename K> class Tree234 {
        void connectChild(int childNum, Node234 *child);
        bool isTwoNode();
        /*
-        * Returns true if found with hit_index set; if not found, next points to next child to traverse.
+        * Returns true if found with: this->keys[index] == key; if not found, next points to next child to search.
         */
        bool searchNode(K key, int& index, Node234 *&next);
 
@@ -170,7 +170,7 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childNum
  * shifts keys in node as needed so that key will be inserted in sorted position
  */
 
-template<typename K> inline int  Tree234<K>::Node234::insertItem(K key)
+template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pass index--maybe?
 { 
   // start on right, examine items
 
@@ -449,7 +449,7 @@ template<typename K> void Tree234<K>::insert(K key)
  
 /*
  * preconditions: current is 2-node.
- * output: current is 3- or 4-node.
+ * output: current is converted from a 2-node into either a 3- or a 4-node.
  *
  */
 template<typename K> void Tree234<K>::convert(Node234 *node)
