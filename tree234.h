@@ -39,7 +39,7 @@ template<typename K> class Tree234 {
 
     void DestroyTree(Node234 *root);
 
-    bool remove(K key, Node234 *location=0);
+    bool remove(K key, Node234 *location);
   public:
 
    
@@ -536,10 +536,11 @@ template<typename K> bool Tree234<K>::remove(K key)
        return false; 
 
    } else if (root->isLeaf()) { // <-- make this part of the general case of remove(K key, Node234 *location);
-                     
-         bool found = root->searchNode(key);
+         int index;
+         Node234 *next = nullptr; 
+         bool found = root->searchNode(key, index, next);
          // . . . to be continued 
-
+         return true;
 
    } else {
  
