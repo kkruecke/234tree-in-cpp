@@ -454,7 +454,7 @@ template<typename K> void Tree234<K>::insert(K key)
  */
 template<typename K> void Tree234<K>::convert(Node234 *node)
 {
-
+ //...not done
 }
 /* split(Node234 *nod)
  * Preconditions: node is full, a four node.
