@@ -48,7 +48,7 @@ template<typename K> class Tree234 {
    class Node234 {
       private: 
        friend class Tree234<K>;             
-       static int MAX;   
+       static int MAX_KEYS;   
        Node234(K small);
        Node234(K small, K larger);
        Node234(K small, K middle, K large);
@@ -96,7 +96,7 @@ template<typename K> class Tree234 {
      bool remove(K key);
 };
 
-template<typename K> int  Tree234<K>::Node234::MAX = 3;
+template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3; 
 
 template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
 {
@@ -139,7 +139,7 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(
 { 
    keys[0] = small; 
 
-   for (int i = 0; i < MAX; i++) {		
+   for (int i = 0; i < MAX_KEYS + 1; i++) {		
        children[i] = nullptr;
     }
 }
@@ -149,7 +149,7 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : t
    keys[0] = small; 
    keys[1] = middle; 
 
-   for (int i = 0; i < MAX; i++) {		
+   for (int i = 0; i < MAX_KEYS + 1; i++) {		
        children[i] = nullptr;
     }
 }
@@ -160,7 +160,7 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
    keys[1] = middle; 
    keys[3] = large; 
     
-   for (int i = 0; i < MAX; i++) {		
+   for (int i = 0; i < MAX_KEYS + 1; i++) {		
        children[i] = nullptr;
     }
 }
@@ -205,7 +205,7 @@ template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pa
 
 template<typename K> inline  bool Tree234<K>::Node234::isFull()  
 { 
-   return totalItems == MAX;
+   return totalItems == MAX_KEYS;
 }
 
 template<typename K> inline  typename Tree234<K>::Node234 *Tree234<K>::Node234::getParent()  
@@ -220,8 +220,8 @@ template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const
  * precondition: node is a two node.
  * output: four node. 
  * pseudo code: 
- * 1. Absorbs the children's keys. 
- * 2. Makes grandchildren its children and deletes former child nodes.
+ * 1. Absorbs the children's keys as its own. 
+ * 2. Makes its grandchildren its children and deletes its former child nodes.
  */ 
 template<typename K> inline void Tree234<K>::Node234::adoptChildren();
 {
@@ -232,10 +232,22 @@ template<typename K> inline void Tree234<K>::Node234::adoptChildren();
   keys[0] = children[0]->keys[0];    
   keys[2] = children[1]->keys[0];       
 
-  Node234 *leftOrphan = children[0]; // will be deleted
+  Node234 *leftOrphan = children[0]; // will later be deleted
   Node234 *rightOrphan = children[1];
 
-  //...
+  // make grandchildren the children.
+  for(auto i = 0; i < MAX_KEYS + 1; i+=2) {
+
+     int index (i == 0) ? 0 : 1;
+
+     children[i] = children[i]->children[0];       
+     children[i + 1] = children[i]->children[1];
+  }
+
+  // delete children
+  delete leftOrphan;
+  delete rightOrphan;
+
   return;    
 }
 
