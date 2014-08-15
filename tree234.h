@@ -225,14 +225,14 @@ template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const
  */ 
 template<typename K> inline void Tree234<K>::Node234::adoptChildren()
 {
-  // move key to middle
+  // move key of 2-node 
   keys[1] = keys[0];
 
   // absorb children's keys
   keys[0] = children[0]->keys[0];    
   keys[2] = children[1]->keys[0];       
 
-  Node234 *leftOrphan = children[0]; // will later be deleted
+  Node234 *leftOrphan = children[0]; // so we can delete them later
   Node234 *rightOrphan = children[1];
 
   // make grandchildren the children.
@@ -240,8 +240,8 @@ template<typename K> inline void Tree234<K>::Node234::adoptChildren()
 
      int index = (i == 0) ? 0 : 1;
 
-     children[i] = children[i]->children[0];       
-     children[i + 1] = children[i]->children[1];
+     children[i] = children[index]->children[0];       
+     children[i + 1] = children[index]->children[1];
   }
 
   // delete children
