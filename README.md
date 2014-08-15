@@ -7,7 +7,10 @@ Code was compiled with clang++ compiler using **-std=c11++** option. If you enco
     tree.traverse([](int x){ cout << x << ' '; }); 
 
 you use this code instead
+
     TreePrinter tree_printer;
     tree.traverse(tree_printer);
 
-The insert() code has been tested. The delete() code is not yet fully implemented. 
+The insert() code has been tested. The delete() code is not yet fully implemented.
+
+Great step-by-step animation of 2 3 4 tree is at: http://cs.sou.edu/~harveyd/classes/cs511/docs/234Tree/tree.htm 

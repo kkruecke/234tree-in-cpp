@@ -35,7 +35,7 @@ template<typename K> class Tree234 {
 
     void split(Node234 *node);
 
-    void convert(Node234 *node);
+    void convertTwoNode(Node234 *node);
 
     void DestroyTree(Node234 *root);
 
@@ -95,6 +95,7 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode()
    return (totalItems == 1) ? true : false;
 }
  
+
 /*
  * Returns: true if found with i set to index of item; false if not found, with next set to next link to descend.
  *           
@@ -448,13 +449,30 @@ template<typename K> void Tree234<K>::insert(K key)
 }
  
 /*
- * preconditions: current is 2-node.
- * output: current is converted from a 2-node into either a 3- or a 4-node.
- *
+ * preconditions: node is 2-node.
+ * output: node is converted into either a 3- or a 4-node.
+ * pseudo code: This method is the inverse of split(). There are three cases:  
+ *  1. The parent and nearest sibling to its left (or, if it is the left-most node, to its right) are both 2-nodes
+ *  2. The parent is a 3-node.
+ *  3. The parent is a 4-node.
  */
-template<typename K> void Tree234<K>::convert(Node234 *node)
+template<typename K> void Tree234<K>::convertTwoNode(Node234 *node)
 {
- //...not done
+   Node234 *parent = node->getParent();
+
+   if (parent->totalItems == 1) { // parent is 2-node, and therefore its silbing is also a 2-node
+
+
+
+   } else if (parent->totalItems == 2) { // 3-node
+
+
+
+   } else { // 4-node
+
+
+   } 
+
 }
 /* split(Node234 *nod)
  * Preconditions: node is full, a four node.
@@ -615,7 +633,7 @@ Consequently when you get to the leaf where the deletion will be performed, the 
        if (current->isTwoNode() && !current->isLeaf()) {
 
             // convert 2-node into 3- or 4-node 
-            convert(current); 
+            convertTwoNode(current); 
       
             // resume search with parent.
             current = current->getParent(); 
