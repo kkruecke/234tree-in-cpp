@@ -69,9 +69,17 @@ template<typename K> class Tree234 {
        int insertItem(K key);
        bool isFull();
        Node234 *getParent();
-       bool isLeaf(); 
+       bool isLeaf() const; 
        void connectChild(int childNum, Node234 *child);
-       bool isTwoNode();
+       bool isTwoNode() const;
+       /*
+        * precondition: node is a two node.
+        * output: four node. 
+        * pseudo code: 
+        * 1. Absorbs the children's keys. 
+        * 2. Makes grandchildren its children and deletes former child nodes.
+        */ 
+       void adoptChildren();
        /*
         * Returns true if found with: this->keys[index] == key; if not found, next points to next child to search.
         */
@@ -90,12 +98,11 @@ template<typename K> class Tree234 {
 
 template<typename K> int  Tree234<K>::Node234::MAX = 3;
 
-template<typename K> inline bool Tree234<K>::Node234::isTwoNode()
+template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
 {
    return (totalItems == 1) ? true : false;
 }
  
-
 /*
  * Returns: true if found with i set to index of item; false if not found, with next set to next link to descend.
  *           
@@ -205,9 +212,31 @@ template<typename K> inline  typename Tree234<K>::Node234 *Tree234<K>::Node234::
 { 
    return parent;
 }
-template<typename K> inline  bool Tree234<K>::Node234::isLeaf()  
+template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const 
 { 
    return !children[0] ? true : false;
+}
+/*
+ * precondition: node is a two node.
+ * output: four node. 
+ * pseudo code: 
+ * 1. Absorbs the children's keys. 
+ * 2. Makes grandchildren its children and deletes former child nodes.
+ */ 
+template<typename K> inline void Tree234<K>::Node234::adoptChildren();
+{
+  // move key to middle
+  keys[1] = keys[0];
+
+  // aborb children's keys
+  keys[0] = children[0]->keys[0];    
+  keys[2] = children[1]->keys[0];       
+
+  Node234 *leftOrphan = children[0]; // will be deleted
+  Node234 *rightOrphan = children[1];
+
+  //...
+  return;    
 }
 
 template<typename K> inline bool Tree234<K>::Node234::find(K key, int& index)
@@ -456,13 +485,14 @@ template<typename K> void Tree234<K>::insert(K key)
  *  2. The parent is a 3-node.
  *  3. The parent is a 4-node.
  */
-template<typename K> void Tree234<K>::convertTwoNode(Node234 *node)
+template<typename K> void Tree234<K>::convertTwoNode(Node234 *node) 
 {
    Node234 *parent = node->getParent();
 
    if (parent->totalItems == 1) { // parent is 2-node (and therefore its sibling, too) is a 2-node
-               
- 
+
+         // merge with parent
+         parent->adoptChildren(); 
 
    } else if (parent->totalItems == 2) { // parent is a 3-node
 
