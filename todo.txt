@@ -1,5 +1,1 @@
-complete new-tree234.h
-1. change the insert code so that Node234::find()
- uses the more efficient version Node234::searchNode, which not only
-searches the node but also returns the next child to traverse if the key
-it not found.
+Finish remove() code.
