@@ -223,12 +223,12 @@ template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const
  * 1. Absorbs the children's keys as its own. 
  * 2. Makes its grandchildren its children and deletes its former child nodes.
  */ 
-template<typename K> inline void Tree234<K>::Node234::adoptChildren();
+template<typename K> inline void Tree234<K>::Node234::adoptChildren()
 {
   // move key to middle
   keys[1] = keys[0];
 
-  // aborb children's keys
+  // absorb children's keys
   keys[0] = children[0]->keys[0];    
   keys[2] = children[1]->keys[0];       
 
@@ -238,7 +238,7 @@ template<typename K> inline void Tree234<K>::Node234::adoptChildren();
   // make grandchildren the children.
   for(auto i = 0; i < MAX_KEYS + 1; i+=2) {
 
-     int index (i == 0) ? 0 : 1;
+     int index = (i == 0) ? 0 : 1;
 
      children[i] = children[i]->children[0];       
      children[i + 1] = children[i]->children[1];
@@ -672,7 +672,7 @@ Consequently when you get to the leaf where the deletion will be performed, the 
 
    while(true) {
        
-       if (current->isTwoNode() && !current->isLeaf()) {
+       if (current != root && current->isTwoNode() && !current->isLeaf()) {
 
             // convert 2-node into 3- or 4-node 
             convertTwoNode(current); 
@@ -694,6 +694,8 @@ Consequently when you get to the leaf where the deletion will be performed, the 
        }
     }
 
+    // Determine if it is a two node.
+    // . . .
     fixUp(current, hit_index);
 
    
