@@ -452,7 +452,7 @@ template<typename K> void Tree234<K>::insert(K key)
  * preconditions: node is 2-node.
  * output: node is converted into either a 3- or a 4-node.
  * pseudo code: This method is the inverse of split(). There are three cases:  
- *  1. The parent and nearest sibling to its left (or, if it is the left-most node, to its right) are both 2-nodes
+ *  1. The parent is a 2-node.
  *  2. The parent is a 3-node.
  *  3. The parent is a 4-node.
  */
@@ -460,15 +460,15 @@ template<typename K> void Tree234<K>::convertTwoNode(Node234 *node)
 {
    Node234 *parent = node->getParent();
 
-   if (parent->totalItems == 1) { // parent is 2-node, and therefore its silbing is also a 2-node
+   if (parent->totalItems == 1) { // parent is 2-node (and therefore its sibling, too) is a 2-node
+               
+ 
+
+   } else if (parent->totalItems == 2) { // parent is a 3-node
 
 
 
-   } else if (parent->totalItems == 2) { // 3-node
-
-
-
-   } else { // 4-node
+   } else { // parent is a 4-node
 
 
    } 
