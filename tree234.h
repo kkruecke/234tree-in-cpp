@@ -72,6 +72,7 @@ template<typename K> class Tree234 {
        bool isLeaf() const; 
        void connectChild(int childNum, Node234 *child);
        bool isTwoNode() const;
+       bool isThreeNode() const;
        /*
         * precondition: node is a two node.
         * output: four node. 
@@ -80,8 +81,10 @@ template<typename K> class Tree234 {
         * 2. Makes grandchildren its children and deletes former child nodes.
         */ 
        void adoptChildren();
+
        /*
-        * Returns true if found with: this->keys[index] == key; if not found, next points to next child to search.
+        * Returns true if key is found in node and set index so that this->keys[index] == key
+        * Returns false if key is if not found and sets next to point to next child with which to continue the search.
         */
        bool searchNode(K key, int& index, Node234 *&next);
 
@@ -90,9 +93,13 @@ template<typename K> class Tree234 {
 
      Tree234() { root = nullptr; } 
      ~Tree234(); 
+
      bool search(K key);
+
      template<typename Functor> void traverse(Functor f);
+
      void insert(K key); // throw(duplicatekey) 
+
      bool remove(K key);
 };
 
@@ -103,11 +110,15 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
    return (totalItems == 1) ? true : false;
 }
  
+template<typename K> inline bool Tree234<K>::Node234::isThreeNode() const
+{
+   return (totalItems == 2) ? true : false;
+}
+ 
 /*
- * Returns: true if found with i set to index of item; false if not found, with next set to next link to descend.
- *           
+ * Returns true if key is found in node, and it set index so that this->keys[index] == key.
+ * Returns false if key is if not found, and it sets next to point to next child with which to continue the search.
  */
-
 template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& index, Node234 *&next)
 {
  bool hit = false;
@@ -166,7 +177,7 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
 }
 /*
  * precondition: childNum is within the range for the type of node.
- * child is not 0.
+ * child is not nullptr.
  */
 template<typename K> inline void  Tree234<K>::Node234::connectChild(int childNum, Node234 *child)
 {
@@ -174,26 +185,26 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childNum
   child->parent = this;
 }
 /*
- * preconditions: node is not full, i.e., not a four node (full), and key is not already in node. It may or may not be a leaf.
+ * preconditions: node is not full, i.e., not a four node (full), and key is not already in node. It may or may not be a leaf node.
  * shifts keys in node as needed so that key will be inserted in sorted position
  */
 
-template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pass index--maybe?
+template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pass index, too--maybe?
 { 
   // start on right, examine items
 
   for(int i = totalItems - 1; i >= 0 ; i--) {
 
-        if (key < keys[i]) { // if key[i] is bigger
+      if (key < keys[i]) { // if key[i] is bigger
 
-            keys[i + 1] = keys[i]; // shift it right
+          keys[i + 1] = keys[i]; // shift it right
 
-        } else {
+      } else {
 
-            keys[i + 1] = key; // insert new item
-          ++totalItems;        // increase the total item count
-            return i + 1;      // return index to inserted key.
-        } 
+          keys[i + 1] = key; // insert new item
+        ++totalItems;        // increase the total item count
+          return i + 1;      // return index of inserted key.
+      } 
     } 
 
     // shifted all items, insert new item at position 0
@@ -220,7 +231,7 @@ template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const
  * precondition: node is a two node.
  * output: four node. 
  * pseudo code: 
- * 1. Absorbs the children's keys as its own. 
+ * 1. Absorbs its children's keys as its own. 
  * 2. Makes its grandchildren its children and deletes its former child nodes.
  */ 
 template<typename K> inline void Tree234<K>::Node234::adoptChildren()
@@ -250,7 +261,9 @@ template<typename K> inline void Tree234<K>::Node234::adoptChildren()
 
   return;    
 }
-
+/*
+ * Is appears to duplicate the functionality searchNode, which takes one more reference parameter 
+ */
 template<typename K> inline bool Tree234<K>::Node234::find(K key, int& index)
 { 
    for(int i = 0; i < totalItems; i++) {
@@ -335,9 +348,11 @@ template<typename K> bool Tree234<K>::search(K key)
  * Descends tree getting next child until key found or leaf encountered.
  * If key is found, additionally returns node and index within node
  */
+/*
 template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& index)
 {
   Node234 *current = root;
+  Node234 *next;
 
   if (root == nullptr) {
 
@@ -346,7 +361,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 
   while(true) {
  
-      if (current->find(key, index)) {
+      if (current->find(key, index)) { // TODO: replace find with searchNode
 
           location = current;
           return true; 
@@ -357,7 +372,35 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 
       } else {
 
-          current = getNextChild(current, key);	
+          current = getNextChild(current, key);	// TO: After replacing find() with cha
+      }  
+    }
+}
+*/
+template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& index)
+{
+  Node234 *current = root;
+  Node234 *next;
+
+  if (root == nullptr) {
+
+     return false;
+  }
+
+  while(true) {
+ 
+      if (current->searchNode(key, index, next)) { 
+
+          location = current;
+          return true; 
+
+      } else if (current->isLeaf()) {
+
+          return false;
+
+      } else {
+
+          current = next;
       }  
     }
 }
@@ -376,7 +419,6 @@ template<typename K> inline  typename Tree234<K>::Node234 *Tree234<K>::getNextCh
            return current->children[i];  
      }
   }
-  // <--- TODO(Bug): There is no test for equality, so we could be equal!
 
   // we're greater, so return right-most child
   return current->children[i];   
@@ -501,12 +543,12 @@ template<typename K> void Tree234<K>::convertTwoNode(Node234 *node)
 {
    Node234 *parent = node->getParent();
 
-   if (parent->totalItems == 1) { // parent is 2-node (and therefore its sibling, too) is a 2-node
+   if (parent->isTwoNode()) { // parent is 2-node (and therefore its sibling, too) is a 2-node
 
          // merge with parent
          parent->adoptChildren(); 
 
-   } else if (parent->totalItems == 2) { // parent is a 3-node
+   } else if (parent->isThreeNode()) { // parent is a 3-node
 
 
 
