@@ -549,8 +549,8 @@ template<typename K> void Tree234<K>::convertTwoNode(Node234 *node)
          parent->adoptChildren(); 
 
    } else if (parent->isThreeNode()) { // parent is a 3-node
-
-
+            
+         // what do we do in this case? Do we borrow from sibling -- or from parent?
 
    } else { // parent is a 4-node
 
@@ -571,7 +571,7 @@ template<typename K> void Tree234<K>::split(Node234 *node)
 {
     K  itemB, itemC;
 
-    Node234 *parent, *child2, *child3;
+    Node234 *parent;
 
     int itemIndex;
 
@@ -579,16 +579,16 @@ template<typename K> void Tree234<K>::split(Node234 *node)
         
     itemC = node->keys[2];
     itemB = node->keys[1]; 
-    node->totalItems = 1; // ...by setting totalItems to 1. 
+    node->totalItems = 1; // ...by first setting totalItems to 1. 
 
-    // Remove two right-most children from this node. 
-    child2 = node->children[2]; 
-    child3 = node->children[3]; 
+    // Remove its two right-most children. 
+    Node234 *child2 = node->children[2]; 
+    Node234 *child3 = node->children[3]; 
 
     Node234 *newRight = new Node234(itemC); // make new right child node from largest item
 
     /* set its left and right children to be the two right-most children of node */
-    if (child2 && child3) { // patch: that is, if they are not zero
+    if (child2 && child3) { // that is, if they are not zero
         
         newRight->connectChild(0, child2); // connect to 0 and 1
 
