@@ -592,17 +592,17 @@ template<typename K> bool Tree234<K>::remove(K key)
 }
 
 /*
- * The delete alogithm is depicted at: http://www.cs.mtsu.edu/~jhankins/files/3110/presentations/2-3Trees.ppt 
- * The startegy is to turn two nodes on the way down into three or four nodes. Pseudo code:
- * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt
- * http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html
- * http://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree
- */
-template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
-{
+ * The startegy is to turn two nodes, on the way down, into three or four nodes. Pseudo code:
+ *
+ *  See 
+ * 1. www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  pages 51-52
+ * 
+ * 2. http://ww3.algorithmdesign.net/handouts/24Trees.pdf     slides 11-13 
+ *
+ * 3. http://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree  detailed pseudo code
+ * 
+From:  http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html
 
- // return true;
-/*
 Deletion — Avoid Parent Corrections
 
 At each step of the traversal to delete (either to find the value or, for interior nodes, to find the in-order successor to replace that value), if you encounter
@@ -615,7 +615,8 @@ a 2-node, amplify it to a 3-node or a 4-node:
 
 Consequently when you get to the leaf where the deletion will be performed, the value can be deleting and leave a valid node.
  */
-
+template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
+{
    if (root == nullptr) {
 
        return false; 
@@ -726,7 +727,7 @@ template<typename K> inline void Tree234<K>::Node234::adoptChildren()
  * pseudo code:
  * convert the 2-node into a 4-node by inserting into to it one value from the parent 3-node and
  * the value of the sibling on its right (or its left if it is the right-most sibling)           
- *           
+ * Note: I believe the silbing will be -- but not sure why -- a 2-node, so we fuse            
  *           
  *           
  */           
