@@ -680,9 +680,10 @@ template<typename K> void Tree234<K>::convertTwoNode(Node234 *node)
 
    } else { // parent is a 3- or 4-node. 
 
-         //  Now check if sibling a 3- or 4-node.
+         //  Now check if it has a sibling that is a 3- or 4-node, in which case we do a rotate; otherwise, if its siblings are all two node, we
+         //  we fuse.
 
-         // First, get index i where node == parent->children[i]
+         // First, we need the index i where node == parent->children[i].
            for (auto i = 0; i < parent->totalItems; ++i) {
 
                if (node->key[0] < parent->keys[i] ) {
@@ -690,18 +691,19 @@ template<typename K> void Tree234<K>::convertTwoNode(Node234 *node)
                } 
            }
 
-           Node234 *sibling;
+           // Now, we determine the siblings to check.
+           // If i is the right-most child
+           if (i == parent->totalItems + 1) { 
 
-           // check if i is the right-most child
-           if (i == parent->totalItems + 1) { // if it is,
+               silbing = i - 1; // the left child is the only possible adjacent sibling to check 
 
-               silbing = i - 1; // use the left child as sibling
-
-           } else { // do we need to check both siblings or just the right?
+           }  else if (i == 1) { // We need to check both parent->children[0] and parent->children[2].
+               
+           } else if (i == 2 && parent->isFourNode() ) { // We check only sibling parent->children[3] 
+             
+           else { // i == 0 and we only need to check parent->children[1]
 
            }
-             
-
    }
             
 }
