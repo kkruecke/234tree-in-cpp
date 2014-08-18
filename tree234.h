@@ -227,40 +227,7 @@ template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const
 { 
    return !children[0] ? true : false;
 }
-/*
- * precondition: node is a two node.
- * output: four node. 
- * pseudo code: 
- * 1. Absorbs its children's keys as its own. 
- * 2. Makes its grandchildren its children and deletes its former child nodes.
- */ 
-template<typename K> inline void Tree234<K>::Node234::adoptChildren()
-{
-  // move key of 2-node 
-  keys[1] = keys[0];
 
-  // absorb children's keys
-  keys[0] = children[0]->keys[0];    
-  keys[2] = children[1]->keys[0];       
-
-  Node234 *leftOrphan = children[0]; // so we can delete them later
-  Node234 *rightOrphan = children[1];
-
-  // make grandchildren the children.
-  for(auto i = 0; i < MAX_KEYS + 1; i+=2) {
-
-     int index = (i == 0) ? 0 : 1;
-
-     children[i] = children[index]->children[0];       
-     children[i + 1] = children[index]->children[1];
-  }
-
-  // delete children
-  delete leftOrphan;
-  delete rightOrphan;
-
-  return;    
-}
 /*
  * Is appears to duplicate the functionality searchNode, which takes one more reference parameter 
  */
@@ -530,34 +497,6 @@ template<typename K> void Tree234<K>::insert(K key)
     // current is now a leaf and not full (because we split all four nodes while descending).
     current->insertItem(key); 
 }
- 
-/*
- * preconditions: node is 2-node.
- * output: node is converted into either a 3- or a 4-node.
- * pseudo code: This method is the inverse of split(). There are three cases:  
- *  1. The parent is a 2-node.
- *  2. The parent is a 3-node.
- *  3. The parent is a 4-node.
- */
-template<typename K> void Tree234<K>::convertTwoNode(Node234 *node) 
-{
-   Node234 *parent = node->getParent();
-
-   if (parent->isTwoNode()) { // parent is 2-node (and therefore its sibling, too) is a 2-node
-
-         // merge with parent
-         parent->adoptChildren(); 
-
-   } else if (parent->isThreeNode()) { // parent is a 3-node
-            
-         // what do we do in this case? Do we borrow from sibling -- or from parent?
-
-   } else { // parent is a 4-node
-
-
-   } 
-
-}
 /* split(Node234 *nod)
  * Preconditions: node is full, a four node.
  *
@@ -570,7 +509,6 @@ template<typename K> void Tree234<K>::convertTwoNode(Node234 *node)
 template<typename K> void Tree234<K>::split(Node234 *node)
 {
     K  itemB, itemC;
-
     Node234 *parent;
 
     int itemIndex;
@@ -651,6 +589,100 @@ template<typename K> bool Tree234<K>::remove(K key)
  
        return remove(key, root); 
   }
+}
+/*
+ * preconditions: node is 2-node.
+ * output: node is converted into either a 3- or a 4-node.
+ * pseudo code: This method is the inverse of split(). There are three cases:  
+ *  1. The parent is a 2-node.
+ *  2. The parent is a 3-node.
+ *  3. The parent is a 4-node.
+ */
+template<typename K> void Tree234<K>::convertTwoNode(Node234 *node) 
+{
+   Node234 *parent = node->getParent();
+
+   if (parent->isTwoNode()) { // parent is 2-node (and therefore its sibling, too) is a 2-node
+
+         // merge node and its sibling into parent
+         parent->adoptChildren(); 
+
+   } else if (parent->isThreeNode()) { // parent is a 3-node
+            
+         // convert the 2-node into a 4-node. 
+         node->adoptParentandSibling(); 
+
+   } else { // parent is a 4-node
+
+
+   } 
+}
+/*
+ * precondition: node is a 2-node.
+ * output: 4-node. 
+ * pseudo code: 
+ * 1. Absorbs its children's keys as its own. 
+ * 2. Makes its grandchildren its children and deletes its former, now orphaned child nodes.
+ */ 
+template<typename K> inline void Tree234<K>::Node234::adoptChildren()
+{
+  // move key of 2-node 
+  keys[1] = keys[0];
+
+  // absorb children's keys
+  keys[0] = children[0]->keys[0];    
+  keys[2] = children[1]->keys[0];       
+
+  Node234 *leftOrphan = children[0]; // so we can delete them later
+  Node234 *rightOrphan = children[1];
+
+  // make grandchildren the children.
+  for(auto i = 0; i < MAX_KEYS + 1; i+=2) {
+
+     Node234 *child = (i == 0) ? leftOrphan : rightOrphan;
+
+     children[i] = child->children[0];       
+     children[i + 1] = child->children[1];
+  }
+
+  // delete children
+  delete leftOrphan;
+  delete rightOrphan;
+
+  return;   // TODO: Should I return node, so the code knows from where to continue? 
+}
+/*
+ * precondition: node is a 2-node. parent is a 3-node           
+ * ouput: 4-node
+ * pseudo code:
+ * convert the 2-node into a 4-node by inserting into to it one value from the parent 3-node and
+ * the value of the sibling on its right (or its left if it is the right-most sibling)           
+ *           
+ *           
+ *           
+ */           
+template<typename K> inline void Tree234<K>::Node234::adoptParentandSibling()
+{
+  Node234 *parent = getParent();
+  Key item;
+
+  if (keys[0] > parent->keys[1]) { // Then this is right child
+
+       item = parent->keys[1];
+
+  } else { // Then this is left or middle child
+
+       item = parent->keys[0];
+  } 
+
+  int insert_index = insertItem(item);
+
+  // remove is from parent by shifting, if necessary, and reducing totalItems by 1
+  // ...
+  parent->totalItems--;
+  
+  // move this's connections right, start from new last index up to insert_index
+
 }
 /*
  * preconditions: current is not a 2-node. current->keys[hit_index] is the value to remove from the node.
