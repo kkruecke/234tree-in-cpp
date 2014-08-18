@@ -624,6 +624,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
 
    Node234 *current = root;
    Node234 *next = nullptr;
+
    int hit_index;
 
    /* Descend, looking for value or, if value is an interior node, its in-order successor leaf node. Convert two nodes as
@@ -631,12 +632,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
 
    while(true) {
        
-       if (current != root && current->isTwoNode() && !current->isLeaf()) {
+       if (current != root && current->isTwoNode()) {
 
             // convert 2-node into 3- or 4-node 
             convertTwoNode(current); 
       
-            // resume search with parent.
+            // resume search with parent?
             current = current->getParent(); 
            
        } else if (current->searchNode(key, hit_index, next)) { // ...search for item in current node. 
@@ -672,20 +673,37 @@ template<typename K> void Tree234<K>::convertTwoNode(Node234 *node)
 {
    Node234 *parent = node->getParent();
 
-   if (parent->isTwoNode()) { // parent is 2-node (and therefore its sibling, too) is a 2-node
+   if (parent->isTwoNode()) { // parent is 2-node and therefore its only sibling is also a 2-node
 
          // merge node and its sibling into parent
          parent->adoptChildren(); 
 
-   } else if (parent->isThreeNode()) { // parent is a 3-node
+   } else { // parent is a 3- or 4-node. 
+
+         //  Now check if sibling a 3- or 4-node.
+
+         // First, get index i where node == parent->children[i]
+           for (auto i = 0; i < parent->totalItems; ++i) {
+
+               if (node->key[0] < parent->keys[i] ) {
+                    break;
+               } 
+           }
+
+           Node234 *sibling;
+
+           // check if i is the right-most child
+           if (i == parent->totalItems + 1) { // if it is,
+
+               silbing = i - 1; // use the left child as sibling
+
+           } else { // do we need to check both siblings or just the right?
+
+           }
+             
+
+   }
             
-         // convert the 2-node into a 4-node. 
-         node->adoptParentandSibling(); 
-
-   } else { // parent is a 4-node
-
-
-   } 
 }
 /*
  * precondition: node is a 2-node.
