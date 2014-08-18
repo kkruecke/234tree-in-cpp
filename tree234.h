@@ -590,6 +590,75 @@ template<typename K> bool Tree234<K>::remove(K key)
        return remove(key, root); 
   }
 }
+
+/*
+ * The delete alogithm is depicted at: http://www.cs.mtsu.edu/~jhankins/files/3110/presentations/2-3Trees.ppt 
+ * The startegy is to turn two nodes on the way down into three or four nodes. Pseudo code:
+ * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt
+ * http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html
+ * http://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree
+ */
+template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
+{
+
+ // return true;
+/*
+Deletion — Avoid Parent Corrections
+
+At each step of the traversal to delete (either to find the value or, for interior nodes, to find the in-order successor to replace that value), if you encounter
+a 2-node, amplify it to a 3-node or a 4-node:
+
+    If an adjacent sibling is a 3-node or a 4-node, redistribute values so the the present 2-node becomes a 3-node.
+
+    If an adjacent sibling is a 2-node, merge the two nodes:  generate a 4-node by bringing down the key value from the parent — which is know to be either a
+     3-node or a 4-node, and consequently can lose a key and a child without becoming illegal.
+
+Consequently when you get to the leaf where the deletion will be performed, the value can be deleting and leave a valid node.
+ */
+
+   if (root == nullptr) {
+
+       return false; 
+   } 
+
+   Node234 *current = root;
+   Node234 *next = nullptr;
+   int hit_index;
+
+   /* Descend, looking for value or, if value is an interior node, its in-order successor leaf node. Convert two nodes as
+      they are encountered to either 3-nodes or 4-nodes */
+
+   while(true) {
+       
+       if (current != root && current->isTwoNode() && !current->isLeaf()) {
+
+            // convert 2-node into 3- or 4-node 
+            convertTwoNode(current); 
+      
+            // resume search with parent.
+            current = current->getParent(); 
+           
+       } else if (current->searchNode(key, hit_index, next)) { // ...search for item in current node. 
+
+              break; // we found it.  
+
+       } else if (current->isLeaf()) { // done searching, not found.
+
+             return false; 
+          
+       } else { // ... If not found, continue to descend. 
+
+         current = next; 
+       }
+    }
+
+    // Determine if it is a two node.
+    // . . .
+    fixUp(current, hit_index);
+
+   
+    return true;  
+}
 /*
  * preconditions: node is 2-node.
  * output: node is converted into either a 3- or a 4-node.
@@ -664,18 +733,26 @@ template<typename K> inline void Tree234<K>::Node234::adoptChildren()
 template<typename K> inline void Tree234<K>::Node234::adoptParentandSibling()
 {
   Node234 *parent = getParent();
-  Key item;
+
+  Key parentKey;
+  Key middle; 
 
   if (keys[0] > parent->keys[1]) { // Then this is right child
 
-       item = parent->keys[1];
+       parentKey = parent->keys[1];
 
   } else { // Then this is left or middle child
 
-       item = parent->keys[0];
+       parentKey = parent->keys[0];
+
+       if (keys[0] < parent->keys[0]) {
+
+       } else {
+
+       }            
   } 
 
-  int insert_index = insertItem(item);
+  int insert_index = insertItem(parentKey);
 
   // remove is from parent by shifting, if necessary, and reducing totalItems by 1
   // ...
@@ -707,72 +784,5 @@ template<typename K> void Tree234<K>::fixUp(Node234 *current, int hit_index)
     // adjust the children, too
     // ... not done
 }
-/*
- * The delete alogithm is depicted at: http://www.cs.mtsu.edu/~jhankins/files/3110/presentations/2-3Trees.ppt 
- * The startegy is to turn two nodes on the way down into three or four nodes. Pseudo code:
- * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt
- * http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html
- * http://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree
- */
-template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
-{
 
- // return true;
-/*
-Deletion — Avoid Parent Corrections
-
-At each step of the traversal to delete (either to find the value or, for interior nodes, to find the in-order successor to replace that value), if you encounter
-a 2-node, amplify it to a 3-node or a 4-node:
-
-    If an adjacent sibling is a 3-node or a 4-node, redistribute values so the the present 2-node becomes a 3-node.
-
-    If an adjacent sibling is a 2-node, merge the two nodes:  generate a 4-node by bringing down the key value from the parent — which is know to be either a
-     3-node or a 4-node, and consequently can lose a key and a child without becoming illegal.
-
-Consequently when you get to the leaf where the deletion will be performed, the value can be deleting and leave a valid node.
- */
-
-   if (root == nullptr) {
-
-       return false; 
-   } 
-
-   Node234 *current = root;
-   Node234 *next = nullptr;
-   int hit_index;
-
-   /* Descend, looking for value or, if value is an interior node, its in-order successor leaf node. Convert two nodes as
-      they are encountered to either 3-nodes or 4-nodes */
-
-   while(true) {
-       
-       if (current != root && current->isTwoNode() && !current->isLeaf()) {
-
-            // convert 2-node into 3- or 4-node 
-            convertTwoNode(current); 
-      
-            // resume search with parent.
-            current = current->getParent(); 
-           
-       } else if (current->searchNode(key, hit_index, next)) { // ...search for item in current node. 
-
-              break; // we found it.  
-
-       } else if (current->isLeaf()) { // done searching, not found.
-
-             return false; 
-          
-       } else { // ... If not found, continue to descend. 
-
-         current = next; 
-       }
-    }
-
-    // Determine if it is a two node.
-    // . . .
-    fixUp(current, hit_index);
-
-   
-    return true;  
-}
 #endif
