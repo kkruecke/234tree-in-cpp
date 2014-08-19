@@ -1,8 +1,6 @@
 #ifndef TREE234_H
 #define	TREE234_H
-/*
- * Based on http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
- */
+
 #include <utility>
 #include <exception>
 
@@ -41,7 +39,6 @@ template<typename K> class Tree234 {
 
     bool remove(K key, Node234 *location);
  
-    void fixUp(Node234 *current, int hit_index); 
   public:
 
    
@@ -73,15 +70,7 @@ template<typename K> class Tree234 {
        void connectChild(int childNum, Node234 *child);
        bool isTwoNode() const;
        bool isThreeNode() const;
-       /*
-        * precondition: node is a two node.
-        * output: four node. 
-        * pseudo code: 
-        * 1. Absorbs the children's keys. 
-        * 2. Makes grandchildren its children and deletes former child nodes.
-        */ 
-       void adoptChildren();
-
+      
        /*
         * Returns true if key is found in node and set index so that this->keys[index] == key
         * Returns false if key is if not found and sets next to point to next child with which to continue the search.
@@ -445,7 +434,11 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
             break;
    }
 }
-
+/* 
+ * Insertion based on this code:
+ *
+ * http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
+ */
 template<typename K> void Tree234<K>::insert(K key)
 {
     if (root == nullptr) {
@@ -564,14 +557,28 @@ template<typename K> void Tree234<K>::split(Node234 *node)
     }
 
     parent->connectChild(insert_index + 1,  newRight);
+
     /* 
      * By default, we do not need to insert node. It will be at the correct position. So we do not need to do:
      *     parent->connectChild(insert_index, node); 
-    */
+     */
   
     return;
 }
-
+/*
+ * Deletion based on pages 50-53 of: 
+ *
+ * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ *
+ * Other similar links explaining this deletion technique: 
+ *
+ * 1. http://ww3.algorithmdesign.net/handouts/24Trees.pdf     See slides 11-13. 
+ *
+ * 2. http://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree  Has detailed pseudo code.
+ * 
+ * 3. http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html  Has succint pseudo coce. 
+ *
+ */
 template<typename K> bool Tree234<K>::remove(K key)
 {
    if (root == nullptr) {
@@ -592,37 +599,26 @@ template<typename K> bool Tree234<K>::remove(K key)
 }
 
 /*
- * The startegy is to turn two nodes, on the way down, into three or four nodes. Pseudo code:
+ *  Follow the 2-node removal code on pages 50-53 of: 
  *
- *  See 
- * 1. www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  pages 51-52
- * 
- * 2. http://ww3.algorithmdesign.net/handouts/24Trees.pdf     slides 11-13 
+ * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *
- * 3. http://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree  detailed pseudo code
+ * Other similar links explaining this: 
+ *
+ * 1. http://ww3.algorithmdesign.net/handouts/24Trees.pdf     slides 11-13 
+ *
+ * 2. http://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree  detailed pseudo code
  * 
-From:  http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html
+ * 3. http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html
 
-Deletion — Avoid Parent Corrections
-
-At each step of the traversal to delete (either to find the value or, for interior nodes, to find the in-order successor to replace that value), if you encounter
-a 2-node, amplify it to a 3-node or a 4-node:
-
-    If an adjacent sibling is a 3-node or a 4-node, redistribute values so the the present 2-node becomes a 3-node.
-
-    If an adjacent sibling is a 2-node, merge the two nodes:  generate a 4-node by bringing down the key value from the parent — which is know to be either a
-     3-node or a 4-node, and consequently can lose a key and a child without becoming illegal.
-
-Consequently when you get to the leaf where the deletion will be performed, the value can be deleting and leave a valid node.
  */
-template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
+template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 {
    if (root == nullptr) {
 
        return false; 
    } 
 
-   Node234 *current = root;
    Node234 *next = nullptr;
 
    int hit_index;
@@ -656,15 +652,14 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
 
     // Determine if it is a two node.
     // . . .
-    fixUp(current, hit_index);
-
    
     return true;  
 }
 /*
  * preconditions: node is 2-node.
  * output: node is converted into either a 3- or a 4-node.
- * pseudo code: This method is the inverse of split(). There are three cases:  
+ *
+ * Follow pages 51-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *  1. The parent is a 2-node.
  *  2. The parent is a 3-node.
  *  3. The parent is a 4-node.
@@ -672,44 +667,38 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *location)
 template<typename K> void Tree234<K>::convertTwoNode(Node234 *node) 
 {
    Node234 *parent = node->getParent();
+                                 
 
-   if (parent->isTwoNode()) { // parent is 2-node and therefore its only sibling is also a 2-node
+   //  Now check if it has a sibling that is a 3- or 4-node, in which case we do a rotate; otherwise, if it has a two node sibling and the parent is a 3- or 4-node
+   //  we fuse the two adjacent siblings together with an item from the parent, to make a 3-node. If it has a two node sibling and the parent is a 2-node, then
+   //  make all three 2-nodes into a 4-node?
 
-         // merge node and its sibling into parent
-         parent->adoptChildren(); 
+   // First, we need the index i where node == parent->children[i].
+   for (auto i = 0; i < parent->totalItems; ++i) {
 
-   } else { // parent is a 3- or 4-node. 
-
-         //  Now check if it has a sibling that is a 3- or 4-node, in which case we do a rotate; otherwise, if all its siblings are all two node, we
-         //  we fuse two adjacent siblings.
-
-         // First, we need the index i where node == parent->children[i].
-           for (auto i = 0; i < parent->totalItems; ++i) {
-
-               if (node->key[0] < parent->keys[i] ) {
-                    break;
-               } 
-           }
-
-           int adjacent_siblings[2];
-           int sibling_count;  // total possible silbing count is the same as parent->totalItems 
-
-           // Now, we determine the siblings to check.
-           // If i is the right-most child
-           if (i == parent->totalItems + 1) { 
-
-               silbing = i - 1; // the left child is the only possible adjacent sibling to check 
-
-           }  else if (i == 1) { // We need to check both parent->children[0] and parent->children[2].
-               
-           } else if (i == 2 && parent->isFourNode() ) { // We check only sibling parent->children[3] 
-             
-           else { // i == 0 and we only need to check parent->children[1]
-
-           }
-           // If first sibling a two node
+       if (node->key[0] < parent->keys[i] ) {
+            break;
+       } 
    }
-            
+
+   int adjacent_siblings[2];
+   int sibling_count;  // total possible silbing count is the same as parent->totalItems 
+
+   // Now, we determine the siblings to check.
+   // If i is the right-most child
+   if (i == parent->totalItems + 1) { 
+
+       silbing = i - 1; // the left child is the only possible adjacent sibling to check 
+
+   }  else if (i == 1) { // We need to check both parent->children[0] and parent->children[2].
+       
+   } else if (i == 2 && parent->isFourNode() ) { // We check only sibling parent->children[3] 
+     
+   else { // i == 0 and we only need to check parent->children[1]
+
+   }
+      // If first sibling a two node
+           
 }
 /*
  * precondition: node is a 2-node.
@@ -717,7 +706,6 @@ template<typename K> void Tree234<K>::convertTwoNode(Node234 *node)
  * pseudo code: 
  * 1. Absorbs its children's keys as its own. 
  * 2. Makes its grandchildren its children and deletes its former, now orphaned child nodes.
- */ 
 template<typename K> inline void Tree234<K>::Node234::adoptChildren()
 {
   // move key of 2-node 
@@ -745,69 +733,5 @@ template<typename K> inline void Tree234<K>::Node234::adoptChildren()
 
   return;   // TODO: Should I return node, so the code knows from where to continue? 
 }
-/*
- * precondition: node is a 2-node. parent is a 3-node           
- * ouput: 4-node
- * pseudo code:
- * convert the 2-node into a 4-node by inserting into to it one value from the parent 3-node and
- * the value of the sibling on its right (or its left if it is the right-most sibling)           
- * Note: I believe the silbing will be -- but not sure why -- a 2-node, so we fuse            
- *           
- *           
- */           
-template<typename K> inline void Tree234<K>::Node234::adoptParentandSibling()
-{
-  Node234 *parent = getParent();
-
-  Key parentKey;
-  Key middle; 
-
-  if (keys[0] > parent->keys[1]) { // Then this is right child
-
-       parentKey = parent->keys[1];
-
-  } else { // Then this is left or middle child
-
-       parentKey = parent->keys[0];
-
-       if (keys[0] < parent->keys[0]) {
-
-       } else {
-
-       }            
-  } 
-
-  int insert_index = insertItem(parentKey);
-
-  // remove is from parent by shifting, if necessary, and reducing totalItems by 1
-  // ...
-  parent->totalItems--;
-  
-  // move this's connections right, start from new last index up to insert_index
-
-}
-/*
- * preconditions: current is not a 2-node. current->keys[hit_index] is the value to remove from the node.
- *
- *
- */
-template<typename K> void Tree234<K>::fixUp(Node234 *current, int hit_index)
-{
-    // We know current is in a 3- or 4-node.
-
-    current->totalItems--; // adjust totalItems
- 
-    for(; hit_index < current->totalItems; ++hit_index)  { // shift all keys[] values to the right of hit_index, left
-            
-         current->keys[hit_index] = current->keys[hit_index + 1];
-    }
-    
-    if (current->isLeaf()) { // if leaf, done
-
-        return;
-    } 
-    // adjust the children, too
-    // ... not done
-}
-
+*/ 
 #endif
