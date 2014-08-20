@@ -641,8 +641,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
    /* Search, looking for key, converting 2-nodes to 3- or 4-nodes as encountered */
 
    while(true) {
-       
-       if (current != root && current->isTwoNode()) {
+
+       if (current == nullptr) {
+              
+            return false;
+
+       } else if (current != root && current->isTwoNode()) {
 
             // convert 2-node into 3- or 4-node 
             // Q: Do I need to reset current?
@@ -656,13 +660,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
               found_node = current;
               break; // we found it.  
 
-       } else if (current->isLeaf()) { // done searching, not found.
-
-             return false; 
-          
-       } else { // ... If not found, continue to descend. 
-
-         current = next; 
+       } else {
+          // ... If not found, continue to descend. 
+           current = next; 
        }
     }
 
@@ -671,6 +671,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
 
          throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K?::remove(Key k, Node234 *current"));
     }
+
     Node234 *successor;
     
     if (!found_node->isLeaf()) {
@@ -683,7 +684,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
         
              if (successor->isTwoNode()) {
         
-                 // is the assignment correct? 		
+                 // Is the assignment correct? 		
                  successor = convertTwoNode(successor);
              } 
         
@@ -737,7 +738,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    //  Otherwise, check if it has a two node sibling and the parent is a 3- or 4-node, in which case we ....
 
    // First, we need the index i where node == parent->children[i].
-   int i =0;
+   int i = 0;
    for (; i < parent->totalItems; ++i) {
 
        if (node->keys[0] < parent->keys[i] ) {
