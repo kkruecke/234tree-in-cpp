@@ -37,7 +37,7 @@ template<typename K> class Tree234 {
 
     void DestroyTree(Node234 *root);
 
-    bool remove(K key, Node234 *location);
+    bool remove(K key, Node234 *location) throw(std::logic_error);
  
   public:
 
@@ -46,13 +46,13 @@ template<typename K> class Tree234 {
       private: 
        friend class Tree234<K>;             
        static int MAX_KEYS;   
+
        Node234(K small);
        Node234(K small, K larger);
        Node234(K small, K middle, K large);
 
        Node234 *parent;
-       
-       int totalItems; /* If totalItems is 1, then two node; if 2, three node, if 3, four node. */   
+       int totalItems; /* If totalItems is 1, then two node; if 2, three node; if 3, four node. */   
        K keys[3];
 
        /* Note:
@@ -62,12 +62,9 @@ template<typename K> class Tree234 {
         */
        Node234 *children[4];
 
-       bool find(K key, int& index);
-       int insertItem(K key);
-       bool isFull();
        Node234 *getParent();
+       bool isFull() const;
        bool isLeaf() const; 
-       void connectChild(int childNum, Node234 *child);
        bool isTwoNode() const;
        bool isThreeNode() const;
        bool isFourNode() const;
@@ -78,7 +75,10 @@ template<typename K> class Tree234 {
         */
        bool searchNode(K key, int& index, Node234 *&next);
 
+       int insertItem(K key);
+       void connectChild(int childNum, Node234 *child);
     };  
+
     typedef Node234 Node;
 
      Tree234() { root = nullptr; } 
@@ -209,7 +209,7 @@ template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pa
     return 0;
 }
 
-template<typename K> inline  bool Tree234<K>::Node234::isFull()  
+template<typename K> inline  bool Tree234<K>::Node234::isFull() const 
 { 
    return totalItems == MAX_KEYS;
 }
@@ -225,7 +225,6 @@ template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const
 
 /*
  * Is appears to duplicate the functionality searchNode, which takes one more reference parameter 
- */
 template<typename K> inline bool Tree234<K>::Node234::find(K key, int& index)
 { 
    for(int i = 0; i < totalItems; i++) {
@@ -238,6 +237,7 @@ template<typename K> inline bool Tree234<K>::Node234::find(K key, int& index)
    }
    return false;
 }
+*/
 
 template<typename K> inline Tree234<K>::~Tree234()
 {
@@ -631,7 +631,7 @@ template<typename K> bool Tree234<K>::remove(K key)
  * 3. http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html
  *
  */
-template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
+template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std::logic_error)
 {
    Node234 *next = nullptr;
    Node234 *found_node;
