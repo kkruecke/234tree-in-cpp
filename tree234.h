@@ -650,15 +650,16 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     }
     // using hit_index and node type, get the child pointer to follow
     
-    Node234 *successor = current->....; 
+    Node234 *successor = current->children[found_index + 1]; 
 
     // search for in-order successor, converting two nodes as we descend
     while (successor != nullptr) {
 
-        if (current->isTwoNode) {
+        if (successor->isTwoNode) {
 
-            convertTwoNode(current);
-            // Q: Do I need to reset current?
+            // is the assignment correct? 		
+            successor = convertTwoNode(sucessor);
+             
         } 
 
         // always take smallest child
