@@ -586,10 +586,11 @@ template<typename K> bool Tree234<K>::remove(K key)
        return false; 
 
    } else if (root->isLeaf()) { // <-- make this part of the general case of remove(K key, Node234 *location);
+
          int index;
          Node234 *next = nullptr; 
          bool found = root->searchNode(key, index, next);
-         // . . . to be continued 
+         // if found...if 4-node, make to 3-node; if 3-node make 2-node; if 2-node empty tree. 
          return true;
 
    } else {
@@ -614,11 +615,6 @@ template<typename K> bool Tree234<K>::remove(K key)
  */
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 {
-   if (root == nullptr) {
-
-       return false; 
-   } 
-
    Node234 *next = nullptr;
 
    int hit_index;
@@ -649,9 +645,23 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
          current = next; 
        }
     }
+    // using hit_index and node type, get the child pointer to follow
+    
+    Node234 *successor = current->....; 
 
-    // Determine if it is a two node.
-    // . . .
+    // search for in-order successor, converting two nodes as we descend
+    while (!successor->isLeaf()) {
+
+        if (current->isTwoNode) {
+
+            convertTwoNode(current);
+
+        } 
+
+        bool b = current->searchNode(key, hit_index, next);
+        successor = next;
+    }
+    // 
    
     return true;  
 }
