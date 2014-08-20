@@ -744,21 +744,42 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
        } 
    }
 
-   int adjacent_siblings[2];
+   int adjacent_siblings[2]; 
+
+   int total_siblings = 1;// 1 or 2.
+
    int sibling;  // total possible silbing count is the same as parent->totalItems 
+
+   book isParent_TwoNode = parent->isTwoNode();
+
+   if (isParent_TwoNode) {
+
+      //....
+   } else if (...if-tests stuff below) { ...
 
    // Now, we determine the siblings to check.
    // If i is the right-most child
    if (i == parent->totalItems + 1) { 
 
-       sibling = i - 1; // the left child is the only possible adjacent sibling to check 
-
+       adjacent_silbings[0] = i - 1; // the left child is the only possible adjacent sibling to check 
+      
    }  else if (i == 1) { // We need to check both parent->children[0] and parent->children[2].
+
+       if (!parent->isTwoNode()) {
+
+           adjacent_siblings[0] = 0;
+           adjacent_siblings[1] = 2;
+           adjacent_siblings++;
+
+       } else {
+
+       } 
        
    } else if (i == 2 && parent->isFourNode() ) { // We check only sibling parent->children[3] 
      
    } else { // i == 0 and we only need to check parent->children[1]
 
+       adjacent_siblings[0] = 1;
    }
       // If first sibling a two node
 
