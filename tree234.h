@@ -2,7 +2,7 @@
 #define	TREE234_H
 
 #include <utility>
-#include <exception>
+#include <stdexcept>
 
 // fwd declarations
 template<typename T> class Tree234;    
@@ -33,7 +33,7 @@ template<typename K> class Tree234 {
 
     void split(Node234 *node);
 
-    void convertTwoNode(Node234 *node);
+    Node234 *convertTwoNode(Node234 *node);
 
     void DestroyTree(Node234 *root);
 
@@ -70,6 +70,7 @@ template<typename K> class Tree234 {
        void connectChild(int childNum, Node234 *child);
        bool isTwoNode() const;
        bool isThreeNode() const;
+       bool isFourNode() const;
       
        /*
         * Returns true if key is found in node and set index so that this->keys[index] == key
@@ -102,6 +103,11 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
 template<typename K> inline bool Tree234<K>::Node234::isThreeNode() const
 {
    return (totalItems == 2) ? true : false;
+}
+ 
+template<typename K> inline bool Tree234<K>::Node234::isFourNode() const
+{
+   return (totalItems == 3) ? true : false;
 }
  
 /*
@@ -600,9 +606,21 @@ template<typename K> bool Tree234<K>::remove(K key)
 }
 
 /*
- *  Follow the 2-node removal code on pages 50-53 of: 
+ * This pseudo code is taken from pages 5-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *
- * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ * Deletion is similar to 2-3 trees: We "swap" the item to be deleted with its in-order successor, which
+ * is always in a leaf node. "Swap" means we overwrite the item to be deleted with its in-order successor and then
+ * remove the in-order successor from the leaf node.
+ *
+ * There is a problem, however: if the successor is a 2-node leaf this leaves an empty leaft node, resulting in an unbalanced tree.
+ * The strategy to prevent this is, on the way down to the leaf we turn 2-nodes (other than the root) into 3-nodes. 
+ *
+ * Case 1: If an adjacent sibling has 2 or 3 items (and the parent is a 3- or 4-node), "steal" item from sibling by
+ * rotating items and moving subtree. For an example, see slide 51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ *         
+ * Case 2: If each adjacent sibling (there may only be one but can be two) has only one item (and parent is a 3- or 4-node),
+ * fuse together the two, an item from parent, and an item from the sibling two node, forming a 4-node and shifting the children
+ * appropriately. For an examples, see slide 52 of www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *
  * Other similar links explaining this: 
  *
@@ -611,17 +629,15 @@ template<typename K> bool Tree234<K>::remove(K key)
  * 2. http://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree  detailed pseudo code
  * 
  * 3. http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html
-
+ *
  */
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 {
    Node234 *next = nullptr;
    Node234 *found_node;
-
    int found_index;
 
-   /* Descend, looking for value or, if value is an interior node, its in-order successor leaf node. Convert two nodes as
-      they are encountered to either 3-nodes or 4-nodes */
+   /* Search, looking for key, converting 2-nodes to 3- or 4-nodes as encountered */
 
    while(true) {
        
@@ -648,22 +664,35 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
          current = next; 
        }
     }
-    // using hit_index and node type, get the child pointer to follow
+
+    // using found_index and node type, get the child pointer to follow
+    if (found_index + 1 > found_node->totalItems) {
+
+         throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K?::remove(Key k, Node234 *current"));
+    }
+    Node234 *successor;
     
-    Node234 *successor = current->children[found_index + 1]; 
+    if (!found_node->isLeaf()) {
+    
+         // Find the smallest item in the subtree of next largest items.
+         successor = found_node->children[found_index + 1]; 
+        
+         // search for in-order successor, again converting two nodes as we descend
+         while (successor != nullptr) {
+        
+             if (successor->isTwoNode()) {
+        
+                 // is the assignment correct? 		
+                 successor = convertTwoNode(successor);
+             } 
+        
+             // always take smallest child
+             successor = successor->children[0];
+         }
 
-    // search for in-order successor, converting two nodes as we descend
-    while (successor != nullptr) {
+    } else {
 
-        if (successor->isTwoNode) {
-
-            // is the assignment correct? 		
-            successor = convertTwoNode(sucessor);
-             
-        } 
-
-        // always take smallest child
-        successor = successor->child[0];
+         successor = found_node;
     }
     
     // We are now at leaf. 
@@ -671,11 +700,20 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
     // add... 
     if (found_node != successor) {
+
 	    found_node->keys[found_index] = successor->keys[0]; 
-    } esle {
-            // in-order successor is in same leaf node..
-    } 
-   
+
+    } else if (found_index + 1 <= found_node->totalItems) {
+
+
+            // The in-order successor is in same leaf node..
+            found_node->keys[found_index] = successor->keys[found_index + 1];
+
+    } else { // found_index + 1 > found_node->totalItems
+
+         throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K?::remove(Key k, Node234 *current"));
+    }
+
     // delete item from leaf -- shifting keys[] and reset totalItems -- and use it to overwrite node key to be deleted. 
     //...
     return true;  
@@ -689,40 +727,42 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
  *  2. The parent is a 3-node.
  *  3. The parent is a 4-node.
  */
-template<typename K> void Tree234<K>::convertTwoNode(Node234 *node) 
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node) 
 {
+   Node234 *convertedNode;
    Node234 *parent = node->getParent();
-                                 
-
-   //  Now check if it has a sibling that is a 3- or 4-node, in which case we do a rotate; otherwise, if it has a two node sibling and the parent is a 3- or 4-node
-   //  we fuse the two adjacent siblings together with an item from the parent, to make a 3-node. If it has a two node sibling and the parent is a 2-node, then
-   //  make all three 2-nodes into a 4-node?
+   
+   //  Check if it has a sibling that is a 3- or 4-node and the parent is a 3- or 4-node, in which case we do a rotate: bring down one of the parent items
+   //  Otherwise, check if it has a two node sibling and the parent is a 3- or 4-node, in which case we ....
 
    // First, we need the index i where node == parent->children[i].
-   for (auto i = 0; i < parent->totalItems; ++i) {
+   int i =0;
+   for (; i < parent->totalItems; ++i) {
 
-       if (node->key[0] < parent->keys[i] ) {
+       if (node->keys[0] < parent->keys[i] ) {
             break;
        } 
    }
 
    int adjacent_siblings[2];
-   int sibling_count;  // total possible silbing count is the same as parent->totalItems 
+   int sibling;  // total possible silbing count is the same as parent->totalItems 
 
    // Now, we determine the siblings to check.
    // If i is the right-most child
    if (i == parent->totalItems + 1) { 
 
-       silbing = i - 1; // the left child is the only possible adjacent sibling to check 
+       sibling = i - 1; // the left child is the only possible adjacent sibling to check 
 
    }  else if (i == 1) { // We need to check both parent->children[0] and parent->children[2].
        
    } else if (i == 2 && parent->isFourNode() ) { // We check only sibling parent->children[3] 
      
-   else { // i == 0 and we only need to check parent->children[1]
+   } else { // i == 0 and we only need to check parent->children[1]
 
    }
       // If first sibling a two node
+
+   return convertedNode;
            
 }
 /*
