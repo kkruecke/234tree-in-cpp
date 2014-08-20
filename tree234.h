@@ -622,14 +622,15 @@ template<typename K> bool Tree234<K>::remove(K key)
  * fuse together the two, an item from parent, and an item from the sibling two node, forming a 4-node and shifting the children
  * appropriately. For an examples, see slide 52 of www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *
+ * It is illustrated and further explained at http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
+ * and http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+ *
  * Other similar links explaining this: 
  *
  * 1. http://ww3.algorithmdesign.net/handouts/24Trees.pdf     slides 11-13 
  *
  * 2. http://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree  detailed pseudo code
  * 
- * 3. http://penguin.ewu.edu/cscd320/Topic/B-Tree/2_3_4_Operations.html
- *
  */
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std::logic_error)
 {
