@@ -627,6 +627,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
        if (current != root && current->isTwoNode()) {
 
             // convert 2-node into 3- or 4-node 
+            // Q: Do I need to reset current?
             convertTwoNode(current); 
       
             // resume search with parent?
@@ -655,13 +656,15 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
         if (current->isTwoNode) {
 
             convertTwoNode(current);
-
+            // Q: Do I need to reset current?
         } 
 
-        bool b = current->searchNode(key, hit_index, next);
-        successor = next;
+        // always take smallest child
+        successor = successor->child[0];
     }
-    // 
+
+    // We are now at leaf. 
+    // delete item from leaf -- shifting keys[] and reset totalItems -- and use it to overwrite node key to be deleted. 
    
     return true;  
 }
