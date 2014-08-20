@@ -698,7 +698,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     // We are now at leaf. 
     // overwrite node key to be deleted with in-order successor. 
 
-    // add... 
     if (found_node != successor) {
 
 	    found_node->keys[found_index] = successor->keys[0]; 
@@ -715,7 +714,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     }
 
     // delete item from leaf -- shifting keys[] and reset totalItems -- and use it to overwrite node key to be deleted. 
-    //...
+    // TODO: add the code for comment above
+    
     return true;  
 }
 /*
