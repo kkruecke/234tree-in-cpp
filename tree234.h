@@ -616,8 +616,9 @@ template<typename K> bool Tree234<K>::remove(K key)
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 {
    Node234 *next = nullptr;
+   Node234 *found_node;
 
-   int hit_index;
+   int found_index;
 
    /* Descend, looking for value or, if value is an interior node, its in-order successor leaf node. Convert two nodes as
       they are encountered to either 3-nodes or 4-nodes */
@@ -633,8 +634,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
             // resume search with parent?
             //current = current->getParent(); 
            
-       } else if (current->searchNode(key, hit_index, next)) { // ...search for item in current node. 
+       } else if (current->searchNode(key, found_index, next)) { // ...search for item in current node. 
 
+              found_node = current;
               break; // we found it.  
 
        } else if (current->isLeaf()) { // done searching, not found.
@@ -662,10 +664,13 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
         // always take smallest child
         successor = successor->child[0];
     }
-
+    
     // We are now at leaf. 
-    // delete item from leaf -- shifting keys[] and reset totalItems -- and use it to overwrite node key to be deleted. 
+    // overwrite node key to be deleted with in-order successor. 
+    found_node->keys[found_index] = successor->keys[0]; 
    
+    // delete item from leaf -- shifting keys[] and reset totalItems -- and use it to overwrite node key to be deleted. 
+    //...
     return true;  
 }
 /*
