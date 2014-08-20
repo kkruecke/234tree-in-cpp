@@ -653,7 +653,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     Node234 *successor = current->....; 
 
     // search for in-order successor, converting two nodes as we descend
-    while (!successor->isLeaf()) {
+    while (successor != nullptr) {
 
         if (current->isTwoNode) {
 
@@ -667,7 +667,13 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     
     // We are now at leaf. 
     // overwrite node key to be deleted with in-order successor. 
-    found_node->keys[found_index] = successor->keys[0]; 
+
+    // add... 
+    if (found_node != successor) {
+	    found_node->keys[found_index] = successor->keys[0]; 
+    } esle {
+            // in-order successor is in same leaf node..
+    } 
    
     // delete item from leaf -- shifting keys[] and reset totalItems -- and use it to overwrite node key to be deleted. 
     //...
