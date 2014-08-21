@@ -79,7 +79,7 @@ template<typename K> class Tree234 {
        void connectChild(int childNum, Node234 *child);
 
        /* merges the 2-node children of a parent 2-node into the parent, making a 4-node. */
-       void fuseWithChildren(); 
+       Node234 *fuseWithChildren(); 
 
        // stubs: parameters undecided now
        void make3Node();
@@ -683,48 +683,55 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 {                                                                         
    Node234 *convertedNode;
    Node234 *parent = node->getParent();
-   int parentKeyTotal = parent->TotalItems;
+   int parentKeyTotal = parent->totalItems;
    int parentChildrenTotal = parentKeyTotal + 1;
    
-   // First, we find i such that parent->children[i] == node by comparing node's key to its parent's keys.
-   int i = 0;
-   for (; i < parentKeyTotal; ++i) {
+   // First, we find i such that parent->children[i] == node, by comparing node's key to its parent's keys.
+   int index = 0;
+   for (; index < parentKeyTotal; ++index) {
        /*
         * If we never break, then node->keys[0] is greater than the last key of its parent which means
         * node == parent->children[totalItems].
         *
         */
 
-       if (node->keys[0] < parent->keys[i] ) { 
+       if (node->keys[0] < parent->keys[index] ) { 
             break;                               
        } 
    }
 
    // adjacent_siblings and total_siblings not declared.
-
+   int total_siblings;
+   int adjacent_siblings[2];
+   
    switch (parentKeyTotal) {
 
-             case 1: // 2-node
-                     int sibling_index =  i ^= 1; // toggle i, which is 0 or 1 
+             case 1: {// 2-node
+                     int sibling_index =  index ^= 1; // toggle index, which is 0 or 1 
 
-                     if (parent->children[ sibling_index  ]->isTwoNode()) {
+                     if (parent->children[ sibling_index ]->isTwoNode()) {
 
+                          // if parent is also a 2-node, then merge the children into the parent, making a 4-node
                           parent->fuseWithChildren();  
 
                      } else { // its sibling is a 3- or 4-node and its parent is a 2-node
 
+                         // do a rotation involving parent and sibling.
+                         //... 
 
                      }
+             
                      break;
+             }
            
              case 2: // 3-node
 
-                     if (i == 1) {
+                     if (index == 1) {
 
                         total_siblings = 2; 
                      
-                        adjacent_siblings[0] =  i - 1;
-                        adjacent_siblings[1] =  i + 1;
+                        adjacent_siblings[0] =  index - 1;
+                        adjacent_siblings[1] =  index + 1;
                         
                      } else {
 
@@ -734,15 +741,15 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
                      break;
 
              case 3: // 4-node
-                     if (i == 0 || i == 3) {
+                     if (index == 0 || index == 3) {
 
-                        adjacent_siblings[0] = (i == 0) ? 0 : 2;
+                        adjacent_siblings[0] = (index == 0) ? 0 : 2;
 
                      } else {
                         
                         total_siblings = 2; 
-                        adjacent_siblings[0] = i - 1;
-                        adjacent_siblings[1] = i + 1;
+                        adjacent_siblings[0] = index - 1;
+                        adjacent_siblings[1] = index + 1;
 
                      }
                      break;
@@ -759,7 +766,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
  * 1. Absorbs its children's keys as its own. 
  * 2. Makes its grandchildren its children and deletes its former, now orphaned child nodes.
  */
-template<typename K> inline void Tree234<K>::Node234::fuseWithChildren()
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWithChildren()
 {
   // move key of 2-node 
   keys[1] = keys[0];
