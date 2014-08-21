@@ -577,7 +577,7 @@ template<typename K> bool Tree234<K>::remove(K key)
  * fuse together the two, an item from parent, and an item from the sibling two node, forming a 4-node and shifting the children
  * appropriately. For an examples, see slide 52 of www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  * 
- * It is explained and illustrated at http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf
+ * It is also explained well and illustrated with examples at http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf
  * pp 64-66
  *
  * It is illustrated and further explained at http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
@@ -682,13 +682,19 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
  * preconditions: node is 2-node.
  * output: node is converted into either a 3- or a 4-node.
  *
- * Follow pages 51-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
- *  1. The parent is a 2-node.
- *  2. The parent is a 3-node.
- *  3. The parent is a 4-node.
+ * Code follows pages 51-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ * and pages 64-66 of http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf
+ *
+ * Case 1: If an adjacent sibling -- there are at most two --  has 2 or 3 items, "steal" item from sibling by
+ * rotating items and shifting children. For an example, see slide 51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ *         
+ * Case 2: If each adjacent sibling has only one item (and parent is a 3- or 4-node), we take its sole item together with an item from parent and fuse them
+ * into the 2-node, making a 4-node. If the parent is also a 2-node (this only happens in the case of the root), we fuse the three together into a 4-node.
+ * We shift the children as needed.
+ *
  */
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node) 
-{
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  //<-- do we know which child of the parent the node is? Can we pass that
+{                                                                                             // info to help us here?  
    Node234 *convertedNode;
    Node234 *parent = node->getParent();
    
@@ -710,38 +716,6 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
    int sibling;  // total possible silbing count is the same as parent->totalItems 
 
-   book isParent_TwoNode = parent->isTwoNode();
-
-   if (isParent_TwoNode) {
-
-      //....
-   } else if (...if-tests stuff below) { ...
-
-   // Now, we determine the siblings to check.
-   // If i is the right-most child
-   if (i == parent->totalItems + 1) { 
-
-       adjacent_silbings[0] = i - 1; // the left child is the only possible adjacent sibling to check 
-      
-   }  else if (i == 1) { // We need to check both parent->children[0] and parent->children[2].
-
-       if (!parent->isTwoNode()) {
-
-           adjacent_siblings[0] = 0;
-           adjacent_siblings[1] = 2;
-           adjacent_siblings++;
-
-       } else {
-
-       } 
-       
-   } else if (i == 2 && parent->isFourNode() ) { // We check only sibling parent->children[3] 
-     
-   } else { // i == 0 and we only need to check parent->children[1]
-
-       adjacent_siblings[0] = 1;
-   }
-      // If first sibling a two node
 
    return convertedNode;
            
