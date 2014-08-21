@@ -621,6 +621,9 @@ template<typename K> bool Tree234<K>::remove(K key)
  * Case 2: If each adjacent sibling (there may only be one but can be two) has only one item (and parent is a 3- or 4-node),
  * fuse together the two, an item from parent, and an item from the sibling two node, forming a 4-node and shifting the children
  * appropriately. For an examples, see slide 52 of www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ * 
+ * It is explained and illustrated at http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf
+ * pp 64-66
  *
  * It is illustrated and further explained at http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
  * and http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
