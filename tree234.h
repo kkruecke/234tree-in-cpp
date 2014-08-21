@@ -686,6 +686,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    Node234 *convertedNode;
    Node234 *parent = node->getParent();
    int parentKeyTotal = parent->TotalItems;
+   int parentChildrenTotal = parentKeyTotal + 1;
    
    // First, we find i such that parent->children[i] == node by comparing node's key to its parent's keys.
    int i = 0;
@@ -708,9 +709,25 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    switch (parentKeyTotal) {
 
              case 1: // 2-node
+                     total_siblings = 1; 
+                     
+                     adjacent_siblings[0] =  i ^= 1; // toggle i, which is 0 or 1 
                      break;
            
              case 2: // 3-node
+                     if (i == 1) {
+
+                        total_siblings = 2; 
+                     
+                        adjacent_siblings[0] =  i - 1;
+                        adjacent_siblings[1] =  i + 1;
+                        
+                     } else {
+
+                        total_siblings = 1; 
+                        adjacent_siblings[0] =  (i + 1) %  parentChildrenTotal; // toggle i, which is 0 or 1 
+
+                     } 
                      break;
 
              case 3: // 4-node
