@@ -680,32 +680,46 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
  * fuse them into the 2-node, making a 4-node. If the parent is also a 2-node (this only happens in the case of the root), we fuse the three together
  * into a 4-node. Shift the children as required.
  * 
- * Question: Do we know which child index node is? Can we pass that value to help us here?
  */
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  
 {                                                                         
    Node234 *convertedNode;
    Node234 *parent = node->getParent();
+   int parentKeyTotal = parent->TotalItems;
    
-   // First, we need the index i where node == parent->children[i].
+   // First, we find i such that parent->children[i] == node by comparing node's key to its parent's keys.
    int i = 0;
-   for (; i < parent->totalItems; ++i) {
+   for (; i < parentKeyTotal; ++i) {
+       /*
+        * If we never break, then node->keys[0] is greater than the last key of its parent which means
+        * node == parent->children[totalItems].
+        *
+        */
 
-       if (node->keys[0] < parent->keys[i] ) {
-            break;
+       if (node->keys[0] < parent->keys[i] ) { 
+            break;                               
        } 
    }
 
-   int adjacent_siblings[2]; 
+   int adjacent_siblings[2]; // at most there are two 
 
-   int total_siblings = 1;// 1 or 2.
+   int total_siblings; // Will be 1 or 2.
 
-   int sibling;  // total possible sib;ing count is the same as parent->totalItems 
-   
-   // ... not yet implemented
+   switch (parentKeyTotal) {
 
-   return convertedNode;
+             case 1: // 2-node
+                     break;
            
+             case 2: // 3-node
+                     break;
+
+             case 3: // 4-node
+                     break;
+           
+   }
+
+   
+   return convertedNode;
 }
 /*
  * precondition: node is a 2-node.
