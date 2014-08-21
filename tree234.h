@@ -78,6 +78,7 @@ template<typename K> class Tree234 {
        int insertItem(K key);
        void connectChild(int childNum, Node234 *child);
 
+       /* merges the 2-node children of a parent 2-node into the parent, making a 4-node. */
        void fuseWithChildren(); 
 
        // stubs: parameters undecided now
