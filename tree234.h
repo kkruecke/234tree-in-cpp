@@ -725,12 +725,18 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
                      } else {
 
                         total_siblings = 1; 
-                        adjacent_siblings[0] =  (i + 1) %  parentChildrenTotal; // toggle i, which is 0 or 1 
+                        adjacent_siblings[0] = 1;  
 
                      } 
                      break;
 
              case 3: // 4-node
+                     if (i == 0 || i == 3) {
+
+                        total_siblings = 1; 
+                        adjacent_siblings[0] = 
+                     }
+
                      break;
            
    }
