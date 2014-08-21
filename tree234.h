@@ -77,6 +77,10 @@ template<typename K> class Tree234 {
 
        int insertItem(K key);
        void connectChild(int childNum, Node234 *child);
+
+       // stubs: parameters unknown now
+       void make3Node();
+       void make4Node();
     };  
 
     typedef Node234 Node;
@@ -223,22 +227,6 @@ template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const
    return !children[0] ? true : false;
 }
 
-/*
- * Is appears to duplicate the functionality searchNode, which takes one more reference parameter 
-template<typename K> inline bool Tree234<K>::Node234::find(K key, int& index)
-{ 
-   for(int i = 0; i < totalItems; i++) {
-   
-       if (keys[i] == key) {
-
-            index = i;
-            return true;
-       }
-   }
-   return false;
-}
-*/
-
 template<typename K> inline Tree234<K>::~Tree234()
 {
    DestroyTree(root);
@@ -305,40 +293,7 @@ template<typename K> bool Tree234<K>::search(K key)
         return DoSearch(key, location, index);
     }
 }   
-/*
- * Precondition: current is initially root.
- * Descends tree getting next child until key found or leaf encountered.
- * If key is found, additionally returns node and index within node
- */
-/*
-template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& index)
-{
-  Node234 *current = root;
-  Node234 *next;
 
-  if (root == nullptr) {
-
-     return false;
-  }
-
-  while(true) {
- 
-      if (current->find(key, index)) { // TODO: replace find with searchNode
-
-          location = current;
-          return true; 
-
-      } else if (current->isLeaf()) {
-
-          return false;
-
-      } else {
-
-          current = getNextChild(current, key);	// TO: After replacing find() with cha
-      }  
-    }
-}
-*/
 template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& index)
 {
   Node234 *current = root;
