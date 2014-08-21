@@ -702,19 +702,25 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
        } 
    }
 
-   int adjacent_siblings[2]; // at most there are two 
-
-   int total_siblings; // Will be 1 or 2.
+   // adjacent_siblings and total_siblings not declared.
 
    switch (parentKeyTotal) {
 
              case 1: // 2-node
-                     total_siblings = 1; 
-                     
-                     adjacent_siblings[0] =  i ^= 1; // toggle i, which is 0 or 1 
+                     int sibling_index =  i ^= 1; // toggle i, which is 0 or 1 
+
+                     if (parent->children[ sibling_index  ]->isTwoNode()) {
+
+                          parent->fuseWithChildren();  
+
+                     } else { // its sibling is a 3- or 4-node and its parent is a 2-node
+
+
+                     }
                      break;
            
              case 2: // 3-node
+
                      if (i == 1) {
 
                         total_siblings = 2; 
@@ -724,7 +730,6 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
                         
                      } else {
 
-                        total_siblings = 1; 
                         adjacent_siblings[0] = 1;  
 
                      } 
@@ -733,10 +738,15 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
              case 3: // 4-node
                      if (i == 0 || i == 3) {
 
-                        total_siblings = 1; 
-                        adjacent_siblings[0] = 
-                     }
+                        adjacent_siblings[0] = (i == 0) ? 0 : 2;
 
+                     } else {
+                        
+                        total_siblings = 2; 
+                        adjacent_siblings[0] = i - 1;
+                        adjacent_siblings[1] = i + 1;
+
+                     }
                      break;
            
    }
@@ -750,6 +760,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
  * pseudo code: 
  * 1. Absorbs its children's keys as its own. 
  * 2. Makes its grandchildren its children and deletes its former, now orphaned child nodes.
+ */
 template<typename K> inline void Tree234<K>::Node234::fuseWithChildren()
 {
   // move key of 2-node 
@@ -775,7 +786,6 @@ template<typename K> inline void Tree234<K>::Node234::fuseWithChildren()
   delete leftOrphan;
   delete rightOrphan;
 
-  return;   // TODO: Should I return node, so the code knows from where to continue? 
+  return const_cast<Node234 *>(this);  
 }
-*/ 
 #endif
