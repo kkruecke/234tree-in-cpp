@@ -597,11 +597,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
        } else if (current != root && current->isTwoNode()) {
 
             // convert 2-node into 3- or 4-node 
-            // Q: Do I need to reset current?
             current = convertTwoNode(current); 
       
-            // resume search with parent?
-            //current = current->getParent(); 
            
        } else if (current->searchNode(key, found_index, next)) { // ...search for item in current node. 
 
