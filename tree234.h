@@ -707,8 +707,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    int left_adjacent = index - 1;
    int right_adjacent = index  + 1;
 
-   // Determine is any adjacent sibling has a 3- or 4-nodes, giving preference to the right adjacent sibling first.
- 
+   // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
+    
    if (right_adjacent < parentChildrenTotal && !parent->children[left_adjacent]->isTwoNode()) {
 
 	has3or4NodeSibling = true;
@@ -719,11 +719,11 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 	has3or4NodeSibling = true;
         sibling_index = left_adjacent;  
 
-   } else if (right_adjacent < parentChildrenTotal) { // There were no 3- or 4-nodes...
+   } else if (right_adjacent < parentChildrenTotal) { // There were no 3- or 4-nodes siblings. Therefore they are 2-node(s).
 
         sibling_index = right_adjacent; 
 
-   } else {
+   } else { 
 
         sibling_index = left_adjacent; 
    }
@@ -732,13 +732,25 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    // Check if is parent 2-node (or 3- or 4-node).
    bool parentIsTwoNode = parent->isTwoNode();
 
-   if (parentIsTwoNode && has3or4NodeSibling == false) {
+   if (parentIsTwoNode) {
 
-	convertedNode = parent->fuseWithChildren();
+        if (has3or4NodeSibling == false) {
 
-   } else if ...
+		convertedNode = parent->fuseWithChildren();
+
+        } else {
+
+        }
+
+   } else { // parent is 3- or 4-node.
+       
+        if (has3or4NodeSibling == false) {
+
+        } else {
+
+        } 
+   }
    
-
    return convertedNode;
 }
 /*
