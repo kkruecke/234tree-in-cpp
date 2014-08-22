@@ -63,6 +63,7 @@ template<typename K> class Tree234 {
        Node234 *children[4];
 
        Node234 *getParent();
+       int getChildCount() const;
        bool isFull() const;
        bool isLeaf() const; 
        bool isTwoNode() const;
@@ -77,6 +78,9 @@ template<typename K> class Tree234 {
 
        int insertItem(K key);
        void connectChild(int childNum, Node234 *child);
+
+       void removeItem(int index);
+       Node234 *disconnectChild(int childNum); 
 
        /* merges the 2-node children of a parent 2-node into the parent, making a 4-node. */
        Node234 *fuseWithChildren(); 
@@ -101,6 +105,11 @@ template<typename K> class Tree234 {
 };
 
 template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3; 
+
+template<typename K> inline bool Tree234<K>::Node234::getChildCount() const
+{
+   return totalItems + 1; 
+}
 
 template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
 {
@@ -147,16 +156,17 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
   return hit;
 }
 
-template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(1)
+template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(1), parent(nullptr)
 { 
    keys[0] = small; 
 
    for (int i = 0; i < MAX_KEYS + 1; i++) {		
        children[i] = nullptr;
-    }
+   }
+
 }
 
-template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : totalItems(2)
+template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : totalItems(2), parent(nullptr)
 { 
    keys[0] = small; 
    keys[1] = middle; 
@@ -166,7 +176,7 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : t
     }
 }
 
-template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large) : totalItems(3)
+template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large) : totalItems(3), parent(nullptr)
 { 
    keys[0] = small; 
    keys[1] = middle; 
@@ -184,6 +194,18 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childNum
 {
   children[childNum] = child;
   child->parent = this;
+}
+/*
+ * precondition: childNum is within the range for the type of node.
+ * returns child pointer.
+ */
+template<typename K> inline Node234 *Tree234<K>::Node234::disconnectChild(int childNum)
+{
+  // shift children left to overwrite removed child i.
+  for(int i = childNum; i < getChildCount(); ++i) {
+
+          children[i] = children[i + 1]; // shift to left
+  } 
 }
 /*
  * preconditions: node is not full, i.e., not a four node (full), and key is not already in node. It may or may not be a leaf node.
@@ -213,6 +235,17 @@ template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pa
     keys[0] = key;  
   ++totalItems; // increase the total item count
     return 0;
+}
+
+template<typename K> inline K Tree234<K>::Node234::removeItem(int index)
+{
+  // shift keys left to overwrite removed key index.
+  for(int i = index; i < totalItems; ++i) {
+
+          keys[i] = keys[i + 1]; // shift to left
+  } 
+
+  totalItems--;
 }
 
 template<typename K> inline  bool Tree234<K>::Node234::isFull() const 
