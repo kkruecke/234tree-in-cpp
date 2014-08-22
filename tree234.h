@@ -38,6 +38,10 @@ template<typename K> class Tree234 {
     void DestroyTree(Node234 *root);
 
     bool remove(K key, Node234 *location) throw(std::logic_error);
+
+    // stubs: parameters undecided now
+    void leftRotation();
+    void rightRotation();
  
   public:
 
@@ -85,9 +89,6 @@ template<typename K> class Tree234 {
        /* merges the 2-node children of a parent 2-node into the parent, making a 4-node. */
        Node234 *fuseWithChildren(); 
 
-       // stubs: parameters undecided now
-       void leftRotation();
-       void rightRotation();
     };  
 
     typedef Node234 Node;
