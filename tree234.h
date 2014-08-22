@@ -82,8 +82,8 @@ template<typename K> class Tree234 {
        Node234 *fuseWithChildren(); 
 
        // stubs: parameters undecided now
-       void make3Node();
-       void make4Node();
+       void leftRotation();
+       void rightRotation();
     };  
 
     typedef Node234 Node;
@@ -691,9 +691,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    int index = 0;
    for (; index < parentKeyTotal; ++index) {
        /*
-        * If we never break, then node->keys[0] is greater than the last key of its parent which means
+        * If we never break, then node->keys[0] is greater than the last key of its parent, which means
         * node == parent->children[totalItems].
-        *
         */
 
        if (node->keys[0] < parent->keys[index] ) { 
@@ -707,8 +706,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
    int left_adjacent = index - 1;
    int right_adjacent = index  + 1;
- 
-   // We give preference to finding the right adjacent sibling first.
+
+   // Determine is any adjacent sibling has a 3- or 4-nodes, giving preference to the right adjacent sibling first.
  
    if (right_adjacent < parentChildrenTotal && !parent->children[left_adjacent]->isTwoNode()) {
 
@@ -729,8 +728,11 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
         sibling_index = left_adjacent; 
    }
 
+   // Determine, base on whether the parent is a two node, whether to rotate or fuse. 
    // Check if is parent 2-node (or 3- or 4-node).
-   if (parent->isTwoNode() && has3or4NodeSibling == false) {
+   bool parentIsTwoNode = parentIsTwoNode;
+
+   if (parentIsTwoNode && has3or4NodeSibling == false) {
 
 	convertedNode = parent->fuseWithChildren();
 
@@ -773,7 +775,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
 
   return const_cast<Node234 *>(this);  
 }
-
+/*
 template<typename K> bool Tree234<K>::checkSiblings(Node234 *node, int& index_of_nonTwoNode)
 {
    // adjacent_siblings and total_siblings not declared.
@@ -844,4 +846,5 @@ template<typename K> bool Tree234<K>::checkSiblings(Node234 *node, int& index_of
            
    }
 }
+*/
 #endif
