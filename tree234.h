@@ -683,10 +683,11 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 {                                                                         
    Node234 *convertedNode;
    Node234 *parent = node->getParent();
+
    int parentKeyTotal = parent->totalItems;
    int parentChildrenTotal = parentKeyTotal + 1;
    
-   // First, we find i such that parent->children[i] == node, by comparing node's key to its parent's keys.
+   // First, we find index such that parent->children[index] == node, by comparing node's key to its parent's keys.
    int index = 0;
    for (; index < parentKeyTotal; ++index) {
        /*
@@ -701,79 +702,41 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    }
 
    // adjacent_siblings and total_siblings not declared.
-   int total_siblings;
-   int adjacent_siblings[2];
+   bool has3or4NodeSibling = false;
+   int sibling_index;
 
-   
-   switch (parentKeyTotal) {
+   int left_adjacent = index - 1;
+   int right_adjacent = index  + 1;
+ 
+   // We give preference to finding the right adjacent sibling first.
+ 
+   if (right_adjacent < parentChildrenTotal && !parent->children[left_adjacent]->isTwoNode()) {
 
-             case 1: {// 2-node
-                     int sibling_index =  index ^= 1; // toggle index, which is 0 or 1 
+	has3or4NodeSibling = true;
+        sibling_index = right_adjacent  
 
-                     if (parent->children[ sibling_index ]->isTwoNode()) {
+   } else if (!has3or4NodeSibling && left_adjacent >= 0 && !parent->children[right_adjacent]->isTwoNode()) {
 
-                          // if parent is also a 2-node, then merge the children into the parent, making a 4-node
-                          parent->fuseWithChildren();  
+	has3or4NodeSibling = true;
+        sibling_index = left_adjacent;  
 
-                     } else { // its sibling is a 3- or 4-node and its parent is a 2-node
+   } else if (right_adjacent < parentChildrenTotal) { // There were no 3- or 4-nodes...
 
-                         // do a rotation involving parent and sibling.
-                         //... 
+        sibling_index = right_adjacent; 
 
-                     }
-             
-                     break;
-             }
-           
-             case 2: // 3-node
+   } else {
 
-                     if (index == 1) {
-
-                        total_siblings = 2; 
-                     
-                        adjacent_siblings[0] =  index - 1;
-                        adjacent_siblings[1] =  index + 1;
-                        
-                     } else {
-
-                        adjacent_siblings[0] = 1;  
-
-                     } 
-                     // Examine siblings for 3- or 4-node
-                     //...
-
-                     for (auto i = 0; i < total_siblings; ++i) {
-
-                          if (!parent->children[ adjacent_siblings[i] ]->isTwoNode()) {
-
-                               break;
-                          }  
-                     }
-
-                     if (i == total_siblings) { // all adjacent siblings are 2-nodes
-
-                     }  
-                     break;
-
-             case 3: // 4-node
-                     if (index == 0 || index == 3) {
-
-                        adjacent_siblings[0] = (index == 0) ? 0 : 2;
-
-                     } else {
-                        
-                        total_siblings = 2; 
-                        adjacent_siblings[0] = index - 1;
-                        adjacent_siblings[1] = index + 1;
-
-                     }
-                     // Examine siblings for 3- or 4-node
-                     //...
-                     break;
-           
+        sibling_index = left_adjacent; 
    }
 
+   // Check if is parent 2-node (or 3- or 4-node).
+   if (parent->isTwoNode() && has3or4NodeSibling == false) {
+
+	convertedNode = parent->fuseWithChildren();
+
+   } else if ...
    
+
    return convertedNode;
 }
 /*
