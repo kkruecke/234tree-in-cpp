@@ -728,7 +728,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
         sibling_index = left_adjacent; 
    }
 
-   // Determine, base on whether the parent is a two node, whether to rotate or fuse. 
+   // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
    // Check if is parent 2-node (or 3- or 4-node).
    bool parentIsTwoNode = parentIsTwoNode;
 
