@@ -742,7 +742,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    return convertedNode;
 }
 /*
- * precondition: node is a 2-node.
+ * precondition: node is a 2-node. Its children are both 2-nodes.
  * output: 4-node. 
  * pseudo code: 
  * 1. Absorbs its children's keys as its own. 
