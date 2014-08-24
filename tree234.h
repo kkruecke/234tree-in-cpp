@@ -710,7 +710,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
  *         
  * Case 2: If each adjacent sibling has only one item (and parent is a 3- or 4-node), we take its sole item together with an item from parent and
  * fuse them into the 2-node, making a 4-node. If the parent is also a 2-node (this only happens in the case of the root), we fuse the three together
- * into a 4-node. Shift the children as required.
+ * into a 4-node. In either case, we shift the children as required.
  * 
  */
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  
@@ -763,22 +763,24 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    }
 
    // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
-   // Check if is parent 2-node (or 3- or 4-node).
+   // Check if its parent 2-node (or 3- or 4-node).
    bool parentIsTwoNode = parent->isTwoNode();
 
-   if (parentIsTwoNode) {
+   if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-node
 
-        if (has3or4NodeSibling == false) {
+         if (parentIsTwoNode) { // as is parent
 
 		convertedNode = parent->fuseWithChildren();
 
-        } else {
+        } else { // parent is 3- or 4-node 
 
+               fuseSiblings(node, sibling_index);
         }
 
-   } else { // parent is 3- or 4-node.
+   } else { // has a 3- or 4-node.
        
-        if (has3or4NodeSibling == false) {
+        if (parentIsTwoNode) { // 
+
 
         } else {
 
