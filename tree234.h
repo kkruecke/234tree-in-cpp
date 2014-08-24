@@ -37,10 +37,11 @@ template<typename K> class Tree234 {
 
     void DestroyTree(Node234 *root);
 
-    bool remove(K key, Node234 *location) throw(std::logic_error);
+    bool remove(K key, Node234 *location) throw(std::logic_error);, 
 
-    // stubs: parameters undecided now
-    void leftRotation();
+    // precondparent is a 3- or 4-nodethe parent node of a 2-node, whose child index is node2_id, and which has only 2-node siblings. sibling_id is the index of the one
+    // to be fused with node2_id, together
+    void fuseSiblings(Node234 *parent, Node234 *node2_id, int sibling_id);
     void rightRotation();
  
   public:
@@ -789,6 +790,11 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    
    return convertedNode;
 }
+fuseSiblings(Node234 *node2, int childId)
+{
+ node2->getParent()
+
+}
 /*
  * precondition: node is a 2-node. Its children are both 2-nodes.
  * output: 4-node. 
@@ -823,6 +829,20 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
 
   return const_cast<Node234 *>(this);  
 }
+
+// preconditions: parent is a 3- or 4-node. node2_id and subling_id are indecies of two of its children.
+// output: node2_id is made into 4-node by merging in its 2-node, siblings_id, together with one item stolen from the
+// parent.
+template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, Node234 *node2_id, int sibling_id)
+{
+  if (node2_id < sibling_id) {
+
+  } else {
+
+  }
+  
+}
+
 /*
 template<typename K> bool Tree234<K>::checkSiblings(Node234 *node, int& index_of_nonTwoNode)
 {
