@@ -835,12 +835,29 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
 // parent.
 template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, Node234 *node2_id, int sibling_id)
 {
-  if (node2_id < sibling_id) {
+  Node234 *psibling = parent->children[sibling_id];
+  Node234 *p2node = parent->children[node2_id];
 
-  } else {
+  if (node2_id > sibling_id) { // sibling is to the left 
 
+      p2node->keys[2] = p2node->keys[0];                       // shift its sole key right two positions
+      p2node->keys[1] = parent->keys[parent->totalItems - 1];  // Make the parent's right-most key its middle value.
+      p2node->keys[0] = psibling->keys[0];                     // Make the sibling's sole key as its first value.
+
+      parent->totalItems--;   // reduce the node type of parent 
+      p2node->totalItems+=2;   // promote the 2-node to a 4-node 
+
+      p2node->children[3] = p2node->children[1];  // shift children right two positions
+      p2node->children[2] = p2node->children[0];
+      psibling->children[1] = psibling->children[1]; // insert sibling's children as the first two children.
+      psibling->children[0] = psibling->children[0];
+
+  } else { // sibling is to the right
+
+        // . . .
   }
-  
+
+  delete psibling; // delete orphaned sibling
 }
 
 /*
