@@ -841,7 +841,11 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, Node234 *nod
   if (node2_id > sibling_id) { // sibling is to the left 
 
       p2node->keys[2] = p2node->keys[0];                       // shift its sole key right two positions
-      p2node->keys[1] = parent->keys[parent->totalItems - 1];  // Make the parent's right-most key its middle value.
+      p2node->keys[1] = parent->keys[parent->totalItems - 1];  // Bug??? Make the parent's right-most key its middle value.
+                                                               // Q: What if p2node is not the right-most child? What if it is only the second child and
+                                                               // its sibling is the first child? 
+                                                               // A: Calculate the parent->keys[index_of_key_2_remove] using node2_id
+ 
       p2node->keys[0] = psibling->keys[0];                     // Make the sibling's sole key as its first value.
 
       parent->totalItems--;   // reduce the node type of parent 
@@ -854,7 +858,20 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, Node234 *nod
 
   } else { // sibling is to the right
 
-        // . . .
+ 
+      p2node->keys[2] = psibling->keys[0];                       // shift its sole key right two positions
+      p2node->keys[1] = parent->keys[parent->totalItems - 1];  // Make the parent's right-most key its middle value.
+      // p2node->keys[0] remains unchanged
+
+      parent->totalItems--;   // reduce the node type of parent 
+      p2node->totalItems+=2;   // promote the 2-node to a 4-node 
+
+      p2node->children[3] = p2node->children[1];  // shift children right two positions
+      p2node->children[2] = p2node->children[0];
+      psibling->children[1] = psibling->children[1]; // insert sibling's children as the first two children.
+      psibling->children[0] = psibling->children[0];
+
+       // . . .
   }
 
   delete psibling; // delete orphaned sibling
