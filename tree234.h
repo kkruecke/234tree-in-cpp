@@ -845,10 +845,10 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, Node234 *nod
       // Calculate parent keys index based on parent's totalItems and child index node2_id, of node to be converted to 4-node
       int index;
 
-      p2node->keys[1] = parent->keys[index];  // Bug??? Make the parent's right-most key its middle value.
-                                                               // Q: What if p2node is not the right-most child? What if it is only the second child and
-                                                               // its sibling is the first child? 
-                                                               // A: Calculate the parent->keys[index_of_key_2_remove] using node2_id
+      // ... to do ...
+      p2node->keys[1] = parent->keys[index];  // Q: What if p2node is not the right-most child? What if it is only the second child and
+                                              // its sibling is the first child? 
+                                              // A: Calculate the parent->keys[index_of_key_2_remove] using node2_id and parent->totalItems
       
       // TODO: Shift parent keys, if needed, too
       // ...
@@ -856,7 +856,7 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, Node234 *nod
       p2node->keys[0] = psibling->keys[0];                     // Make the sibling's sole key as its first value.
 
       parent->totalItems--;   // reduce the node type of parent 
-      p2node->totalItems+=2;   // promote the 2-node to a 4-node 
+      p2node->totalItems += 2;   // promote the 2-node to a 4-node 
 
       p2node->children[3] = p2node->children[1];  // shift children right two positions
       p2node->children[2] = p2node->children[0];
@@ -866,9 +866,9 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, Node234 *nod
   } else { // sibling is to the right
 
  
-      p2node->keys[2] = psibling->keys[0];                       // shift its sole key right two positions
+      p2node->keys[2] = psibling->keys[0];                     // Q: shift its sole key right two positions--OR LEFT??
       p2node->keys[1] = parent->keys[parent->totalItems - 1];  // Make the parent's right-most key its middle value.
-      // p2node->keys[0] remains unchanged
+      // p2node->keys[0] remains unchanged. Q: Is this correct??
 
       parent->totalItems--;   // reduce the node type of parent 
       p2node->totalItems+=2;   // promote the 2-node to a 4-node 
