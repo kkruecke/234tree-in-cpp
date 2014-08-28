@@ -727,7 +727,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    for (; index < parentKeyTotal; ++index) {
        /*
         * If we never break, then node->keys[0] is greater than the last key of its parent, which means
-        * node == parent->children[totalItems].
+        * node == parent->children[totalItems]. 
         */
 
        if (node->keys[0] < parent->keys[index] ) { 
@@ -754,8 +754,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 	has3or4NodeSibling = true;
         sibling_index = left_adjacent;  
 
-   } else if (right_adjacent < parentChildrenTotal) { // There were no 3- or 4-nodes siblings. Therefore they are 2-node(s).
-
+   } else if (right_adjacent < parentChildrenTotal) { // There were no 3- or 4-nodes siblings. Therefore the all siblings 
+                                                      // are 2-node(s).
         sibling_index = right_adjacent; 
 
    } else { 
@@ -829,10 +829,19 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
 
   return const_cast<Node234 *>(this);  
 }
-
-// preconditions: parent is a 3- or 4-node. node2_id and subling_id are indecies of two of its children.
-// output: node2_id is made into 4-node by merging in its 2-node, siblings_id, together with one item stolen from the
-// parent.
+/*
+ * Preconditions: parent is a 3- or 4-node. node2_id is its index of the 2-node to convert into a 3- or 4-node, and sibling_id is its child index
+ * of the adjacent sibling.
+ * Output: node2_id is made into 4-node by adding to the 2-node its sibling's key together with one item "stolen" from the parent. The 
+ * Pseudo code: 
+ *
+ * We must first determine the index of the parent value, the value in parent->keys[], to steal.
+ * Q: Does the calling code know this value? 
+ * A: I think it can be determined from the for-loop at the top of convertTwoNode(). 
+ * Then we must also...adjust the parent's totalItems, its children pointers. We have the 2-node adopt the sibling's children. After this we must delete the 
+ * orphaned sibling that is now empty. 
+ * 
+ */
 template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, Node234 *node2_id, int sibling_id)
 {
   Node234 *psibling = parent->children[sibling_id];
