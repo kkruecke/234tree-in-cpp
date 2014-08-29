@@ -2,6 +2,7 @@
 #define	TREE234_H
 
 #include <utility>
+#include <algorithm>
 #include <stdexcept>
 
 // fwd declarations
@@ -722,18 +723,19 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    int parentKeyTotal = parent->totalItems;
    int parentChildrenTotal = parentKeyTotal + 1;
    
-   // First, we find index such that parent->children[index] == node, by comparing node's key to its parent's keys.
-   int index = 0;
-   for (; index < parentKeyTotal; ++index) {
+   // First, we find the index of the 2-node such that parent->children[node2_index] == node, by comparing node's key to its parent's keys.
+   int node2_index = 0;
+   for (; node2_index < parentKeyTotal; ++node2_index) {
        /*
         * If we never break, then node->keys[0] is greater than the last key of its parent, which means
         * node == parent->children[totalItems]. 
         */
 
-       if (node->keys[0] < parent->keys[index] ) { 
+       if (node->keys[0] < parent->keys[node2_index] ) { 
             break;                               
        } 
    }
+
 
    // adjacent_siblings and total_siblings not declared.
    bool has3or4NodeSibling = false;
@@ -775,7 +777,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
         } else { // parent is 3- or 4-node 
 
-               fuseSiblings(node, sibling_index);
+               fuseSiblings(parent, node2_index, sibling_index);
         }
 
    } else { // has a 3- or 4-node.
@@ -842,10 +844,13 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
  * orphaned sibling that is now empty. 
  * 
  */
-template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, Node234 *node2_id, int sibling_id)
+template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id, int sibling_id)
 {
   Node234 *psibling = parent->children[sibling_id];
   Node234 *p2node = parent->children[node2_id];
+
+  // get the index of the parent's key value that will be merge into the 2-node
+  int parent_key_index = std::min(node2_id, sibling_id); 
 
   if (node2_id > sibling_id) { // sibling is to the left 
 
