@@ -854,35 +854,61 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id
   if (node2_id > sibling_id) { // sibling is to the left: right rotation 
 
       // Add keys to 2-node and set its totalItems
-      p2node->keys[2] = p2node->keys[0];                       // shift its sole key right two positions
+      p2node->keys[2] = p2node->keys[0];       // shift the 2-node's sole key right two positions
 
-      p2node->keys[1] = parent->keys[parent_key_index];  
+      p2node->keys[1] = parent->keys[parent_key_index];  // bring down parent key
 
       p2node->keys[0] = parent->keys[sibling_index];  
 
       p2node->totalItems = 3;
       
       /* Adjust parent:
-        TODO: 1. Shift parent keys
-              2. Reduce its totalItems
-              3. Reset its children pointers 
+         1. Shift parent keys
+         2. Reduce its totalItems
+         3. Reset parent's children pointers <-- TODO
        */
 
       parent->removeItem(parent_key_index); //this will #1 and #2.
 
       psibling = parent->disconnectChild(silbing_index);
 
-      // set the children of convert 2-node, now 4-node
-
+      // set the children of converted 2-node, now 4-node
+      // call connectChild() ?
       p2node->children[3] = p2node->children[1];  // shift children right two positions
       p2node->children[2] = p2node->children[0];
+
       psibling->children[1] = psibling->children[1]; // insert sibling's children as the first two children.
       psibling->children[0] = psibling->children[0];
 
   } else { // sibling is to the right: left rotation
 
-      // . . .  
+      // p2node->key2;0] is in the correct position
+      p2node->keys[1] = parent->keys[parent_key_index];  
 
+      p2node->keys[2] = parent->keys[sibling_index];  
+ 
+      p2node->totalItems = 3;
+      
+      /* Adjust parent:
+         1. Shift parent keys
+         2. Reduce its totalItems
+         3. Reset its children pointers <-- TODO 
+       */
+
+      parent->removeItem(parent_key_index); //this will #1 and #2.
+
+      psibling = parent->disconnectChild(silbing_index);
+
+      // set the children of converted 2-node, now 4-node
+      // call connectChild() ?
+
+      p2node->children[3] = psibling->children[1];  // shift children right two positions
+      p2node->children[2] = psilbing->children[0];
+
+      /* These two are already correct
+      psibling->children[1] 
+      psibling->children[0] 
+       */ 
   }
 
   delete psibling; // delete orphaned sibling
