@@ -32,11 +32,11 @@ template<typename K> class Tree234 {
 
     void split(Node234 *node);
 
-    Node234 *convertTwoNode(Node234 *node);
-
     void DestroyTree(Node234 *root);
 
     bool remove(K key, Node234 *location) throw(std::logic_error);, 
+
+    Node234 *convertTwoNode(Node234 *node);
 
     void fuseSiblings(Node234 *parent, Node234 *node2_id, int sibling_id);
 
@@ -637,7 +637,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
             // convert 2-node into 3- or 4-node 
             current = convertTwoNode(current); 
       
-           
        } else if (current->searchNode(key, found_index, next)) { // ...search for item in current node. 
 
               found_node = current;
@@ -659,7 +658,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     // Search for the in-order successor 
     Node234 *successor;
     
-    // If key found in an internal node, descend 
+    // If key found in an internal node, search for in-order successor. 
     if (!found_node->isLeaf()) {
     
          // Find the smallest item in the subtree of next largest items.
@@ -768,7 +767,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    // Check if its parent 2-node (or 3- or 4-node).
    bool parentIsTwoNode = parent->isTwoNode();
 
-   if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-node
+   if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-nodes
 
          if (parentIsTwoNode) { // as is parent
 
@@ -779,7 +778,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
              fuseSiblings(parent, node2_index, sibling_index);
         }
 
-   } else { // has a 3- or 4-node sibling.
+   } else { // it has a 3- or 4-node sibling.
        
         doRotation(parent, node2_index, sibling_index):
    }
