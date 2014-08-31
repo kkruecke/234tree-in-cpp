@@ -791,6 +791,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
         } else {
 
+             doRotation(...):
         } 
    }
    
@@ -841,6 +842,78 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
  * Output: node2_id is converted into 4-node by adding its sibling's sole key together with a key "stolen" from the parent. The 
  * siblings children are adopted by the former 2- now 4-node.
  */
+template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, int sibling_id)
+{
+  Node234 *psibling;
+
+  Node234 *p2node = parent->children[node2_id];
+
+  // First get the index of the parent's key value to be stolen and added into the 2-node
+  int parent_key_index = std::min(node2_id, sibling_id); 
+
+  if (node2_id > sibling_id) { // sibling is to the left: do a right rotation
+
+      // Add both the sibling's and parent's key to 2-node
+
+      // 1. shift the 2-node's sole key right two positions
+      p2node->keys[2] = p2node->keys[0];      
+
+      p2node->keys[1] = parent->keys[parent_key_index];  // 2. bring down parent key
+
+      p2node->keys[0] = parent->keys[sibling_index]; // 3. insert adjacent siblings sole key`:w
+ 
+      p2node->totalItems = 3; // 4. increase total items
+      
+      /* Adjust parent:
+         1. Remove parent key (and shift its remaining keys and reduce its totalItems)
+         2. Reset parent's children pointers <-- TODO
+       */
+
+      parent->removeItem(parent_key_index); //this will #1 and #2.
+
+      psibling = parent->disconnectChild(silbing_index); //TODO: check that this does #3.
+
+      // Add sibling's children to the former 2-node, now 4-node
+      // call connectChild() ?
+      p2node->children[3] = p2node->children[1];  // but first shift its children right two positions
+      p2node->children[2] = p2node->children[0];
+
+      // TODO: change to disconnectChildren?
+      psibling->children[1] = psibling->children[1]; // insert sibling's children as the first two children.
+      psibling->children[0] = psibling->children[0];
+
+  } else { // sibling is to the right: do a left rotation
+      // CHANGE CODE BELOW
+      // p2node->key[0] is already in the correct position
+      p2node->keys[1] = parent->keys[parent_key_index];  // 1. bring down parent key
+
+      p2node->keys[2] = parent->keys[sibling_index];  // 2. add sibling key 
+ 
+      p2node->totalItems = 3; // 3. make it a 4-node
+      
+      /* Next adjust parent:
+         1. Remove parent key (and shift its remaining keys and reduce its totalItems)
+         2. Reset its children pointers 
+       */
+
+      parent->removeItem(parent_key_index); // this will #1 and #2.
+
+      psibling = parent->disconnectChild(silbing_index); //TODO: check that this does #3
+
+      // TODO: change to disconnectChildren?
+      p2node->children[3] = psibling->children[1];  // Add sibling's children
+      p2node->children[2] = psilbing->children[0];  /* Note: The current children are already correct */ 
+  }
+
+}
+
+
+/*
+ * Preconditions: parent is a 3- or 4-node. node2_id is the child index of the 2-node to convert (into a 3- or 4-node),
+ * and sibling_id is the child index of the adjacent sibling.
+ * Output: node2_id is converted into 4-node by adding its sibling's sole key together with a key "stolen" from the parent. The 
+ * siblings children are adopted by the former 2- now 4-node.
+ */
 template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id, int sibling_id)
 {
   Node234 *psibling;
@@ -850,7 +923,7 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id
   // First get the index of the parent's key value to be stolen and added into the 2-node
   int parent_key_index = std::min(node2_id, sibling_id); 
 
-  if (node2_id > sibling_id) { // sibling is to the left: do a right rotation 
+  if (node2_id > sibling_id) { // sibling is to the left: 
 
       // Add both the sibling's and parent's key to 2-node
 
@@ -880,7 +953,7 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id
       psibling->children[1] = psibling->children[1]; // insert sibling's children as the first two children.
       psibling->children[0] = psibling->children[0];
 
-  } else { // sibling is to the right: do a left rotation
+  } else { // sibling is to the right: 
 
       // p2node->key[0] is already in the correct position
       p2node->keys[1] = parent->keys[parent_key_index];  // 1. bring down parent key
