@@ -40,10 +40,9 @@ template<typename K> class Tree234 {
 
     bool remove(K key, Node234 *location) throw(std::logic_error);, 
 
-    // precondparent is a 3- or 4-nodethe parent node of a 2-node, whose child index is node2_id, and which has only 2-node siblings. sibling_id is the index of the one
-    // to be fused with node2_id, together
     void fuseSiblings(Node234 *parent, Node234 *node2_id, int sibling_id);
-    void rightRotation();
+
+    void doRotation(Node234 *parent, int node2_id, int sibling_id)
  
   public:
 
@@ -574,7 +573,8 @@ template<typename K> void Tree234<K>::split(Node234 *node)
  * Deletion based on pages 50-53 of: 
  *
  * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
- * 
+ * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the deleted key
+ * with its in-order successor.
  */
 template<typename K> bool Tree234<K>::remove(K key)
 {
