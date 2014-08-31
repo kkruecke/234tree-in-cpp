@@ -204,11 +204,15 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childNum
  */
 template<typename K> inline Node234 *Tree234<K>::Node234::disconnectChild(int childNum)
 {
+  Node234 *node = children[childNum];
+
   // shift children left to overwrite removed child i.
   for(int i = childNum; i < getChildCount(); ++i) {
 
-          children[i] = children[i + 1]; // shift to left
+       children[i] = children[i + 1]; // shift remaining children to the left
   } 
+
+  return node;
 }
 /*
  * preconditions: node is not full, i.e., not a four node (full), and key is not already in node. It may or may not be a leaf node.
@@ -860,9 +864,8 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id
       p2node->totalItems = 3; // 4. increase total items
       
       /* Adjust parent:
-         1. Shift parent keys
-         2. Reduce its totalItems
-         3. Reset parent's children pointers <-- TODO
+         1. Remove parent key (and shift its remaining keys and reduce its totalItems)
+         2. Reset parent's children pointers <-- TODO
        */
 
       parent->removeItem(parent_key_index); //this will #1 and #2.
@@ -877,7 +880,7 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id
       psibling->children[1] = psibling->children[1]; // insert sibling's children as the first two children.
       psibling->children[0] = psibling->children[0];
 
-  } else { // sibling is to the right: left rotation
+  } else { // sibling is to the right: do a left rotation
 
       // p2node->key[0] is already in the correct position
       p2node->keys[1] = parent->keys[parent_key_index];  // 1. bring down parent key
@@ -886,10 +889,9 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id
  
       p2node->totalItems = 3; // 3. make it a 4-node
       
-      /* Adjust parent:
-         1. Shift parent keys
-         2. Reduce its totalItems
-         3. Reset its children pointers 
+      /* Next adjust parent:
+         1. Remove parent key (and shift its remaining keys and reduce its totalItems)
+         2. Reset its children pointers 
        */
 
       parent->removeItem(parent_key_index); // this will #1 and #2.
