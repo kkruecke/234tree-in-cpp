@@ -687,7 +687,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
 
 	    found_node->keys[found_index] = successor->keys[0]; 
 
-    } else if (found_index + 1 <= found_node->totalItems) { // Debug sanity test
+    } else if (found_index + 1 <= found_node->totalItems) { 
 
             // The in-order successor is in same leaf node..
             found_node->keys[found_index] = successor->keys[found_index + 1];
@@ -698,6 +698,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     }
 
     // TODO: Now delete item from leaf -- shifting keys[] and reseting totalItems
+    // . . .
         
     return true;  
 }
@@ -877,7 +878,6 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
 
 }
 
-
 /*
  * Preconditions: parent is a 3- or 4-node. node2_id is the child index of the 2-node to convert (into a 3- or 4-node),
  * and sibling_id is the child index of the adjacent sibling.
@@ -947,77 +947,4 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id
 
   delete psibling; // delete orphaned sibling
 }
-
-/*
-template<typename K> bool Tree234<K>::checkSiblings(Node234 *node, int& index_of_nonTwoNode)
-{
-   // adjacent_siblings and total_siblings not declared.
-   int total_siblings;
-   int adjacent_siblings[2];
-
-   
-   switch (parentKeyTotal) {
-
-       case 1: {// 2-node
-               int sibling_index =  index ^= 1; // toggle index, which is 0 or 1 
-
-               if (parent->children[ sibling_index ]->isTwoNode()) {
-
-               } else { // its sibling is a 3- or 4-node and its parent is a 2-node
-
-
-               }
-       
-               break;
-       }
-     
-       case 2: // 3-node
-
-               if (index == 1) {
-
-                  total_siblings = 2; 
-               
-                  adjacent_siblings[0] =  index - 1;
-                  adjacent_siblings[1] =  index + 1;
-                  
-               } else {
-
-                  adjacent_siblings[0] = 1;  
-
-               } 
-               // Examine siblings for 3- or 4-node
-               //...
-
-               for (auto i = 0; i < total_siblings; ++i) {
-
-                    if (!parent->children[ adjacent_siblings[i] ]->isTwoNode()) {
-
-                         break;
-                    }  
-               }
-
-               if (i == total_siblings) { // all adjacent siblings are 2-nodes
-
-               }  
-               break;
-
-       case 3: // 4-node
-               if (index == 0 || index == 3) {
-
-                  adjacent_siblings[0] = (index == 0) ? 0 : 2;
-
-               } else {
-                  
-                  total_siblings = 2; 
-                  adjacent_siblings[0] = index - 1;
-                  adjacent_siblings[1] = index + 1;
-
-               }
-               // Examine siblings for 3- or 4-node
-               //...
-               break;
-           
-   }
-}
-*/
 #endif
