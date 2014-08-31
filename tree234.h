@@ -821,9 +821,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
   return const_cast<Node234 *>(this);  
 }
 /*
- *
- *
- *
+ * preconditions: sibling_id is a 3- or 4-node of parent. node2_id is the node to convert from a 2-node to a 3-node
  *
  */
 template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, int sibling_id)
@@ -832,7 +830,17 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
 
   Node234 *p2node = parent->children[node2_id];
 
-  // First get the index of the parent's key value to be stolen and added into the 2-node
+  /* 
+   * First get the index of the parent's key value such that either 
+   *
+   *   parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
+   *     
+   *  or  
+   *
+   *    parent->children[sibling_id]->keys[0]  <  parent->keys[index] <  parent->children[node2_index]->keys[0]
+   *
+   */
+
   int parent_key_index = std::min(node2_id, sibling_id); 
 
   if (parentIsTwoNode) { // Q: Do we need to test if parent is a two node? How does this affect the code?
@@ -842,25 +850,27 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
 
   }
 
-  if (node2_id > sibling_id) { // sibling is to the left: do a right rotation
-
+  if (node2_id > sibling_id) { /* sibling is to the left and therefore
+                                *
+                                * parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
+                                *
+                                */ 
       // Add both the sibling's and parent's key to 2-node
 
-      // 1. shift the 2-node's sole key right two positions
-      p2node->keys[2] = p2node->keys[0];      
+      // 1. shift the 2-node's sole key right one position
+      p2node->keys[1] = p2node->keys[0];      
 
-      p2node->keys[1] = parent->keys[parent_key_index];  // 2. bring down parent key
+      p2node->keys[0] = parent->keys[parent_key_index];  // 2. bring down parent key
 
-      p2node->keys[0] = parent->keys[sibling_index]; // 3. insert adjacent siblings sole key`:w
- 
-      p2node->totalItems = 3; // 4. increase total items
+      p2node->totalItems = 2; // 3. increase total items
       
       /* Adjust parent:
-         1. Remove parent key (and shift its remaining keys and reduce its totalItems)
-         2. Reset parent's children pointers <-- TODO
+           Remove parent key (and shift its remaining keys and reduce its totalItems)
        */
 
-      parent->removeItem(parent_key_index); //this will #1 and #2.
+      parent->removeItem(parent_key_index); 
+
+      // The code below was borrowed and has not been modified for this method....
 
       psibling = parent->disconnectChild(silbing_index); //TODO: check that this does #3.
 
