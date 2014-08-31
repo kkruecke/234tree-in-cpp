@@ -30,8 +30,6 @@ template<typename K> class Tree234 {
 
     template<typename Functor> void DoTraverse(Functor f, Node234 *root);
 
-    //--Node234 *getNextChild(Node234 *current, K key);
-
     void split(Node234 *node);
 
     Node234 *convertTwoNode(Node234 *node);
@@ -732,7 +730,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    for (; node2_index < parentKeyTotal; ++node2_index) {
        /*
         * If we never break, then node->keys[0] is greater than the last key of its parent, which means
-        * node == parent->children[totalItems]. 
+        * node == parent->children[totalItems], the last child. 
         */
 
        if (node->keys[0] < parent->keys[node2_index] ) { 
@@ -740,15 +738,12 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
        } 
    }
 
-
-   // adjacent_siblings and total_siblings not declared.
+   // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
    bool has3or4NodeSibling = false;
    int sibling_index;
 
    int left_adjacent = index - 1;
    int right_adjacent = index  + 1;
-
-   // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
     
    if (right_adjacent < parentChildrenTotal && !parent->children[left_adjacent]->isTwoNode()) {
 
@@ -777,30 +772,19 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
          if (parentIsTwoNode) { // as is parent
 
-		convertedNode = parent->fuseWithChildren();
+	     convertedNode = parent->fuseWithChildren();
 
         } else { // parent is 3- or 4-node 
 
-               fuseSiblings(parent, node2_index, sibling_index);
+             fuseSiblings(parent, node2_index, sibling_index);
         }
 
-   } else { // has a 3- or 4-node.
+   } else { // has a 3- or 4-node sibling.
        
-        if (parentIsTwoNode) { // 
-
-
-        } else {
-
-             doRotation(...):
-        } 
+        doRotation(parent, node2_index, sibling_index):
    }
    
    return convertedNode;
-}
-fuseSiblings(Node234 *node2, int childId)
-{
- node2->getParent()
-
 }
 /*
  * precondition: node is a 2-node. Its children are both 2-nodes.
@@ -837,10 +821,10 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
   return const_cast<Node234 *>(this);  
 }
 /*
- * Preconditions: parent is a 3- or 4-node. node2_id is the child index of the 2-node to convert (into a 3- or 4-node),
- * and sibling_id is the child index of the adjacent sibling.
- * Output: node2_id is converted into 4-node by adding its sibling's sole key together with a key "stolen" from the parent. The 
- * siblings children are adopted by the former 2- now 4-node.
+ *
+ *
+ *
+ *
  */
 template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, int sibling_id)
 {
@@ -850,6 +834,13 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
 
   // First get the index of the parent's key value to be stolen and added into the 2-node
   int parent_key_index = std::min(node2_id, sibling_id); 
+
+  if (parentIsTwoNode) { // Q: Do we need to test if parent is a two node? How does this affect the code?
+
+
+  } else {
+
+  }
 
   if (node2_id > sibling_id) { // sibling is to the left: do a right rotation
 
