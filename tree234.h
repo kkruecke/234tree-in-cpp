@@ -243,6 +243,8 @@ template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pa
 
 template<typename K> inline K Tree234<K>::Node234::removeItem(int index)
 {
+  Key key = keys[index]; 
+
   // shift keys left to overwrite removed key index.
   for(int i = index; i < totalItems; ++i) {
 
@@ -250,6 +252,8 @@ template<typename K> inline K Tree234<K>::Node234::removeItem(int index)
   } 
 
   totalItems--;
+
+  return key;
 }
 
 template<typename K> inline  bool Tree234<K>::Node234::isFull() const 
@@ -848,7 +852,7 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
                                 * parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
                                 *
                                 */ 
-      // Add both the parent's key to 2-node, making 3-node
+      // Add the parent's key to 2-node, making 3-node
 
       // 1. But first shift the 2-node's sole key right one position
       p2node->keys[1] = p2node->keys[0];      
@@ -858,16 +862,18 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
       p2node->totalItems = 2; // 3. increase total items
       
       // get largest key in sibling.
-      Key rightMost_silbing_key = psibling->keys[psibling->totalItems];
+      Key rightMost_silbing_key = psibling->removeItem(psibling->totalItems);
 
-      parent->removeItem(parent_key_index); 
+      K rightMost_sibling_key = parent->removeItem(parent_key_index); 
 
       parent->insertItem(rightMost_sibling_key);
 
-      psibling = parent->disconnectChild(silbing_index); 
+      pchild_of_sibling = psibling->disconnectChild(???); 
+
 
       // TODO: Add sibling's right-most chlild to former 2-node, now 3-node
       // ....note yet done
+      p2node->insertChild(?, pchild_of_sibling);
 
   } else { // sibling is to the right: do a left rotation
 
