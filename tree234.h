@@ -871,7 +871,7 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
                                 *
                                 * parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
                                 *
-                                */ 
+blin                                */ 
       // Add the parent's key to 2-node, making 3-node
 
       // 1. But first shift the 2-node's sole key right one position
@@ -884,21 +884,36 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
       int total_sibling_keys = psibling->totalItems;
       
       // get largest key in sibling, the right-most.
-      K rightMost_sibling_key = psibling->removeItem(total_sibling_keys - 1);
+      K largest_sibling_key = psibling->removeItem(total_sibling_keys - 1);
 
-      parent->keys[parent_key_index] = rightMost_sibling_key;  // overwrite parent item
+      parent->keys[parent_key_index] = largest_sibling_key;  // overwrite parent item
 
       Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // disconnect right-most child of sibling
 
       p2node->insertChild(0, pchild_of_sibling); // add it as its first child
 
   } else { // sibling is to the right: do a left rotation
+  		/* sibling is to the right and therefore
+   		 *
+		 *   parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
+   		 */ 
+      // Add the parent's key to 2-node, making 3-node
 
+      p2node->keys[1] = parent->keys[parent_key_index];  // 1. bring down parent key
 
+      p2node->totalItems = 2; // 2. increase total items
 
+      int total_sibling_keys = psibling->totalItems;
+      
+      // get smallest key in sibling, the first.
+      K smallest_sibling_key = psibling->removeItem(0);
 
+      parent->keys[parent_key_index] = smallest_sibling_key;  // overwrite parent item
+
+      Node234 *pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling
+
+      p2node->insertChild(totalItems, pchild_of_sibling); // add it as its last child?
   }
-
 }
 
 /*
