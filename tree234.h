@@ -212,6 +212,23 @@ template<typename K> inline Node234 *Tree234<K>::Node234::disconnectChild(int ch
   return node;
 }
 /*
+ * precondition: 
+ * returns child pointer.
+ */
+template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, Tree234<K>::Node234 *pChild)
+{
+  // shift children right in order to insert pChild
+  for(int i = childNum; i < getChildCount(); ++i) { 
+
+       children[i + 1] = children[i]; // shift remaining children to the right
+  } 
+
+  children[childNum] = pChild;
+
+  return;
+}
+
+/*
  * preconditions: node is not full, i.e., not a four node (full), and key is not already in node. It may or may not be a leaf node.
  * shifts keys in node as needed so that key will be inserted in sorted position
  */
@@ -864,15 +881,13 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
       int total_sibling_keys = psibling->getTotalItems();
       
       // get largest key in sibling, the right-most.
-      Key rightMost_silbing_key = psibling->removeItem(psibling->totalItems); //ok
+      Key rightMost_silbing_key = psibling->removeItem(total_sibling_keys - 1);
 
-      K rightMost_sibling_key = parent->keys[parent_key_index]; // overwrite parent item
-
-      parent->keys[parent_key_index] = rightMost_sibling_key;
+      parent->keys[parent_key_index] = rightMost_sibling_key;  // overwrite parent item
 
       pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // disconnect right-most child of sibling
 
-      p2node->insertChild(pnode->totalItems, pchild_of_sibling); // add third child
+      p2node->insertChild(0, pchild_of_sibling); // add it as its first child
 
   } else { // sibling is to the right: do a left rotation
 
@@ -907,7 +922,7 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id
 
       p2node->keys[1] = parent->keys[parent_key_index];  // 2. bring down parent key
 
-      p2node->keys[0] = parent->keys[sibling_index]; // 3. insert adjacent siblings sole key`:w
+      p2node->keys[0] = parent->keys[sibling_index]; // 3. insert adjacent siblings sole key
  
       p2node->totalItems = 3; // 4. increase total items
       
