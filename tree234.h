@@ -34,13 +34,13 @@ template<typename K> class Tree234 {
 
     void DestroyTree(Node234 *root);
 
-    bool remove(K key, Node234 *location) throw(std::logic_error);, 
+    bool remove(K key, Node234 *location) throw(std::logic_error); 
 
     Node234 *convertTwoNode(Node234 *node);
 
-    void fuseSiblings(Node234 *parent, Node234 *node2_id, int sibling_id);
-
-    void doRotation(Node234 *parent, int node2_id, int sibling_id)
+    void fuseSiblings(Node234 *parent, int node2_id, int sibling_id);
+    
+    void doRotation(Node234 *parent, int node2_id, int sibling_id);
  
   public:
 
@@ -81,9 +81,11 @@ template<typename K> class Tree234 {
 
        int insertItem(K key);
        void connectChild(int childNum, Node234 *child);
+       
 
-       void removeItem(int index);
+       K removeItem(int index);
        Node234 *disconnectChild(int childNum); 
+       void insertChild(int childNum, Node234 *pChild);
 
        /* merges the 2-node children of a parent 2-node into the parent, making a 4-node. */
        Node234 *fuseWithChildren(); 
@@ -106,7 +108,7 @@ template<typename K> class Tree234 {
 
 template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3; 
 
-template<typename K> inline bool Tree234<K>::Node234::getChildCount() const
+template<typename K> inline int Tree234<K>::Node234::getChildCount() const
 {
    return totalItems + 1; 
 }
@@ -199,7 +201,7 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childNum
  * precondition: childNum is within the range for the type of node.
  * returns child pointer.
  */
-template<typename K> inline Node234 *Tree234<K>::Node234::disconnectChild(int childNum)
+template<typename K> inline typename Tree234<K>::Node234 *Tree234<K>::Node234::disconnectChild(int childNum)
 {
   Node234 *node = children[childNum];
 
@@ -260,7 +262,7 @@ template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pa
 
 template<typename K> inline K Tree234<K>::Node234::removeItem(int index)
 {
-  Key key = keys[index]; 
+  K key = keys[index]; 
 
   // shift keys left to overwrite removed key index.
   for(int i = index; i < totalItems; ++i) {
@@ -748,6 +750,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    
    // First, we find the index of the 2-node such that parent->children[node2_index] == node, by comparing node's key to its parent's keys.
    int node2_index = 0;
+   
    for (; node2_index < parentKeyTotal; ++node2_index) {
        /*
         * If we never break, then node->keys[0] is greater than the last key of its parent, which means
@@ -763,13 +766,13 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    bool has3or4NodeSibling = false;
    int sibling_index;
 
-   int left_adjacent = index - 1;
-   int right_adjacent = index  + 1;
+   int left_adjacent = node2_index - 1;
+   int right_adjacent = node2_index  + 1;
     
    if (right_adjacent < parentChildrenTotal && !parent->children[left_adjacent]->isTwoNode()) {
 
 	has3or4NodeSibling = true;
-        sibling_index = right_adjacent  
+        sibling_index = right_adjacent;  
 
    } else if (!has3or4NodeSibling && left_adjacent >= 0 && !parent->children[right_adjacent]->isTwoNode()) {
 
@@ -802,7 +805,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
    } else { // it has a 3- or 4-node sibling.
        
-        doRotation(parent, node2_index, sibling_index):
+        doRotation(parent, node2_index, sibling_index);
    }
    
    return convertedNode;
@@ -847,7 +850,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
  */
 template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, int sibling_id)
 {
-  Node234 *psibling = parent->children[silbing_id];
+  Node234 *psibling = parent->children[sibling_id];
 
   Node234 *p2node = parent->children[node2_id];
 
@@ -878,14 +881,14 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
 
       p2node->totalItems = 2; // 3. increase total items
 
-      int total_sibling_keys = psibling->getTotalItems();
+      int total_sibling_keys = psibling->totalItems;
       
       // get largest key in sibling, the right-most.
-      Key rightMost_silbing_key = psibling->removeItem(total_sibling_keys - 1);
+      K rightMost_sibling_key = psibling->removeItem(total_sibling_keys - 1);
 
       parent->keys[parent_key_index] = rightMost_sibling_key;  // overwrite parent item
 
-      pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // disconnect right-most child of sibling
+      Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // disconnect right-most child of sibling
 
       p2node->insertChild(0, pchild_of_sibling); // add it as its first child
 
@@ -904,16 +907,16 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
  * Output: node2_id is converted into 4-node by adding its sibling's sole key together with a key "stolen" from the parent. The 
  * siblings children are adopted by the former 2- now 4-node.
  */
-template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id, int sibling_id)
+template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_index, int sibling_index)
 {
   Node234 *psibling;
 
-  Node234 *p2node = parent->children[node2_id];
+  Node234 *p2node = parent->children[node2_index];
 
   // First get the index of the parent's key value to be stolen and added into the 2-node
-  int parent_key_index = std::min(node2_id, sibling_id); 
+  int parent_key_index = std::min(node2_index, sibling_index); 
 
-  if (node2_id > sibling_id) { // sibling is to the left: 
+  if (node2_index > sibling_index) { // sibling is to the left: 
 
       // Add both the sibling's and parent's key to 2-node
 
@@ -933,7 +936,7 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id
 
       parent->removeItem(parent_key_index); //this will #1 and #2.
 
-      psibling = parent->disconnectChild(silbing_index); //TODO: check that this does #3.
+      psibling = parent->disconnectChild(sibling_index); //TODO: check that this does #3.
 
       // Add sibling's children to the former 2-node, now 4-node
       // call connectChild() ?
@@ -959,10 +962,10 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_id
 
       parent->removeItem(parent_key_index); // this will #1 and #2.
 
-      psibling = parent->disconnectChild(silbing_index); //TODO: check that this does #3
+      psibling = parent->disconnectChild(sibling_index); //TODO: check that this does #3
 
       p2node->children[3] = psibling->children[1];  // Add sibling's children
-      p2node->children[2] = psilbing->children[0];  /* Note: The current children are already correct */ 
+      p2node->children[2] = psibling->children[0];  /* Note: The current children are already correct */ 
   }
 
   delete psibling; // delete orphaned sibling
