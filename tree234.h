@@ -860,20 +860,19 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
       p2node->keys[0] = parent->keys[parent_key_index];  // 2. bring down parent key
 
       p2node->totalItems = 2; // 3. increase total items
+
+      int total_sibling_keys = psibling->getTotalItems();
       
-      // get largest key in sibling.
-      Key rightMost_silbing_key = psibling->removeItem(psibling->totalItems);
+      // get largest key in sibling, the right-most.
+      Key rightMost_silbing_key = psibling->removeItem(psibling->totalItems); //ok
 
-      K rightMost_sibling_key = parent->removeItem(parent_key_index); 
+      K rightMost_sibling_key = parent->keys[parent_key_index]; // overwrite parent item
 
-      parent->insertItem(rightMost_sibling_key);
+      parent->keys[parent_key_index] = rightMost_sibling_key;
 
-      pchild_of_sibling = psibling->disconnectChild(???); 
+      pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // disconnect right-most child of sibling
 
-
-      // TODO: Add sibling's right-most chlild to former 2-node, now 3-node
-      // ....note yet done
-      p2node->insertChild(?, pchild_of_sibling);
+      p2node->insertChild(pnode->totalItems, pchild_of_sibling); // add third child
 
   } else { // sibling is to the right: do a left rotation
 
