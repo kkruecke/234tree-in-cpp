@@ -608,7 +608,17 @@ template<typename K> bool Tree234<K>::remove(K key)
          int index;
          Node234 *next = nullptr; 
          bool found = root->searchNode(key, index, next);
-         // if found...if 4-node, make to 3-node; if 3-node make 2-node; if 2-node empty tree. 
+
+         /*
+          * Remove key from root, when root is a leaf
+          */
+         root->removeItem(index);
+
+         if (root->totalItems == 0) {
+
+             delete root;
+             root  = nullptr;
+         }  
          return true;
 
    } else {
