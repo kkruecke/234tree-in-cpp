@@ -777,12 +777,12 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    int left_adjacent = node2_index - 1;
    int right_adjacent = node2_index  + 1;
     
-   if (right_adjacent < parentChildrenTotal && !parent->children[left_adjacent]->isTwoNode()) {
+   if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
 
 	has3or4NodeSibling = true;
         sibling_index = right_adjacent;  
 
-   } else if (!has3or4NodeSibling && left_adjacent >= 0 && !parent->children[right_adjacent]->isTwoNode()) {
+   } else if (!has3or4NodeSibling && left_adjacent >= 0 && !parent->children[left_adjacent]->isTwoNode()) {
 
 	has3or4NodeSibling = true;
         sibling_index = left_adjacent;  
