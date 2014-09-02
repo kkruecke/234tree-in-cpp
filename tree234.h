@@ -201,12 +201,12 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childNum
  * precondition: childNum is within the range for the type of node.
  * returns child pointer.
  */
-template<typename K> inline typename Tree234<K>::Node234 *Tree234<K>::Node234::disconnectChild(int childNum)
+template<typename K> inline typename Tree234<K>::Node234 *Tree234<K>::Node234::disconnectChild(int childIndex)
 {
-  Node234 *node = children[childNum];
+  Node234 *node = children[childIndex];
 
   // shift children left to overwrite removed child i.
-  for(int i = childNum; i < getChildCount(); ++i) {
+  for(int i = childIndex; i < getChildCount(); ++i) {
 
        children[i] = children[i + 1]; // shift remaining children to the left
   } 
@@ -264,10 +264,10 @@ template<typename K> inline K Tree234<K>::Node234::removeItem(int index)
 {
   K key = keys[index]; 
 
-  // shift keys left to overwrite removed key index.
+  // shift keys to the right of index to the left
   for(int i = index; i < totalItems; ++i) {
 
-          keys[i] = keys[i + 1]; // shift to left
+          keys[i] = keys[i + 1]; 
   } 
 
   totalItems--;
@@ -679,49 +679,57 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     }
 
     // Search for the in-order successor 
-    Node234 *successor;
+    Node234 *in_order_successor;
     
-    // If key found in an internal node, search for in-order successor. 
+    // If key found in an internal node, search for in-order in_order_successor. 
     if (!found_node->isLeaf()) {
     
-         // Find the smallest item in the subtree of next largest items.
-         successor = found_node->children[found_index + 1]; 
+         // The next largest item with be the smallest item, the left most left node, of the subtree rooted at found_node->children[found_index + 1].
+         in_order_successor = found_node->children[found_index + 1]; 
         
-         // search for in-order successor, again converting two nodes as we descend
-         while (successor != nullptr) {
+         // Traverse down the left-most branch until we find a leaf. 
+         while (!in_order_successor->isLeaf()) {
         
-             if (successor->isTwoNode()) {
+             if (in_order_successor->isTwoNode()) {
         
-                successor = convertTwoNode(successor);
+                in_order_successor = convertTwoNode(in_order_successor);
              } 
         
-             // always take smallest child
-             successor = successor->children[0];
+             // Traverse the left subtree root at the smallest child
+             in_order_successor = in_order_successor->children[0];
          }
 
-    } else { // else we are at a leaf and the successor is in the same node.
+    } else { // else we are at a leaf and the in_order_successor is in the same node.
 
-         successor = found_node;
+         in_order_successor = found_node;
     }
     
-    // We are now at leaf. 
-    // overwrite node key to be deleted with in-order successor. 
-    if (found_node != successor) { // If found_node is internal node
+    // We are now at the in-order successor leaf node. 
 
-	    found_node->keys[found_index] = successor->keys[0]; 
+    // Remove in-order successor from leaf and overwrite deleted key with it. 
+    // First, check if found_node is internal node
+    if (found_node != in_order_successor) {
+
+	    found_node->keys[found_index] = in_order_successor->removeItem(0);
 
     } else if (found_index + 1 <= found_node->totalItems) { 
 
-            // The in-order successor is in same leaf node..
-            found_node->keys[found_index] = successor->keys[found_index + 1];
+            // The in-order in_order_successor is in same leaf node, so simply remove it, which will also overwrite its position by
+            // shifting all keys to right of it one position left.
+            in_order_successor->removeItem(found_index);
+
+            /* 
+             * Note: The line above is equivalent to doing:
+             * found_node->keys[found_index] = in_order_successor->keys[found_index + 1];
+             * found_node->totalItems--;  
+             */
 
     } else { // found_index + 1 > found_node->totalItems
 
          throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K?::remove(Key k, Node234 *current"));
     }
 
-    // TODO: Now delete item from leaf -- shifting keys[] and reseting totalItems
-    // . . .
+    // Note, we did not need to disconnect a child because we are at a leaf node.
         
     return true;  
 }
@@ -735,9 +743,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
  * Case 1: If an adjacent sibling--there are at most two--has 2 or 3 items, "steal" an item from the sibling by
  * rotating items and shifting children. See slide 51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *         
- * Case 2: If each adjacent sibling has only one item (and parent is a 3- or 4-node), we take its sole item together with an item from parent and
- * fuse them into the 2-node, making a 4-node. If the parent is also a 2-node (this only happens in the case of the root), we fuse the three together
- * into a 4-node. In either case, we shift the children as required.
+ * Case 2: If each adjacent sibling has only one item (and parent is a 3- or 4-node), we take its sole item together with an item from
+ * parent and fuse them into the 2-node, making a 4-node. If the parent is also a 2-node (this only happens in the case of the root),
+ * we fuse the three together into a 4-node. In either case, we shift the children as required.
  * 
  */
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  
@@ -754,7 +762,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    for (; node2_index < parentKeyTotal; ++node2_index) {
        /*
         * If we never break, then node->keys[0] is greater than the last key of its parent, which means
-        * node == parent->children[totalItems], the last child. 
+        * node == parent->children[parent->totalItems], the last child. 
         */
 
        if (node->keys[0] < parent->keys[node2_index] ) { 
@@ -867,53 +875,51 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
 
   int parent_key_index = std::min(node2_id, sibling_id); 
 
-  if (node2_id > sibling_id) { /* sibling is to the left and therefore
-                                *
-                                * parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
-                                *
-                                */ 
-      // Add the parent's key to 2-node, making 3-node
+  if (node2_id > sibling_id) { /* If sibling is to the left, then
+          *
+          * parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
+          *
+          */ 
+
+      // Add the parent's key to 2-node, making it a 3-node
 
       // 1. But first shift the 2-node's sole key right one position
       p2node->keys[1] = p2node->keys[0];      
 
-      p2node->keys[0] = parent->keys[parent_key_index];  // 2. bring down parent key
+      p2node->keys[0] = parent->keys[parent_key_index];  // 2. Now bring down parent key
 
       p2node->totalItems = 2; // 3. increase total items
 
       int total_sibling_keys = psibling->totalItems; 
       
-      Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // disconnect right-most child of sibling
+      Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // 4. disconnect right-most child of sibling
 
-      // get largest key in sibling, the right-most.
       K largest_sibling_key = psibling->removeItem(total_sibling_keys - 1);
 
-      parent->keys[parent_key_index] = largest_sibling_key;  // overwrite parent item
+      parent->keys[parent_key_index] = largest_sibling_key;  // 5. overwrite parent item with largest sibling key
 
-      p2node->insertChild(0, pchild_of_sibling); // add it as its first child
+      p2node->insertChild(0, pchild_of_sibling); // add former right-most child of sibling as its first child
 
   } else { // sibling is to the right: do a left rotation
   		/* sibling is to the right and therefore
    		 *
 		 *   parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
    		 */ 
-      // Add the parent's key to 2-node, making 3-node
 
-      p2node->keys[1] = parent->keys[parent_key_index];  // 1. bring down parent key
+      p2node->keys[1] = parent->keys[parent_key_index];  // 1. insert parent key making 2-node a 3-node
 
       p2node->totalItems = 2; // 2. increase total items
 
       int total_sibling_keys = psibling->totalItems;
       
       Node234 *pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
-                                                                 // Q: I think, since it uses totalItems, we should call it before removeItem()  
 
-      // get smallest key in sibling
+      // Remove smallest key in sibling
       K smallest_sibling_key = psibling->removeItem(0);
 
-      parent->keys[parent_key_index] = smallest_sibling_key;  // overwrite parent item
+      parent->keys[parent_key_index] = smallest_sibling_key;  // overwrite parent item with it.
 
-      p2node->insertChild(p2node->totalItems, pchild_of_sibling); // add it as its last child.
+      p2node->insertChild(p2node->totalItems, pchild_of_sibling); // add former first child of silbing as last child of our 3-node.
   }
 }
 
