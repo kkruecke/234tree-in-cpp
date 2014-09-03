@@ -829,16 +829,18 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
   keys[0] = children[0]->keys[0];    
   keys[2] = children[1]->keys[0];       
 
+  totalItems = 3;
+
   Node234 *leftOrphan = children[0]; // so we can delete them later
   Node234 *rightOrphan = children[1];
 
   // make grandchildren the children.
-  for(auto i = 0; i < MAX_KEYS + 1; i+=2) {
+  for(auto i = 0; i < totalItems; i+=2) {
 
-     Node234 *child = (i == 0) ? leftOrphan : rightOrphan;
-    
-     children[i] = child->children[0];      // <-- Does the parent pointer also needs to be set?
-     children[i + 1] = child->children[1];  // <-- Does the parent pointer also needs to be set?
+     Node234 *orphan = (i == 0) ? leftOrphan : rightOrphan;
+   
+     connectChild(i, orphan->children[0]); // connectChild() will also reset parent point of right parameter.
+     connectChild(i + 1, orphan->children[1]);
   }
 
   // delete children
