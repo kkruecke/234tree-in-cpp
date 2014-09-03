@@ -30,10 +30,11 @@ template<typename K> class Tree234 {
 
     template<typename Functor> void DoTraverse(Functor f, Node234 *root);
 
-    void split(Node234 *node);
+    void split(Node234 *node);  // called during insert to split 4-nodes
+ 
+    void DestroyTree(Node234 *root); 
 
-    void DestroyTree(Node234 *root);
-
+    // These methods are called during remove(K key
     bool remove(K key, Node234 *location) throw(std::logic_error); 
 
     Node234 *convertTwoNode(Node234 *node);
@@ -55,10 +56,10 @@ template<typename K> class Tree234 {
        Node234(K small, K middle, K large);
 
        Node234 *parent;
-       int totalItems; /* If totalItems is 1, then two node; if 2, three node; if 3, four node. */   
+       int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
        K keys[3];
 
-       /* Note:
+       /*
         * For 2-nodes, children[0] is left pointer and children[1] is right pointer.
         * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
         * And so on for 4-nodes.
@@ -70,24 +71,32 @@ template<typename K> class Tree234 {
        bool isFull() const;
        bool isLeaf() const; 
        bool isTwoNode() const;
-       bool isThreeNode() const;
-       bool isFourNode() const;
       
-       /*
-        * Returns true if key is found in node and sets index so that this->keys[index] == key
-        * Returns false if key is if not found and sets next to point to the next child to search.
+       /* searchNode(K key, int& index, Node234 *&next)
+        * Returns true if key is found in node. Sets index such that this->keys[index] == key
+        * Returns false if key is if not found, and sets next to the next in-order child.
         */
        bool searchNode(K key, int& index, Node234 *&next);
 
        int insertItem(K key);
        void connectChild(int childNum, Node234 *child);
        
-
+       /*
+        * Remove key, if found, from node and shifting remaining keys to fill its gap.
+        */  
        K removeItem(int index);
-       Node234 *disconnectChild(int childNum); 
+ 
+       /*
+        *
+        * Removes child node, shifts its children to fill the gap. Returns child pointer.
+        */  
+       Node234 *disconnectChild(int child_index); 
        void insertChild(int childNum, Node234 *pChild);
 
-       /* merges the 2-node children of a parent 2-node into the parent, making a 4-node. */
+       /* 
+        * Called during remove(K key).
+        * Merges the 2-node children of a parent 2-node into the parent, making a 4-node. 
+        */
        Node234 *fuseWithChildren(); 
 
     };  
@@ -99,11 +108,11 @@ template<typename K> class Tree234 {
 
     bool search(K key);
 
-     template<typename Functor> void traverse(Functor f);
+    template<typename Functor> void traverse(Functor f);
 
-     void insert(K key); // throw(duplicatekey) 
+    void insert(K key); 
 
-     bool remove(K key);
+    bool remove(K key);
 };
 
 template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3; 
@@ -116,16 +125,6 @@ template<typename K> inline int Tree234<K>::Node234::getChildCount() const
 template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
 {
    return (totalItems == 1) ? true : false;
-}
- 
-template<typename K> inline bool Tree234<K>::Node234::isThreeNode() const
-{
-   return (totalItems == 2) ? true : false;
-}
- 
-template<typename K> inline bool Tree234<K>::Node234::isFourNode() const
-{
-   return (totalItems == 3) ? true : false;
 }
  
 /*
@@ -157,7 +156,10 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
 
   return hit;
 }
-
+/*
+ * Node234 constructors. Note: While all children are initialize to nullptr, this is not really necessary. Instead your can simply set
+ * children[0] = nullptr, since a Node234 is a leaf if and only if children[0] == 0/
+ */
 template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(1), parent(nullptr)
 { 
    keys[0] = small; 
@@ -165,7 +167,6 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(
    for (int i = 0; i < MAX_KEYS + 1; i++) {		
        children[i] = nullptr;
    }
-
 }
 
 template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : totalItems(2), parent(nullptr)
@@ -189,16 +190,16 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
     }
 }
 /*
- * precondition: childNum is within the range for the type of node.
+ * precondition: childIndex is within the range for the type of node.
  * child is not nullptr.
  */
-template<typename K> inline void  Tree234<K>::Node234::connectChild(int childNum, Node234 *child)
+template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, Node234 *child)
 {
-  children[childNum] = child;
+  children[childIndex] = child;
   child->parent = this;
 }
 /*
- * precondition: childNum is within the range for the type of node.
+ * precondition: childIndex is within the range for the type of node.
  * returns child pointer.
  */
 template<typename K> inline typename Tree234<K>::Node234 *Tree234<K>::Node234::disconnectChild(int childIndex)
@@ -213,10 +214,7 @@ template<typename K> inline typename Tree234<K>::Node234 *Tree234<K>::Node234::d
 
   return node;
 }
-/*
- * precondition: 
- * returns child pointer.
- */
+
 template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, Tree234<K>::Node234 *pChild)
 {
   // shift children right in order to insert pChild
@@ -227,12 +225,14 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
 
   children[childNum] = pChild;
 
+  pChild->parent = this; // reset the child's parent pointer, too.
+
   return;
 }
 
 /*
- * preconditions: node is not full, i.e., not a four node (full), and key is not already in node. It may or may not be a leaf node.
- * shifts keys in node as needed so that key will be inserted in sorted position
+ * preconditions: node is not full, not a four node (full), and key is not already in node. It may or may not be a leaf node.
+ * Shifts keys in node as needed so that key will be inserted in sorted position. Returns index of inserted key.
  */
 
 template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pass index, too--maybe?
@@ -253,7 +253,7 @@ template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pa
       } 
     } 
 
-    // shifted all items, insert new item at position 0
+    // key is smaller than all keys, so insert it at position 0
 
     keys[0] = key;  
   ++totalItems; // increase the total item count
@@ -264,7 +264,7 @@ template<typename K> inline K Tree234<K>::Node234::removeItem(int index)
 {
   K key = keys[index]; 
 
-  // shift keys to the right of index to the left
+  // shift to the left all keys to the right of index to the left
   for(int i = index; i < totalItems; ++i) {
 
           keys[i] = keys[i + 1]; 
@@ -369,7 +369,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 
   while(true) {
  
-      if (current->searchNode(key, index, next)) { 
+      if (current->searchNode(key, index, next)) {  
 
           location = current;
           return true; 
@@ -384,27 +384,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
       }  
     }
 }
-/* 
- * Precondition: assumes node is not empty, not full, not a leaf
- * Returns next child (there could be up to three children)
- */
-/*
-template<typename K> inline  typename Tree234<K>::Node234 *Tree234<K>::getNextChild(Node234 *current, K key)
-{
- int i = 0;  
-  for (; i < current->totalItems; i++) {        
 
-     // Are we less?
-     if (key < current->keys[i]) {
-
-           return current->children[i];  
-     }
-  }
-
-  // we're greater, so return right-most child
-  return current->children[i];   
-}
-*/
 template<typename K> template<typename Functor> inline void Tree234<K>::traverse(Functor f)
 {     
   DoTraverse(f, root);    
@@ -460,7 +440,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
    }
 }
 /* 
- * Insertion based on this code:
+ * Insertion based on this pseudo code:
  *
  * http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  */
@@ -497,7 +477,7 @@ template<typename K> void Tree234<K>::insert(K key)
             
             if (current->searchNode(key, index, next) ) {
 
-                // return if already in tree
+                // return if key is already in tree
                 return;
             } 
 
@@ -506,7 +486,7 @@ template<typename K> void Tree234<K>::insert(K key)
        }
     }
 
-    // Make sure it is not in the leaf node, which is 2- or 3-node.
+    // Make sure key is not in the leaf node, which is 2- or 3-node.
     if (current->keys[0] == key || (current->totalItems == 2 && current->keys[1] == key)) {
 
         return;
@@ -515,7 +495,7 @@ template<typename K> void Tree234<K>::insert(K key)
     // current is now a leaf and not full (because we split all four nodes while descending).
     current->insertItem(key); 
 }
-/* split(Node234 *nod)
+/* 
  * Preconditions: node is full, a four node.
  *
  * Pseudo code
@@ -591,9 +571,10 @@ template<typename K> void Tree234<K>::split(Node234 *node)
     return;
 }
 /*
- * Deletion based on pages 50-53 of: 
+ * Deletion based on pseudo code from pages 50-53 of: 
  *
  * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ *
  * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the deleted key
  * with its in-order successor.
  */
@@ -603,7 +584,7 @@ template<typename K> bool Tree234<K>::remove(K key)
 
        return false; 
 
-   } else if (root->isLeaf()) { // <-- make this part of the general case of remove(K key, Node234 *location);
+   } else if (root->isLeaf()) { 
 
          int index;
          Node234 *next = nullptr; 
@@ -612,7 +593,7 @@ template<typename K> bool Tree234<K>::remove(K key)
          if (found) { 
 
            /*
-            * Remove key from root, when root is a leaf
+            * Remove key from root, when root is a leaf. This will also shift the in-order successor into its location.
             */
             root->removeItem(index);
 
@@ -855,9 +836,9 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
   for(auto i = 0; i < MAX_KEYS + 1; i+=2) {
 
      Node234 *child = (i == 0) ? leftOrphan : rightOrphan;
-
-     children[i] = child->children[0];       
-     children[i + 1] = child->children[1];
+    
+     children[i] = child->children[0];      // <-- Does the parent pointer also needs to be set?
+     children[i + 1] = child->children[1];  // <-- Does the parent pointer also needs to be set?
   }
 
   // delete children
@@ -867,8 +848,12 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
   return const_cast<Node234 *>(this);  
 }
 /*
- * preconditions: sibling_id is a 3- or 4-node of parent. node2_id is the node to convert from a 2-node to a 3-node
- *
+ * preconditions:
+ * 1. sibling_id is a 3- or 4-node of parent. 
+ * 2. node2_id is the node to convert from a 2-node to a 3-node
+ * Returns:
+ * Add parent key is stolen and inserted into parent->children[node2_id], making it a 3-node. A key from the sibling replaces the stolen parent key.
+ * The siblings orphaned child is adopted by the converted 2- now 3-node. 
  */
 template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, int sibling_id)
 {
@@ -908,7 +893,7 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
       
       Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // 4. disconnect right-most child of sibling
 
-      K largest_sibling_key = psibling->removeItem(total_sibling_keys - 1);
+      K largest_sibling_key = psibling->removeItem(total_sibling_keys - 1); // remove the largest, the right-most, sibling's key.
 
       parent->keys[parent_key_index] = largest_sibling_key;  // 5. overwrite parent item with largest sibling key
 
@@ -920,12 +905,11 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
 		 *   parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
    		 */ 
 
+      // pnode2->keys[0] doesn't change.
       p2node->keys[1] = parent->keys[parent_key_index];  // 1. insert parent key making 2-node a 3-node
 
       p2node->totalItems = 2; // 2. increase total items
 
-      int total_sibling_keys = psibling->totalItems;
-      
       Node234 *pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
 
       // Remove smallest key in sibling
@@ -933,15 +917,19 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
 
       parent->keys[parent_key_index] = smallest_sibling_key;  // overwrite parent item with it.
 
-      p2node->insertChild(p2node->totalItems, pchild_of_sibling); // add former first child of silbing as last child of our 3-node.
+      p2node->insertChild(p2node->totalItems, pchild_of_sibling); // add former first child of silbing as right-most child of our 3-node.
   }
 }
 
 /*
- * Preconditions: parent is a 3- or 4-node. node2_id is the child index of the 2-node to convert (into a 3- or 4-node),
- * and sibling_id is the child index of the adjacent sibling.
- * Output: node2_id is converted into 4-node by adding its sibling's sole key together with a key "stolen" from the parent. The 
- * siblings children are adopted by the former 2- now 4-node.
+ * Preconditions: 
+ * 1. parent is a 3- or 4-node. 
+ * 2. node2_id is the child index of the 2-node being converted (into a 3- or 4-node).
+ * 3. sibling_id is a 2-node.
+ *
+ * Returns: node2_id is converted into 4-node by adding sibling's sole key together with a key "stolen" from the parent. The 
+ * siblings children are adopted by the former 2- now 4-node. The parent becomes a 2-node, if it was a 3-node, or a 3-node, if it 
+ * was a 4-node.
  */
 template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_index, int sibling_index)
 {
@@ -954,54 +942,58 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_in
 
   if (node2_index > sibling_index) { // sibling is to the left: 
 
-      // Add both the sibling's and parent's key to 2-node
-
-      // 1. shift the 2-node's sole key right two positions
-      p2node->keys[2] = p2node->keys[0];      
-
-      p2node->keys[1] = parent->keys[parent_key_index];  // 2. bring down parent key
-
-      p2node->keys[0] = parent->keys[sibling_index]; // 3. insert adjacent siblings sole key
- 
-      p2node->totalItems = 3; // 4. increase total items
-      
       /* Adjust parent:
          1. Remove parent key (and shift its remaining keys and reduce its totalItems)
-         2. Reset parent's children pointers <-- TODO
+         2. Reset parent's children pointers after removing sibling.
        */
 
-      parent->removeItem(parent_key_index); //this will #1 and #2.
+      K parent_key = parent->removeItem(parent_key_index); //this will do #1
 
-      psibling = parent->disconnectChild(sibling_index); //TODO: check that this does #3.
+      psibling = parent->disconnectChild(sibling_index); // This will do #2.
 
-      // Add sibling's children to the former 2-node, now 4-node
-      // call connectChild() ?
-      p2node->children[3] = p2node->children[1];  // but first shift its children right two positions
+      // Now, add both the sibling's and parent's key to 2-node
+
+      // 1. But first shift the 2-node's sole key right two positions
+      p2node->keys[2] = p2node->keys[0];      
+
+      p2node->keys[1] = parent_key;  // 2. bring down parent key
+
+      p2node->keys[0] = psibling->keys[sibling_index]; // 3. insert adjacent sibling's sole key. BUG: This is another parent key
+ 
+      p2node->totalItems = 3; // 3. increase total items
+
+
+      // Add sibling's children to the former 2-node, now 4-node...
+      p2node->children[3] = p2node->children[1];  // ... but first shift its children right two positions
       p2node->children[2] = p2node->children[0];
 
-      psibling->children[1] = psibling->children[1]; // insert sibling's children as the first two children.
-      psibling->children[0] = psibling->children[0];
+      // Insert sibling's first two child. Note: connectChild() will also reset the parent pointer of these children to be p2node. 
+      p2node->connectChild(1, psibling->children[1]); 
+      p2node->connectChild(0, psibling->children[0]); 
 
   } else { // sibling is to the right: 
 
-      // p2node->key[0] is already in the correct position
-      p2node->keys[1] = parent->keys[parent_key_index];  // 1. bring down parent key
-
-      p2node->keys[2] = parent->keys[sibling_index];  // 2. add sibling key 
- 
-      p2node->totalItems = 3; // 3. make it a 4-node
       
       /* Next adjust parent:
          1. Remove parent key (and shift its remaining keys and reduce its totalItems)
          2. Reset its children pointers 
        */
 
-      parent->removeItem(parent_key_index); // this will #1 and #2.
+      K parent_key = parent->removeItem(parent_key_index); // this will #1
 
-      psibling = parent->disconnectChild(sibling_index); //TODO: check that this does #3
+      psibling = parent->disconnectChild(sibling_index); // this does #2
 
-      p2node->children[3] = psibling->children[1];  // Add sibling's children
-      p2node->children[2] = psibling->children[0];  /* Note: The current children are already correct */ 
+      // p2node->key[0] is already in the correct position
+      p2node->keys[1] = parent_key;  // 1. bring down parent key
+
+      p2node->keys[2] = psibling->keys[sibling_index];  // 2. add sibling key. 
+ 
+      p2node->totalItems = 3; // 3. make it a 4-node
+
+      // Insert sibling's last two child. Note: connectChild() will also reset the parent pointer of these children to be p2node. 
+
+      p2node->connectChild(3, psibling->children[1]);  // Add sibling's children
+      p2node->connectChild(2, psibling->children[0]);  
   }
 
   delete psibling; // delete orphaned sibling
