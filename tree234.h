@@ -960,7 +960,7 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_in
 
       p2node->keys[1] = parent_key;  // 2. bring down parent key
 
-      p2node->keys[0] = psibling->keys[sibling_index]; // 3. insert adjacent sibling's sole key. BUG: This is another parent key
+      p2node->keys[0] = psibling->keys[sibling_index]; // 3. insert adjacent sibling's sole key. 
  
       p2node->totalItems = 3; // 3. increase total items
 
