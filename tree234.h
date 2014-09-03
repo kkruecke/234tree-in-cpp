@@ -835,13 +835,11 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
   Node234 *rightOrphan = children[1];
 
   // make grandchildren the children.
-  for(auto i = 0; i < totalItems; i+=2) {
 
-     Node234 *orphan = (i == 0) ? leftOrphan : rightOrphan;
-   
-     connectChild(i, orphan->children[0]); // connectChild() will also reset parent pointer of right parameter.
-     connectChild(i + 1, orphan->children[1]);
-  }
+  connectChild(0, leftOrphan->children[0]); // connectChild() will also reset parent pointer of right parameter.
+  connectChild(1, leftOrphan->children[1]);
+  connectChild(2, rightOrphan->children[0]); 
+  connectChild(3, rightOrphan->children[1]);
 
   // delete children
   delete leftOrphan;
