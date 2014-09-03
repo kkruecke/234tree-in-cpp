@@ -839,7 +839,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
 
      Node234 *orphan = (i == 0) ? leftOrphan : rightOrphan;
    
-     connectChild(i, orphan->children[0]); // connectChild() will also reset parent point of right parameter.
+     connectChild(i, orphan->children[0]); // connectChild() will also reset parent pointer of right parameter.
      connectChild(i + 1, orphan->children[1]);
   }
 
