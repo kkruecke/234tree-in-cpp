@@ -206,8 +206,8 @@ template<typename K> inline typename Tree234<K>::Node234 *Tree234<K>::Node234::d
 {
   Node234 *node = children[childIndex];
 
-  // shift children left to overwrite removed child i.
-  for(int i = childIndex; i < getChildCount(); ++i) {
+  // shift children (whose last 0-based index is totalItems) left to overwrite removed child i.
+  for(int i = childIndex; i < totalItems; ++i) {
 
        children[i] = children[i + 1]; // shift remaining children to the left
   } 
@@ -218,15 +218,20 @@ template<typename K> inline typename Tree234<K>::Node234 *Tree234<K>::Node234::d
 template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, Tree234<K>::Node234 *pChild)
 {
   // shift children right in order to insert pChild
-  for(int i = childNum; i < getChildCount(); ++i) { 
+  int childCount =  totalItems + 1;  
+  
+  for(int i = childNum; i < childCount; ++i) { 
 
        children[i + 1] = children[i]; // shift remaining children to the right
   } 
 
   children[childNum] = pChild;
 
-  pChild->parent = this; // reset the child's parent pointer, too.
-
+  if (!isLeaf()) {
+      
+   pChild->parent = this; // reset the child's parent pointer, too.
+  }
+  
   return;
 }
 
@@ -265,7 +270,7 @@ template<typename K> inline K Tree234<K>::Node234::removeItem(int index)
   K key = keys[index]; 
 
   // shift to the left all keys to the right of index to the left
-  for(int i = index; i < totalItems; ++i) {
+  for(int i = index; i < totalItems - 1; ++i) {
 
           keys[i] = keys[i + 1]; 
   } 
@@ -891,7 +896,8 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
 
       int total_sibling_keys = psibling->totalItems; 
       
-      Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // 4. disconnect right-most child of sibling
+      //--Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // 4. disconnect right-most child of sibling
+      Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys); // 4. disconnect right-most child of sibling
 
       K largest_sibling_key = psibling->removeItem(total_sibling_keys - 1); // remove the largest, the right-most, sibling's key.
 
