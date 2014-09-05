@@ -807,12 +807,13 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 	     convertedNode = parent->fuseWithChildren();
 
         } else { // parent is 3- or 4-node 
-
+             //TODO: convertedNode is never set? Should fuseSiblings() return the converted 2-node. Should it be passed, too, as a paramter?
              fuseSiblings(parent, node2_index, sibling_index);
+             
         }
 
    } else { // it has a 3- or 4-node sibling.
-       
+       //TODO: convertedNode is never set? Should fuseSiblings() return the converted 2-node. Should it be passed, too, as a paramter?
         doRotation(parent, node2_index, sibling_index);
    }
    
