@@ -39,9 +39,9 @@ template<typename K> class Tree234 {
 
     Node234 *convertTwoNode(Node234 *node);
 
-    void fuseSiblings(Node234 *parent, int node2_id, int sibling_id);
+    Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id);
     
-    void doRotation(Node234 *parent, int node2_id, int sibling_id);
+    Node234 *doRotation(Node234 *parent, int node2_id, int sibling_id);
  
   public:
 
@@ -807,14 +807,13 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 	     convertedNode = parent->fuseWithChildren();
 
         } else { // parent is 3- or 4-node 
-             //TODO: convertedNode is never set? Should fuseSiblings() return the converted 2-node. Should it be passed, too, as a paramter?
-             fuseSiblings(parent, node2_index, sibling_index);
-             
+
+             convertedNode = fuseSiblings(parent, node2_index, sibling_index);
         }
 
    } else { // it has a 3- or 4-node sibling.
-       //TODO: convertedNode is never set? Should fuseSiblings() return the converted 2-node. Should it be passed, too, as a paramter?
-        doRotation(parent, node2_index, sibling_index);
+
+        convertedNode = doRotation(parent, node2_index, sibling_index);
    }
    
    return convertedNode;
@@ -858,10 +857,11 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
  * 1. sibling_id is a 3- or 4-node of parent. 
  * 2. node2_id is the node to convert from a 2-node to a 3-node
  * Returns:
- * Add parent key is stolen and inserted into parent->children[node2_id], making it a 3-node. A key from the sibling replaces the stolen parent key.
+ * A parent key is stolen and inserted into parent->children[node2_id], making it a 3-node. A key from the sibling replaces the stolen parent key.
  * The siblings orphaned child is adopted by the converted 2- now 3-node. 
+ * The converted 2-node is returned.
  */
-template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, int sibling_id)
+template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node234 *parent, int node2_id, int sibling_id)
 {
   Node234 *psibling = parent->children[sibling_id];
 
@@ -926,6 +926,8 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
 
       p2node->insertChild(p2node->totalItems, pchild_of_sibling); // add former first child of silbing as right-most child of our 3-node.
   }
+
+  return p2node;
 }
 
 /*
@@ -938,7 +940,7 @@ template<typename K> void Tree234<K>::doRotation(Node234 *parent, int node2_id, 
  * siblings children are adopted by the former 2- now 4-node. The parent becomes a 2-node, if it was a 3-node, or a 3-node, if it 
  * was a 4-node.
  */
-template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_index, int sibling_index)
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node234 *parent, int node2_index, int sibling_index)
 {
   Node234 *psibling;
 
@@ -1004,5 +1006,7 @@ template<typename K> void Tree234<K>::fuseSiblings(Node234 *parent, int node2_in
   }
 
   delete psibling; // delete orphaned sibling
+
+  return p2node;
 }
 #endif
