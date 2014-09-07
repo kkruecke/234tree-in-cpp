@@ -196,7 +196,11 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
 template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, Node234 *child)
 {
   children[childIndex] = child;
-  child->parent = this;
+  
+  if (child != nullptr) {
+      
+     child->parent = this;
+  }
 }
 /*
  * precondition: childIndex is within the range for the type of node.
@@ -504,9 +508,10 @@ template<typename K> void Tree234<K>::insert(K key)
  * Preconditions: node is full, a four node.
  *
  * Pseudo code
- * The four node has either: 
- * 1. has a two node parent
- * 2. has a three node parent
+ * The four node is either: 
+ * 1. the root
+ * 2. has a two node parent
+ * 3. has a three node parent
  */ 
 template<typename K> void Tree234<K>::split(Node234 *node)
 {
@@ -709,7 +714,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     // First, check if found_node is internal node
     if (found_node != in_order_successor) {
 
-            // Note: we do not need to shift the children if in_order_successor because it is a a leaf node.
 	    found_node->keys[found_index] = in_order_successor->removeKey(0);
 
     } else if (found_index + 1 <= found_node->totalItems) { 
@@ -724,12 +728,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              * found_node->totalItems--;  
              */
 
-    } else { // found_index + 1 > found_node->totalItems, which should never happen.
+    } else { // found_index + 1 > found_node->totalItems
 
          throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K?::remove(Key k, Node234 *current"));
     }
 
-    // Note, we did not need to disconnect a child from the in_order_successor because it is a leaf node.
+    // Note, we did not need to disconnect a child because we are at a leaf node.
         
     return true;  
 }
