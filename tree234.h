@@ -709,6 +709,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     // First, check if found_node is internal node
     if (found_node != in_order_successor) {
 
+            // Note: we do not need to shift the children if in_order_successor because it is a a leaf node.
 	    found_node->keys[found_index] = in_order_successor->removeKey(0);
 
     } else if (found_index + 1 <= found_node->totalItems) { 
@@ -723,12 +724,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              * found_node->totalItems--;  
              */
 
-    } else { // found_index + 1 > found_node->totalItems
+    } else { // found_index + 1 > found_node->totalItems, which should never happen.
 
          throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K?::remove(Key k, Node234 *current"));
     }
 
-    // Note, we did not need to disconnect a child because we are at a leaf node.
+    // Note, we did not need to disconnect a child from the in_order_successor because it is a leaf node.
         
     return true;  
 }
