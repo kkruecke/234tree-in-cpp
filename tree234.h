@@ -4,6 +4,7 @@
 #include <utility>
 #include <algorithm>
 #include <stdexcept>
+#include <iosfwd>
 
 // fwd declarations
 template<typename T> class Tree234;    
@@ -26,6 +27,8 @@ template<typename K> class Tree234 {
 
     Node234 *root; 
     
+    void DoDebug(std::ostream& ostr, Node234 *root);
+
     bool DoSearch(K key, Node234 *&location, int& index);
 
     template<typename Functor> void DoTraverse(Functor f, Node234 *root);
@@ -109,6 +112,8 @@ template<typename K> class Tree234 {
     bool search(K key);
 
     template<typename Functor> void traverse(Functor f);
+    
+    void Debug(std::ostream& ostr);
 
     void insert(K key); 
 
@@ -394,10 +399,16 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
     }
 }
 
-template<typename K> template<typename Functor> inline void Tree234<K>::traverse(Functor f)
-{     
-  DoTraverse(f, root);    
+template<typename K> inline void Tree234<K>::Debug(std::ostr& ostr)
+{
+   DoDebug(ostr);
 }
+
+template<typename K> template<typename Functor> inline void Tree234<K>::traverse(Functor f)
+{
+   DoTraverse(f, root);
+}
+
 /*
  * In order traversal
  */
@@ -448,6 +459,63 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
             break;
    }
 }
+/*
+ * In order traversal
+ */
+template<typename K> void Tree234<K>::DoDebug(std::ostream& ostr, Node234 *current)
+{     
+   if (current == nullptr) {
+
+	return;
+   }
+
+   switch (current->totalItems) {
+
+      case 1: // two node
+            DoDebug(ostr, current->children[0]);
+
+            ostr << "Two node " << "\n" << "key[0]: " << current->keys[0] << "\n";
+
+            DoDebug(ostr, current->children[1]);
+
+            break;
+
+      case 2: // three node
+            DoDebug(ostr, current->children[0]);
+
+            ostr << "Three node: " << current->keys[0] << "\n";
+            ostr << "key[0]: " << current->keys[0] << "\n";
+
+            DoDebug(ostr, current->children[1]);
+ 
+            ostr << "key[1]: " << current->keys[1] << "\n"; 
+
+            DoDebug(ostr, current->children[2]);
+
+            break;
+
+      case 3: // four node
+            DoDebug(ostr, current->children[0]);
+
+            ostr << "Four node: " << current->keys[0] << "\n";
+            ostr << "key[0]: " << current->keys[0] << "\n";
+
+            DoDebug(ostr, current->children[1]);
+ 
+            ostr << "key[1]: " << current->keys[1] << "\n";
+
+            DoDebug(ostr, current->children[2]);
+
+            f(current->keys[2]);
+
+            ostr << "key[2]: " << current->keys[2] << "\n";
+
+            DoTraverse(ostr, current->children[3]);
+ 
+            break;
+   }
+}
+
 /* 
  * Insertion based on this pseudo code:
  *

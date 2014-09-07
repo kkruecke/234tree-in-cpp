@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <string>
 #include "tree234.h"
 #include "TreePrinter.h"
 
@@ -34,16 +35,27 @@ int main(int argc, char** argv)
     cout << endl;
     
     cout << "============================" << endl;
+                         
+    int remove_items[] = { 100, 40, 15, 10, 80, 60, 30, 50, 20, 10, 70 };
     
-    int remove_index[] = { 10, 5, 8, 2, 7, 0, 1, 4, 3, 2, 6 };
+    /*
+     * BUGS: After removing 10, the tree prints out as:
+     * 20 40 50 60 70 60
+     * 40 appears even though it was removed and 80 does not appear.
+     */ 
             
-    for (auto i = 0; i < sizeof(remove_index)/sizeof(int); ++i) {
+    for (auto i = 0; i < sizeof(remove_items)/sizeof(int); ++i) {
         
-        int item = v[ remove_index[i] ];
+        int item = remove_items[i];
         
-        tree.remove(item);
+        bool rc = tree.remove(item);
         
-        cout << "Printing tree after removing  " << item << "\n";
+        string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
+                
+        cout << "Item " << item << " was " << str_remove_status << "\n";
+        
+        cout << "Printing tree after called remove(" << item << ")\n";
+                
         tree.traverse(printer);
     
         cout << endl;
