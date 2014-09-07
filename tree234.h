@@ -399,9 +399,9 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
     }
 }
 
-template<typename K> inline void Tree234<K>::Debug(std::ostr& ostr)
+template<typename K> inline void Tree234<K>::Debug(std::ostream& ostr)
 {
-   DoDebug(ostr);
+   DoDebug(ostr, root);
 }
 
 template<typename K> template<typename Functor> inline void Tree234<K>::traverse(Functor f)
@@ -474,7 +474,7 @@ template<typename K> void Tree234<K>::DoDebug(std::ostream& ostr, Node234 *curre
       case 1: // two node
             DoDebug(ostr, current->children[0]);
 
-            ostr << "Two node " << "\n" << "key[0]: " << current->keys[0] << "\n";
+            ostr << "\nTwo node   (" << current << "): key[0]: " << current->keys[0] << "\n";
 
             DoDebug(ostr, current->children[1]);
 
@@ -483,12 +483,11 @@ template<typename K> void Tree234<K>::DoDebug(std::ostream& ostr, Node234 *curre
       case 2: // three node
             DoDebug(ostr, current->children[0]);
 
-            ostr << "Three node: " << current->keys[0] << "\n";
-            ostr << "key[0]: " << current->keys[0] << "\n";
+            ostr << "\nThree node (" << current << "): key[0]: " << current->keys[0] << "\n";
 
             DoDebug(ostr, current->children[1]);
  
-            ostr << "key[1]: " << current->keys[1] << "\n"; 
+            ostr << "Three node (" << current << "): key[1]: " << current->keys[1] << "\n"; 
 
             DoDebug(ostr, current->children[2]);
 
@@ -497,20 +496,17 @@ template<typename K> void Tree234<K>::DoDebug(std::ostream& ostr, Node234 *curre
       case 3: // four node
             DoDebug(ostr, current->children[0]);
 
-            ostr << "Four node: " << current->keys[0] << "\n";
-            ostr << "key[0]: " << current->keys[0] << "\n";
+            ostr << "\nFour node  (" << current << "): key[0]: " << current->keys[0] << "\n";
 
             DoDebug(ostr, current->children[1]);
  
-            ostr << "key[1]: " << current->keys[1] << "\n";
+            ostr << "Four node  (" << current << "): key[1]: " << current->keys[1] << "\n";
 
             DoDebug(ostr, current->children[2]);
 
-            f(current->keys[2]);
+            ostr << "Four node  (" << current << "): key[2]: " << current->keys[2] << "\n";
 
-            ostr << "key[2]: " << current->keys[2] << "\n";
-
-            DoTraverse(ostr, current->children[3]);
+            DoDebug(ostr, current->children[3]);
  
             break;
    }
