@@ -78,13 +78,13 @@ template<typename K> class Tree234 {
         */
        bool searchNode(K key, int& index, Node234 *&next);
 
-       int insertItem(K key);
+       int insertKey(K key);
        void connectChild(int childNum, Node234 *child);
        
        /*
         * Remove key, if found, from node and shifting remaining keys to fill its gap.
         */  
-       K removeItem(int index);
+       K removeKey(int index);
  
        /*
         *
@@ -240,7 +240,7 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
  * Shifts keys in node as needed so that key will be inserted in sorted position. Returns index of inserted key.
  */
 
-template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pass index, too--maybe?
+template<typename K> inline int  Tree234<K>::Node234::insertKey(K key) 
 { 
   // start on right, examine items
 
@@ -265,7 +265,7 @@ template<typename K> inline int  Tree234<K>::Node234::insertItem(K key) //<-- pa
     return 0;
 }
 
-template<typename K> inline K Tree234<K>::Node234::removeItem(int index)
+template<typename K> inline K Tree234<K>::Node234::removeKey(int index)
 {
   K key = keys[index]; 
 
@@ -498,16 +498,15 @@ template<typename K> void Tree234<K>::insert(K key)
     } 
  
     // current is now a leaf and not full (because we split all four nodes while descending).
-    current->insertItem(key); 
+    current->insertKey(key); 
 }
 /* 
  * Preconditions: node is full, a four node.
  *
  * Pseudo code
- * The four node is either: 
- * 1. the root
- * 2. has a two node parent
- * 3. has a three node parent
+ * The four node has either: 
+ * 1. has a two node parent
+ * 2. has a three node parent
  */ 
 template<typename K> void Tree234<K>::split(Node234 *node)
 {
@@ -557,7 +556,7 @@ template<typename K> void Tree234<K>::split(Node234 *node)
 
     // deal with parent, moving itemB middle value to parent.
 
-    int insert_index = parent->insertItem(itemB);
+    int insert_index = parent->insertKey(itemB);
     int last_index = parent->totalItems - 1;
     
     for(int i = last_index; i > insert_index; i--)  {// move parent's connections right, start from new last index up to insert_index
@@ -600,7 +599,7 @@ template<typename K> bool Tree234<K>::remove(K key)
            /*
             * Remove key from root, when root is a leaf. This will also shift the in-order successor into its location.
             */
-            root->removeItem(index);
+            root->removeKey(index);
 
             if (root->totalItems == 0) {
 
@@ -710,13 +709,13 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     // First, check if found_node is internal node
     if (found_node != in_order_successor) {
 
-	    found_node->keys[found_index] = in_order_successor->removeItem(0);
+	    found_node->keys[found_index] = in_order_successor->removeKey(0);
 
     } else if (found_index + 1 <= found_node->totalItems) { 
 
             // The in-order in_order_successor is in same leaf node, so simply remove it, which will also overwrite its position by
             // shifting all keys to right of it one position left.
-            in_order_successor->removeItem(found_index);
+            in_order_successor->removeKey(found_index);
 
             /* 
              * Note: The line above is equivalent to doing:
@@ -900,7 +899,7 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
       //--Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // 4. disconnect right-most child of sibling
       Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys); // 4. disconnect right-most child of sibling
 
-      K largest_sibling_key = psibling->removeItem(total_sibling_keys - 1); // remove the largest, the right-most, sibling's key.
+      K largest_sibling_key = psibling->removeKey(total_sibling_keys - 1); // remove the largest, the right-most, sibling's key.
 
       parent->keys[parent_key_index] = largest_sibling_key;  // 5. overwrite parent item with largest sibling key
 
@@ -920,7 +919,7 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
       Node234 *pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
 
       // Remove smallest key in sibling
-      K smallest_sibling_key = psibling->removeItem(0);
+      K smallest_sibling_key = psibling->removeKey(0);
 
       parent->keys[parent_key_index] = smallest_sibling_key;  // overwrite parent item with it.
 
@@ -956,7 +955,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
          2. Reset parent's children pointers after removing sibling.
        */
 
-      K parent_key = parent->removeItem(parent_key_index); //this will do #1
+      K parent_key = parent->removeKey(parent_key_index); //this will do #1
 
       psibling = parent->disconnectChild(sibling_index); // This will do #2.
 
@@ -988,7 +987,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
          2. Reset its children pointers 
        */
 
-      K parent_key = parent->removeItem(parent_key_index); // this will #1
+      K parent_key = parent->removeKey(parent_key_index); // this will #1
 
       psibling = parent->disconnectChild(sibling_index); // this does #2
 
