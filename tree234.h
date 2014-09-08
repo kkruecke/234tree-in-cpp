@@ -9,6 +9,7 @@
 // fwd declarations
 template<typename T> class Tree234;    
 template<typename K> class Node234; 
+class DebugPrinter; 
 
 class duplicatekey :  public std::exception {
 public:
@@ -52,8 +53,10 @@ template<typename K> class Tree234 {
 
    
    class Node234 {
+       
       private: 
        friend class Tree234<K>;             
+       friend class DebugPrinter;
        static int MAX_KEYS;   
 
        Node234(K small);
