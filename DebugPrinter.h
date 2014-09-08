@@ -24,22 +24,36 @@ public:
 template<class K> inline std::ostream& DebugPrinter::operator()(K k, int index, const typename Tree234<K>::Node234 *current)
 {
 
+    Node234 *parent = current->getParent();
+
+    int i ;
+ 
+    for (i = 0; i <= parent->getTotalItems; ++i) {
+       
+         if (current == parent->children[i]) {
+             break;
+         }  
+    }
+
+    int child_index = i;
+
     switch (current->getTotalItems()) {
     
       case 1: // 2-node
-              ostr_ << "\nTwo node   (" << current << "): key[" << index << "]: " << k << " parent:[" << current->getParent() << "] \n";
+              ostr_ << "\nTwo node   (" << current << "): key[" << index << "]: " << k << " parent:[" << current->getParent() << "]:childId[" << child_index << "] \n";
               break;
     
       case 2: // 3-node
 
-              ostr_ << "\nThree node (" << current << "): key[" << index << "]: " << k << " parent:[" << current->getParent() << "] \n";
+              ostr_ << "\nThree node (" << current << "): key[" << index << "]: " << k << " parent:[" << current->getParent() << "]:childId[" << child_index << "]\n";
               break;
     
       case 3: // 4-node
-              ostr_ << "\nFour node  (" << current << "): key[" << index << "]: " << k << " parent:[" << current->getParent() << "] \n";
+              ostr_ << "\nFour node  (" << current << "): key[" << index << "]: " << k << " parent:[" << current->getParent() <<  << "]:childId[" << child_index << "] \n";
               break;
     }
 
     return ostr_;
 }
+
 #endif	/* DEBUGRINTER_H */
