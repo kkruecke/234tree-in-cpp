@@ -474,7 +474,7 @@ template<typename K> void Tree234<K>::DoDebug(std::ostream& ostr, Node234 *curre
       case 1: // two node
             DoDebug(ostr, current->children[0]);
 
-            ostr << "\nTwo node   (" << current << "): key[0]: " << current->keys[0] << "\n";
+            ostr << "\nTwo node   (" << current << "): key[0]: " << current->keys[0] << " parent:[" << current->getParent() << "] \n";
 
             DoDebug(ostr, current->children[1]);
 
@@ -483,11 +483,11 @@ template<typename K> void Tree234<K>::DoDebug(std::ostream& ostr, Node234 *curre
       case 2: // three node
             DoDebug(ostr, current->children[0]);
 
-            ostr << "\nThree node (" << current << "): key[0]: " << current->keys[0] << "\n";
+            ostr << "\nThree node (" << current << "): key[0]: " << current->keys[0] << " parent:[" << current->getParent() << "] \n";
 
             DoDebug(ostr, current->children[1]);
  
-            ostr << "Three node (" << current << "): key[1]: " << current->keys[1] << "\n"; 
+            ostr << "Three node (" << current << "): key[1]: " << current->keys[1] << " parent:[" << current->getParent() << "] \n";
 
             DoDebug(ostr, current->children[2]);
 
@@ -496,15 +496,15 @@ template<typename K> void Tree234<K>::DoDebug(std::ostream& ostr, Node234 *curre
       case 3: // four node
             DoDebug(ostr, current->children[0]);
 
-            ostr << "\nFour node  (" << current << "): key[0]: " << current->keys[0] << "\n";
+            ostr << "\nFour node  (" << current << "): key[0]: " << current->keys[0] << " parent:[" << current->getParent() << "] \n";
 
             DoDebug(ostr, current->children[1]);
  
-            ostr << "Four node  (" << current << "): key[1]: " << current->keys[1] << "\n";
+            ostr << "Four node  (" << current << "): key[1]: " << current->keys[1] << " parent:[" << current->getParent() << "] \n";
 
             DoDebug(ostr, current->children[2]);
 
-            ostr << "Four node  (" << current << "): key[2]: " << current->keys[2] << "\n";
+            ostr << "Four node  (" << current << "): key[2]: " << current->keys[2] << " parent:[" << current->getParent() << "] \n";
 
             DoDebug(ostr, current->children[3]);
  
