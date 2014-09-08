@@ -30,7 +30,7 @@ template<typename K> class Tree234 {
     bool DoSearch(K key, Node234 *&location, int& index);
 
     template<typename Functor> void DoTraverse(Functor f, Node234 *root);
-    template<typename Functor> void DoPostOrder(Functor f, Node234 *root);
+    template<typename Functor> void DoPostOrder4Debug(Functor f, Node234 *root);
     
     void split(Node234 *node);  // called during insert to split 4-nodes
  
@@ -418,13 +418,13 @@ template<typename K> template<typename Functor> inline void Tree234<K>::traverse
 
 template<typename K> template<typename Functor> inline void Tree234<K>::debug_dump(Functor f)
 {
-   DoPostOrder(f, root);
+   DoPostOrder4Debug(f, root);
 }
 
 /*
  * In order traversal
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder(Functor f, Node234 *current)
+template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderDebug(Functor f, Node234 *current)
 {     
    if (current == nullptr) {
 
@@ -434,37 +434,37 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder(Fun
    switch (current->totalItems) {
 
       case 1: // two node
-            DoPostOrder(f, current->children[0]);
+            DoPostOrderDebug(f, current->children[0]);
 
-            DoPostOrder(f, current->children[1]);
+            DoPostOrderDebug(f, current->children[1]);
 
             f(current->keys[0], 0, current);
             break;
 
       case 2: // three node
-            DoPostOrder(f, current->children[0]);
+            DoPostOrderDebug(f, current->children[0]);
 
-            DoPostOrder(f, current->children[1]);
+            DoPostOrderDebug(f, current->children[1]);
 
             f(current->keys[0], 0, current);
 
-            DoPostOrder(f, current->children[2]);
+            DoPostOrderDebug(f, current->children[2]);
 
             f(current->keys[1], 1, current);
             break;
 
       case 3: // four node
-            DoPostOrder(f, current->children[0]);
+            DoPostOrderDebug(f, current->children[0]);
 
-            DoPostOrder(f, current->children[1]);
+            DoPostOrderDebug(f, current->children[1]);
 
             f(current->keys[0], 0, current);
 
-            DoPostOrder(f, current->children[2]);
+            DoPostOrderDebug(f, current->children[2]);
 
             f(current->keys[1], 1, current);
 
-            DoPostOrder(f, current->children[3]);
+            DoPostOrderDebug(f, current->children[3]);
 
             f(current->keys[2], 2, current);
  
