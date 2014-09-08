@@ -2,73 +2,41 @@
  * File:   main.cpp
  * Author: kurt
  *
- * Created on August 13, 2014, 4:58 PM
+ * Created on April 22, 2013, 6:56 PM
  */
 
 #include <cstdlib>
-#include <string>
-#include <iostream>
 #include "tree234.h"
-#include "TreePrinter.h"
-
+#include <iostream>
+#include <vector>
 using namespace std;
+
+/* Use this code if you get compile error about lambda
+
+ */
 
 int main(int argc, char** argv) 
 {
-    int v[] = { 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100 };
-    
-    int delete_values[] = { 40 }; //, 
-    
+    vector<int> v { 10, 20, 30, 40, 50 ,60, 70 , 80, 90, 37, 36, 35, 34 };
+
     Tree234<int> tree;
-      
-    for(int i = 0; i < sizeof(v)/sizeof(int); ++i) {
+
+    for (auto iter = v.begin(); iter != v.end(); ++iter)     {
         
-       tree.insert(v[i]);    
+        tree.insert(*iter);
     }
-    
-    TreePrinter printer(cout);
-    
-    cout << "Printing tree " << endl;
-    
-    tree.traverse(printer);
-            
+        
+    tree.search(80);
+
+    /* Using a lambda below is equivalent to doing 
+
+        void print_int(int x)  { cout << x << ' '; } 
+        tree.traverse(print_int); 
+    */
+
+    tree.traverse([](int x){ cout << x << ' '; }); 
     cout << endl;
-    
-    cout << "============================" << endl;
-                         
-    int remove_items[] = { 100, 40, 15, 10, 80, 60, 30, 50, 20, 10, 70 };
-    
-    /*
-     * BUGS: 
-     * After removing 10, the tree prints out as:
-     * 20 40 50 60 70 60
-     * 40 appears even though it was removed and 80 and 30 do not appear.
-     */ 
-            
-    for (auto i = 0; i < sizeof(remove_items)/sizeof(int); ++i) {
-        
-        int item = remove_items[i];
-        
-        bool rc = tree.remove(item);
-        
-        string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
-        
-        cout << "item " << item << str_remove_status << ". Printing tree \n";
-                
-        tree.Debug(cout);
-    
-        cout << endl;
-    }
-    
-    // BUG: 40, 50 and 60 are not being removed above. 
-    tree.remove(40);
-        
-    cout << "Printing tree after removing  " << 40 << "\n";
-    tree.Debug(cout);
-    
-    cout << endl;
-  
-     
+       
     return 0;
 }
 
