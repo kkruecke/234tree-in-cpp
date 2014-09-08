@@ -24,8 +24,6 @@ public:
 template<class K> inline std::ostream& DebugPrinter::operator()(K k, int index, const typename Tree234<K>::Node234 *current)
 {
 
-    //ostr_ << k << ' ';
-
     switch (current->getTotalItems()) {
     
       case 1: // 2-node
