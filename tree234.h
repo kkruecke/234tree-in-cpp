@@ -27,12 +27,11 @@ template<typename K> class Tree234 {
 
     Node234 *root; 
     
-    void DoDebug(std::ostream& ostr, Node234 *root);
-
     bool DoSearch(K key, Node234 *&location, int& index);
 
     template<typename Functor> void DoTraverse(Functor f, Node234 *root);
-
+    template<typename Functor> void DoPostOrder(Functor f, Node234 *root);
+    
     void split(Node234 *node);  // called during insert to split 4-nodes
  
     void DestroyTree(Node234 *root); 
@@ -69,12 +68,7 @@ template<typename K> class Tree234 {
         */
        Node234 *children[4];
 
-       Node234 *getParent();
-       int getChildCount() const;
-       bool isFull() const;
-       bool isLeaf() const; 
-       bool isTwoNode() const;
-      
+       Node234 *getParent(); 
        /* searchNode(K key, int& index, Node234 *&next)
         * Returns true if key is found in node. Sets index such that this->keys[index] == key
         * Returns false if key is if not found, and sets next to the next in-order child.
@@ -101,7 +95,14 @@ template<typename K> class Tree234 {
         * Merges the 2-node children of a parent 2-node into the parent, making a 4-node. 
         */
        Node234 *fuseWithChildren(); 
-
+       
+     public:
+       const Node234 *getParent() const;
+       int getTotalItems() const;
+       int getChildCount() const;
+       bool isFull() const;
+       bool isLeaf() const; 
+       bool isTwoNode() const;
     };  
 
     typedef Node234 Node;
@@ -112,15 +113,20 @@ template<typename K> class Tree234 {
     bool search(K key);
 
     template<typename Functor> void traverse(Functor f);
-    
-    void Debug(std::ostream& ostr);
 
+    template<typename Functor> void debug_dump(Functor f);
+    
     void insert(K key); 
 
     bool remove(K key);
 };
 
 template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3; 
+
+template<typename K> inline int Tree234<K>::Node234::getTotalItems() const
+{
+   return totalItems; 
+}
 
 template<typename K> inline int Tree234<K>::Node234::getChildCount() const
 {
@@ -299,6 +305,12 @@ template<typename K> inline  typename Tree234<K>::Node234 *Tree234<K>::Node234::
    return parent;
 }
 
+template<typename K> inline  const typename Tree234<K>::Node234 *Tree234<K>::Node234::getParent() const 
+{ 
+   return parent;
+}
+
+
 template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const 
 { 
    return !children[0] ? true : false;
@@ -399,14 +411,65 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
     }
 }
 
-template<typename K> inline void Tree234<K>::Debug(std::ostream& ostr)
-{
-   DoDebug(ostr, root);
-}
-
 template<typename K> template<typename Functor> inline void Tree234<K>::traverse(Functor f)
 {
    DoTraverse(f, root);
+}
+
+template<typename K> template<typename Functor> inline void Tree234<K>::debug_dump(Functor f)
+{
+   DoPostOrder(f, root);
+}
+
+/*
+ * In order traversal
+ */
+template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder(Functor f, Node234 *current)
+{     
+   if (current == nullptr) {
+
+	return;
+   }
+
+   switch (current->totalItems) {
+
+      case 1: // two node
+            DoPostOrder(f, current->children[0]);
+
+            DoPostOrder(f, current->children[1]);
+
+            f(current->keys[0], 0, current);
+            break;
+
+      case 2: // three node
+            DoPostOrder(f, current->children[0]);
+
+            DoPostOrder(f, current->children[1]);
+
+            f(current->keys[0], 0, current);
+
+            DoPostOrder(f, current->children[2]);
+
+            f(current->keys[1], 1, current);
+            break;
+
+      case 3: // four node
+            DoPostOrder(f, current->children[0]);
+
+            DoPostOrder(f, current->children[1]);
+
+            f(current->keys[0], 0, current);
+
+            DoPostOrder(f, current->children[2]);
+
+            f(current->keys[1], 1, current);
+
+            DoPostOrder(f, current->children[3]);
+
+            f(current->keys[2], 2, current);
+ 
+            break;
+   }
 }
 
 /*
@@ -455,58 +518,6 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
             f(current->keys[2]);
 
             DoTraverse(f, current->children[3]);
- 
-            break;
-   }
-}
-/*
- * In order traversal
- */
-template<typename K> void Tree234<K>::DoDebug(std::ostream& ostr, Node234 *current)
-{     
-   if (current == nullptr) {
-
-	return;
-   }
-
-   switch (current->totalItems) {
-
-      case 1: // two node
-            DoDebug(ostr, current->children[0]);
-
-            ostr << "\nTwo node   (" << current << "): key[0]: " << current->keys[0] << " parent:[" << current->getParent() << "] \n";
-
-            DoDebug(ostr, current->children[1]);
-
-            break;
-
-      case 2: // three node
-            DoDebug(ostr, current->children[0]);
-
-            ostr << "\nThree node (" << current << "): key[0]: " << current->keys[0] << " parent:[" << current->getParent() << "] \n";
-
-            DoDebug(ostr, current->children[1]);
- 
-            ostr << "Three node (" << current << "): key[1]: " << current->keys[1] << " parent:[" << current->getParent() << "] \n";
-
-            DoDebug(ostr, current->children[2]);
-
-            break;
-
-      case 3: // four node
-            DoDebug(ostr, current->children[0]);
-
-            ostr << "\nFour node  (" << current << "): key[0]: " << current->keys[0] << " parent:[" << current->getParent() << "] \n";
-
-            DoDebug(ostr, current->children[1]);
- 
-            ostr << "Four node  (" << current << "): key[1]: " << current->keys[1] << " parent:[" << current->getParent() << "] \n";
-
-            DoDebug(ostr, current->children[2]);
-
-            ostr << "Four node  (" << current << "): key[2]: " << current->keys[2] << " parent:[" << current->getParent() << "] \n";
-
-            DoDebug(ostr, current->children[3]);
  
             break;
    }
