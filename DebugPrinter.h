@@ -24,18 +24,21 @@ public:
 template<class K> inline std::ostream& DebugPrinter::operator()(K k, int index, const typename Tree234<K>::Node234 *current)
 {
 
-    Node234 *parent = current->getParent();
+    const typename Tree234<K>::Node234 *parent = current->getParent();
 
-    int i ;
- 
-    for (i = 0; i <= parent->getTotalItems; ++i) {
+    int child_index = -1; // This means the parent is nullptr and current is therefore the root.
+    
+    if (parent != nullptr) {
+        
+    
+        for (child_index = 0; child_index <= parent->getTotalItems(); ++child_index) {
        
-         if (current == parent->children[i]) {
-             break;
-         }  
-    }
-
-    int child_index = i;
+             if (current == parent->children[child_index]) {
+                 break;
+            }  
+        }
+    } 
+    
 
     switch (current->getTotalItems()) {
     
@@ -49,7 +52,7 @@ template<class K> inline std::ostream& DebugPrinter::operator()(K k, int index, 
               break;
     
       case 3: // 4-node
-              ostr_ << "\nFour node  (" << current << "): key[" << index << "]: " << k << " parent:[" << current->getParent() <<  << "]:childId[" << child_index << "] \n";
+              ostr_ << "\nFour node  (" << current << "): key[" << index << "]: " << k << " parent:[" << current->getParent() <<  "]:childId[" << child_index << "] \n";
               break;
     }
 
