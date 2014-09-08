@@ -424,7 +424,7 @@ template<typename K> template<typename Functor> inline void Tree234<K>::debug_du
 /*
  * In order traversal
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderDebug(Functor f, Node234 *current)
+template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Debug(Functor f, Node234 *current)
 {     
    if (current == nullptr) {
 
@@ -434,37 +434,37 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderDebu
    switch (current->totalItems) {
 
       case 1: // two node
-            DoPostOrderDebug(f, current->children[0]);
+            DoPostOrder4Debug(f, current->children[0]);
 
-            DoPostOrderDebug(f, current->children[1]);
+            DoPostOrder4Debug(f, current->children[1]);
 
             f(current->keys[0], 0, current);
             break;
 
       case 2: // three node
-            DoPostOrderDebug(f, current->children[0]);
+            DoPostOrder4Debug(f, current->children[0]);
 
-            DoPostOrderDebug(f, current->children[1]);
+            DoPostOrder4Debug(f, current->children[1]);
 
             f(current->keys[0], 0, current);
 
-            DoPostOrderDebug(f, current->children[2]);
+            DoPostOrder4Debug(f, current->children[2]);
 
             f(current->keys[1], 1, current);
             break;
 
       case 3: // four node
-            DoPostOrderDebug(f, current->children[0]);
+            DoPostOrder4Debug(f, current->children[0]);
 
-            DoPostOrderDebug(f, current->children[1]);
+            DoPostOrder4Debug(f, current->children[1]);
 
             f(current->keys[0], 0, current);
 
-            DoPostOrderDebug(f, current->children[2]);
+            DoPostOrder4Debug(f, current->children[2]);
 
             f(current->keys[1], 1, current);
 
-            DoPostOrderDebug(f, current->children[3]);
+            DoPostOrder4Debug(f, current->children[3]);
 
             f(current->keys[2], 2, current);
  
