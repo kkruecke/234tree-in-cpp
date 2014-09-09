@@ -1,0 +1,3 @@
+Work on remove() bug:
+Compare the tree shape when 40 is removed until is reappears using the debug
+output.
