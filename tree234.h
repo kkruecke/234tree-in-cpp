@@ -827,7 +827,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     if (!found_node->isLeaf()) {
     
          // The next largest item with be the smallest item, the left most left node, of the subtree rooted at found_node->children[found_index + 1].
-         in_order_successor = found_node->children[found_index + 1]; 
+         Node234 *prospective_in_order_successor = found_node->children[found_index + 1]; 
         
          /* 
           * Traverse down the left-most branch until we find a leaf.
@@ -835,7 +835,10 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
           *  However if our key, is in the parent of an in-order successor that is a 2-node leaf, the key may be moved to the leaf after the leaf has been converted
           *  to a 2-node. So we need to handle this.
           */ 
-         while (!in_order_successor->isLeaf()) {
+         //--while (!in_order_successor->isLeaf()) {
+         while (prospective_in_order_successor != nullptr) { // fixed first part of bug: converting even leaf 2-nodes.
+
+             in_order_successor = prospective_in_order_successor;
         
              if (in_order_successor->isTwoNode()) {
         
@@ -843,7 +846,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              } 
         
              // Traverse the left subtree root at the smallest child
-             in_order_successor = in_order_successor->children[0];
+             prospective_in_order_successor = in_order_successor->children[0];
          }
 
     } else { // else we are at a leaf and the in_order_successor is in the same node.
@@ -852,6 +855,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     }
     
     // We are now at the in-order successor leaf node. 
+    // TODO: However, if the found_node was the parent of a 2-node leaf that is the in-order successor, the key may be in the convert 2-node leaf node!
+     
 
     // Remove in-order successor from leaf and overwrite deleted key with it. 
     // First, check if found_node is internal node
