@@ -1,8 +1,7 @@
-Work on remove() bug:
-Compare the tree shape when 40 is removed until is reappears using the debug
-output.
+Work on remove() bug. See "TODO:" in remove(K key, Node234 *current).
+
 ----------------
-Converting to managed pointers:
+Convert code to use managed pointers:
 
 
 unique_ptr objects automatically delete the object they manage (using a deleter) as soon as they themselves are destroyed,

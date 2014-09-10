@@ -831,9 +831,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
         
          /* 
           * Traverse down the left-most branch until we find a leaf.
-          *  Bug: This fails to convert leaves that are 2-nodes, which will screw up our tree.
-          *  However if our key, is in the parent of a 2-node leaf, it may be moved to the leaf after the leaf has been converted
-          *  to a 2-node. How do we handle this?
+          *  TODO: This code is a BUG. It fails to convert leaves that are 2-nodes, which will screw up our tree.
+          *  However if our key, is in the parent of an in-order successor that is a 2-node leaf, the key may be moved to the leaf after the leaf has been converted
+          *  to a 2-node. So we need to handle this.
           */ 
          while (!in_order_successor->isLeaf()) {
         
