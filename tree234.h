@@ -829,7 +829,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
          // The next largest item with be the smallest item, the left most left node, of the subtree rooted at found_node->children[found_index + 1].
          in_order_successor = found_node->children[found_index + 1]; 
         
-         // Traverse down the left-most branch until we find a leaf. 
+         /* 
+          * Traverse down the left-most branch until we find a leaf.
+          *  Bug: This fails to convert leaves that are 2-nodes, which will screw up our tree.
+          *  However if our key, is in the parent of a 2-node leaf, it may be moved to the leaf after the leaf has been converted
+          *  to a 2-node. How do we handle this?
+          */ 
          while (!in_order_successor->isLeaf()) {
         
              if (in_order_successor->isTwoNode()) {
@@ -1039,7 +1044,6 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
 
       int total_sibling_keys = psibling->totalItems; 
       
-      //--Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys + 1); // 4. disconnect right-most child of sibling
       Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys); // 4. disconnect right-most child of sibling
 
       K largest_sibling_key = psibling->removeKey(total_sibling_keys - 1); // remove the largest, the right-most, sibling's key.
@@ -1096,11 +1100,12 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       /* Adjust parent:
          1. Remove parent key (and shift its remaining keys and reduce its totalItems)
          2. Reset parent's children pointers after removing sibling.
+       * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKey reduces. Therefore,
+       * disconnectChild() should always be called before removeKey().
        */
-
-      K parent_key = parent->removeKey(parent_key_index); //this will do #1
-
       psibling = parent->disconnectChild(sibling_index); // This will do #2.
+      
+      K parent_key = parent->removeKey(parent_key_index); //this will do #1
 
       // Now, add both the sibling's and parent's key to 2-node
 
@@ -1113,7 +1118,6 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
  
       p2node->totalItems = 3; // 3. increase total items
 
-
       // Add sibling's children to the former 2-node, now 4-node...
       p2node->children[3] = p2node->children[1];  // ... but first shift its children right two positions
       p2node->children[2] = p2node->children[0];
@@ -1122,17 +1126,19 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       p2node->connectChild(1, psibling->children[1]); 
       p2node->connectChild(0, psibling->children[0]); 
 
+
   } else { // sibling is to the right: 
 
       
       /* Next adjust parent:
          1. Remove parent key (and shift its remaining keys and reduce its totalItems)
          2. Reset its children pointers 
+       * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKey reduces. Therefore,
+       * disconnectChild() must always be called before removeKey() or children will not be shifted correctly.
        */
-
-      K parent_key = parent->removeKey(parent_key_index); // this will #1
-
       psibling = parent->disconnectChild(sibling_index); // this does #2
+      
+      K parent_key = parent->removeKey(parent_key_index); // this will #1
 
       // p2node->key[0] is already in the correct position
       p2node->keys[1] = parent_key;  // 1. bring down parent key
