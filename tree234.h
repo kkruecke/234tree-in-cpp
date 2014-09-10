@@ -1075,8 +1075,8 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
 /*
  * Preconditions: 
  * 1. parent is a 3- or 4-node. 
- * 2. node2_id is the child index of the 2-node being converted (into a 3- or 4-node).
- * 3. sibling_id is a 2-node.
+ * 2. sibling is a 2-node whose child index in the parent is, parent->children[sibling_index].
+ * 3. node2_id is child index such that parent->childen[node2_id] is the 2-node being converted (into a 3- or 4-node).
  *
  * Returns: node2_id is converted into 4-node by adding sibling's sole key together with a key "stolen" from the parent. The 
  * siblings children are adopted by the former 2- now 4-node. The parent becomes a 2-node, if it was a 3-node, or a 3-node, if it 
@@ -1109,7 +1109,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
 
       p2node->keys[1] = parent_key;  // 2. bring down parent key
 
-      p2node->keys[0] = psibling->keys[sibling_index]; // 3. insert adjacent sibling's sole key. 
+      p2node->keys[0] = psibling->keys[0]; // 3. insert adjacent sibling's sole key. 
  
       p2node->totalItems = 3; // 3. increase total items
 
@@ -1137,7 +1137,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       // p2node->key[0] is already in the correct position
       p2node->keys[1] = parent_key;  // 1. bring down parent key
 
-      p2node->keys[2] = psibling->keys[sibling_index];  // 2. add sibling key. 
+      p2node->keys[2] = psibling->keys[0];// 2. insert sibling's sole key.
  
       p2node->totalItems = 3; // 3. make it a 4-node
 
