@@ -90,7 +90,6 @@ template<typename K> class Tree234 {
        K removeKey(int index);
  
        /*
-        *
         * Removes child node, shifts its children to fill the gap. Returns child pointer.
         */  
        Node234 *disconnectChild(int child_index); 
@@ -223,6 +222,7 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
 /*
  * precondition: childIndex is within the range for the type of node.
  * returns child pointer.
+ * Note: Always call disconnectChild() before removeItem(), or it will not work correctly because totalItems will have been altered.
  */
 template<typename K> inline typename Tree234<K>::Node234 *Tree234<K>::Node234::disconnectChild(int childIndex)
 {
@@ -856,7 +856,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     
     // We are now at the in-order successor leaf node. 
     // TODO: However, if the found_node was the parent of a 2-node leaf that is the in-order successor, the key may be in the convert 2-node leaf node!
-     
+    //.... if (found_node == in_order_successor) { research for key }? 
 
     // Remove in-order successor from leaf and overwrite deleted key with it. 
     // First, check if found_node is internal node
