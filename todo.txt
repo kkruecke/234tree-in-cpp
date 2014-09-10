@@ -1,3 +1,9 @@
 Work on remove() bug:
 Compare the tree shape when 40 is removed until is reappears using the debug
 output.
+----------------
+Converting to managed pointers:
+
+
+unique_ptr objects automatically delete the object they manage (using a deleter) as soon as they themselves are destroyed,
+or as soon as their value changes either by an assignment operation or by an explicit call to unique_ptr::reset.
