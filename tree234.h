@@ -813,26 +813,27 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
        }
     }
 
-    // using found_index and node type, get the child pointer to follow
-    // Debug line below
+    // Invariant checking: this should never happen. 
     if (found_index + 1 > found_node->totalItems) {
 
          throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K?::remove(Key k, Node234 *current"));
     }
 
-    // Search for the in-order successor 
+    // using found_index and node type, get the child pointer to follow in the search for the in-order
+    // successor 
     Node234 *in_order_successor;
     
-    // If key found in an internal node, search for in-order in_order_successor. 
+    // If key found in an internal node, search for in_order_successor. 
     if (!found_node->isLeaf()) {
     
-         // The next largest item with be the smallest item, the left most left node, of the subtree rooted at found_node->children[found_index + 1].
+         // The next largest item with be the smallest item, the left most left node, in the subtree rooted at found_node->children[found_index + 1].
          Node234 *prospective_in_order_successor = found_node->children[found_index + 1]; 
         
          /* 
           * Traverse down the left-most branch until we find a leaf.
           *  
-          *  However if our key is in the parent of an in-order successor that is a 2-node the key may be moved after the 2-node has been converted.
+          *  Note: if the immediate child of found_node is a 2-node, the key may be moved to the child after the 2-node has been converted to a 3- or 4-node.
+          *  This is why there is a second loop that calls searchNode().
           */ 
          
          while (prospective_in_order_successor != nullptr) { 
@@ -853,8 +854,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              prospective_in_order_successor = in_order_successor->children[0];
          }
 
-         // However, if the found_node was the parent of an in-order successor 2-node, now converted to a 3- or 4-node, then the key may now be in the
-         // converted 2-node, so we unconditionally search again rather than try to special-case this.
+         // See note preceding while loop above as to why we call searchNode() again. 
          while ( !found_node->searchNode(key, found_index, next) ) {
 
                   found_node = next;
@@ -902,7 +902,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
  * and pages 64-66 of http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf
  *
  * Case 1: If an adjacent sibling--there are at most two--has 2 or 3 items, "steal" an item from the sibling by
- * rotating items and shifting children. See slide 51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ * rotating items and shifting children. See slide 51 of www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *         
  * Case 2: If each adjacent sibling has only one item (and parent is a 3- or 4-node), we take its sole item together with an item from
  * parent and fuse them into the 2-node, making a 4-node. If the parent is also a 2-node (this only happens in the case of the root),
@@ -1007,7 +1007,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
   connectChild(2, rightOrphan->children[0]); 
   connectChild(3, rightOrphan->children[1]);
 
-  // delete children
+  // delete previous children
   delete leftOrphan;
   delete rightOrphan;
 
@@ -1029,7 +1029,7 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
   Node234 *p2node = parent->children[node2_id];
 
   /* 
-   * First get the index of the parent's key value such that either 
+   * First we get the index of the parent's key value such that either 
    *
    *   parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
    *     
@@ -1037,6 +1037,7 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
    *
    *    parent->children[sibling_id]->keys[0]  <  parent->keys[index] <  parent->children[node2_index]->keys[0]
    *
+   * by taking the minimum of the indecies.
    */
 
   int parent_key_index = std::min(node2_id, sibling_id); 
@@ -1093,11 +1094,12 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
 /*
  * Preconditions: 
  * 1. parent is a 3- or 4-node. 
- * 2. sibling is a 2-node whose child index in the parent is, parent->children[sibling_index].
- * 3. node2_id is child index such that parent->childen[node2_id] is the 2-node being converted (into a 3- or 4-node).
+ * 2. parent->children[sibling_index] is the 2-node sibling to be fused, along with a parent key,
+ *    into the 2-node, to make a 4-node.
+ * 3. parent->childen[node2_id] is the 2-node being converted (into a 3- or 4-node).
  *
  * Returns: node2_id is converted into 4-node by adding sibling's sole key together with a key "stolen" from the parent. The 
- * siblings children are adopted by the former 2- now 4-node. The parent becomes a 2-node, if it was a 3-node, or a 3-node, if it 
+ * siblings children are connected to the former 2- now 4-node. The parent becomes a 2-node, if it was a 3-node; or a 3-node, if it 
  * was a 4-node.
  */
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node234 *parent, int node2_index, int sibling_index)
@@ -1114,8 +1116,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       /* Adjust parent:
          1. Remove parent key (and shift its remaining keys and reduce its totalItems)
          2. Reset parent's children pointers after removing sibling.
-       * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKey reduces. Therefore,
-       * disconnectChild() should always be called before removeKey().
+       * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKey() reduces. Therefore,
+       * disconnectChild() must always be called before removeKey().
        */
       psibling = parent->disconnectChild(sibling_index); // This will do #2.
       
@@ -1136,7 +1138,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       p2node->children[3] = p2node->children[1];  // ... but first shift its children right two positions
       p2node->children[2] = p2node->children[0];
 
-      // Insert sibling's first two child. Note: connectChild() will also reset the parent pointer of these children to be p2node. 
+      // Insert sibling's first two child. Note: connectChild() will also reset the parent pointer of these children (to be p2node). 
       p2node->connectChild(1, psibling->children[1]); 
       p2node->connectChild(0, psibling->children[0]); 
 
@@ -1148,7 +1150,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
          1. Remove parent key (and shift its remaining keys and reduce its totalItems)
          2. Reset its children pointers 
        * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKey reduces. Therefore,
-       * disconnectChild() must always be called before removeKey() or children will not be shifted correctly.
+       * disconnectChild() must always be called before removeKey(), or children will not be shifted correctly.
        */
       psibling = parent->disconnectChild(sibling_index); // this does #2
       
@@ -1161,7 +1163,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
  
       p2node->totalItems = 3; // 3. make it a 4-node
 
-      // Insert sibling's last two child. Note: connectChild() will also reset the parent pointer of these children to be p2node. 
+      // Insert sibling's last two child. Note: connectChild() will also reset the parent pointer of these children (to be p2node). 
 
       p2node->connectChild(3, psibling->children[1]);  // Add sibling's children
       p2node->connectChild(2, psibling->children[0]);  
