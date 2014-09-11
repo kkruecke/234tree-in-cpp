@@ -841,12 +841,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              in_order_successor = prospective_in_order_successor;
         
              if (in_order_successor->isTwoNode()) {
-                
+                /*         
                 if (in_order_successor->parent == found_node) {
 
                         search_again = true;
                 }
-   
+                */
                 in_order_successor = convertTwoNode(in_order_successor);
              } 
         
@@ -857,9 +857,11 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
          // TODO: However, if the found_node was the parent of the in-order successor 2-node leaf, now converted to a 3- or 4-node, then the key may now be in the
          // converted 2-node leaf node!
          //.... if (found_node == in_order_successor) { research for key }? 
-         if (search_again) {
-             
-         }
+         // search again in case a fuse or a rotation moved the key to a child node. 
+         while ( !found_node->searchNode(key, index, next) ) {
+
+                  found_node = next;
+         }            
 
     } else { // else we are at a leaf and the in_order_successor is in the same node.
 
