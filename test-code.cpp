@@ -67,7 +67,8 @@ int main(int argc, char** argv)
         cout << endl;
     }
     
-    cout << "Final Tree\n " << "============" << endl;
+    cout << "Final Tree\n============\n" << endl;
+    
     tree.debug_dump(debug_printer);
     
     cout << endl;
