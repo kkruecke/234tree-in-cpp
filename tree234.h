@@ -848,6 +848,10 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              // Traverse the left subtree root at the smallest child
              prospective_in_order_successor = in_order_successor->children[0];
          }
+         // TODO: However, if the found_node was the parent of the in-order successor 2-node leaf, now converted to a 3- or 4-node, then the key may now be in the
+         // converted 2-node leaf node!
+         //.... if (found_node == in_order_successor) { research for key }? 
+
 
     } else { // else we are at a leaf and the in_order_successor is in the same node.
 
@@ -855,8 +859,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     }
     
     // We are now at the in-order successor leaf node. 
-    // TODO: However, if the found_node was the parent of a 2-node leaf that is the in-order successor, the key may be in the convert 2-node leaf node!
-    //.... if (found_node == in_order_successor) { research for key }? 
 
     // Remove in-order successor from leaf and overwrite deleted key with it. 
     // First, check if found_node is internal node
