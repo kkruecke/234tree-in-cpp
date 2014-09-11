@@ -853,8 +853,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              prospective_in_order_successor = in_order_successor->children[0];
          }
 
-         // However, if the found_node was the parent of the in-order successor 2-node leaf, now converted to a 3- or 4-node, then the key may now be in the
-         // converted 2-node leaf node, so we unconditionally search again rather than try to special-case this.
+         // However, if the found_node was the parent of an in-order successor 2-node, now converted to a 3- or 4-node, then the key may now be in the
+         // converted 2-node, so we unconditionally search again rather than try to special-case this.
          while ( !found_node->searchNode(key, found_index, next) ) {
 
                   found_node = next;
