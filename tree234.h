@@ -21,7 +21,6 @@ public:
 };
 
 template<typename K> class Tree234 {
-  public:
       
   protected:
       
