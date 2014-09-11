@@ -831,17 +831,16 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
         
          /* 
           * Traverse down the left-most branch until we find a leaf.
-          *  TODO: This code is a BUG. It fails to convert leaves that are 2-nodes, which will screw up our tree.
-          *  However if our key, is in the parent of an in-order successor that is a 2-node leaf, the key may be moved to the leaf after the leaf has been converted
-          *  to a 2-node. So we need to handle this.
+          *  
+          *  However if our key is in the parent of an in-order successor that is a 2-node the key may be moved after the 2-node has been converted.
           */ 
-         //--while (!in_order_successor->isLeaf()) {
-         while (prospective_in_order_successor != nullptr) { // fixed first part of bug: converting even leaf 2-nodes.
+         
+         while (prospective_in_order_successor != nullptr) { 
 
              in_order_successor = prospective_in_order_successor;
         
              if (in_order_successor->isTwoNode()) {
-                /*         
+                /*   check for special case      
                 if (in_order_successor->parent == found_node) {
 
                         search_again = true;
@@ -854,10 +853,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              prospective_in_order_successor = in_order_successor->children[0];
          }
 
-         // TODO: However, if the found_node was the parent of the in-order successor 2-node leaf, now converted to a 3- or 4-node, then the key may now be in the
-         // converted 2-node leaf node!
-         //.... if (found_node == in_order_successor) { research for key }? 
-         // search again in case a fuse or a rotation moved the key to a child node. 
+         // However, if the found_node was the parent of the in-order successor 2-node leaf, now converted to a 3- or 4-node, then the key may now be in the
+         // converted 2-node leaf node, so we unconditionally search again rather than try to special-case this.
          while ( !found_node->searchNode(key, index, next) ) {
 
                   found_node = next;
