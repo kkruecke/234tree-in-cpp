@@ -42,13 +42,12 @@ int main(int argc, char** argv)
           
     cout << "============================" << endl;
     
-    int remove_items[] = { 100, 40, 15, 10, 80, 60, 30, 50, 20, 10, 70 };
+    int remove_items[] = { 100, 40, 15, 10, 80, 60, 30, 50, 20, 10, 70, 90 };
     
     /*
      * BUGS: 
-     * After removing 10, the tree prints out as:
-     * 20 40 50 60 70 60
-     * 40 appears even though it was removed and 80 and 30 do not appear.
+     * After removing 30, the tree seems to be wrong.
+     * 
      */ 
             
     for (auto i = 0; i < sizeof(remove_items)/sizeof(int); ++i) {
@@ -68,10 +67,7 @@ int main(int argc, char** argv)
         cout << endl;
     }
     
-    // BUG: 40, 50 and 60 are not being removed above. 
-    tree.remove(40);
-        
-    cout << "Printing tree after removing  " << 40 << "\n";
+    cout << "Final Tree\n " << "============" << endl;
     tree.debug_dump(debug_printer);
     
     cout << endl;
