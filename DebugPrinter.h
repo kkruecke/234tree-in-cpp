@@ -9,7 +9,7 @@
 #define	DEBUGPRINTER_H
 #include <iosfwd>
 
-//template<typename K> Tree234<K>;// fwd reference
+template<typename K> class Tree234;// fwd reference
 
 class DebugPrinter {
     
