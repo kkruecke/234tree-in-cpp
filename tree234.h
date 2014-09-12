@@ -864,18 +864,18 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     
                    } else { 
     
-	                prospective_in_order_successor = next; // correct?
+	                prospective_in_order_successor = next; 
                    } 
           
              } else {
 
-                  prospective_in_order_successor = in_order_successor->children[0]; 
+                  prospective_in_order_successor = in_order_successor->children[0]; // it was not converted, so take smallest child.
              } 
              
          }
     
          int index;
-         // This should always return true, but the found_index may be different
+         // This should always return true, but the found_index may be different. Not sure if this if test is even needed.
          if (found_node->searchNode(key, index, next) ) {
 
                found_index = index;
