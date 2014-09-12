@@ -867,11 +867,11 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
 
                              found_node = convertedNode;
                              found_index = index;
-                             in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
+                             prospective_in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
 
                   } else { // does searchNode set next to the in-order successor if key is not found?
 
-	              in_order_successor = next;
+	              prospective_in_order_successor = next;
                   } 
               */
 
