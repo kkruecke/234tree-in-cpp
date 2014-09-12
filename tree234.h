@@ -847,43 +847,43 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              in_order_successor = prospective_in_order_successor;
         
              if (in_order_successor->isTwoNode()) {
-                /*   check for special case      
-                if (in_order_successor->parent == found_node) {
 
-                        search_again = true;
-                }
-                */
-                in_order_successor = convertTwoNode(in_order_successor);
-             } 
-        
+                   Node234 *convertedNode = convertTwoNode(in_order_successor);
+
+                   int index;
+                   
+                   if (convertedNode->searchNode(key, index, next) ) {
              /* 
               * The key may have been moved to the converted 2-node, now a 3- or 4-node, so we search for it in the converted node. 
               * or the index of the convertedNode to choose as the next-greatest link, the in-order successor link, may not be children[0]. 
               * The second while loop below will also need to be removed.
+              */ 
+                        found_node = convertedNode;
+                        found_index = index;
+                        prospective_in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
+    
+                   } else { 
+    
+	                prospective_in_order_successor = next; // correct?
+                   } 
+          
+             } else {
 
-                  convertedNode = convertTwoNode(in_order_successor);
+                  prospective_in_order_successor = in_order_successor->children[0]; 
+             } 
+             
+         }
+    
+         int index;
+         // This should always return true, but the found_index may be different
+         if (found_node->searchNode(key, index, next) ) {
 
-                  if (convertedNode->searchNode(key, index, next) ) {
+               found_index = index;
+         } else { // This should never happend.
 
-                             found_node = convertedNode;
-                             found_index = index;
-                             prospective_in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
-
-                  } else { // does searchNode set next to the in-order successor if key is not found?
-
-	              prospective_in_order_successor = next;
-                  } 
-              */
-
-                  prospective_in_order_successor = in_order_successor->children[0]; // <-- TODO: This is a bug because 
-                    // the 2-node is now a 3- or 4-node and always selecting children[0] as the next link in may no longer be the correct.
+              throw std::logic_error(std::string("Bug found: searchNode() returned false when it shouldn't have"));
          }
 
-         // See note preceding while loop above as to why we call searchNode() again. 
-         while ( !found_node->searchNode(key, found_index, next) ) {
-
-                  found_node = next;
-         }            
 
     } else { // else we are at a leaf and the in_order_successor is in the same node.
 
