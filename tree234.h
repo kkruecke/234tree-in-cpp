@@ -875,7 +875,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
          }
     
          int index;
-         // This should always return true, but the found_index may be different. Not sure if this if test is even needed.
+         // This should always return true. We only call it because the found_index may have changed as a result of the converting one of found_nodes's
+         // children from a 2-node above.
          if (found_node->searchNode(key, index, next) ) {
 
                found_index = index;
