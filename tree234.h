@@ -856,8 +856,26 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
                 in_order_successor = convertTwoNode(in_order_successor);
              } 
         
-             // Traverse the left subtree root at the smallest child
-             prospective_in_order_successor = in_order_successor->children[0]; // <-- TODO: This is a bug because 
+             /* 
+              * The key may have been moved to the converted 2-node, now a 3- or 4-node, so we search for it in the converted node. 
+              * or the index of the convertedNode to choose as the next-greatest link, the in-order successor link, may not be children[0]. 
+              * The second while loop below will also need to be removed.
+
+                  convertedNode = convertTwoNode(in_order_successor);
+
+                  if (convertedNode->searchNode(key, index, next) ) {
+
+                             found_node = convertedNode;
+                             found_index = index;
+                             in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
+
+                  } else { // does searchNode set next to the in-order successor if key is not found?
+
+	              in_order_successor = next;
+                  } 
+              */
+
+                  prospective_in_order_successor = in_order_successor->children[0]; // <-- TODO: This is a bug because 
                     // the 2-node is now a 3- or 4-node and always selecting children[0] as the next link in may no longer be the correct.
          }
 
@@ -969,13 +987,13 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    // Check if its parent 2-node (or 3- or 4-node).
    bool parentIsTwoNode = parent->isTwoNode();
 
-   if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-nodes
+   if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-nodes...
 
-         if (parentIsTwoNode) { // as is parent (which must be root); otherwise, it would have already been converted.
+         if (parentIsTwoNode) { //... as is the parent, which must be root; otherwise, it would have already been converted.
 
 	     convertedNode = parent->fuseWithChildren();
 
-        } else { // parent is 3- or 4-node 
+        } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
 
              convertedNode = fuseSiblings(parent, node2_index, sibling_index);
         }
