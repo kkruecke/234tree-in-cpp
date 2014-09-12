@@ -857,7 +857,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              } 
         
              // Traverse the left subtree root at the smallest child
-             prospective_in_order_successor = in_order_successor->children[0];
+             prospective_in_order_successor = in_order_successor->children[0]; // <-- TODO: This is a bug because 
+                    // the 2-node is now a 3- or 4-node and always selecting children[0] as the next link in may no longer be the correct.
          }
 
          // See note preceding while loop above as to why we call searchNode() again. 

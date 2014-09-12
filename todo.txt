@@ -1,5 +1,4 @@
-Work on remove() bug. See "TODO:" in remove(K key, Node234 *current).
-
+See "TODO:" for prospective bug.
 ----------------
 Convert code to use managed pointers:
 
