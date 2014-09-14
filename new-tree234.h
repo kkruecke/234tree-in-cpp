@@ -103,6 +103,7 @@ template<typename K> class Tree234 {
        const Node234 *getParent() const;
        int getTotalItems() const;
        int getChildCount() const;
+       bool findKey(K key, int index&) const;
        bool isFull() const;
        bool isLeaf() const; 
        bool isTwoNode() const;
@@ -864,13 +865,13 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
                            // We no longer need to check if the key moved.
                            check_if_key_moved = false;  
 
-                   } else if (convertedNode->searchNode(key, index, next) ) { // It has moved, it is either in coverted node ...
+                   } else if (convertedNode->findKey(key, index) ) { // It has moved, it is either in coverted node ...
              
                         found_node = convertedNode;
                         found_index = index;
                         prospective_in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
-    
-                   } else if (parent->searchNode(key, index, next)) { // or in the parent (and in a different element of parent->keys[].
+     
+                   } else if (parent->findKe(key, index)) { // or in the parent (and in a different element of parent->keys[].
                 
 	                found_index = index; 
                         prospective_in_order_successor = parent->children[index + 1]; // root of subtree with next largest key 

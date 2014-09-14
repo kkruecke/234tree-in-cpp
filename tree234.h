@@ -103,6 +103,7 @@ template<typename K> class Tree234 {
        const Node234 *getParent() const;
        int getTotalItems() const;
        int getChildCount() const;
+       bool findKey(K key, int index&) const;
        bool isFull() const;
        bool isLeaf() const; 
        bool isTwoNode() const;
@@ -841,6 +842,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
           *  converted to a 3- or 4-node.
           *  This is why there is a second loop that calls searchNode().
           */ 
+         bool check_if_key_moved = true;
          
          while (prospective_in_order_successor != nullptr) { 
 
@@ -851,40 +853,35 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
                    Node234 *convertedNode = convertTwoNode(in_order_successor);
 
                    int index;
-                   
-                   if (convertedNode->searchNode(key, index, next) ) {
              /* 
-              * The key may have been moved to the converted 2-node, now a 3- or 4-node, so we search for it in the converted node. 
-              * or the index of the convertedNode to choose as the next-greatest link, the in-order successor link, may not be children[0]. 
-              * The second while loop below will also need to be removed.
-              */ 
+              * If a rotation occurred, the key may have moved to the converted 2-node (now a 3-node). If a fusion of the 2-node with
+              * its adjacent sibling 2-node sibling, together with a parent key, it again may have moved to the converted node. If the parent
+              * and the siblings are both 2-nodes, then the converted node is now part of the parent, and the key will have moved within the 
+              * parent.
+              */       
+                   // check if it moved
+                   if (found_index < found_node->totalItems && found_node[found_index] == key) {
+
+                           // We no longer need to check if the key moved.
+                           check_if_key_moved = false;  
+
+                   } else if (convertedNode->findKey(key, index) ) { // It has moved, it is either in coverted node ...
+             
                         found_node = convertedNode;
                         found_index = index;
                         prospective_in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
-    
-                   } else { 
-    
-	                prospective_in_order_successor = next; 
+     
+                   } else if (parent->findKe(key, index)) { // or in the parent (and in a different element of parent->keys[].
+                
+	                found_index = index; 
+                        prospective_in_order_successor = parent->children[index + 1]; // root of subtree with next largest key 
                    } 
           
              } else {
 
                   prospective_in_order_successor = in_order_successor->children[0]; // it was not converted, so take smallest child.
              } 
-             
          }
-    
-         int index;
-         // This should always return true. We only call it because the found_index may have changed as a result of the converting one of found_nodes's
-         // children from a 2-node above.
-         if (found_node->searchNode(key, index, next) ) {
-
-               found_index = index;
-         } else { // This should never happend.
-
-              throw std::logic_error(std::string("Bug found: searchNode() returned false when it shouldn't have"));
-         }
-
 
     } else { // else we are at a leaf and the in_order_successor is in the same node.
 
