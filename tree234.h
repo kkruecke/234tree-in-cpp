@@ -850,8 +850,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
          /* 
           * Traverse down the left-most branch until we find a leaf.
           *  
-          *  Note: if the immediate child of found_node is a 2-node, the key may have moved to the child after the 2-node has been
-          *  converted to a 3- or 4-node, or it may have shifted (to keys[1]) if the children where fused with it.
+          *  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index], the parent) may get moved down to
+          *  the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may have shifted (to keys[1]) if 
+          *  fuseWithChildren() was called. 
           */ 
          bool check_if_key_moved = true;
          
@@ -877,12 +878,17 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
               * and the siblings are both 2-nodes, then the converted node is now part of the parent, and the key will have moved within the 
               * parent.
               */       
-                   } else if ( convertedNode->findKey(key, index) || found_node->findKey(key, index) )  { // It has moved, it is either in the converted node ...
-                                                                              // ... or in its parent, found_node. 
+                   } else if ( convertedNode->findKey(key, index) || found_node->findKey(key, index) )  { /* It is either in the converted node ...
+                                                                                 ... or in its parent, found_node. */
                         found_node = convertedNode;
                         found_index = index;
                         prospective_in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
-                   }           
+
+                   } else { /* This should never happen: Either the key didn't move from found_node->keys[found_index] or it moved within
+                             *  found_node or it moved within found_node.   */ 
+
+                        throw std::logic_error(std::string("Bug in remove(K key, Node234*current): 2-node converted, but key not found"));
+                   }          
 
              } else {
 
