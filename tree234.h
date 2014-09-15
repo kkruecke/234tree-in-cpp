@@ -850,9 +850,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
          /* 
           * Traverse down the left-most branch until we find a leaf.
           *  
-          *  Note: if the immediate child of found_node is a 2-node, the key may be moved to the child after the 2-node has been
-          *  converted to a 3- or 4-node.
-          *  This is why there is a second loop that calls searchNode().
+          *  Note: if the immediate child of found_node is a 2-node, the key may have moved to the child after the 2-node has been
+          *  converted to a 3- or 4-node, or it may have shifted (to keys[1]) if the children where fused with it.
           */ 
          bool check_if_key_moved = true;
          
@@ -863,35 +862,31 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              if (in_order_successor->isTwoNode()) {
 
                    Node234 *convertedNode = convertTwoNode(in_order_successor);
-                   
-                   if (!check_if_key_moved) { // We no longer need check if the key moved to 
-                       
-                       prospective_in_order_successor = convertedNode->children[0];
-                       continue;
-                   }
 
                    int index;
+                   
+                   if (!check_if_key_moved || (found_index < found_node->totalItems && found_node->keys[found_index] == key) )  { 
+
+                        // We no longer need check if the key moved to 
+                       check_if_key_moved  = false;
+                       prospective_in_order_successor = convertedNode->children[0];
+                   
              /* 
               * If a rotation occurred, the key may have moved to the converted 2-node (now a 3-node). If a fusion of the 2-node with
               * its adjacent sibling 2-node sibling, together with a parent key, it again may have moved to the converted node. If the parent
               * and the siblings are both 2-nodes, then the converted node is now part of the parent, and the key will have moved within the 
               * parent.
               */       
-                   // check if it moved
-                   if (found_index < found_node->totalItems && found_node->keys[found_index] == key) {
-
-                        // We no longer need to check if the key moved.
-                        check_if_key_moved = false;  
-                        prospective_in_order_successor = convertedNode->children[0];
-
                    } else if ( convertedNode->findKey(key, index) || found_node->findKey(key, index) )  { // It has moved, it is either in the converted node ...
                                                                               // ... or in its parent, found_node. 
                         found_node = convertedNode;
                         found_index = index;
                         prospective_in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
                    }           
+
              } else {
 
+                  check_if_key_moved = false; 
                   prospective_in_order_successor = in_order_successor->children[0]; // it was not converted, so take smallest child.
              } 
          }
