@@ -103,7 +103,7 @@ template<typename K> class Tree234 {
        const Node234 *getParent() const;
        int getTotalItems() const;
        int getChildCount() const;
-       bool findKey(K key, int index&) const;
+       bool findKey(K key, int& index) const;
        bool isFull() const;
        bool isLeaf() const; 
        bool isTwoNode() const;
@@ -132,6 +132,18 @@ template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3;
 template<typename K> inline int Tree234<K>::Node234::getTotalItems() const
 {
    return totalItems; 
+}
+
+template<typename K> inline bool Tree234<K>::Node234::findKey(K key, int& index) const
+{
+   for(index = 0; index < totalItems; ++index) {
+       
+       if (keys[index] == key) {
+           return true;
+       }
+   }   
+   
+   return false;
 }
 
 template<typename K> inline int Tree234<K>::Node234::getChildCount() const
@@ -851,6 +863,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
              if (in_order_successor->isTwoNode()) {
 
                    Node234 *convertedNode = convertTwoNode(in_order_successor);
+                   
+                   if (!check_if_key_moved) { // We no longer need check if the key moved to 
+                       
+                       prospective_in_order_successor = convertedNode->children[0];
+                       continue;
+                   }
 
                    int index;
              /* 
@@ -860,23 +878,18 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
               * parent.
               */       
                    // check if it moved
-                   if (found_index < found_node->totalItems && found_node[found_index] == key) {
+                   if (found_index < found_node->totalItems && found_node->keys[found_index] == key) {
 
-                           // We no longer need to check if the key moved.
-                           check_if_key_moved = false;  
+                        // We no longer need to check if the key moved.
+                        check_if_key_moved = false;  
+                        prospective_in_order_successor = convertedNode->children[0];
 
-                   } else if (convertedNode->findKey(key, index) ) { // It has moved, it is either in coverted node ...
-             
+                   } else if ( convertedNode->findKey(key, index) || found_node->findKey(key, index) )  { // It has moved, it is either in the converted node ...
+                                                                              // ... or in its parent, found_node. 
                         found_node = convertedNode;
                         found_index = index;
                         prospective_in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
-     
-                   } else if (parent->findKe(key, index)) { // or in the parent (and in a different element of parent->keys[].
-                
-	                found_index = index; 
-                        prospective_in_order_successor = parent->children[index + 1]; // root of subtree with next largest key 
-                   } 
-          
+                   }           
              } else {
 
                   prospective_in_order_successor = in_order_successor->children[0]; // it was not converted, so take smallest child.
