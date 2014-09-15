@@ -910,7 +910,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
 
 	    found_node->keys[found_index] = in_order_successor->removeKey(0);
 
-    } else if (found_index + 1 <= found_node->totalItems) { 
+    } else if (found_index < found_node->totalItems) { 
 
             // The in-order in_order_successor is in same leaf node, so simply remove it, which will also overwrite its position by
             // shifting all keys to right of it one position left.
@@ -1049,7 +1049,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
   delete leftOrphan;
   delete rightOrphan;
 
-  return const_cast<Node234 *>(this);  
+  //--return const_cast<Node234 *>(this);  
+  return this;  
 }
 /*
  * preconditions:
