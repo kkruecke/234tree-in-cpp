@@ -8,6 +8,8 @@
 #ifndef DEBUGPRINTER_H
 #define	DEBUGPRINTER_H
 #include <iosfwd>
+#include <string>
+#include <sstream>
 
 template<typename K> class Tree234;// fwd reference
 
@@ -21,7 +23,7 @@ public:
     template<class K> std::ostream& operator()(K k, int index, const typename Tree234<K>::Node234 *current);
 };
 
-template<class K> inline std::ostream& DebugPrinter::operator()(K k, int index, const typename Tree234<K>::Node234 *current)
+template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index, const typename Tree234<K>::Node234 *current)
 {
 
     const typename Tree234<K>::Node234 *parent = current->getParent();
@@ -29,30 +31,34 @@ template<class K> inline std::ostream& DebugPrinter::operator()(K k, int index, 
     int child_index = -1; // This means the parent is nullptr and current is therefore the root.
     
     if (parent != nullptr) {
-        
     
         for (child_index = 0; child_index <= parent->getTotalItems(); ++child_index) {
        
-             if (current == parent->children[child_index]) {
+             if (current == parent->children[child_index]) { 
                  break;
             }  
         }
     } 
     
+    std::ostringstream oss;
+
+    oss << " address(" << current << "): key[" << index << "]: " << key <<  " parent[" << current->getParent() << "] -->children[" << child_index << "]-->keys[" << index << "] = " << key << "\n";
+
+    std::string suffix = oss.str();
 
     switch (current->getTotalItems()) {
     
       case 1: // 2-node
-              ostr_ << "\nTwo node   (" << current << "): key[" << index << "]: " << k << " parent:[" << current->getParent() << "]:childId[" << child_index << "] \n";
+              ostr_ << "\nTwo node:  " << suffix;
               break;
     
       case 2: // 3-node
 
-              ostr_ << "\nThree node (" << current << "): key[" << index << "]: " << k << " parent:[" << current->getParent() << "]:childId[" << child_index << "]\n";
+              ostr_ << "\nThree node:" << suffix; 
               break;
     
       case 3: // 4-node
-              ostr_ << "\nFour node  (" << current << "): key[" << index << "]: " << k << " parent:[" << current->getParent() <<  "]:childId[" << child_index << "] \n";
+              ostr_ << "\nFour node: " << suffix; 
               break;
     }
 
