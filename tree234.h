@@ -888,6 +888,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
 
                    int index;
                    
+                   // TODO: Bug: This test is not correct when the tree contains a single 2-node with two children and fuseWithChildren() converts
+                   // it into a single 4-node with nullptr children. Then the found_node has been deleted.
+                   
                    if (!check_if_key_moved || (found_index < found_node->totalItems && found_node->keys[found_index] == key) )  { 
 
                         // We no longer need check if the key moved to 
@@ -902,7 +905,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
               */       
                    } else if ( convertedNode->findKey(key, index) || found_node->findKey(key, index) )  { /* It is either in the converted node ...
                                                                                  ... or in its parent, found_node. */
-                        found_node = convertedNode;
+                        found_node = convertedNode; // TODO: Bug <--doesn't correspond to if-test.
                         found_index = index;
                         prospective_in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
 
