@@ -524,7 +524,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
 
             DoPostOrder4Debug(f, current->children[1]);
 
-            f(current->keys[0], 0, current, isRoot);
+            f(current->keys[0], 0, current, root);
             break;
 
       case 2: // three node
@@ -532,11 +532,11 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
 
             DoPostOrder4Debug(f, current->children[1]);
 
-            f(current->keys[0], 0, current, isRoot);
+            f(current->keys[0], 0, current, root);
 
             DoPostOrder4Debug(f, current->children[2]);
 
-            f(current->keys[1], 1, current, isRoot);
+            f(current->keys[1], 1, current, root);
             break;
 
       case 3: // four node
@@ -544,15 +544,15 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
 
             DoPostOrder4Debug(f, current->children[1]);
 
-            f(current->keys[0], 0, current, isRoot);
+            f(current->keys[0], 0, current, root);
 
             DoPostOrder4Debug(f, current->children[2]);
 
-            f(current->keys[1], 1, current, isRoot);
+            f(current->keys[1], 1, current, root);
 
             DoPostOrder4Debug(f, current->children[3]);
 
-            f(current->keys[2], 2, current, isRoot);
+            f(current->keys[2], 2, current, root);
  
             break;
    }
