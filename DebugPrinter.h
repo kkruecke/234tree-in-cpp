@@ -20,15 +20,17 @@ class DebugPrinter {
 public:
     DebugPrinter(std::ostream& ostr) : ostr_(ostr) {}
     DebugPrinter(const DebugPrinter& tp) : ostr_(tp.ostr_) {}
-    template<class K> std::ostream& operator()(K k, int index, const typename Tree234<K>::Node234 *current, bool isRoot);
+    template<class K> std::ostream& operator()(K k, int index, const typename Tree234<K>::Node234 *current,
+                                                                                     const  typename Tree234<K>::Node234 *const root);
 };
 
-template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index, const typename Tree234<K>::Node234 *current, bool isRoot)
+template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index, const typename Tree234<K>::Node234 *current,
+                                                                const typename Tree234<K>::Node234 *const root)
 {
-
     const typename Tree234<K>::Node234 *parent = current->getParent();
 
-    int child_index; // This means the parent is nullptr and current is therefore the root.
+    // Get current's child index in its parent.
+    int child_index; 
     
     if (parent != nullptr) {
     
@@ -41,19 +43,34 @@ template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index
     } 
     
     std::ostringstream oss;
+    std::string strLeaf = (current->isLeaf()) ? " <-- Leaf " : "";
+
+    strLeaf += std::string("\n");
     
     if (parent != nullptr) {
-        
-        oss << " address(" << current << "): key[" << index << "] = " << key <<  ": parent[" << parent << "]->children[" << child_index << "]->keys[" << index << "] = " << key << "\n";
+             
+        oss << " address(" << current << "): key[" << index << "] = " << key <<  ": parent[";
+
+        if (parent == root) {
+
+           oss << "  root   ";
+
+        } else {
+
+           oss << parent;
+        }   
+
+        oss   << "]->children[" << child_index << "]->keys[" << index << "] = " << key;
         
     } else {
         
-        oss << " address(" << current << "): key[" << index << "] = " << key <<  ": root\n";
+        oss << " address(" << current << "): key[" << index << "] = " << key <<  ": root";
     }
 
     std::string suffix = oss.str();
-  //--std::string suffix("some junk");
 
+    suffix += strLeaf; 
+  
     switch (current->getTotalItems()) {
     
       case 1: // 2-node
