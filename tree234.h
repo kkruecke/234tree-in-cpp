@@ -49,6 +49,7 @@ template<typename K> class Tree234 {
     Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id);
     
     Node234 *doRotation(Node234 *parent, int node2_id, int sibling_id);
+    bool isRoot(Node234 *node);
 
    class Node234 {
        
@@ -132,6 +133,11 @@ template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3;
 template<typename K> inline int Tree234<K>::Node234::getTotalItems() const
 {
    return totalItems; 
+}
+
+template<typename K> inline  bool isRoot(Node234 *node)
+{
+   return  (node == root) ? true : false;	
 }
 
 template<typename K> inline bool Tree234<K>::Node234::findKey(K key, int& index) const
