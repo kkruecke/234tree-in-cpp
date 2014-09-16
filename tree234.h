@@ -450,11 +450,7 @@ template<typename K> template<typename Functor> inline void Tree234<K>::debug_du
  * post order traversal 
  */
 template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTraverse(Functor f, Node234 *current)
-{     
-   if (current == nullptr) {
-
-	return;
-   }
+{  
 
    switch (current->totalItems) {
 
@@ -503,6 +499,13 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTrav
  */
 template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Debug(Functor f, Node234 *current)
 {     
+   bool isRoot = (current == root) ? true : false;
+
+   if (current == nullptr) {
+
+	return;
+   }
+
    if (current == nullptr) {
 
 	return;
@@ -515,7 +518,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
 
             DoPostOrder4Debug(f, current->children[1]);
 
-            f(current->keys[0], 0, current);
+            f(current->keys[0], 0, current, isRoot);
             break;
 
       case 2: // three node
@@ -523,11 +526,11 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
 
             DoPostOrder4Debug(f, current->children[1]);
 
-            f(current->keys[0], 0, current);
+            f(current->keys[0], 0, current, isRoot);
 
             DoPostOrder4Debug(f, current->children[2]);
 
-            f(current->keys[1], 1, current);
+            f(current->keys[1], 1, current, isRoot);
             break;
 
       case 3: // four node
@@ -535,15 +538,15 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
 
             DoPostOrder4Debug(f, current->children[1]);
 
-            f(current->keys[0], 0, current);
+            f(current->keys[0], 0, current, isRoot);
 
             DoPostOrder4Debug(f, current->children[2]);
 
-            f(current->keys[1], 1, current);
+            f(current->keys[1], 1, current, isRoot);
 
             DoPostOrder4Debug(f, current->children[3]);
 
-            f(current->keys[2], 2, current);
+            f(current->keys[2], 2, current, isRoot);
  
             break;
    }

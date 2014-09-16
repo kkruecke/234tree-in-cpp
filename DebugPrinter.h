@@ -20,10 +20,10 @@ class DebugPrinter {
 public:
     DebugPrinter(std::ostream& ostr) : ostr_(ostr) {}
     DebugPrinter(const DebugPrinter& tp) : ostr_(tp.ostr_) {}
-    template<class K> std::ostream& operator()(K k, int index, const typename Tree234<K>::Node234 *current);
+    template<class K> std::ostream& operator()(K k, int index, const typename Tree234<K>::Node234 *current, bool isRoot);
 };
 
-template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index, const typename Tree234<K>::Node234 *current)
+template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index, const typename Tree234<K>::Node234 *current, bool isRoot)
 {
 
     const typename Tree234<K>::Node234 *parent = current->getParent();
@@ -42,9 +42,10 @@ template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index
     
     std::ostringstream oss;
 
-    oss << " address(" << current << "): key[" << index << "]: " << key <<  " parent[" << current->getParent() << "] -->children[" << child_index << "]-->keys[" << index << "] = " << key << "\n";
+    oss << " address(" << current << "): key[" << index << "]: " << key <<  " parent[" << parent << "] -->children[" << child_index << "]-->keys[" << index << "] = " << key << "\n";
 
     std::string suffix = oss.str();
+  //--std::string suffix("some junk");
 
     switch (current->getTotalItems()) {
     
