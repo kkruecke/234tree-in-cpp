@@ -28,7 +28,7 @@ template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index
 
     const typename Tree234<K>::Node234 *parent = current->getParent();
 
-    int child_index = -1; // This means the parent is nullptr and current is therefore the root.
+    int child_index; // This means the parent is nullptr and current is therefore the root.
     
     if (parent != nullptr) {
     
@@ -41,8 +41,15 @@ template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index
     } 
     
     std::ostringstream oss;
-
-    oss << " address(" << current << "): key[" << index << "]: " << key <<  " parent[" << parent << "] -->children[" << child_index << "]-->keys[" << index << "] = " << key << "\n";
+    
+    if (parent != nullptr) {
+        
+        oss << " address(" << current << "): key[" << index << "] = " << key <<  ": parent[" << parent << "]->children[" << child_index << "]->keys[" << index << "] = " << key << "\n";
+        
+    } else {
+        
+        oss << " address(" << current << "): key[" << index << "] = " << key <<  ": root\n";
+    }
 
     std::string suffix = oss.str();
   //--std::string suffix("some junk");

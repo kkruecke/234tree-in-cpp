@@ -192,20 +192,24 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
 template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(1), parent(nullptr)
 { 
    keys[0] = small; 
-
+   children[0] = nullptr;
+/*
    for (int i = 0; i < MAX_KEYS + 1; i++) {		
        children[i] = nullptr;
    }
+*/
 }
 
 template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : totalItems(2), parent(nullptr)
 { 
    keys[0] = small; 
    keys[1] = middle; 
-
+   children[0] = nullptr;
+/*
    for (int i = 0; i < MAX_KEYS + 1; i++) {		
        children[i] = nullptr;
     }
+*/
 }
 
 template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large) : totalItems(3), parent(nullptr)
@@ -213,10 +217,12 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
    keys[0] = small; 
    keys[1] = middle; 
    keys[3] = large; 
-    
+   children[0] = nullptr;
+/*    
    for (int i = 0; i < MAX_KEYS + 1; i++) {		
        children[i] = nullptr;
     }
+*/
 }
 /*
  * precondition: childIndex is within the range for the type of node.
