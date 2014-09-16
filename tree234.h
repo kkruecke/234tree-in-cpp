@@ -926,11 +926,11 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
     
     // We are now at the in-order successor leaf node. 
 
-    // Remove in-order successor from leaf and overwrite deleted key with it. 
+    // Remove in-order successor from leaf and overwrite key to be deleted with it. 
     // First, check if found_node is internal node
-    if (found_node != in_order_successor) {
+    if (!found_node->isLeaf() && found_node != in_order_successor) { // <-- the found_node may be the only node
 
-	    found_node->keys[found_index] = in_order_successor->removeKey(0);
+	    found_node->keys[found_index] = in_order_successor->removeKey(0);  // <-- wrong
 
     } else if (found_index < found_node->totalItems) { 
 
