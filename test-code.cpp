@@ -59,30 +59,14 @@ int main(int argc, char** argv)
         
         cout << "item " << item << str_remove_status;
         
-        
-        
-       
-        if (item != 87) {
+        cout << "\n\n=======Tree Debug  =====================" << endl;
 
-            cout << "\n\n=======Tree Debug (PostOrder) Printer  =====================" << endl;
+        tree.debug_dump(debug_printer);
 
-            tree.debug_dump(debug_printer);
+        cout << "\n=================== Normal Tree Print =======================\n";
 
-            cout << "\n=================== Normal Tree Print =======================\n";
-
-            tree.traverse(printer);
+        tree.traverse(printer);
                        
-        } else {
-
-            cout << "\n\n=======Tree Debug (PostOrder) Printer  =====================" << endl;
-
-            tree.debug_dump(debug_printer);
-
-            cout << "\n=================== Normal Tree Print =======================\n";
-
-            tree.traverse(printer);
-        }  
-        
         cout << endl;
     }
     
