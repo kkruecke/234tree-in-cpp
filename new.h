@@ -49,6 +49,7 @@ template<typename K> class Tree234 {
     Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id);
     
     Node234 *doRotation(Node234 *parent, int node2_id, int sibling_id);
+    bool isRoot(Node234 *node);
 
    class Node234 {
        
@@ -132,6 +133,11 @@ template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3;
 template<typename K> inline int Tree234<K>::Node234::getTotalItems() const
 {
    return totalItems; 
+}
+
+template<typename K> inline  bool isRoot(Node234 *node)
+{
+   return  (node == root) ? true : false;	
 }
 
 template<typename K> inline bool Tree234<K>::Node234::findKey(K key, int& index) const
@@ -878,15 +884,23 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
           */ 
          bool check_if_key_moved = true;
          
-         while (prospective_in_order_successor != nullptr) { 
+         while (true) { 
+       //while (prospective_in_order_successor != nullptr) { 
 
              in_order_successor = prospective_in_order_successor;
         
              if (in_order_successor->isTwoNode()) {
 
+                   int index;
+
                    Node234 *convertedNode = convertTwoNode(in_order_successor);
 
-                   int index;
+                   if (convertedNode != in_order_successor) { // fuseWithSiblings() was called
+
+                         if (found_node == convertedNode) { // does this mean convertedNode->isRoot() since fuse
+
+                               convertedNode->findKey(key, index)/searchNode() ? 
+                          }                       
                    
                    /*
                     * TODO: Bug found: This test is not correct when the tree contains a single 2-node with two children and fuseWithChildren() converts
@@ -902,7 +916,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
                     */
                 
 	           /*
-                    * Maybe check if key moved, that might be simplier? This seems very convoluted. 
+                    * Maybe check if key moved, that might be simplier? This seems very convoluted. We are only checking whether a rotation or fusion of siblings
+                    * occurred that moved the key to the convertedNode
 		    */                
                    if (!check_if_key_moved || (found_index < found_node->totalItems && found_node->keys[found_index] == key) )  { 
 
