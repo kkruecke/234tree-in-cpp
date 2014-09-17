@@ -895,17 +895,20 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
                    int index;
                    
                    /*
-                    * TODO: Bug: This test is not correct when the tree contains a single 2-node with two children and fuseWithChildren() converts
+                    * TODO: Bug found: This test is not correct when the tree contains a single 2-node with two children and fuseWithChildren() converts
                     * it into a single 4-node with nullptr children. Then the found_node has been deleted.
-                   if (convertedNode->isLeaf()) {
+                   if (convertedNode != in_order_successor) { // fuseWithSiblings() was called
 
-                         ... 
-                         break;                    
+                         if (convertedNode->isLeaf()) { // we have our successor. Is it the same node as found_node?
+
+                            ... 
+                            break;                    
+                         }
                    } else...
                     */
                 
 	           /*
-                    * Maybe check if key moved, that might be simplier? 
+                    * Maybe check if key moved, that might be simplier? This seems very convoluted. 
 		    */                
                    if (!check_if_key_moved || (found_index < found_node->totalItems && found_node->keys[found_index] == key) )  { 
 
