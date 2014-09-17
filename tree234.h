@@ -897,11 +897,16 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
                    /*
                     * TODO: Bug: This test is not correct when the tree contains a single 2-node with two children and fuseWithChildren() converts
                     * it into a single 4-node with nullptr children. Then the found_node has been deleted.
-                   if (convertedNode->isRoot()) { // Then the in_order_successor must now be the root.
-                   
+                   if (convertedNode->isLeaf()) {
+
+                         ... 
+                         break;                    
                    } else...
                     */
-                    
+                
+	           /*
+                    * Maybe check if key moved, that might be simplier? 
+		    */                
                    if (!check_if_key_moved || (found_index < found_node->totalItems && found_node->keys[found_index] == key) )  { 
 
                         // We no longer need check if the key moved to 
