@@ -889,16 +889,13 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
                    int index;
                                   
                    if (convertedNode == found_node) { // fuseWithSiblings() was called. This only happens when leaves are fused with root.
-
-                       //if (found_node->isLeaf()) { // we have our successor, and it is the same node as found_node?
                              
-                            found_node->findKey(key, found_index);
-                            in_order_successor = found_node;
-                            break;
-                      // } 
+                         found_node->findKey(key, found_index);
+                         in_order_successor = found_node;
+                         break;
 
                     /*
-                     * Check if key moved.
+                     * else Check if key moved.
 		     */
                    } else if (!check_if_key_moved || (found_index < found_node->totalItems && found_node->keys[found_index] == key) )  { 
 
