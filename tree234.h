@@ -888,18 +888,17 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
 
                    int index;
                                   
-                   if (convertedNode == found_node) { // fuseWithSiblings() was called. This only happens when leaves fused with root.
+                   if (convertedNode == found_node) { // fuseWithSiblings() was called. This only happens when leaves are fused with root.
 
-                         if (convertedNode->isLeaf()) { // we have our successor, and it is the same node as found_node?
+                         if (found_node->isLeaf()) { // we have our successor, and it is the same node as found_node?
                              
                             found_node->findKey(key, found_index);
                             in_order_successor = found_node;
                             break;
-
                          } 
                     /*
-                    * Maybe check if key moved, that might be simplier? This seems very convoluted. 
-		    */
+                     * Check if key moved.
+		     */
                    } else if (!check_if_key_moved || (found_index < found_node->totalItems && found_node->keys[found_index] == key) )  { 
 
                         // We no longer need check if the key moved to 
@@ -907,16 +906,11 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
                        prospective_in_order_successor = convertedNode->children[0];
                    
              /* 
-              * If a rotation occurred, the key may have moved to the converted 2-node (now a 3-node). If a fusion of the 2-node with
-              * its adjacent sibling 2-node sibling, together with a parent key, it again may have moved to the converted node. If the parent
-              * and the siblings are both 2-nodes, then the converted node is now part of the parent, and the key will have moved within the 
-              * parent.
+              * If a rotation occurred, the key may have moved to the converted 2-node (now a 3-node). Also, if a fusion of the 2-node with
+              * its adjacent sibling 2-node sibling, together with a parent key, it again may have moved to the converted node.
               */      
-                // } else if ( convertedNode->findKey(key, index) || found_node->findKey(key, index) )  { /* It is either in the converted node ...
                    } else if ( convertedNode->findKey(key, index) )  { /* It is either in the converted node ...
                                                                                  ... or in its parent, found_node. */
- // TODO: Bug <--doesn't correspond to 2nd half of if-test. Change this to simply call a find() method of some sort. I may have to write it.
- // We know that the key will not be in the found_node. That was handled above.
                         found_node = convertedNode;
                         found_index = index;
                         prospective_in_order_successor = convertedNode->children[index + 1]; // root of subtree with next largest key 
