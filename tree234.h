@@ -193,11 +193,6 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(
 { 
    keys[0] = small; 
    children[0] = nullptr;
-/*
-   for (int i = 0; i < MAX_KEYS + 1; i++) {		
-       children[i] = nullptr;
-   }
-*/
 }
 
 template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : totalItems(2), parent(nullptr)
@@ -205,11 +200,7 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : t
    keys[0] = small; 
    keys[1] = middle; 
    children[0] = nullptr;
-/*
-   for (int i = 0; i < MAX_KEYS + 1; i++) {		
-       children[i] = nullptr;
-    }
-*/
+
 }
 
 template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large) : totalItems(3), parent(nullptr)
@@ -218,11 +209,7 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
    keys[1] = middle; 
    keys[3] = large; 
    children[0] = nullptr;
-/*    
-   for (int i = 0; i < MAX_KEYS + 1; i++) {		
-       children[i] = nullptr;
-    }
-*/
+
 }
 /*
  * precondition: childIndex is within the range for the type of node.
@@ -259,14 +246,7 @@ template<typename K> inline typename Tree234<K>::Node234 *Tree234<K>::Node234::d
 template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, Tree234<K>::Node234 *pChild)
 {
   // shift children right in order to insert pChild
-  /*
-  int childCount =  totalItems + 1;  // <-- Bug. The child has not yet been added.
-  for(int i = childNum; i < childCount; ++i) { 
-
-       children[i + 1] = children[i]; // shift remaining children to the right
-  } 
-  */
-
+  
   /*
    * When insertChild() is called, totalItems reflects the number of keys after a new key was added, but before a new child was inserted.
    * Therefore, the index of the last child would be totalItems - 1. For example, if the prior totalIems was 1, and we made the 2-node a 3-node
