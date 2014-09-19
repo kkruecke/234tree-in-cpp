@@ -26,7 +26,7 @@ public:
     TreeInserter(Tree234<T> &t) : tree(t) {}
     void operator()(int key) { tree.insert(key); }
 };
-
+/*
 class GenSequence {
   int i;
  public:
@@ -34,13 +34,11 @@ class GenSequence {
    GenSequence(const GenSequence& g) : i(g.i) {}
    int operator()() { return i--; }
 };
-
+*/
 int main(int argc, char** argv)
 {
-  vector<int> v(100);
+  vector<int> v{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};
 
-  generate_n(v.begin(), 100, GenSequence(100));
-  
   Tree234<int> tree;
   
   TreeInserter<int> tree_inserter(tree);
@@ -65,15 +63,20 @@ int main(int argc, char** argv)
   
   vector< int > v_copy;
   
-  copy(v.begin(), v.end(), back_inserter(v_copy));
+  copy(v.rbegin(), v.rend(), back_inserter(v_copy));
   
    
   for (vector<int>::reverse_iterator iter = v_copy.rbegin(); iter != v_copy.rend(); ++iter) {
 
     int item = *iter;
+    
+    if (item == 50) {
+        cout << "50 FOUND\n"  << endl;
+        //return 0;
+    }
 
     bool rc = tree.remove(item);
-
+       
     string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
 
     cout << "item " << item << str_remove_status;

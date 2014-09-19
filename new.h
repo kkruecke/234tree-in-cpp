@@ -872,12 +872,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
                              
                          found_node->findKey(key, found_index);
 
-                         if (found_node->isLeaf()) { // This should always be true...
+                         if (found_node->isLeaf()) {
 
                             in_order_successor = found_node;
                             break;
 
-                         } else { //..but this is insurance.
+                         } else {
 
                              prospective_in_order_successor = found_node->children[found_index + 1];   
 
