@@ -611,7 +611,7 @@ template<typename K> void Tree234<K>::insert(K key)
 {
     if (root == nullptr) {
 
-       root =  new Node234(key); 
+       root =  new Node234{key}; 
        return; 
     } 
 
@@ -684,7 +684,7 @@ template<typename K> void Tree234<K>::split(Node234 *node)
     Node234 *child2 = node->children[2]; 
     Node234 *child3 = node->children[3]; 
 
-    Node234 *newRight = new Node234(itemC); // make new right child node from largest item
+    Node234 *newRight = new Node234{itemC}; // make new right child node from largest item
 
     /* set its left and right children to be the two right-most children of node */
     if (child2 && child3) { // that is, if they are not zero
@@ -703,7 +703,7 @@ template<typename K> void Tree234<K>::split(Node234 *node)
     if(node == root) { 
 
         /* make new root two node using node's middle value */  
-        root = new Node234(itemB); 
+        root = new Node234{itemB}; 
         parent = root;          // root is parent of node
         root->connectChild(0, node); // connect node to root as left child
         root->connectChild(1, newRight);
