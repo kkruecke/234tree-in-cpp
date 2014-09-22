@@ -11,15 +11,6 @@ template<typename T> class Tree234;
 template<typename K> class Node234; 
 class DebugPrinter; 
 
-class duplicatekey :  public std::exception {
-public:
-    
-  virtual const char* what() const throw()
-  {
-    return "Attempting to insert duplicate key ";
-  }
-};
-
 template<typename K> class Tree234 {
       
   protected:
@@ -73,9 +64,10 @@ template<typename K> class Tree234 {
        Node234 *children[4];
 
        Node234 *getParent(); 
-       /* searchNode(K key, int& index, Node234 *&next)
-        * Returns true if key is found in node. Sets index such that this->keys[index] == key
-        * Returns false if key is if not found, and sets next to the next in-order child.
+
+       /* 
+        * Returns true if key is found in node and set index: this->keys[index] == key
+        * Returns false if key is if not found; set next to the next in-order child.
         */
        bool searchNode(K key, int& index, Node234 *&next);
 
@@ -83,7 +75,7 @@ template<typename K> class Tree234 {
        void connectChild(int childNum, Node234 *child);
        
        /*
-        * Remove key, if found, from node and shifting remaining keys to fill its gap.
+        * Remove key, if found, from node, shifting remaining keys to fill its gap.
         */  
        K removeKey(int index);
  
@@ -91,6 +83,7 @@ template<typename K> class Tree234 {
         * Removes child node, shifts its children to fill the gap. Returns child pointer.
         */  
        Node234 *disconnectChild(int child_index); 
+
        void insertChild(int childNum, Node234 *pChild);
 
        /* 
@@ -110,9 +103,8 @@ template<typename K> class Tree234 {
     };  
 
   public:
-    typedef Node234 Node;
+   // typedef Node234 Node;
 
-     //--Tree234() { root = nullptr; } 
      Tree234() : root{nullptr} { } 
     ~Tree234(); 
 
@@ -129,6 +121,30 @@ template<typename K> class Tree234 {
 };
 
 template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3; 
+/*
+ * Node234 constructors. Note: While all children are initialize to nullptr, this is not really necessary. 
+ * Instead your can simply set children[0] = nullptr, since a Node234 is a leaf if and only if children[0] == 0
+ */
+template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(1), parent(nullptr)
+{ 
+   keys[0] = small; 
+   children[0] = nullptr;
+}
+
+template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : totalItems(2), parent(nullptr)
+{ 
+   keys[0] = small; 
+   keys[1] = middle; 
+   children[0] = nullptr;
+}
+
+template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large) : totalItems(3), parent(nullptr)
+{ 
+   keys[0] = small; 
+   keys[1] = middle; 
+   keys[3] = large; 
+   children[0] = nullptr;
+}
 
 template<typename K> inline int Tree234<K>::Node234::getTotalItems() const
 {
@@ -185,32 +201,6 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
   } 
 
   return hit;
-}
-/*
- * Node234 constructors. Note: While all children are initialize to nullptr, this is not really necessary. 
- * Instead your can simply set children[0] = nullptr, since a Node234 is a leaf if and only if children[0] == 0
- */
-template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(1), parent(nullptr)
-{ 
-   keys[0] = small; 
-   children[0] = nullptr;
-}
-
-template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : totalItems(2), parent(nullptr)
-{ 
-   keys[0] = small; 
-   keys[1] = middle; 
-   children[0] = nullptr;
-
-}
-
-template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large) : totalItems(3), parent(nullptr)
-{ 
-   keys[0] = small; 
-   keys[1] = middle; 
-   keys[3] = large; 
-   children[0] = nullptr;
-
 }
 /*
  * precondition: childIndex is within the range for the type of node.
