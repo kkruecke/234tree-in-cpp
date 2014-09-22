@@ -112,7 +112,8 @@ template<typename K> class Tree234 {
   public:
     typedef Node234 Node;
 
-     Tree234() { root = nullptr; } 
+     //--Tree234() { root = nullptr; } 
+     Tree234() : root{nullptr} { } 
     ~Tree234(); 
 
     bool search(K key);
