@@ -225,7 +225,11 @@ template<typename K>  void Tree234<K>::CopyTree(Node234 *ptree, Node234 *&newNod
    switch (current->totalItems) {
 
       case 1: // two node
-            newTree = new Node234(...); 
+
+            newTree = new Node234(ptree->keys[0]); 
+            newTree->insertChild(0, ptree->children[0]); // ? or should a move ctor be used or operator=()?
+            newTree->insertChild(1, ptree->children[1]); // ? 
+
             CopyTree(current->children[0]);
 
             CopyTree(current->children[1]);
