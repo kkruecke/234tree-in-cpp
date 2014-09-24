@@ -31,6 +31,7 @@ template<typename K> class Tree234 {
     void split(Node234 *node);  // called during insert to split 4-nodes
  
     void DestroyTree(Node234 *root); 
+    void CopyTree(const Tree234 *root); 
 
     // These methods are called during remove(K key
     bool remove(K key, Node234 *location) throw(std::logic_error); 
@@ -175,11 +176,16 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
    return (totalItems == 1) ? true : false;
 }
 
-template<typename K> Tree234<K>::Tree234(const Tree234<K>& lhs)
+template<typename K>  void Tree234<K>::CopyTree(const Tree234<K> *tree)
 {
- // TODO: not yet implemented
+   // TODO: Not implemented 
 }
 
+
+template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs)
+{
+    CopyTree(lhs.root);
+}
 // Move constructor 
 template<typename K> inline Tree234<K>::Tree234(Tree234<K>&& lhs)
 {
