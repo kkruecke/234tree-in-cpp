@@ -26,15 +26,7 @@ public:
     TreeInserter(Tree234<T> &t) : tree(t) {}
     void operator()(int key) { tree.insert(key); }
 };
-/*
-class GenSequence {
-  int i;
- public:
-   GenSequence(int start) : i(start) {}
-   GenSequence(const GenSequence& g) : i(g.i) {}
-   int operator()() { return i--; }
-};
-*/
+
 int main(int argc, char** argv)
 {
   vector<int> v{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};

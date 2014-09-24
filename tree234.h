@@ -208,6 +208,7 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
  */
 template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, Node234 *child)
 {
+  //--children[childIndex] = child;
   children[childIndex] = child;
   
   if (child != nullptr) {
