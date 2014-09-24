@@ -106,6 +106,8 @@ template<typename K> class Tree234 {
    // typedef Node234 Node;
 
      Tree234() : root{nullptr} { } 
+     Tree234(const Tree234& lhs); 
+     Tree234(Tree234&& lhs); 
     ~Tree234(); 
 
     bool search(K key);
@@ -172,7 +174,20 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
 {
    return (totalItems == 1) ? true : false;
 }
+
+template<typename K> Tree234<K>::Tree234(const Tree234<K>& lhs)
+{
+ // TODO: not yet implemented
+}
+
+// Move constructor 
+template<typename K> inline Tree234<K>::Tree234(Tree234<K>&& lhs)
+{
+   root = lhs.root;
+   lhs.root = nullptr; 
+}
  
+
 /*
  * Returns true if key is found in node, and it set index so that this->keys[index] == key.
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the search.
@@ -208,7 +223,6 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
  */
 template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, Node234 *child)
 {
-  //--children[childIndex] = child;
   children[childIndex] = child;
   
   if (child != nullptr) {
@@ -240,10 +254,10 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
   // shift children right in order to insert pChild
   
   /*
-   * When insertChild() is called, totalItems reflects the number of keys after a new key was added, but before a new child was inserted.
-   * Therefore, the index of the last child would be totalItems - 1. For example, if the prior totalIems was 1, and we made the 2-node a 3-node
-   * by calling insertKey(), then totalItmes would be 2, but the last child index--before calling insertChild()--would still be 1, or the new
-   * totalItems - 1.
+   * When insertChild() is called, totalItems will reflect the number of keys after a new key was added by insertKey(K key), but before a new
+   * child was inserted using insertChild(). Therefore, the index of the last child would be totalItems - 1. 
+   *    For example, if the prior totalIems was 1, and we made the 2-node a 3-node by calling insertKey(key), then totalItmes would be 2, but the
+   * last child index--before calling insertChild()--would still be 1, or "the new  totalItems" - 1.
    */
   for(int i = totalItems - 1; i >= childNum ; i--) {
 
@@ -490,8 +504,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTrav
  */
 template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Debug(Functor f, Node234 *current)
 {     
-   bool isRoot = (current == root) ? true : false;
-
+   
    if (current == nullptr) {
 
 	return;
@@ -595,9 +608,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
 }
 
 /* 
- * Insertion based on this pseudo code:
- *
- * http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
+ * Insertion based on pseudo code at: http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  */
 template<typename K> void Tree234<K>::insert(K key)
 {
@@ -664,8 +675,6 @@ template<typename K> void Tree234<K>::split(Node234 *node)
     K  itemB, itemC;
     Node234 *parent;
 
-    int itemIndex;
-
     // remove two largest (of three total) keys...
         
     itemC = node->keys[2];
@@ -703,8 +712,7 @@ template<typename K> void Tree234<K>::split(Node234 *node)
     }         
 
     parent = node->getParent(); 
-    bool bParentWas2Node = parent->totalItems == 1;
-
+    
     // deal with parent, moving itemB middle value to parent.
 
     int insert_index = parent->insertKey(itemB);
@@ -844,9 +852,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
          /* 
           * Traverse down the left-most branch until we find a leaf.
           *  
-          *  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index], the parent) may get moved down to
-          *  the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may have shifted (to keys[1]) if 
-          *  fuseWithChildren() was called. 
+          *  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down (from the parent) to
+          *  the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may have shifted within found_node 
+          * (to keys[1]) if fuseWithChildren() gets called. 
           */ 
          bool check_if_key_moved = true;
          
@@ -928,8 +936,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
 
             /* 
              * Note: The line above is equivalent to doing:
-             * found_node->keys[found_index] = in_order_successor->keys[found_index + 1];
-             * found_node->totalItems--;  
+             *   found_node->keys[found_index] = in_order_successor->keys[found_index + 1];
+             *   found_node->totalItems--;  
              */
 
     } else { // found_index + 1 > found_node->totalItems
