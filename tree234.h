@@ -31,7 +31,7 @@ template<typename K> class Tree234 {
     void split(Node234 *node);  // called during insert to split 4-nodes
  
     void DestroyTree(Node234 *root); 
-    void CopyTree(const Tree234 *root); 
+    void CopyTree(Node234 *root, Node234 *&newNode); 
 
     // These methods are called during remove(K key
     bool remove(K key, Node234 *location) throw(std::logic_error); 
@@ -53,6 +53,9 @@ template<typename K> class Tree234 {
        Node234(K small, K larger);
        Node234(K small, K middle, K large);
 
+//     Node234(const Node234&);
+       Node234& operator=(const Node234&);
+       
        Node234 *parent;
        int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
        K keys[3];
@@ -149,6 +152,39 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
    children[0] = nullptr;
 }
 
+template<typename K> typename Tree234<K>::Node234& Tree234<K>::Node234::operator=(const Node234& rhs)
+{
+  if (this == &rhs) {
+    return rhs;
+  }
+
+  parent = rhs.parent;
+  totalItems = rhs.totalItems;
+
+  auto i = 0;
+  for(; i < rhs.totalItems; ++i) {
+      keys[i] = rhs.keys[i];
+      children[i] = rhs.children[i];
+  }
+
+  children[i] = rhs.children[i];
+}
+
+/*
+template<typename K> Tree234<K>::Node234::Node234(const Node234& rhs) : totalItems(rhs.totalItems), parent(rhs.parent)
+{ 
+  auto i = 0;
+  
+  for(; i < rhs.totalItems; ++i) {
+      
+     keys[i] = rhs.keys[i];
+     children[i] = rhs.children[i];
+  }
+ 
+  children[i] = rhs.children[i];
+}
+*/
+
 template<typename K> inline int Tree234<K>::Node234::getTotalItems() const
 {
    return totalItems; 
@@ -176,11 +212,57 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
    return (totalItems == 1) ? true : false;
 }
 
-template<typename K>  void Tree234<K>::CopyTree(const Tree234<K> *tree)
-{
-   // TODO: Not implemented 
-}
+/*
+ * pre-order traversal
+ */
 
+template<typename K>  void Tree234<K>::CopyTree(Node234 *ptree, Node234 *&newNode)
+{
+/* TODO: implement
+ if (ptree != nullptr) {
+
+        // copy node
+   switch (current->totalItems) {
+
+      case 1: // two node
+            newTree = new Node234(...); 
+            CopyTree(current->children[0]);
+
+            CopyTree(current->children[1]);
+
+
+            break;
+
+      case 2: // three node
+            newTree = new Node234(...); 
+            CopyTree(current->children[0]);
+
+            CopyTree(current->children[1]);
+ 
+            CopyTree(current->children[2]);
+
+
+            break;
+
+      case 3: // four node
+            newTree = new Node234(...); 
+            CopyTree(current->children[0]);
+
+            CopyTree(current->children[1]);
+ 
+            CopyTree(current->children[2]);
+
+            CopyTree(current->children[3]);
+
+ 
+            break;
+   }
+ } else {
+
+    newNode = nullptr;
+ } 
+*/
+}
 
 template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs)
 {
