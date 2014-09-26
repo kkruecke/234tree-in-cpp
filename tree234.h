@@ -15,34 +15,7 @@ template<typename K> class Tree234 {
       
   protected:
       
-    class Node234; // forward declaration of nested class.
-    friend class DebugPrinter;
-  
-    Node234 *root; 
-    
-    bool DoSearch(K key, Node234 *&location, int& index);
-
-    template<typename Functor> void DoinOrderTraverse(Functor f, Node234 *root);
-
-    template<typename Functor> void DoPostOrderTraverse(Functor f, Node234 *root);
-    template<typename Functor> void DoPreOrderTraverse(Functor f, Node234 *root);
-    
-    template<typename Functor> void DoPostOrder4Debug(Functor f, Node234 *root);
-    
-    void split(Node234 *node);  // called during insert to split 4-nodes
- 
-    void DestroyTree(Node234 *root); 
-    void CopyTree(Node234 *root, Node234 *&newNode); 
-
-    // These methods are called during remove(K key
-    bool remove(K key, Node234 *location) throw(std::logic_error); 
-
-    Node234 *convertTwoNode(Node234 *node);
-
-    Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id);
-    
-    Node234 *doRotation(Node234 *parent, int node2_id, int sibling_id);
-
+//    class Node234; // forward declaration of nested class.
    class Node234 {
        
       private: 
@@ -106,6 +79,33 @@ template<typename K> class Tree234 {
        bool isLeaf() const; 
        bool isTwoNode() const;
     };  
+
+    friend class DebugPrinter;
+  
+    Node234 *root; 
+    
+    bool DoSearch(K key, Node234 *&location, int& index);
+
+    template<typename Functor> void DoInorderTraverse(Functor f, Node234 *root);
+    template<typename Functor> void DoPostOrderTraverse(Functor f, Node234 *root);
+    template<typename Functor> void DoPreOrderTraverse(Functor f, Node234 *root);
+    
+    template<typename Functor> void DoPostOrder4Debug(Functor f, Node234 *root);
+    
+    void split(Node234 *node);  // called during insert to split 4-nodes
+ 
+    void DestroyTree(Node234 *root); 
+    //--void CopyTree(Node234 *root, Node234 *&newNode); 
+    void CopyTree(Node234 *pNode2Copy, Node234 *pNodeCopy);
+
+    // These methods are called during remove(K key
+    bool remove(K key, Node234 *location) throw(std::logic_error); 
+
+    Node234 *convertTwoNode(Node234 *node);
+
+    Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id);
+    
+    Node234 *doRotation(Node234 *parent, int node2_id, int sibling_id);
 
   public:
    // typedef Node234 Node;
@@ -218,56 +218,54 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
  * pre-order traversal
  */
 
-template<typename K>  void Tree234<K>::CopyTree(Node234 *ptree, Node234 *&newNode)
+template<typename K>  void Tree234<K>::CopyTree(Node234 *pNode2Copy, Node234 *pNodeCopy)
 {
-/* TODO: implement
- if (ptree != nullptr) {
+ if (pNode2Copy != nullptr) {
 
         // copy node
-   switch (current->totalItems) {
+   switch (pNode2Copy->totalItems) {
 
       case 1: // two node
 
-            newTree = new Node234(ptree->keys[0]); 
-            newTree->insertChild(0, ptree->children[0]); // ? or should a move ctor be used or operator=()?
-            newTree->insertChild(1, ptree->children[1]); // ? 
+            pNodeCopy = new Node234(pNode2Copy->keys[0]); 
 
-            CopyTree(current->children[0]);
+            CopyTree(&pNode2Copy->children[0], pNodeCopy); // 2nd parm wrong?
 
-            CopyTree(current->children[1]);
-
+            CopyTree(&pNode2Copy->children[1], pNodeCopy); // 2nd parm wrong?
 
             break;
 
       case 2: // three node
-            newTree = new Node234(...); 
-            CopyTree(current->children[0]);
 
-            CopyTree(current->children[1]);
+            pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1]); 
+
+            CopyTree(pNode2Copy->children[0]);
+
+            CopyTree(pNode2Copy->children[1]);
  
-            CopyTree(current->children[2]);
-
+            CopyTree(pNode2Copy->children[2]);
 
             break;
 
       case 3: // four node
-            newTree = new Node234(...); 
-            CopyTree(current->children[0]);
+            pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1], 
+                                pNode2Copy->keys[3]); 
 
-            CopyTree(current->children[1]);
+            CopyTree(pNode2Copy->children[0]);
+
+            CopyTree(pNode2Copy->children[1]);
  
-            CopyTree(current->children[2]);
+            CopyTree(pNode2Copy->children[2]);
 
-            CopyTree(current->children[3]);
+            CopyTree(pNode2Copy->children[3]);
 
  
             break;
    }
  } else {
 
-    newNode = nullptr;
+    pNodeCopy = nullptr;
  } 
-*/
 }
 
 template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs)
@@ -533,7 +531,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 
 template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f)
 {
-   DoinOrderTraverse(f, root);
+   DoInorderTraverse(f, root);
 }
 
 template<typename K> template<typename Functor> inline void Tree234<K>::postOrderTraverse(Functor f)
@@ -709,7 +707,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
 /*
  * In order traversal
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoinOrderTraverse(Functor f, Node234 *current)
+template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraverse(Functor f, Node234 *current)
 {     
    if (current == nullptr) {
 
@@ -719,39 +717,39 @@ template<typename K> template<typename Functor> void Tree234<K>::DoinOrderTraver
    switch (current->totalItems) {
 
       case 1: // two node
-            DoinOrderTraverse(f, current->children[0]);
+            DoInorderTraverse(f, current->children[0]);
 
             f(current->keys[0]);
 
-            DoinOrderTraverse(f, current->children[1]);
+            DoInorderTraverse(f, current->children[1]);
             break;
 
       case 2: // three node
-            DoinOrderTraverse(f, current->children[0]);
+            DoInorderTraverse(f, current->children[0]);
 
             f(current->keys[0]);
 
-            DoinOrderTraverse(f, current->children[1]);
+            DoInorderTraverse(f, current->children[1]);
  
             f(current->keys[1]);
 
-            DoinOrderTraverse(f, current->children[2]);
+            DoInorderTraverse(f, current->children[2]);
             break;
 
       case 3: // four node
-            DoinOrderTraverse(f, current->children[0]);
+            DoInorderTraverse(f, current->children[0]);
 
             f(current->keys[0]);
 
-            DoinOrderTraverse(f, current->children[1]);
+            DoInorderTraverse(f, current->children[1]);
  
             f(current->keys[1]);
 
-            DoinOrderTraverse(f, current->children[2]);
+            DoInorderTraverse(f, current->children[2]);
 
             f(current->keys[2]);
 
-            DoinOrderTraverse(f, current->children[3]);
+            DoInorderTraverse(f, current->children[3]);
  
             break;
    }
