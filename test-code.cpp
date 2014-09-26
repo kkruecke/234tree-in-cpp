@@ -41,7 +41,7 @@ int main(int argc, char** argv)
    
   cout << "Printing tree " << endl;
    
-  tree.traverse(printer);
+  tree.inOrderTraverse(printer);
   
   cout << endl;
     
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 
     cout << "\n=================== Normal Tree Print =======================\n";
 
-    tree.traverse(printer);
+    tree.inOrderTraverse(printer);
     cout << "\n-----------------------\n";
 
     cout << endl;

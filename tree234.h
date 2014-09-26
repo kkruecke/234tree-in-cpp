@@ -22,7 +22,7 @@ template<typename K> class Tree234 {
     
     bool DoSearch(K key, Node234 *&location, int& index);
 
-    template<typename Functor> void DoTraverse(Functor f, Node234 *root);
+    template<typename Functor> void DoinOrderTraverse(Functor f, Node234 *root);
 
     template<typename Functor> void DoPostOrderTraverse(Functor f, Node234 *root);
     
@@ -116,7 +116,7 @@ template<typename K> class Tree234 {
 
     bool search(K key);
 
-    template<typename Functor> void traverse(Functor f);
+    template<typename Functor> void inOrderTraverse(Functor f);
     template<typename Functor> void postOrderTraverse(Functor f);
 
     template<typename Functor> void debug_dump(Functor f);
@@ -529,9 +529,9 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
     }
 }
 
-template<typename K> template<typename Functor> inline void Tree234<K>::traverse(Functor f)
+template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f)
 {
-   DoTraverse(f, root);
+   DoinOrderTraverse(f, root);
 }
 
 template<typename K> template<typename Functor> inline void Tree234<K>::postOrderTraverse(Functor f)
@@ -651,7 +651,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
 /*
  * In order traversal
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Functor f, Node234 *current)
+template<typename K> template<typename Functor> void Tree234<K>::DoinOrderTraverse(Functor f, Node234 *current)
 {     
    if (current == nullptr) {
 
@@ -661,39 +661,39 @@ template<typename K> template<typename Functor> void Tree234<K>::DoTraverse(Func
    switch (current->totalItems) {
 
       case 1: // two node
-            DoTraverse(f, current->children[0]);
+            DoinOrderTraverse(f, current->children[0]);
 
             f(current->keys[0]);
 
-            DoTraverse(f, current->children[1]);
+            DoinOrderTraverse(f, current->children[1]);
             break;
 
       case 2: // three node
-            DoTraverse(f, current->children[0]);
+            DoinOrderTraverse(f, current->children[0]);
 
             f(current->keys[0]);
 
-            DoTraverse(f, current->children[1]);
+            DoinOrderTraverse(f, current->children[1]);
  
             f(current->keys[1]);
 
-            DoTraverse(f, current->children[2]);
+            DoinOrderTraverse(f, current->children[2]);
             break;
 
       case 3: // four node
-            DoTraverse(f, current->children[0]);
+            DoinOrderTraverse(f, current->children[0]);
 
             f(current->keys[0]);
 
-            DoTraverse(f, current->children[1]);
+            DoinOrderTraverse(f, current->children[1]);
  
             f(current->keys[1]);
 
-            DoTraverse(f, current->children[2]);
+            DoinOrderTraverse(f, current->children[2]);
 
             f(current->keys[2]);
 
-            DoTraverse(f, current->children[3]);
+            DoinOrderTraverse(f, current->children[3]);
  
             break;
    }
