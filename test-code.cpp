@@ -44,7 +44,16 @@ int main(int argc, char** argv)
   tree.preOrderTraverse(printer);
   
   cout << "\n======================" << endl;
+  
+  
+  cout << "Printing copy of tree" << endl;
    
+  Tree234<int> newTree{tree};
+  
+  newTree.inOrderTraverse(printer);
+  
+  cout << "\n======================" << endl;
+  
   cout << "Printing tree in order" << endl;
    
   tree.inOrderTraverse(printer);

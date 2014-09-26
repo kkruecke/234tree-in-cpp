@@ -78,6 +78,7 @@ template<typename K> class Tree234 {
        bool isFull() const;
        bool isLeaf() const; 
        bool isTwoNode() const;
+       void nullAllChildren();
     };  
 
     friend class DebugPrinter;
@@ -95,8 +96,8 @@ template<typename K> class Tree234 {
     void split(Node234 *node);  // called during insert to split 4-nodes
  
     void DestroyTree(Node234 *root); 
-    //--void CopyTree(Node234 *root, Node234 *&newNode); 
-    void CopyTree(Node234 *pNode2Copy, Node234 *pNodeCopy);
+
+    void CopyTree(Node234 *pNode2Copy, Node234 *&pNodeCopy); // called by ctor
 
     // These methods are called during remove(K key
     bool remove(K key, Node234 *location) throw(std::logic_error); 
@@ -150,8 +151,16 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
 { 
    keys[0] = small; 
    keys[1] = middle; 
-   keys[3] = large; 
+   keys[2] = large; 
    children[0] = nullptr;
+}
+
+template<typename K> inline void Tree234<K>::Node234::nullAllChildren()
+{
+  for(auto i = 0; i <= totalItems; ++i) {
+
+	children[i] = nullptr;
+  }
 }
 
 template<typename K> typename Tree234<K>::Node234& Tree234<K>::Node234::operator=(const Node234& rhs)
@@ -218,20 +227,23 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
  * pre-order traversal
  */
 
-template<typename K>  void Tree234<K>::CopyTree(Node234 *pNode2Copy, Node234 *pNodeCopy)
+template<typename K>  void Tree234<K>::CopyTree(Node234 *pNode2Copy, Node234 *&pNodeCopy)
 {
- if (pNode2Copy != nullptr) {
-
-        // copy node
+ if (pNode2Copy != nullptr) { 
+                              
+   // copy node
    switch (pNode2Copy->totalItems) {
 
       case 1: // two node
 
             pNodeCopy = new Node234(pNode2Copy->keys[0]); 
+             
+            pNodeCopy->parent = pNode2Copy->parent;
+            pNodeCopy->nullAllChildren();
+            
+            CopyTree(pNode2Copy->children[0], pNodeCopy->children[0]); 
 
-            CopyTree(&pNode2Copy->children[0], pNodeCopy); // 2nd parm wrong?
-
-            CopyTree(&pNode2Copy->children[1], pNodeCopy); // 2nd parm wrong?
+            CopyTree(pNode2Copy->children[1], pNodeCopy->children[1]); 
 
             break;
 
@@ -239,26 +251,31 @@ template<typename K>  void Tree234<K>::CopyTree(Node234 *pNode2Copy, Node234 *pN
 
             pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1]); 
 
-            CopyTree(pNode2Copy->children[0]);
+            pNodeCopy->parent = pNode2Copy->parent;
+            pNodeCopy->nullAllChildren();
 
-            CopyTree(pNode2Copy->children[1]);
+            CopyTree(pNode2Copy->children[0], pNodeCopy->children[0]);
+
+            CopyTree(pNode2Copy->children[1], pNodeCopy->children[1]);
  
-            CopyTree(pNode2Copy->children[2]);
+            CopyTree(pNode2Copy->children[2], pNodeCopy->children[2]);
 
             break;
 
       case 3: // four node
-            pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1], 
-                                pNode2Copy->keys[3]); 
 
-            CopyTree(pNode2Copy->children[0]);
+            pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]); 
 
-            CopyTree(pNode2Copy->children[1]);
+            pNodeCopy->parent = pNode2Copy->parent;
+            pNodeCopy->nullAllChildren();
+
+            CopyTree(pNode2Copy->children[0], pNodeCopy->children[0]);
+
+            CopyTree(pNode2Copy->children[1], pNodeCopy->children[1]);
  
-            CopyTree(pNode2Copy->children[2]);
+            CopyTree(pNode2Copy->children[2], pNodeCopy->children[2]);
 
-            CopyTree(pNode2Copy->children[3]);
-
+            CopyTree(pNode2Copy->children[3], pNodeCopy->children[3]);
  
             break;
    }
@@ -270,7 +287,7 @@ template<typename K>  void Tree234<K>::CopyTree(Node234 *pNode2Copy, Node234 *pN
 
 template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs)
 {
-    CopyTree(lhs.root);
+    CopyTree(lhs.root, root);
 }
 // Move constructor 
 template<typename K> inline Tree234<K>::Tree234(Tree234<K>&& lhs)
