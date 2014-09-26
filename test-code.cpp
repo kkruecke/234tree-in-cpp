@@ -38,8 +38,14 @@ int main(int argc, char** argv)
   for_each(v.begin(), v.end(),  tree_inserter);
   
   TreePrinter printer(cout);
+  
+  cout << "Printing tree in pre order" << endl;
    
-  cout << "Printing tree " << endl;
+  tree.preOrderTraverse(printer);
+  
+  cout << "\n======================" << endl;
+   
+  cout << "Printing tree in order" << endl;
    
   tree.inOrderTraverse(printer);
   
@@ -62,11 +68,6 @@ int main(int argc, char** argv)
 
     int item = *iter;
     
-    if (item == 50) {
-        cout << "50 FOUND\n"  << endl;
-        //return 0;
-    }
-
     bool rc = tree.remove(item);
        
     string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");

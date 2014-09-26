@@ -25,6 +25,7 @@ template<typename K> class Tree234 {
     template<typename Functor> void DoinOrderTraverse(Functor f, Node234 *root);
 
     template<typename Functor> void DoPostOrderTraverse(Functor f, Node234 *root);
+    template<typename Functor> void DoPreOrderTraverse(Functor f, Node234 *root);
     
     template<typename Functor> void DoPostOrder4Debug(Functor f, Node234 *root);
     
@@ -118,6 +119,7 @@ template<typename K> class Tree234 {
 
     template<typename Functor> void inOrderTraverse(Functor f);
     template<typename Functor> void postOrderTraverse(Functor f);
+    template<typename Functor> void preOrderTraverse(Functor f);
 
     template<typename Functor> void debug_dump(Functor f);
     
@@ -539,6 +541,11 @@ template<typename K> template<typename Functor> inline void Tree234<K>::postOrde
    DoPostOrderTraverse(f, root);
 }
 
+template<typename K> template<typename Functor> inline void Tree234<K>::preOrderTraverse(Functor f)
+{
+   DoPreOrderTraverse(f, root);
+}
+
 template<typename K> template<typename Functor> inline void Tree234<K>::debug_dump(Functor f)
 {
    DoPostOrder4Debug(f, root);
@@ -548,6 +555,10 @@ template<typename K> template<typename Functor> inline void Tree234<K>::debug_du
  */
 template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTraverse(Functor f, Node234 *current)
 {  
+   if (current == nullptr) {
+
+        return;
+   }
 
    switch (current->totalItems) {
 
@@ -589,7 +600,59 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTrav
             break;
    }
 }
+/*
+ * pre order traversal 
+ */
+template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTraverse(Functor f, Node234 *current)
+{  
 
+  if (current == nullptr) {
+
+        return;
+   }
+
+   switch (current->totalItems) {
+
+      case 1: // two node
+            f(current->keys[0]);
+
+            DoPreOrderTraverse(f, current->children[0]);
+
+            DoPreOrderTraverse(f, current->children[1]);
+
+            break;
+
+      case 2: // three node
+            f(current->keys[0]);
+
+            DoPreOrderTraverse(f, current->children[0]);
+
+            DoPreOrderTraverse(f, current->children[1]);
+
+            f(current->keys[1]);
+
+            DoPreOrderTraverse(f, current->children[2]);
+
+            break;
+
+      case 3: // four node
+            f(current->keys[0]);
+
+            DoPreOrderTraverse(f, current->children[0]);
+
+            DoPreOrderTraverse(f, current->children[1]);
+
+            f(current->keys[1]);
+
+            DoPreOrderTraverse(f, current->children[2]);
+
+            f(current->keys[2]);
+
+            DoPreOrderTraverse(f, current->children[3]);
+
+            break;
+   }
+}
 
 /*
  * post order traversal for debugging purposes
@@ -597,11 +660,6 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTrav
 template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Debug(Functor f, Node234 *current)
 {     
    
-   if (current == nullptr) {
-
-	return;
-   }
-
    if (current == nullptr) {
 
 	return;
