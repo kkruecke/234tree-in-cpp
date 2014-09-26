@@ -15,7 +15,6 @@ template<typename K> class Tree234 {
       
   protected:
       
-//    class Node234; // forward declaration of nested class.
    class Node234 {
        
       private: 
@@ -27,7 +26,6 @@ template<typename K> class Tree234 {
        Node234(K small, K larger);
        Node234(K small, K middle, K large);
 
-//     Node234(const Node234&);
        Node234& operator=(const Node234&);
        
        Node234 *parent;
@@ -109,11 +107,10 @@ template<typename K> class Tree234 {
     Node234 *doRotation(Node234 *parent, int node2_id, int sibling_id);
 
   public:
-   // typedef Node234 Node;
 
      Tree234() : root{nullptr} { } 
      Tree234(const Tree234& lhs); 
-     Tree234(Tree234&& lhs); 
+     Tree234(Tree234&& lhs);  // move constructor
     ~Tree234(); 
 
     bool search(K key);
@@ -180,21 +177,6 @@ template<typename K> typename Tree234<K>::Node234& Tree234<K>::Node234::operator
 
   children[i] = rhs.children[i];
 }
-
-/*
-template<typename K> Tree234<K>::Node234::Node234(const Node234& rhs) : totalItems(rhs.totalItems), parent(rhs.parent)
-{ 
-  auto i = 0;
-  
-  for(; i < rhs.totalItems; ++i) {
-      
-     keys[i] = rhs.keys[i];
-     children[i] = rhs.children[i];
-  }
- 
-  children[i] = rhs.children[i];
-}
-*/
 
 template<typename K> inline int Tree234<K>::Node234::getTotalItems() const
 {
