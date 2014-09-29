@@ -4,6 +4,7 @@
 #include <utility>
 #include <algorithm>
 #include <stdexcept>
+#include <algorithm>
 #include <iosfwd>
 
 // fwd declarations
@@ -111,6 +112,7 @@ template<typename K> class Tree234 {
      Tree234() : root{nullptr} { } 
      Tree234(const Tree234& lhs); 
      Tree234(Tree234&& lhs);  // move constructor
+     Tree234(std::initializer_list<K> list); 
     ~Tree234(); 
 
     bool search(K key);
@@ -278,6 +280,12 @@ template<typename K> inline Tree234<K>::Tree234(Tree234<K>&& lhs)
    lhs.root = nullptr; 
 }
  
+template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) : root(nullptr)
+{
+    for (auto x: il) {
+        insert(x);
+    }
+}
 
 /*
  * Returns true if key is found in node, and it set index so that this->keys[index] == key.

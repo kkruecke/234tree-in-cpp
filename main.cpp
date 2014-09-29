@@ -17,26 +17,12 @@
 using namespace std;
 template<typename T> class Tree;
 
-template<typename T> class TreeInserter {
-    
-    Tree234<T>& tree;
-    
-public:
-    
-    TreeInserter(Tree234<T> &t) : tree(t) {}
-    void operator()(int key) { tree.insert(key); }
-};
-
 int main(int argc, char** argv)
 {
-  vector<int> v{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};
+  vector<int> v{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};  
+  
+  Tree234<int> tree{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};
 
-  Tree234<int> tree;
-  
-  TreeInserter<int> tree_inserter(tree);
-  
-  for_each(v.begin(), v.end(),  tree_inserter);
-  
   TreePrinter printer(cout);
   
   cout << "Printing tree in pre order" << endl;
@@ -44,7 +30,6 @@ int main(int argc, char** argv)
   tree.preOrderTraverse(printer);
   
   cout << "\n======================" << endl;
-  
   
   cout << "Printing copy of tree" << endl;
    
@@ -69,13 +54,14 @@ int main(int argc, char** argv)
   cout << "\n============================" << endl;
   
   vector< int > v_copy;
-  
-  copy(v.rbegin(), v.rend(), back_inserter(v_copy));
-  
-   
-  for (vector<int>::reverse_iterator iter = v_copy.rbegin(); iter != v_copy.rend(); ++iter) {
 
-    int item = *iter;
+  // make a copy of v, but in reverse order  
+  copy(v.rbegin(), v.rend(), back_inserter(v_copy));
+   
+  //--for (vector<int>::reverse_iterator iter = v_copy.rbegin(); iter != v_copy.rend(); ++iter) {
+  for (auto item : v) {
+
+    //--int item = *iter;
     
     bool rc = tree.remove(item);
        
