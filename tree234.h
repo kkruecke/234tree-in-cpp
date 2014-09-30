@@ -49,6 +49,7 @@ template<typename K> class Tree234 {
        bool searchNode(K key, int& index, Node234 *&next);
 
        int insertKey(K key);
+       
        void connectChild(int childNum, Node234 *child);
        
        /*
@@ -57,7 +58,7 @@ template<typename K> class Tree234 {
        K removeKey(int index);
  
        /*
-        * Removes child node, shifts its children to fill the gap. Returns child pointer.
+        * Removes child node andshifts its children to fill the gap. Returns child pointer.
         */  
        Node234 *disconnectChild(int child_index); 
 
@@ -70,6 +71,7 @@ template<typename K> class Tree234 {
        Node234 *fuseWithChildren(); 
        
      public:
+         
        const Node234 *getParent() const;
        int getTotalItems() const;
        int getChildCount() const;
@@ -340,7 +342,7 @@ template<typename K> inline typename Tree234<K>::Node234 *Tree234<K>::Node234::d
   Node234 *node = children[childIndex];
 
   // shift children (whose last 0-based index is totalItems) left to overwrite removed child i.
-  for(int i = childIndex; i < totalItems; ++i) {
+  for(auto i = childIndex; i < totalItems; ++i) {
 
        children[i] = children[i + 1]; // shift remaining children to the left
   } 
@@ -358,7 +360,7 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
    *    For example, if the prior totalIems was 1, and we made the 2-node a 3-node by calling insertKey(key), then totalItmes would be 2, but the
    * last child index--before calling insertChild()--would still be 1, or "the new  totalItems" - 1.
    */
-  for(int i = totalItems - 1; i >= childNum ; i--) {
+  for(auto i = totalItems - 1; i >= childNum ; i--) {
 
           children[i + 1] = children[i]; // shift child right
 
@@ -410,7 +412,7 @@ template<typename K> inline K Tree234<K>::Node234::removeKey(int index)
   K key = keys[index]; 
 
   // shift to the left all keys to the right of index to the left
-  for(int i = index; i < totalItems - 1; ++i) {
+  for(auto i = index; i < totalItems - 1; ++i) {
 
           keys[i] = keys[i + 1]; 
   } 
