@@ -98,7 +98,7 @@ template<typename K> class Tree234 {
  
     void DestroyTree(Node234 *root); 
 
-    void CopyTree(Node234 *pNode2Copy, Node234 *&pNodeCopy); // called by ctor
+    void CloneTree(Node234 *pNode2Copy, Node234 *&pNodeCopy); // called by ctor
 
     // These methods are called during remove(K key
     bool remove(K key, Node234 *location) throw(std::logic_error); 
@@ -213,7 +213,7 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
  * pre-order traversal
  */
 
-template<typename K>  void Tree234<K>::CopyTree(Node234 *pNode2Copy, Node234 *&pNodeCopy)
+template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&pNodeCopy)
 {
  if (pNode2Copy != nullptr) { 
                               
@@ -227,9 +227,9 @@ template<typename K>  void Tree234<K>::CopyTree(Node234 *pNode2Copy, Node234 *&p
             pNodeCopy->parent = pNode2Copy->parent;
             pNodeCopy->nullAllChildren();
             
-            CopyTree(pNode2Copy->children[0], pNodeCopy->children[0]); 
+            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]); 
 
-            CopyTree(pNode2Copy->children[1], pNodeCopy->children[1]); 
+            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]); 
 
             break;
 
@@ -240,11 +240,11 @@ template<typename K>  void Tree234<K>::CopyTree(Node234 *pNode2Copy, Node234 *&p
             pNodeCopy->parent = pNode2Copy->parent;
             pNodeCopy->nullAllChildren();
 
-            CopyTree(pNode2Copy->children[0], pNodeCopy->children[0]);
+            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]);
 
-            CopyTree(pNode2Copy->children[1], pNodeCopy->children[1]);
+            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]);
  
-            CopyTree(pNode2Copy->children[2], pNodeCopy->children[2]);
+            CloneTree(pNode2Copy->children[2], pNodeCopy->children[2]);
 
             break;
 
@@ -255,13 +255,13 @@ template<typename K>  void Tree234<K>::CopyTree(Node234 *pNode2Copy, Node234 *&p
             pNodeCopy->parent = pNode2Copy->parent;
             pNodeCopy->nullAllChildren();
 
-            CopyTree(pNode2Copy->children[0], pNodeCopy->children[0]);
+            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]);
 
-            CopyTree(pNode2Copy->children[1], pNodeCopy->children[1]);
+            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]);
  
-            CopyTree(pNode2Copy->children[2], pNodeCopy->children[2]);
+            CloneTree(pNode2Copy->children[2], pNodeCopy->children[2]);
 
-            CopyTree(pNode2Copy->children[3], pNodeCopy->children[3]);
+            CloneTree(pNode2Copy->children[3], pNodeCopy->children[3]);
  
             break;
    }
@@ -273,7 +273,7 @@ template<typename K>  void Tree234<K>::CopyTree(Node234 *pNode2Copy, Node234 *&p
 
 template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs)
 {
-    CopyTree(lhs.root, root);
+    CloneTree(lhs.root, root);
 }
 // Move constructor 
 template<typename K> inline Tree234<K>::Tree234(Tree234<K>&& lhs)
@@ -386,7 +386,7 @@ template<typename K> inline int  Tree234<K>::Node234::insertKey(K key)
 { 
   // start on right, examine items
 
-  for(int i = totalItems - 1; i >= 0 ; i--) {
+  for(auto i = totalItems - 1; i >= 0 ; i--) {
 
       if (key < keys[i]) { // if key[i] is bigger
 
@@ -496,7 +496,7 @@ template<typename K> void Tree234<K>::DestroyTree(Node234 *current)
   
 }
 
-template<typename K> bool Tree234<K>::search(K key)
+template<typename K> inline bool Tree234<K>::search(K key)
 {
     // make sure tree has at least one element    
     if (root == nullptr) {
@@ -875,7 +875,7 @@ template<typename K> void Tree234<K>::split(Node234 *node)
     int insert_index = parent->insertKey(itemB);
     int last_index = parent->totalItems - 1;
     
-    for(int i = last_index; i > insert_index; i--)  {// move parent's connections right, start from new last
+    for(auto i = last_index; i > insert_index; i--)  {// move parent's connections right, start from new last
                                                      // index up to insert_index
 
         Node234 *temp = parent->children[i];  // one child
