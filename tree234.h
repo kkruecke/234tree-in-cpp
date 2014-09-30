@@ -1034,10 +1034,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current) throw(std:
                             in_order_successor = found_node;
                             break;
 
-                         } else { //..but this is insurance.
+                         } else { //..but this is extra insurance.
 
                              prospective_in_order_successor = found_node->children[found_index + 1];   
-
                          }
 
                     /*
