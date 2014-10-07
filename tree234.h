@@ -125,9 +125,9 @@ template<typename K> class Tree234 {
 
     template<typename Functor> void debug_dump(Functor f);
     
-    void insert(K key); 
+    void insert(K key) noexcept; 
 
-    bool remove(K key);
+    bool remove(K key) noexcept;
 };
 
 template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3; 
@@ -767,7 +767,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraver
 /* 
  * Insertion based on pseudo code at: http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  */
-template<typename K> void Tree234<K>::insert(K key)
+template<typename K> void Tree234<K>::insert(K key) noexcept
 {
     if (root == nullptr) {
 
@@ -899,7 +899,7 @@ template<typename K> void Tree234<K>::split(Node234 *node)
  * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the deleted key
  * with its in-order successor.
  */
-template<typename K> bool Tree234<K>::remove(K key)
+template<typename K> bool Tree234<K>::remove(K key) noexcept
 {
    if (root == nullptr) {
 

@@ -5,3 +5,5 @@ A 2 3 4 implemented in C++. Based on these slides on [2-3-4 trees](http://www.un
 There is a great step-by-step animation of 2 3 4 tree is at: http://cs.sou.edu/~harveyd/classes/cs511/docs/234Tree/tree.htm 
 
 Code was compiled with clang++ compiler using **-std=c11++** option. implemented. There is a bug in the remove code.
+
+ntree234.h is the start of a conversion to unique_ptr<Node234>.
