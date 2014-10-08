@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <memory>
+#include <array>
 #include <iosfwd>
 
 // fwd declarations
@@ -32,14 +33,18 @@ template<typename K> class Tree234 {
        std::unique_ptr<Node234> &parent;
 
        int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
-       K keys[3];
+  //-- K keys[3];
+
+       std::array<K, 3> keys;
 
        /*
         * For 2-nodes, children[0] is left pointer and children[1] is right pointer.
         * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
         * And so on for 4-nodes.
         */
-       std::unique_ptr<Node234> children[4];
+//--   std::unique_ptr<Node234> children[4];
+
+       std::array<std::unique_ptr<Node234>, 4> children;
 
        std::unique_ptr<Node234> &getParent(); 
 
@@ -51,7 +56,7 @@ template<typename K> class Tree234 {
 
        int insertKey(K key);
        
-       void connectChild(int childNum, Node234 *child);
+       void connectChild(int childNum, std::unique_ptr<Node234> child);
        
        /*
         * Removes child node andshifts its children to fill the gap. Returns child pointer.
@@ -108,11 +113,21 @@ template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3;
  * Node234 constructors. Note: While all children are initialize to nullptr, this is not really necessary. 
  * Instead your can simply set children[0] = nullptr, since a Node234 is a leaf if and only if children[0] == 0
  */
+
+/*
+ * TODO: 
+ * error: non-const lvalue reference to type 'std::unique_ptr<Node234>' cannot bind to a temporary of type 'nullptr_t'
+ */
 template<typename K> inline  Tree234<K>::Node234::Node234(K small) : totalItems(1), parent(nullptr)
 { 
    keys[0] = small; 
    children[0] = nullptr;
 }
+
+/*
+ * TODO: 
+ * error: non-const lvalue reference to type 'std::unique_ptr<Node234>' cannot bind to a temporary of type 'nullptr_t'
+ */
 
 template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : totalItems(2), parent(nullptr)
 { 
@@ -120,7 +135,10 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle) : t
    keys[1] = middle; 
    children[0] = nullptr;
 }
-
+/*
+ * TODO: 
+ * error: non-const lvalue reference to type 'std::unique_ptr<Node234>' cannot bind to a temporary of type 'nullptr_t'
+ */
 template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large) : totalItems(3), parent(nullptr)
 { 
    keys[0] = small; 
@@ -253,13 +271,16 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
  * precondition: childIndex is within the range for the type of node.
  * child is not nullptr.
  */
-template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, Node234 *child)
+template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, std::unique_ptr<Node234> child)
 {
-  children[childIndex] = child;
+  children[childIndex] = child; // This calls move ctor, I believe.
   
   if (child != nullptr) {
-      
-     child->parent = this;
+      /*
+       * TODO:  error: no viable overloaded '='
+       */ 
+     child->parent = this; 
+     
   }
 }
 /*
@@ -403,8 +424,11 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
             split(current); 
       
             // resume search with parent.
+            /*
+             * TODO: Error message about: no operaotr= exists in unique_ptr. Should I call: current->getParent.get()?
+             */
             current = current->getParent(); 
-            
+                        
        }  else if( current->isLeaf() )  {
 
             /* done descending. */
@@ -494,9 +518,7 @@ template<typename K> void Tree234<K>::split(std::unique_ptr<Node234> &node)
     
     for(auto i = last_index; i > insert_index; i--)  {// move parent's connections right, start from new last
                                                      // index up to insert_index
-
-        Node234 *temp = parent->children[i];  // one child
-        parent->connectChild(i + 1, temp);       // to the right
+        parent->connectChild(i + 1, parent->children[i]);       // to the right
     }
 
     parent->connectChild(insert_index + 1,  newRight);
