@@ -17,7 +17,9 @@ class DebugPrinter;
 template<typename K> class Tree234 {
       
   protected:
-      
+   /*
+    * TODO: The default copy constructor won't work because....I believe...because of the default unique_ptr<> default copy ctor--which does what?
+    */   
    class Node234 {
        
       private: 
@@ -44,7 +46,7 @@ template<typename K> class Tree234 {
         */
 //--   std::unique_ptr<Node234> children[4];
 
-       std::array<std::unique_ptr<Node234>, 4> children;
+       std::array< std::unique_ptr<Node234>, 4 > children;
 
        std::unique_ptr<Node234> &getParent(); 
 
@@ -273,13 +275,15 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
  */
 template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, std::unique_ptr<Node234> child)
 {
-  children[childIndex] = child; // This calls move ctor, I believe.
+  //--children[childIndex] = child; // no operator=
+  children[childIndex].reset( child ); 
   
   if (child != nullptr) {
       /*
        * TODO:  error: no viable overloaded '='
        */ 
-     child->parent = this; 
+     //--child->parent = this; 
+     child->parent.reset( this ); 
      
   }
 }
