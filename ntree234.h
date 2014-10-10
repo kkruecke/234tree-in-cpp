@@ -498,9 +498,10 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         
         root = std::move(p); // TODO: Is this what I intend?
         
-        // TODO: Do this line do anything?
-        parent = root;          // root is parent of node 
+        // TODO: This line doesn't seem to do anything?
+        //--parent = root;          // root is parent of node 
         
+        // TODO: change to do move() and then set the parent.)
         root->connectChild(0, node); // connect node to root as left child
         
         root->connectChild(1, newRight);
