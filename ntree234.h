@@ -88,10 +88,9 @@ template<typename K> class Tree234 {
   
     std::unique_ptr<Node234>  root; 
     
-    bool DoSearch(K key, std::unique_ptr<Node234> &location, int& index);
+    bool DoSearch(K key, Node234 *&location, int& index);
 
-    void split(std::unique_ptr<Node234> &node);  // called during insert to split 4-nodes
- 
+    void split(Node234 *node);  // called during insert to split 4-nodes
     void DestroyTree(std::unique_ptr<Node234> &root); 
 
   public:
@@ -335,12 +334,12 @@ template<typename K> inline  bool Tree234<K>::Node234::isFull() const
    return totalItems == MAX_KEYS;
 }
 
-template<typename K> inline  safe_ptr< typename Tree<K>::Node234 > Tree234<K>::Node234::getParent()  
+template<typename K> inline typename Tree234<K>::Node234 * Tree234<K>::Node234::getParent()  
 { 
    return parent;
 }
 
-template<typename K> inline  const typename Tree<K>::Node234 *Tree234<K>::Node234::getParent() const // <-- not sure how to do 
+template<typename K> inline const typename Tree234<K>::Node234 *Tree234<K>::Node234::getParent() const 
 { 
    return parent;
 }
@@ -353,7 +352,7 @@ template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const
 
 template<typename K> inline Tree234<K>::~Tree234()
 {
-  // DestroyTree(root);
+  // DestroyTree(root); TODO: DestroyTree should call p.release() instead of delete p;
 }
 
 template<typename K> inline bool Tree234<K>::search(K key)
@@ -370,7 +369,7 @@ template<typename K> inline bool Tree234<K>::search(K key)
     }
 }   
 
-template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *location, int& index)
+template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& index)
 {
   Node234 *current = root.get();
   Node234 *next;
@@ -463,7 +462,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
  * 2. has a two node parent
  * 3. has a three node parent
  */ 
-template<typename K> void Tree234<K>::split(std::unique_ptr<Node234> &node)
+template<typename K> void Tree234<K>::split(Node234 *node)
 {
     K  itemB, itemC;
     Node234 *parent;
@@ -492,10 +491,12 @@ template<typename K> void Tree234<K>::split(std::unique_ptr<Node234> &node)
     node->children[3] = std::move(std::unique_ptr<Node234>()); 
 
     // if this is the root,
-    if(node == root) { 
+    if(node == root.get()) { 
 
         /* make new root two node using node's middle value */  
-        root = std::move( new Node234{itemB} ); 
+        std::unique_ptr<Node234> p{ new Node234{itemB} };
+        
+        root = std::move(p); // TODO: Is this what I intend?
         
         parent = root;          // root is parent of node
         
