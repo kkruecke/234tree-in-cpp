@@ -12,6 +12,7 @@
 // fwd declarations
 template<typename T> class Tree234;    
 template<typename K> class Node234; 
+
 class DebugPrinter; 
 
 template<typename K> class Tree234 {
@@ -32,10 +33,9 @@ template<typename K> class Tree234 {
        Node234(K small, K middle, K large);
        Node234& operator=(const Node234& rhs);
 
-       std::unique_ptr<Node234> &parent;
+       Node234 *parent; // parent is only used for navigation of the tree. It does not own the memory it points to.
 
        int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
-  //-- K keys[3];
 
        std::array<K, 3> keys;
 
@@ -44,11 +44,10 @@ template<typename K> class Tree234 {
         * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
         * And so on for 4-nodes.
         */
-//--   std::unique_ptr<Node234> children[4];
 
        std::array< std::unique_ptr<Node234>, 4 > children;
 
-       std::unique_ptr<Node234> &getParent(); 
+       Node234 *getParent(); 
 
        /* 
         * Returns true if key is found in node and set index: this->keys[index] == key
@@ -58,7 +57,7 @@ template<typename K> class Tree234 {
 
        int insertKey(K key);
        
-       void connectChild(int childNum, std::unique_ptr<Node234> child);
+       void connectChild(int childNum, std::unique_ptr<Node234>& child);
        
        /*
         * Removes child node andshifts its children to fill the gap. Returns child pointer.
@@ -74,7 +73,7 @@ template<typename K> class Tree234 {
        
      public:
          
-       const std::unique_ptr<Node234> &getParent() const;
+       const Node234 *getParent() const;
 
        int getTotalItems() const;
        int getChildCount() const;
@@ -203,11 +202,25 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const
 }
 
  
-template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) : root(nullptr)
+template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) //: root(nullptr)
 {
     for (auto x: il) {
+
         insert(x);
     }
+}
+/*
+ * precondition: childIndex is within the range for the type of node.
+ * child is not nullptr.
+ */
+template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, std::unique_ptr<Node234>& child)
+{
+  children[childIndex] = std::move( child );
+  
+  if (child != nullptr) {
+
+       child->parent = this; 
+  }
 }
 
 /*
@@ -252,41 +265,20 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
    */
   for(auto i = totalItems - 1; i >= childNum ; i--) {
 
-          // TODO: use std::move
-          children[i + 1] = std::move(children[i]); // shift child right
-
+        children[i + 1] = std::move(children[i]); // shift child right. Calls operator=(Node234&&) 
    } 
 
-//??  children[childNum] = pChild;
   children[childNum] = std::move(pChild);
 
   if (!isLeaf()) {
       
-   pChild->parent = this; // reset the child's parent pointer, too.
+     pChild->parent = this; // reset the child's parent pointer, too.
   }
   
   return;
 }
 
 
-/*
- * precondition: childIndex is within the range for the type of node.
- * child is not nullptr.
- */
-template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, std::unique_ptr<Node234> child)
-{
-  //--children[childIndex] = child; // no operator=
-  children[childIndex].reset( child ); 
-  
-  if (child != nullptr) {
-      /*
-       * TODO:  error: no viable overloaded '='
-       */ 
-     //--child->parent = this; 
-     child->parent.reset( this ); 
-     
-  }
-}
 /*
  * precondition: childIndex is within the range for the type of node.
  * returns child pointer.
@@ -296,12 +288,12 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
 
 template<typename K> inline std::unique_ptr<typename Tree234<K>::Node234> Tree234<K>::Node234::disconnectChild(int childIndex)
 {
-  std::unique_ptr<Node234> node{ children[childIndex] };
+  std::unique_ptr<Node234> node{ children[childIndex] }; // invokes move constructor.
 
   // shift children (whose last 0-based index is totalItems) left to overwrite removed child i.
   for(auto i = childIndex; i < totalItems; ++i) {
 
-       children[i] = std::move(children[i + 1]); // shift remaining children to the left
+       children[i] = std::move(children[i + 1]); // shift remaining children to the left. Calls operator=(Node234&&)
   } 
 
   return node;
@@ -343,12 +335,12 @@ template<typename K> inline  bool Tree234<K>::Node234::isFull() const
    return totalItems == MAX_KEYS;
 }
 
-template<typename K> inline  std::unique_ptr< typename Tree234<K>::Node234 > &Tree234<K>::Node234::getParent()  
+template<typename K> inline  safe_ptr< typename Tree<K>::Node234 > Tree234<K>::Node234::getParent()  
 { 
    return parent;
 }
 
-template<typename K> inline  const std::unique_ptr< typename Tree234<K>::Node234 > &Tree234<K>::Node234::getParent() const 
+template<typename K> inline  const typename Tree<K>::Node234 *Tree234<K>::Node234::getParent() const // <-- not sure how to do 
 { 
    return parent;
 }
@@ -378,12 +370,12 @@ template<typename K> inline bool Tree234<K>::search(K key)
     }
 }   
 
-template<typename K>  bool Tree234<K>::DoSearch(K key, std::unique_ptr<Node234> &location, int& index)
+template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *location, int& index)
 {
-  Node234 *current = root;
+  Node234 *current = root.get();
   Node234 *next;
 
-  if (root == nullptr) {
+  if (!root) { // <--> if (root.get() == nullptr)
 
      return false;
   }
@@ -412,12 +404,14 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, std::unique_ptr<Node234> 
 template<typename K> void Tree234<K>::insert(K key) noexcept
 {
     if (root == nullptr) {
-
+    /*
+     * TODO: reset() first deletes object current being managed before the new'ed pointer begins to be managed. 
+     */
        root.reset( new Node234{key} ); 
        return; 
     } 
 
-   std::unique_ptr<Node234> &current = root;
+   Node234 *current = root.get();
 
    /* Descend until a leaf node is found, splitting four nodes as they are encountered */
 
@@ -428,10 +422,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
             split(current); 
       
             // resume search with parent.
-            /*
-             * TODO: Error message about: no operaotr= exists in unique_ptr. Should I call: current->getParent.get()?
-             */
-            current = current->getParent(); 
+            current = current->getParent(); // TODO:  no operaotr= exists in unique_ptr. Should I call: current->getParent.get()?
                         
        }  else if( current->isLeaf() )  {
 
@@ -450,7 +441,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
             } 
 
             // set current to next   
-            current = next;  
+            current = next;  // can't copy assign a unique_ptr. You can only move-assign.
        }
     }
 
@@ -481,35 +472,37 @@ template<typename K> void Tree234<K>::split(std::unique_ptr<Node234> &node)
         
     itemC = node->keys[2];
     itemB = node->keys[1]; 
+    
     node->totalItems = 1; // ...by first setting totalItems to 1. 
 
-    // Remove its two right-most children. 
-    Node234 *child2 = node->children[2]; // TODO:
-    Node234 *child3 = node->children[3]; // TODO:
-
-    Node234 *newRight = new Node234{itemC}; // make new right child node from largest item
+    std::unique_ptr<Node234> newRight{ new Node234{itemC} }; // make new right child node from largest item
 
     /* set its left and right children to be the two right-most children of node */
-    if (child2 && child3) { // that is, if they are not zero
+    if (node->children[2] && node->children[3]) { // that is, if neither are nullptr
         
-        newRight->connectChild(0, child2); // connect to 0 and 1
+        newRight->connectChild(0, node->children[2]); // connect to 0 and 1
 
-        newRight->connectChild(1, child3); // on newRight
+        newRight->connectChild(1, node->children[3]); // on newRight
     }
 
     /* we will covert node into a two node whose left and right children will be the two left most children
        This occurs by default. We only need adjust totalItems  */
-    node->children[2] = nullptr; 
-    node->children[3] = nullptr; 
+    
+    node->children[2] = std::move(std::unique_ptr<Node234>()); 
+    node->children[3] = std::move(std::unique_ptr<Node234>()); 
 
     // if this is the root,
     if(node == root) { 
 
         /* make new root two node using node's middle value */  
-        root = new Node234{itemB}; 
+        root = std::move( new Node234{itemB} ); 
+        
         parent = root;          // root is parent of node
+        
         root->connectChild(0, node); // connect node to root as left child
+        
         root->connectChild(1, newRight);
+        
         return;
     }         
 
@@ -518,6 +511,7 @@ template<typename K> void Tree234<K>::split(std::unique_ptr<Node234> &node)
     // deal with parent, moving itemB middle value to parent.
 
     int insert_index = parent->insertKey(itemB);
+
     int last_index = parent->totalItems - 1;
     
     for(auto i = last_index; i > insert_index; i--)  {// move parent's connections right, start from new last
