@@ -502,7 +502,7 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         //--parent = root;          // root is parent of node 
         
         // TODO: change to do move() and then set the parent.)
-        root->connectChild(0, node); // connect node to root as left child
+        root->connectChild(0, node); // TODO: node is a raw pointer and not a unique_ptr<Node234>
         
         root->connectChild(1, newRight);
         
