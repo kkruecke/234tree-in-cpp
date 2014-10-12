@@ -496,12 +496,13 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         /* make new root two node using node's middle value */  
         std::unique_ptr<Node234> p{ new Node234{itemB} };
         
-        root = std::move(p); // TODO: Is this what I intend?
+        root = std::move(p); // TODO: Is this what I intend? Does this cause root to leak?
         
         // TODO: This line doesn't seem to do anything?
         //--parent = root;          // root is parent of node 
         
         // TODO: change to do move() and then set the parent.)
+        // root is newly allocated Node.
         root->connectChild(0, node); // TODO: node is a raw pointer and not a unique_ptr<Node234>
         
         root->connectChild(1, newRight);
