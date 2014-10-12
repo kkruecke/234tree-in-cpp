@@ -295,7 +295,7 @@ template<typename K> inline std::unique_ptr<typename Tree234<K>::Node234> Tree23
        children[i] = std::move(children[i + 1]); // shift remaining children to the left. Calls operator=(Node234&&)
   } 
 
-  return node;
+  return node; // invokes move constructor since node.
 }
 /*
  * preconditions: node is not full, not a four node (full), and key is not already in node. It may or may not
@@ -503,12 +503,15 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         
         // TODO: change to do move() and then set the parent.)
         // root is newly allocated Node.
-        //--root->connectChild(0, node); // TODO: node is a raw pointer and not a unique_ptr<Node234>
+    //--root->connectChild(0, node); // TODO: node is a raw pointer and not a unique_ptr<Node234>
         root->children[0].reset(node); // maybe do this, or ...
         root->children[0] = std:::move(std::unique_ptr<Node234>{node}); // or ...
         root->children[0]->parent = root;
         
-        root->connectChild(1, newRight);
+    //--root->connectChild(1, newRight);
+        root->children[1].reset(newRight); // maybe do this, or ...
+        root->children[1] = std:::move(newRight); // or ...
+        root->children[1]->parent = root;
         
         return;
     }         
