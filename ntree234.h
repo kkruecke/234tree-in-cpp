@@ -503,7 +503,10 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         
         // TODO: change to do move() and then set the parent.)
         // root is newly allocated Node.
-        root->connectChild(0, node); // TODO: node is a raw pointer and not a unique_ptr<Node234>
+        //--root->connectChild(0, node); // TODO: node is a raw pointer and not a unique_ptr<Node234>
+        root->children[0].reset(node); // maybe do this, or ...
+        root->children[0] = std:::move(std::unique_ptr<Node234>{node}); // or ...
+        root->children[0]->parent = root;
         
         root->connectChild(1, newRight);
         

@@ -1,0 +1,7 @@
+Finish implementing code to use unique_ptr. Focus on what each routine does, the pseudo code, as this will tell
+you what parameters each method will need to take, in the unique_ptr version of Tree234.
+
+Doesn't connectChild always set an empty, unused array element?
+
+Add noexcept to function signatures where no exceptions are thrown. Add constexpr where appropriate...and so on with
+other C++11 constructs.
