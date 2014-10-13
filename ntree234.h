@@ -234,7 +234,7 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
 
      if (value < keys[i]) {
             
-           next = children[i]; 
+           next = children[i].get(); 
            break;
 
      } else if (keys[i] == value) {
@@ -245,7 +245,7 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
 
      } else if (i == totalItems - 1) { // it is greater than the last key
           
-          next = children[totalItems]; 
+          next = children[totalItems].get(); 
      }
   } 
 
@@ -504,11 +504,11 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         // root is now newly allocated Node.
         root = std::move(p); 
         
-        root->children[0] = std:::move(std::unique_ptr<Node234>{node}); // <-- Doesor ...
-        root->children[0]->parent = root;
+        root->children[0] = std::move(std::unique_ptr<Node234>{node}); // <-- Doesor ...
+        root->children[0]->parent = root.get();
         
-        root->children[1] = std:::move(newRight); 
-        root->children[1]->parent = root;
+        root->children[1] = std::move(newRight); 
+        root->children[1]->parent = root.get();
         
         return;
     }         
