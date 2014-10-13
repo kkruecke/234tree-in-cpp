@@ -473,30 +473,26 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
  */ 
 template<typename K> void Tree234<K>::split(Node234 *node) noexcept
 {
-    K  itemB, itemC;
-    Node234 *parent;
-
     // remove two largest (of three total) keys...
         
-    itemC = node->keys[2];
-    itemB = node->keys[1]; 
+    K itemC = node->keys[2];
+    K itemB = node->keys[1]; 
     
-    node->totalItems = 1; // ...set its totalItems to 1. We preserve in this way only keys[0], the smallest value, in node. 
+    node->totalItems = 1; // This effective removes all but the smallest key from node.
 
-    std::unique_ptr<Node234> newRight{ new Node234{itemC} }; // Move largest key to new right child
+    std::unique_ptr<Node234> newRight{ new Node234{itemC} }; // Move largest key to what will be the new right child of split node.
 
     /* The "bool operator()" of unique_ptr tests whether a pointer is being managed, whether get() == nullptr. */
-    if (node->children[2] && node->children[3]) { // that is, if neither are nullptr
+    if (node->children[2] && node->children[3]) { // If neither are nullptr
         
         newRight->connectChild(0, node->children[2]); // set its left child to the 3rd child of node 
 
         newRight->connectChild(1, node->children[3]); // set its right child to the 4th child of node
     }
 
-    /* we will covert node into a two node whose left and right children will be the two left most children
-       This occurs by default. We already set totalItems = 1  */
+    /* node's left and right children will be the two left most children of the node being split. */
     
-    node->children[2] = std::move(std::unique_ptr<Node234>()); // set node's two rightmost children to nullptr(this isn't strictly necessary) 
+    node->children[2] = std::move(std::unique_ptr<Node234>()); // First set node's two rightmost children to nullptr(this isn't strictly necessary) 
     node->children[3] = std::move(std::unique_ptr<Node234>()); 
 
     // if this is the root,
@@ -517,19 +513,21 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         return;
     }         
 
-    parent = node->getParent(); 
+    Node234 *parent = node->getParent(); 
     
-    // deal with parent, moving itemB middle value to parent (which we know has room).
+    // Move itemB, middle value, to parent (which we know has room).
 
     int insert_index = parent->insertKey(itemB);
 
     int last_index = parent->totalItems - 1;
-    
-    for(auto i = last_index; i > insert_index; i--)  {// move parent's connections right, start from new last index, stopping before insert_index
+
+    // move parent's connections right, starting from new last index, stopping before insert_index
+    for(auto i = last_index; i > insert_index; i--)  {
 
         parent->connectChild(i + 1, parent->children[i]);       
     }
 
+    // make newRight the right most child.
     parent->connectChild(insert_index + 1,  newRight);
 
     return;
