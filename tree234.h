@@ -864,7 +864,7 @@ template<typename K> void Tree234<K>::split(Node234 *node)
         root = new Node234{itemB}; 
         parent = root;          // root is parent of node
         root->connectChild(0, node); // connect node to root as left child
-        root->connectChild(1, newRight);
+        root->connectChild(1, newRight); // connect newRight as right child
         return;
     }         
 

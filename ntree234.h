@@ -458,7 +458,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
  *  
  *  Upon encountering a full node (searching for a place to insert…):
  *  
- *  1.  split that node at that time. 
+ *  1.  split the node at that time. 
  *  2.  move highest data  item from the current (full) node into new node to the right.
  *  3.  move middle value of node undergoing the split up to parent node (Know we can do all this because parent node was not full) 
  *  4.  Retain lowest item in node.    
@@ -467,7 +467,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
  *  6.  Original node (formerly full) node contains only the lowest of the three values.
  *  7.  Rightmost children of original full node are disconnected and connected to new children as appropriate 
  *	    (They must be disconnected, since their parent data is changed)
- *            New connections conform to linkage conventions, as expected.  
+ *            New connections conform to linkage conventions, as expected. 
  *  8. Insert new data item into the original leaf node.
  *  
  */ 
@@ -481,22 +481,22 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
     itemC = node->keys[2];
     itemB = node->keys[1]; 
     
-    node->totalItems = 1; // ...by first setting totalItems to 1. 
+    node->totalItems = 1; // ...set its totalItems to 1. We preserve in this way only keys[0], the smallest value, in node. 
 
-    std::unique_ptr<Node234> newRight{ new Node234{itemC} }; // make new right child node from largest item
+    std::unique_ptr<Node234> newRight{ new Node234{itemC} }; // Move largest key to new right child
 
-    /* set its left and right children to be the two right-most children of node */
+    /* The "bool operator()" of unique_ptr tests whether a pointer is being managed, whether get() == nullptr. */
     if (node->children[2] && node->children[3]) { // that is, if neither are nullptr
         
-        newRight->connectChild(0, node->children[2]); // connect to 0 and 1
+        newRight->connectChild(0, node->children[2]); // set its left child to the 3rd child of node 
 
-        newRight->connectChild(1, node->children[3]); // on newRight
+        newRight->connectChild(1, node->children[3]); // set its right child to the 4th child of node
     }
 
     /* we will covert node into a two node whose left and right children will be the two left most children
-       This occurs by default. We only need adjust totalItems  */
+       This occurs by default. We already set totalItems = 1  */
     
-    node->children[2] = std::move(std::unique_ptr<Node234>()); 
+    node->children[2] = std::move(std::unique_ptr<Node234>()); // set node's two rightmost children to nullptr(this isn't strictly necessary) 
     node->children[3] = std::move(std::unique_ptr<Node234>()); 
 
     // if this is the root,
@@ -505,21 +505,13 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         /* make new root two node using node's middle value */  
         std::unique_ptr<Node234> p{ new Node234{itemB} };
         
-        root = std::move(p); // TODO: Is this what I intend? Does this cause root to leak?
+        // root is now newly allocated Node.
+        root = std::move(p); 
         
-        // TODO: This line doesn't seem to do anything?
-        //--parent = root;          // root is parent of node 
-        
-        // TODO: change to do move() and then set the parent.)
-        // root is newly allocated Node.
-    //--root->connectChild(0, node); // TODO: node is a raw pointer and not a unique_ptr<Node234>
-        root->children[0].reset(node); // maybe do this, or ...
-        root->children[0] = std:::move(std::unique_ptr<Node234>{node}); // or ...
+        root->children[0] = std:::move(std::unique_ptr<Node234>{node}); // <-- Doesor ...
         root->children[0]->parent = root;
         
-    //--root->connectChild(1, newRight);
-        root->children[1].reset(newRight); // maybe do this, or ...
-        root->children[1] = std:::move(newRight); // or ...
+        root->children[1] = std:::move(newRight); 
         root->children[1]->parent = root;
         
         return;
@@ -527,24 +519,19 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
 
     parent = node->getParent(); 
     
-    // deal with parent, moving itemB middle value to parent.
+    // deal with parent, moving itemB middle value to parent (which we know has room).
 
     int insert_index = parent->insertKey(itemB);
 
     int last_index = parent->totalItems - 1;
     
-    for(auto i = last_index; i > insert_index; i--)  {// move parent's connections right, start from new last
-                                                     // index up to insert_index
-        parent->connectChild(i + 1, parent->children[i]);       // to the right
+    for(auto i = last_index; i > insert_index; i--)  {// move parent's connections right, start from new last index, stopping before insert_index
+
+        parent->connectChild(i + 1, parent->children[i]);       
     }
 
     parent->connectChild(insert_index + 1,  newRight);
 
-    /* 
-     * By default, we do not need to insert node. It will be at the correct position. So we do not need to do:
-     *     parent->connectChild(insert_index, node); 
-     */
-  
     return;
 }
 #endif
