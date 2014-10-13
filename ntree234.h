@@ -352,7 +352,58 @@ template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const  noexcept
 
 template<typename K> inline Tree234<K>::~Tree234()
 {
-  // DestroyTree(root); TODO: DestroyTree should call p.release() instead of delete p;
+  DestroyTree(root); 
+}
+
+/*
+ * Post order traversal, deleting nodes
+ */
+template<typename K> void Tree234<K>::DestroyTree(std::unique_ptr<Node234> &current) noexcept 
+{
+  if (current == nullptr) {
+
+	return;
+   }
+
+   switch (current->totalItems) {
+
+      case 1: // two node
+            DestroyTree(current->children[0]);
+
+            DestroyTree(current->children[1]);
+
+            //delete current;
+            current.reset();
+
+            break;
+
+      case 2: // three node
+            DestroyTree(current->children[0]);
+
+            DestroyTree(current->children[1]);
+ 
+            DestroyTree(current->children[2]);
+
+            //delete current;
+            current.reset();
+
+            break;
+
+      case 3: // four node
+            DestroyTree(current->children[0]);
+
+            DestroyTree(current->children[1]);
+ 
+            DestroyTree(current->children[2]);
+
+            DestroyTree(current->children[3]);
+
+            //delete current;
+            current.reset();
+ 
+            break;
+   }
+  
 }
 
 template<typename K> inline bool Tree234<K>::search(K key) noexcept
