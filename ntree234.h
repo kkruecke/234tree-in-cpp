@@ -643,9 +643,9 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
     }
 
     /* node's left and right children will be the two left most children of the node being split. */
-    
-    //--node->children[2] = std::move(std::unique_ptr<Node234>()); // First set node's two rightmost children to nullptr(this isn't strictly necessary) 
-    //--node->children[3] = std::move(std::unique_ptr<Node234>()); 
+    // I think these two lines can be deleted.  
+    node->children[2] = std::move(std::unique_ptr<Node234>()); // First set node's two rightmost children to nullptr
+    node->children[3] = std::move(std::unique_ptr<Node234>()); 
 
     // if this is the root,
     if(node == root.get()) { 
