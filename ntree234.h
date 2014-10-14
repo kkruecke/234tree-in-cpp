@@ -216,71 +216,48 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, Node
    switch (pNode2Copy->totalItems) {
 
       case 1: // two node
-      {
 
             pNodeCopy = new Node234(pNode2Copy->keys[0]); 
              
             pNodeCopy->parent = pNode2Copy->parent;
             pNodeCopy->nullAllChildren();
             
-            Node234 *pDestNode = pNodeCopy->children[0].get();
-            
-            CloneTree(pNode2Copy->children[0].get(), pDestNode); 
-            
-            pDestNode = pNodeCopy->children[1].get();
+            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]); 
 
-            CloneTree(pNode2Copy->children[1].get(), pDestNode); 
-      }
+            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]); 
 
             break;
 
       case 2: // three node
-      {
 
             pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1]); 
 
             pNodeCopy->parent = pNode2Copy->parent;
-            
             pNodeCopy->nullAllChildren();
-            
-            Node234 *pDestNode = pNodeCopy->children[0].get();
-            
-            CloneTree(pNode2Copy->children[0].get(), pDestNode);
-            
-            pDestNode = pNodeCopy->children[1].get();
 
-            CloneTree(pNode2Copy->children[1].get(), pDestNode);
-            
-            pDestNode = pNodeCopy->children[2].get();
-            
-            CloneTree(pNode2Copy->children[2].get(), pDestNode);
-      }
+            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]);
+
+            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]);
+ 
+            CloneTree(pNode2Copy->children[2], pNodeCopy->children[2]);
 
             break;
 
       case 3: // four node
-            {
+
             pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]); 
 
             pNodeCopy->parent = pNode2Copy->parent;
             pNodeCopy->nullAllChildren();
-            
-            Node234 *pDestNode = pNodeCopy->children[0].get();
 
-            CloneTree(pNode2Copy->children[0].get(), pDestNode);
-            
-            pDestNode = pNodeCopy->children[1].get();
-            
-            CloneTree(pNode2Copy->children[1].get(), pDestNode);
+            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]);
+
+            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]);
  
-            pDestNode = pNodeCopy->children[2].get();
-            
-            CloneTree(pNode2Copy->children[2].get(), pDestNode);
-            
-            pDestNode = pNodeCopy->children[3].get();
-            
-            CloneTree(pNode2Copy->children[3].get(), pDestNode);
-            }
+            CloneTree(pNode2Copy->children[2], pNodeCopy->children[2]);
+
+            CloneTree(pNode2Copy->children[3], pNodeCopy->children[3]);
+ 
             break;
    }
  } else {
@@ -288,6 +265,7 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, Node
     pNodeCopy = nullptr;
  } 
 }
+
 
 
 /*
