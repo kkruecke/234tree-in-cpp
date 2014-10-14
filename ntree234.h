@@ -653,16 +653,15 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         /* make new root two node using node's middle value */  
         std::unique_ptr<Node234> p{ new Node234{itemB} };
         
-        // root is now newly allocated Node. 
-        /* 
-         * TODO: But this will swap root's raw pointer with p, so that the original root pointer is lost. 
-         * Q: Is this a problem? Does it cause a memory leak? Should root.release() be done first?
-         * 
+       /*
+         * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we must first call release(). 
+         * otherwise, node, which equals root, will be deleted. 
          */ 
-      //Node234 *old_root = root.release(); // ??  
+        root.release(); 
+      
         root = std::move(p); 
         
-        root->children[0] = std::move(std::unique_ptr<Node234>{node}); // <-- Doesor ...
+        root->children[0] = std::move(std::unique_ptr<Node234>{node}); 
         root->children[0]->parent = root.get();
         
         root->children[1] = std::move(newRight); 
