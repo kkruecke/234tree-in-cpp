@@ -659,6 +659,7 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
          * Q: Is this a problem? Does it cause a memory leak? Should root.release() be done first?
          * 
          */ 
+      //Node234 *old_root = root.release(); // ??  
         root = std::move(p); 
         
         root->children[0] = std::move(std::unique_ptr<Node234>{node}); // <-- Doesor ...
