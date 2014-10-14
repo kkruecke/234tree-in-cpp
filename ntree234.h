@@ -654,7 +654,11 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         std::unique_ptr<Node234> p{ new Node234{itemB} };
         
         // root is now newly allocated Node. 
-        // TODO: But this will swap root's raw pointer with p, so that the original root pointer is lost. Is this a problem? Does it cause a memory leak?
+        /* 
+         * TODO: But this will swap root's raw pointer with p, so that the original root pointer is lost. 
+         * Q: Is this a problem? Does it cause a memory leak? Should root.release() be done first?
+         * 
+         */ 
         root = std::move(p); 
         
         root->children[0] = std::move(std::unique_ptr<Node234>{node}); // <-- Doesor ...
