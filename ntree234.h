@@ -89,7 +89,8 @@ template<typename K> class Tree234 {
 
     void split(Node234 *node) noexcept;  // called during insert to split 4-nodes
     void DestroyTree(std::unique_ptr<Node234> &root) noexcept; 
-    void CloneTree(const Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept; // called by copy ctor
+    //--void CloneTree(const Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept; // called by copy ctor
+    void CloneTree(Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept; // called by copy ctor
 
   public:
 
@@ -197,7 +198,8 @@ template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noe
 
 template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
 {
-    const Tree234<K>::Node234 *src =  const_cast<const Tree234<K>::Node234 *>( lhs.root.get() );
+    //const Tree234<K>::Node234 *src =  const_cast<const Tree234<K>::Node234 *>( lhs.root.get() );
+    Tree234<K>::Node234 *src =  lhs.root.get();
     
     Tree234<K>::Node234 *dest = root.get();
             
@@ -208,7 +210,7 @@ template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
  * pre-order traversal
  */
 
-template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept
+template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept
 {
  if (pNode2Copy != nullptr) { 
                               
@@ -216,49 +218,88 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, Node
    switch (pNode2Copy->totalItems) {
 
       case 1: // two node
+      {    
 
             pNodeCopy = new Node234(pNode2Copy->keys[0]); 
              
             pNodeCopy->parent = pNode2Copy->parent;
-            pNodeCopy->nullAllChildren();
             
-            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]); 
+            pNodeCopy->nullAllChildren(); // necessary?
+            
+            /*
+             * There is no implicit coversion from
+             * 
+             *      unique_ptr<Tree234<int>::Node234> 
+             * to 
+             *      Tree234<int>::Node234 *
+             * 
+             */
+            Node234 *src = pNode2Copy->children[0].get();
+            Node234* dest = pNodeCopy->children[0].get();
+            
+            CloneTree(src, dest); 
+            
+            src = pNode2Copy->children[1].get();
+            dest = pNodeCopy->children[1].get();
 
-            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]); 
+            CloneTree(src, dest); 
 
             break;
-
+      }   // end case
       case 2: // three node
-
+      {
             pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1]); 
 
             pNodeCopy->parent = pNode2Copy->parent;
             pNodeCopy->nullAllChildren();
+            
+            Node234 *src = pNode2Copy->children[0].get();
+            Node234* dest =  pNodeCopy->children[0].get();
 
-            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]);
+            CloneTree(src, dest);
+            
+            src = pNode2Copy->children[1].get();
+            dest = pNodeCopy->children[1].get();
 
-            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]);
+            CloneTree(src, dest);
+            
+            src = pNode2Copy->children[2].get();
+            dest = pNodeCopy->children[2].get();
  
-            CloneTree(pNode2Copy->children[2], pNodeCopy->children[2]);
+            CloneTree(src, dest);
 
             break;
-
+      } // end case
       case 3: // four node
+      {
 
             pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]); 
 
             pNodeCopy->parent = pNode2Copy->parent;
             pNodeCopy->nullAllChildren();
+            
+            Node234 *src = pNode2Copy->children[0].get();
+            Node234 *dest =  pNodeCopy->children[0].get();
 
-            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]);
+            CloneTree(src, dest);
+            
+            src = pNode2Copy->children[1].get();
+            dest =  pNodeCopy->children[1].get();
 
-            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]);
+            CloneTree(src, dest);
+            
+            src = pNode2Copy->children[2].get();
+            dest =  pNodeCopy->children[2].get();
  
-            CloneTree(pNode2Copy->children[2], pNodeCopy->children[2]);
+            CloneTree(src, dest);
+            
+            src = pNode2Copy->children[3].get();
+            dest =  pNodeCopy->children[3].get();
 
-            CloneTree(pNode2Copy->children[3], pNodeCopy->children[3]);
+            CloneTree(src, dest);
  
             break;
+      } // end case
    }
  } else {
 
@@ -603,8 +644,8 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
 
     /* node's left and right children will be the two left most children of the node being split. */
     
-    node->children[2] = std::move(std::unique_ptr<Node234>()); // First set node's two rightmost children to nullptr(this isn't strictly necessary) 
-    node->children[3] = std::move(std::unique_ptr<Node234>()); 
+    //--node->children[2] = std::move(std::unique_ptr<Node234>()); // First set node's two rightmost children to nullptr(this isn't strictly necessary) 
+    //--node->children[3] = std::move(std::unique_ptr<Node234>()); 
 
     // if this is the root,
     if(node == root.get()) { 
@@ -612,7 +653,8 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         /* make new root two node using node's middle value */  
         std::unique_ptr<Node234> p{ new Node234{itemB} };
         
-        // root is now newly allocated Node.
+        // root is now newly allocated Node. 
+        // TODO: But this will swap root's raw pointer with p, so that the original root pointer is lost. Is this a problem? Does it cause a memory leak?
         root = std::move(p); 
         
         root->children[0] = std::move(std::unique_ptr<Node234>{node}); // <-- Doesor ...
