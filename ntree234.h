@@ -87,9 +87,13 @@ template<typename K> class Tree234 {
     
     bool DoSearch(K key, Node234 *&location, int& index) noexcept;
 
+    template<typename Functor> void DoInorderTraverse(Functor f, Node234 *root) noexcept;
+    template<typename Functor> void DoPostOrderTraverse(Functor f, Node234 *root) noexcept;
+    template<typename Functor> void DoPreOrderTraverse(Functor f, Node234 *root) noexcept;
+    template<typename Functor> void DoPostOrder4Debug(Functor f, Node234 *root) noexcept;
+
     void split(Node234 *node) noexcept;  // called during insert to split 4-nodes
     void DestroyTree(std::unique_ptr<Node234> &root) noexcept; 
-    //--void CloneTree(const Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept; // called by copy ctor
     void CloneTree(Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept; // called by copy ctor
 
   public:
@@ -101,6 +105,10 @@ template<typename K> class Tree234 {
      Tree234(std::initializer_list<K> list) noexcept; 
 
     ~Tree234(); 
+
+    template<typename Functor> void inOrderTraverse(Functor f) noexcept;
+    template<typename Functor> void postOrderTraverse(Functor f) noexcept;
+    template<typename Functor> void preOrderTraverse(Functor f) noexcept;
 
     bool search(K key) noexcept;
 
@@ -205,6 +213,229 @@ template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
             
     CloneTree(src, dest);
 }
+
+template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f) noexcept
+{
+   DoInorderTraverse(f, root);
+}
+
+template<typename K> template<typename Functor> inline void Tree234<K>::postOrderTraverse(Functor f) noexcept
+{
+   DoPostOrderTraverse(f, root);
+}
+
+template<typename K> template<typename Functor> inline void Tree234<K>::preOrderTraverse(Functor f) noexcept
+{
+   DoPreOrderTraverse(f, root);
+}
+
+/*
+ * post order traversal 
+ */
+template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTraverse(Functor f, Node234 *current) noexcept
+{  
+   if (current == nullptr) {
+
+        return;
+   }
+
+   switch (current->totalItems) {
+
+      case 1: // two node
+            DoPostOrderTraverse(f, current->children[0]);
+
+            DoPostOrderTraverse(f, current->children[1]);
+
+            f(current->keys[0]);
+            break;
+
+      case 2: // three node
+            DoPostOrderTraverse(f, current->children[0]);
+
+            DoPostOrderTraverse(f, current->children[1]);
+
+            f(current->keys[0]);
+
+            DoPostOrderTraverse(f, current->children[2]);
+
+            f(current->keys[1]);
+            break;
+
+      case 3: // four node
+            DoPostOrderTraverse(f, current->children[0]);
+
+            DoPostOrderTraverse(f, current->children[1]);
+
+            f(current->keys[0]);
+
+            DoPostOrderTraverse(f, current->children[2]);
+
+            f(current->keys[1]);
+
+            DoPostOrderTraverse(f, current->children[3]);
+
+            f(current->keys[2]);
+ 
+            break;
+   }
+}
+/*
+ * pre order traversal 
+ */
+template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTraverse(Functor f, Node234 *current) noexcept
+{  
+
+  if (current == nullptr) {
+
+        return;
+   }
+
+   switch (current->totalItems) {
+
+      case 1: // two node
+            f(current->keys[0]);
+
+            DoPreOrderTraverse(f, current->children[0]);
+
+            DoPreOrderTraverse(f, current->children[1]);
+
+            break;
+
+      case 2: // three node
+            f(current->keys[0]);
+
+            DoPreOrderTraverse(f, current->children[0]);
+
+            DoPreOrderTraverse(f, current->children[1]);
+
+            f(current->keys[1]);
+
+            DoPreOrderTraverse(f, current->children[2]);
+
+            break;
+
+      case 3: // four node
+            f(current->keys[0]);
+
+            DoPreOrderTraverse(f, current->children[0]);
+
+            DoPreOrderTraverse(f, current->children[1]);
+
+            f(current->keys[1]);
+
+            DoPreOrderTraverse(f, current->children[2]);
+
+            f(current->keys[2]);
+
+            DoPreOrderTraverse(f, current->children[3]);
+
+            break;
+   }
+}
+
+/*
+ * post order traversal for debugging purposes
+ */
+template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Debug(Functor f, Node234 *current) noexcept
+{     
+   
+   if (current == nullptr) {
+
+	return;
+   }
+
+   switch (current->totalItems) {
+
+      case 1: // two node
+            DoPostOrder4Debug(f, current->children[0]);
+
+            DoPostOrder4Debug(f, current->children[1]);
+
+            f(current->keys[0], 0, current, root);
+            break;
+
+      case 2: // three node
+            DoPostOrder4Debug(f, current->children[0]);
+
+            DoPostOrder4Debug(f, current->children[1]);
+
+            f(current->keys[0], 0, current, root);
+
+            DoPostOrder4Debug(f, current->children[2]);
+
+            f(current->keys[1], 1, current, root);
+            break;
+
+      case 3: // four node
+            DoPostOrder4Debug(f, current->children[0]);
+
+            DoPostOrder4Debug(f, current->children[1]);
+
+            f(current->keys[0], 0, current, root);
+
+            DoPostOrder4Debug(f, current->children[2]);
+
+            f(current->keys[1], 1, current, root);
+
+            DoPostOrder4Debug(f, current->children[3]);
+
+            f(current->keys[2], 2, current, root);
+ 
+            break;
+   }
+}
+
+/*
+ * In order traversal
+ */
+template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraverse(Functor f, Node234 *current) noexcept
+{     
+   if (current == nullptr) {
+
+	return;
+   }
+
+   switch (current->totalItems) {
+
+      case 1: // two node
+            DoInorderTraverse(f, current->children[0]);
+
+            f(current->keys[0]);
+
+            DoInorderTraverse(f, current->children[1]);
+            break;
+
+      case 2: // three node
+            DoInorderTraverse(f, current->children[0]);
+
+            f(current->keys[0]);
+
+            DoInorderTraverse(f, current->children[1]);
+ 
+            f(current->keys[1]);
+
+            DoInorderTraverse(f, current->children[2]);
+            break;
+
+      case 3: // four node
+            DoInorderTraverse(f, current->children[0]);
+
+            f(current->keys[0]);
+
+            DoInorderTraverse(f, current->children[1]);
+ 
+            f(current->keys[1]);
+
+            DoInorderTraverse(f, current->children[2]);
+
+            f(current->keys[2]);
+
+            DoInorderTraverse(f, current->children[3]);
+ 
+            break;
+   }
+}
+
 
 /*
  * pre-order traversal
@@ -654,8 +885,8 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         std::unique_ptr<Node234> p{ new Node234{itemB} };
         
        /*
-         * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we must first call release(). 
-         * otherwise, node, which equals root, will be deleted. 
+         * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we must first call release(); 
+         * otherwise, node, which equals root, the soon-to-be prior root, will be deleted. 
          */ 
         root.release(); 
       
