@@ -554,7 +554,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
             split(current); 
       
             // resume search with parent.
-            current = current->getParent(); // TODO:  no operaotr= exists in unique_ptr. Should I call: current->getParent.get()?
+            current = current->getParent(); 
                         
        }  else if( current->isLeaf() )  {
 
