@@ -829,13 +829,12 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
  */ 
 template<typename K> void Tree234<K>::split(Node234 *node)
 {
-    K  itemB, itemC;
     Node234 *parent;
 
     // remove two largest (of three total) keys...
         
-    itemC = node->keys[2];
-    itemB = node->keys[1]; 
+    K itemC = node->keys[2];
+    K itemB = node->keys[1]; 
     node->totalItems = 1; // ...by first setting totalItems to 1. 
 
     // Remove its two right-most children. 

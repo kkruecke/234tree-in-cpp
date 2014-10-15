@@ -555,7 +555,7 @@ template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&
  */
 template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, std::unique_ptr<Node234>& child)  noexcept
 {
-  children[childIndex] = std::move( child );
+  children[childIndex] = std::move( child ); // Note: If children[childIndex] currently holds a managed pointer , it will be freed.
   
   if (child != nullptr) {
 
@@ -875,31 +875,42 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
 
     /* The "bool operator()" of unique_ptr tests whether a pointer is being managed, whether get() == nullptr. */
     if (node->children[2] && node->children[3]) { // If neither are nullptr
-        
+       
+        /* connectChild() same as:
+         *
+         * newRight->children[0] = std::move(node->children[2]);
+         * newRight->children[0]->parent = newRight; 
+         * newRight->children[1] = std::move(node->children[2]);
+         * newRight->children[1]->parent = newRight; 
+         *
+         */  
         newRight->connectChild(0, node->children[2]); // set its left child to the 3rd child of node 
 
         newRight->connectChild(1, node->children[3]); // set its right child to the 4th child of node
     }
 
-    /* node's left and right children will be the two left most children of the node being split. */
-    // I think these two lines can be deleted.  
-    node->children[2] = std::move(std::unique_ptr<Node234>()); // First set node's two rightmost children to nullptr
+    /* node's left and right children will be the two left most children of the node being split. 
+     * but first set node's two rightmost children to nullptr */
+    node->children[2] = std::move(std::unique_ptr<Node234>());  
     node->children[3] = std::move(std::unique_ptr<Node234>()); 
 
     // if this is the root,
     if(node == root.get()) { 
 
         /* make new root two node using node's middle value */  
-        std::unique_ptr<Node234> p{ new Node234{itemB} };
+        //--std::unique_ptr<Node234> p{ new Node234{itemB} };
         
        /*
-         * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we must first call release(); 
-         * otherwise, node, which equals root, the soon-to-be prior root, will be deleted. 
-         */ 
-        root.release(); 
+        * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we must first call release(); 
+        * otherwise, node, which is root, the soon-to-be prior root, will be deleted. 
+        */ 
+        root.release(); // stop managing raw pointer. 
       
-        root = std::move(p); 
-        
+//--    root = std::move(p); 
+
+        root = std::move(std::unique_ptr<Node234>{ new Node234{itemB} }); 
+         
+        /* make new root two node using node's middle value, which we make root's left-most child */  
         root->children[0] = std::move(std::unique_ptr<Node234>{node}); 
         root->children[0]->parent = root.get();
         
@@ -923,7 +934,12 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         parent->connectChild(i + 1, parent->children[i]);       
     }
 
-    // make newRight the right most child.
+    /* make newRight the right most child.
+       TODO: Didn't we just move newRight above to be root's right child. If we
+       are using managed pointers, how can we also move it into the parent?
+       What shouldn't this be instead? Draw a picture. 
+     */ 
+
     parent->connectChild(insert_index + 1,  newRight);
 
     return;
