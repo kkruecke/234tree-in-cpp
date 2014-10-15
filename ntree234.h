@@ -99,6 +99,8 @@ template<typename K> class Tree234 {
     void DestroyTree(std::unique_ptr<Node234> &root) noexcept; 
     void CloneTree(Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept; // called by copy ctor
 
+    void test_null() const noexcept;
+
   public:
 
      Tree234() noexcept : root{nullptr} { } 
@@ -201,10 +203,23 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const noexcept
    return (totalItems == 1) ? true : false;
 }
 
+template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) : root(nullptr)
+{
+static  DebugPrinter debug_printer(std::cout); //TODO: Remove
+    for (auto x: il) {
+        insert(x);
+        
+        test_null(); // Remove
+
+/*
+        this->debug_dump(debug_printer);  // Remove
+        std::cout << "\n--------------------\n" << std::endl; // Remove
+*/
+    }
+}
  
 template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept//: root(nullptr)
 {
-static  DebugPrinter debug_printer(std::cout); //TODO: Remove
   
   
     for (auto x: il) {
