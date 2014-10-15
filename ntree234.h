@@ -9,9 +9,6 @@
 #include <array>
 #include <iosfwd>
 
-#include <iostream>         // Remove
-#include "DebugPrinter.h" // Remove
-
 // fwd declarations
 template<typename T> class Tree234;    
 template<typename K> class Node234; 
@@ -19,7 +16,7 @@ template<typename K> class Node234;
 class DebugPrinter; 
 
 template<typename K> class Tree234 {
-      
+    
   protected:
    class Node234 {
        
@@ -203,30 +200,11 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const noexcept
    return (totalItems == 1) ? true : false;
 }
 
-template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) : root(nullptr)
-{
-static  DebugPrinter debug_printer(std::cout); //TODO: Remove
-    for (auto x: il) {
-        insert(x);
-        
-        test_null(); // Remove
-
-/*
-        this->debug_dump(debug_printer);  // Remove
-        std::cout << "\n--------------------\n" << std::endl; // Remove
-*/
-    }
-}
  
-template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept//: root(nullptr)
+template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr) 
 {
-  
-  
     for (auto x: il) {
-        
-        insert(x);
-        this->debug_dump(debug_printer);  // Remove
-        std::cout << "\n--------------------\n" << std::endl; // Remove
+          insert(x);
     }
 }
 
