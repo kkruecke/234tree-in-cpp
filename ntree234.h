@@ -849,12 +849,13 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
  *  
  *  Upon encountering a full node (searching for a place to insert…):
  *  
- *  1.  We split the 4-node node into two 2-nodes with the smallest and largest keys, respectively. 
- *  2.  We move the middle key up to the parent( which we know is not a 4-node; else it too would have been split)
- *  3.  The largest key will be put into a newly allocated node. and node itself will simply hold the smallest key. It
-        is converted into a 2-node   
- *  5.  New node (to the right) only has one data item (the highest value) 
- *  6.  Original node (formerly full) node contains only the lowest of the three values.
+ *  1. We move the largest key into a newly allocated 2-node
+ *  2. We convert *pnode into a 2-node, holding its smallest key, by setting totalItems to 1. 
+ *  3. We move the middle key up to the parent( which we know is not a 4-node; else it too would have been split)
+ *  4. The two left-most children of the former 4-node become the left and right children of the 2-node holding the smallest key.
+ *  5. The two right-most children of the former 4-node are move to become the left and right children of the 2-node holding the largest key.
+ *  6. TODO: Q: How are the children of the parent shifted? Does the middle of pnode always become the middle item in the parent?
+ *  OLD comments:
  *  7.  Rightmost children of original full node are disconnected and connected to new children as appropriate 
  *	    (They must be disconnected, since their parent data is changed)
  *            New connections conform to linkage conventions, as expected. 
