@@ -1,1 +1,1 @@
-Add remove() methods to ntree234 and test traversal methods
+Put debug_dump into initializer_list ctor, in order to find out when parent pointer becomes 0x00.
