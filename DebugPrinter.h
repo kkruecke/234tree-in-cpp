@@ -49,31 +49,24 @@ template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index
 
     strLeaf += std::string("\n");
     
-//    if (parent != nullptr) { 
-             
-        oss << " address(" << current << "): key[" << index << "] = " << key <<  ": parent[";
+    oss << " address(" << current << "): key[" << index << "] = " << key <<  ": parent[";
 
-        if (parent == root) {
+    if (parent == root) {
 
-           oss << "  root   ";
+       oss << "  root   ";
 
-        } else {
+    } else {
 
-           oss << parent;
-        }   
+       oss << parent;
+    }   
 
-        oss   << "]->children[" << child_index << "]->keys[" << index << "] = " << key;
+    oss   << "]->children[" << child_index << "]->keys[" << index << "] = " << key;
 
-        if (current == root) {
+    if (current == root) {
 
-            oss << "  { Root } ";
-        } 
+        oss << "  { Root } ";
+    } 
         
-  /*  } else {
-        
-        oss << " address(" << current << "): key[" << index << "] = " << key <<  ": root";
-    }
-  */
     std::string suffix = oss.str();
 
     suffix += strLeaf; 
