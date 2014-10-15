@@ -101,6 +101,7 @@ template<typename K> class Tree234 {
      Tree234() noexcept : root{nullptr} { } 
 
      Tree234(const Tree234& lhs) noexcept; 
+     Tree234(Tree234&& lhs) noexcept; 
 
      Tree234(std::initializer_list<K> list) noexcept; 
 
@@ -109,6 +110,8 @@ template<typename K> class Tree234 {
     template<typename Functor> void inOrderTraverse(Functor f) noexcept;
     template<typename Functor> void postOrderTraverse(Functor f) noexcept;
     template<typename Functor> void preOrderTraverse(Functor f) noexcept;
+
+    template<typename Functor> void debug_dump(Functor f) noexcept;
 
     bool search(K key) noexcept;
 
@@ -216,17 +219,22 @@ template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
 
 template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f) noexcept
 {
-   DoInorderTraverse(f, root);
+   DoInorderTraverse(f, root.get());
 }
 
 template<typename K> template<typename Functor> inline void Tree234<K>::postOrderTraverse(Functor f) noexcept
 {
-   DoPostOrderTraverse(f, root);
+   DoPostOrderTraverse(f, root.get());
 }
 
 template<typename K> template<typename Functor> inline void Tree234<K>::preOrderTraverse(Functor f) noexcept
 {
-   DoPreOrderTraverse(f, root);
+   DoPreOrderTraverse(f, root.get());
+}
+
+template<typename K> template<typename Functor> inline void Tree234<K>::debug_dump(Functor f) noexcept
+{
+   DoPostOrder4Debug(f, root.get());
 }
 
 /*
@@ -242,37 +250,37 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTrav
    switch (current->totalItems) {
 
       case 1: // two node
-            DoPostOrderTraverse(f, current->children[0]);
+            DoPostOrderTraverse(f, current->children[0].get());
 
-            DoPostOrderTraverse(f, current->children[1]);
+            DoPostOrderTraverse(f, current->children[1].get());
 
             f(current->keys[0]);
             break;
 
       case 2: // three node
-            DoPostOrderTraverse(f, current->children[0]);
+            DoPostOrderTraverse(f, current->children[0].get());
 
-            DoPostOrderTraverse(f, current->children[1]);
+            DoPostOrderTraverse(f, current->children[1].get());
 
             f(current->keys[0]);
 
-            DoPostOrderTraverse(f, current->children[2]);
+            DoPostOrderTraverse(f, current->children[2].get());
 
             f(current->keys[1]);
             break;
 
       case 3: // four node
-            DoPostOrderTraverse(f, current->children[0]);
+            DoPostOrderTraverse(f, current->children[0].get());
 
-            DoPostOrderTraverse(f, current->children[1]);
+            DoPostOrderTraverse(f, current->children[1].get());
 
             f(current->keys[0]);
 
-            DoPostOrderTraverse(f, current->children[2]);
+            DoPostOrderTraverse(f, current->children[2].get());
 
             f(current->keys[1]);
 
-            DoPostOrderTraverse(f, current->children[3]);
+            DoPostOrderTraverse(f, current->children[3].get());
 
             f(current->keys[2]);
  
@@ -295,39 +303,39 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTrave
       case 1: // two node
             f(current->keys[0]);
 
-            DoPreOrderTraverse(f, current->children[0]);
+            DoPreOrderTraverse(f, current->children[0].get());
 
-            DoPreOrderTraverse(f, current->children[1]);
+            DoPreOrderTraverse(f, current->children[1].get());
 
             break;
 
       case 2: // three node
             f(current->keys[0]);
 
-            DoPreOrderTraverse(f, current->children[0]);
+            DoPreOrderTraverse(f, current->children[0].get());
 
-            DoPreOrderTraverse(f, current->children[1]);
+            DoPreOrderTraverse(f, current->children[1].get());
 
             f(current->keys[1]);
 
-            DoPreOrderTraverse(f, current->children[2]);
+            DoPreOrderTraverse(f, current->children[2].get());
 
             break;
 
       case 3: // four node
             f(current->keys[0]);
 
-            DoPreOrderTraverse(f, current->children[0]);
+            DoPreOrderTraverse(f, current->children[0].get());
 
-            DoPreOrderTraverse(f, current->children[1]);
+            DoPreOrderTraverse(f, current->children[1].get());
 
             f(current->keys[1]);
 
-            DoPreOrderTraverse(f, current->children[2]);
+            DoPreOrderTraverse(f, current->children[2].get());
 
             f(current->keys[2]);
 
-            DoPreOrderTraverse(f, current->children[3]);
+            DoPreOrderTraverse(f, current->children[3].get());
 
             break;
    }
@@ -347,39 +355,39 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
    switch (current->totalItems) {
 
       case 1: // two node
-            DoPostOrder4Debug(f, current->children[0]);
+            DoPostOrder4Debug(f, current->children[0].get());
 
-            DoPostOrder4Debug(f, current->children[1]);
+            DoPostOrder4Debug(f, current->children[1].get());
 
-            f(current->keys[0], 0, current, root);
+            f(current->keys[0], 0, current, root.get());
             break;
 
       case 2: // three node
-            DoPostOrder4Debug(f, current->children[0]);
+            DoPostOrder4Debug(f, current->children[0].get());
 
-            DoPostOrder4Debug(f, current->children[1]);
+            DoPostOrder4Debug(f, current->children[1].get());
 
-            f(current->keys[0], 0, current, root);
+            f(current->keys[0], 0, current, root.get());
 
-            DoPostOrder4Debug(f, current->children[2]);
+            DoPostOrder4Debug(f, current->children[2].get());
 
-            f(current->keys[1], 1, current, root);
+            f(current->keys[1], 1, current, root.get());
             break;
 
       case 3: // four node
-            DoPostOrder4Debug(f, current->children[0]);
+            DoPostOrder4Debug(f, current->children[0].get());
 
-            DoPostOrder4Debug(f, current->children[1]);
+            DoPostOrder4Debug(f, current->children[1].get());
 
-            f(current->keys[0], 0, current, root);
+            f(current->keys[0], 0, current, root.get());
 
-            DoPostOrder4Debug(f, current->children[2]);
+            DoPostOrder4Debug(f, current->children[2].get());
 
-            f(current->keys[1], 1, current, root);
+            f(current->keys[1], 1, current, root.get());
 
-            DoPostOrder4Debug(f, current->children[3]);
+            DoPostOrder4Debug(f, current->children[3].get());
 
-            f(current->keys[2], 2, current, root);
+            f(current->keys[2], 2, current, root.get());
  
             break;
    }
@@ -398,39 +406,39 @@ template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraver
    switch (current->totalItems) {
 
       case 1: // two node
-            DoInorderTraverse(f, current->children[0]);
+            DoInorderTraverse(f, current->children[0].get());
 
             f(current->keys[0]);
 
-            DoInorderTraverse(f, current->children[1]);
+            DoInorderTraverse(f, current->children[1].get());
             break;
 
       case 2: // three node
-            DoInorderTraverse(f, current->children[0]);
+            DoInorderTraverse(f, current->children[0].get());
 
             f(current->keys[0]);
 
-            DoInorderTraverse(f, current->children[1]);
+            DoInorderTraverse(f, current->children[1].get());
  
             f(current->keys[1]);
 
-            DoInorderTraverse(f, current->children[2]);
+            DoInorderTraverse(f, current->children[2].get());
             break;
 
       case 3: // four node
-            DoInorderTraverse(f, current->children[0]);
+            DoInorderTraverse(f, current->children[0].get());
 
             f(current->keys[0]);
 
-            DoInorderTraverse(f, current->children[1]);
+            DoInorderTraverse(f, current->children[1].get());
  
             f(current->keys[1]);
 
-            DoInorderTraverse(f, current->children[2]);
+            DoInorderTraverse(f, current->children[2].get());
 
             f(current->keys[2]);
 
-            DoInorderTraverse(f, current->children[3]);
+            DoInorderTraverse(f, current->children[3].get());
  
             break;
    }
