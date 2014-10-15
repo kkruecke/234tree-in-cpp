@@ -129,14 +129,16 @@ template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3;
 template<typename K> inline  Tree234<K>::Node234::Node234(K small)  noexcept : totalItems(1), parent(nullptr)
 { 
    keys[0] = small; 
-   children[0] = nullptr;
+   //--children[0] = nullptr;
+   nullAllChildren();
 }
 
 template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle)  noexcept : totalItems(2), parent(nullptr)
 { 
    keys[0] = small; 
    keys[1] = middle; 
-   children[0] = nullptr;
+   //--children[0] = nullptr;
+   nullAllChildren();
 }
 
 template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large)  noexcept : totalItems(3), parent(nullptr)
@@ -144,7 +146,8 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
    keys[0] = small; 
    keys[1] = middle; 
    keys[2] = large; 
-   children[0] = nullptr;
+   //children[0] = nullptr;
+   nullAllChildren();
 }
 
 template<typename K> inline void Tree234<K>::Node234::nullAllChildren()  noexcept
@@ -921,18 +924,13 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
 
         Node234 *parent = pnode->getParent(); 
     
-        /* 
-         * Note: root and node are not identical (as in the if block above that returns). Here we have moved itemB to the parent(since
-         * we know it has room). We now shift its children right... 
-         */ 
-    
-        int insert_index = parent->insertKey(itemB);
+        int insert_index = parent->insertKey(itemB); // insert itemB into parent, and using its inserted index...
     
         int last_index = parent->totalItems - 1;
     
-        // move parent's connections right, starting from new last index, stopping before insert_index
-        // TODO: Is this correct? Why do we need to move the current children right if we only need to insert newRight as right-most child?
-     
+        // ...move parent's connections right, starting from its last child index and stopping just before insert_index.
+        // TODO: We need to ensure that the right-most child was nullptr, so memory it not inadvertently freed when a child is moved.     
+        // TODO: This means, I believe, the ctors must set all children to nullptr.
         for(auto i = last_index; i > insert_index; i--)  {
     
             parent->connectChild(i + 1, parent->children[i]);       
