@@ -845,18 +845,19 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
     current->insertKey(key); 
 }
 /* 
- *  Split pseudocode: 
+ *  Split pseudocode:
+ *  TODO: Rewrite this pseudo code so it is completely understandable.
  *  
  *  Upon encountering a full node (searching for a place to insert…):
  *  
- *  1.  split the node at that time. 
- *  2.  move highest data  item from the current (full) node into new node to the right.
- *  3.  move middle value of node undergoing the split up to parent node (Know we can do all this because parent node was not full) 
- *  4.  Retain lowest item in node.    
+ *  1.  split Node234 node
+ *  2.  move highest data item from the currently full node into a new node.
+ *  3.  move middle value of node undergoing the split up to parent node (we know we can do all this because parent node was not full) 
+ *  4.  Retain lowest item in node and make it a 2-node by setting its totalItems.    
  *  
- *  5.  New node (to the right) only has one data item (the highest value) 
+ *  5.  New node (to the right) is a 2-node with only one data item (the highest value) 
  *  6.  Original node (formerly full) node contains only the lowest of the three values.
- *  7.  Rightmost children of original full node are disconnected and connected to new children as appropriate 
+ *  7.  The two right-most children of originally full node are disconnected and connected to new children as appropriate 
  *	    (They must be disconnected, since their parent data is changed)
  *            New connections conform to linkage conventions, as expected. 
  *  8. Insert new data item into the original leaf node.
