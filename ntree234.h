@@ -558,6 +558,7 @@ template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&
  */
 template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, std::unique_ptr<Node234>& child)  noexcept
 {
+  //TODO: assert(children[childIndex]) == nullptr;  
   children[childIndex] = std::move( child ); // Note: If children[childIndex] currently holds a managed pointer , it will be freed.
   
   if (child != nullptr) {
@@ -907,7 +908,7 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
         * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we must first call release(); 
         * otherwise, node, which is root, the soon-to-be prior root, will be deleted. 
         */ 
-        root.release(); // stop managing raw pointer. 
+        Node234 *prior_root = root.release(); // stop managing raw pointer. 
       
 //--    root = std::move(p); 
 
@@ -915,10 +916,10 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
          
         /* make new root two node using node's middle value, which we make root's left-most child */  
         root->children[0] = std::move(std::unique_ptr<Node234>{pnode}); 
-        root->children[0]->parent = root.get();
+        root->children[0]->parent = prior_root; // root.get();
         
         root->children[1] = std::move(newRight); 
-        root->children[1]->parent = root.get();
+        root->children[1]->parent = prior_root; // root.get(); // TODO:
 
     }  else {       
 
