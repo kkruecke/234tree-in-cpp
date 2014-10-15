@@ -921,23 +921,26 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
     }         
 
     Node234 *parent = node->getParent(); 
-    
-    // Move itemB, middle value, to parent (which we know has room).
+
+    /* 
+     * Note: root and node are not identical (as in the if block above that returns). Here we have moved itemB to the parent(since
+     * we know it has room). We now shift its children right... 
+     */ 
 
     int insert_index = parent->insertKey(itemB);
 
     int last_index = parent->totalItems - 1;
 
     // move parent's connections right, starting from new last index, stopping before insert_index
+    // TODO: Is this correct? Why do we need to move the current children right if we only need to insert newRight as right-most child?
+ 
     for(auto i = last_index; i > insert_index; i--)  {
 
         parent->connectChild(i + 1, parent->children[i]);       
     }
 
-    /* make newRight the right most child.
-       TODO: Didn't we just move newRight above to be root's right child. If we
-       are using managed pointers, how can we also move it into the parent?
-       What shouldn't this be instead? Draw a picture. 
+    /* 
+     * ...and make newRight the 
      */ 
 
     parent->connectChild(insert_index + 1,  newRight);
