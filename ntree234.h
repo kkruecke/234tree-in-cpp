@@ -845,37 +845,35 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
     current->insertKey(key); 
 }
 /* 
- *  Split pseudocode:
- *  TODO: Rewrite this pseudo code so it is completely understandable.
+ *  Split pseudocode: 
  *  
  *  Upon encountering a full node (searching for a place to insert…):
  *  
- *  1.  split Node234 node
- *  2.  move highest data item from the currently full node into a new node.
- *  3.  move middle value of node undergoing the split up to parent node (we know we can do all this because parent node was not full) 
- *  4.  Retain lowest item in node and make it a 2-node by setting its totalItems.    
- *  
- *  5.  New node (to the right) is a 2-node with only one data item (the highest value) 
+ *  1.  We split the 4-node node into two 2-nodes with the smallest and largest keys, respectively. 
+ *  2.  We move the middle key up to the parent( which we know is not a 4-node; else it too would have been split)
+ *  3.  The largest key will be put into a newly allocated node. and node itself will simply hold the smallest key. It
+        is converted into a 2-node   
+ *  5.  New node (to the right) only has one data item (the highest value) 
  *  6.  Original node (formerly full) node contains only the lowest of the three values.
- *  7.  The two right-most children of originally full node are disconnected and connected to new children as appropriate 
+ *  7.  Rightmost children of original full node are disconnected and connected to new children as appropriate 
  *	    (They must be disconnected, since their parent data is changed)
  *            New connections conform to linkage conventions, as expected. 
  *  8. Insert new data item into the original leaf node.
  *  
  */ 
-template<typename K> void Tree234<K>::split(Node234 *node) noexcept
+template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
 {
     // remove two largest (of three total) keys...
         
-    K itemC = node->keys[2];
-    K itemB = node->keys[1]; 
+    K itemC = pnode->keys[2];
+    K itemB = pnode->keys[1]; 
     
-    node->totalItems = 1; // This effective removes all but the smallest key from node.
+    pnode->totalItems = 1; // This effective removes all but the smallest key from node.
 
     std::unique_ptr<Node234> newRight{ new Node234{itemC} }; // Move largest key to what will be the new right child of split node.
 
     /* The "bool operator()" of unique_ptr tests whether a pointer is being managed, whether get() == nullptr. */
-    if (node->children[2] && node->children[3]) { // If neither are nullptr
+    if (pnode->children[2] && pnode->children[3]) { // If neither are nullptr
        
         /* connectChild() same as:
          *
@@ -885,18 +883,18 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
          * newRight->children[1]->parent = newRight; 
          *
          */  
-        newRight->connectChild(0, node->children[2]); // set its left child to the 3rd child of node 
+        newRight->connectChild(0, pnode->children[2]); // set its left child to the 3rd child of node 
 
-        newRight->connectChild(1, node->children[3]); // set its right child to the 4th child of node
+        newRight->connectChild(1, pnode->children[3]); // set its right child to the 4th child of node
     }
 
     /* node's left and right children will be the two left most children of the node being split. 
      * but first set node's two rightmost children to nullptr */
-    node->children[2] = std::move(std::unique_ptr<Node234>());  
-    node->children[3] = std::move(std::unique_ptr<Node234>()); 
+    pnode->children[2] = std::move(std::unique_ptr<Node234>());  
+    pnode->children[3] = std::move(std::unique_ptr<Node234>()); 
 
     // if this is the root,
-    if(node == root.get()) { 
+    if(pnode == root.get()) { 
 
         /* make new root two node using node's middle value */  
         //--std::unique_ptr<Node234> p{ new Node234{itemB} };
@@ -912,39 +910,39 @@ template<typename K> void Tree234<K>::split(Node234 *node) noexcept
         root = std::move(std::unique_ptr<Node234>{ new Node234{itemB} }); 
          
         /* make new root two node using node's middle value, which we make root's left-most child */  
-        root->children[0] = std::move(std::unique_ptr<Node234>{node}); 
+        root->children[0] = std::move(std::unique_ptr<Node234>{pnode}); 
         root->children[0]->parent = root.get();
         
         root->children[1] = std::move(newRight); 
         root->children[1]->parent = root.get();
-        
-        return;
-    }         
 
-    Node234 *parent = node->getParent(); 
+    }  else {       
 
-    /* 
-     * Note: root and node are not identical (as in the if block above that returns). Here we have moved itemB to the parent(since
-     * we know it has room). We now shift its children right... 
-     */ 
-
-    int insert_index = parent->insertKey(itemB);
-
-    int last_index = parent->totalItems - 1;
-
-    // move parent's connections right, starting from new last index, stopping before insert_index
-    // TODO: Is this correct? Why do we need to move the current children right if we only need to insert newRight as right-most child?
- 
-    for(auto i = last_index; i > insert_index; i--)  {
-
-        parent->connectChild(i + 1, parent->children[i]);       
+        Node234 *parent = pnode->getParent(); 
+    
+        /* 
+         * Note: root and node are not identical (as in the if block above that returns). Here we have moved itemB to the parent(since
+         * we know it has room). We now shift its children right... 
+         */ 
+    
+        int insert_index = parent->insertKey(itemB);
+    
+        int last_index = parent->totalItems - 1;
+    
+        // move parent's connections right, starting from new last index, stopping before insert_index
+        // TODO: Is this correct? Why do we need to move the current children right if we only need to insert newRight as right-most child?
+     
+        for(auto i = last_index; i > insert_index; i--)  {
+    
+            parent->connectChild(i + 1, parent->children[i]);       
+        }
+    
+        /* 
+         * ...and make newRight the 
+         */ 
+    
+        parent->connectChild(insert_index + 1,  newRight);
     }
-
-    /* 
-     * ...and make newRight the 
-     */ 
-
-    parent->connectChild(insert_index + 1,  newRight);
 
     return;
 }
