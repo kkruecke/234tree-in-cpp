@@ -58,11 +58,8 @@ int main(int argc, char** argv)
   // make a copy of v, but in reverse order  
   copy(v.rbegin(), v.rend(), back_inserter(v_copy));
    
-  //--for (vector<int>::reverse_iterator iter = v_copy.rbegin(); iter != v_copy.rend(); ++iter) {
   for (auto item : v) {
 
-    //--int item = *iter;
-    
     bool rc = tree.remove(item);
        
     string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
