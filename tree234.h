@@ -46,7 +46,7 @@ template<typename K> class Tree234 {
 
        std::array< std::unique_ptr<Node234>, 4 > children;
 
-       Node234 *getParent() noexcept; 
+       constexpr Node234 *getParent() noexcept; 
 
        /* 
         * Returns true if key is found in node and set index: this->keys[index] == key
@@ -78,15 +78,15 @@ template<typename K> class Tree234 {
        
      public:
          
-       const Node234 *getParent() const noexcept;
+       constexpr const Node234 *getParent() const noexcept;
 
        constexpr int getTotalItems() const noexcept;
        constexpr int getChildCount() const noexcept;
 
        bool findKey(K key, int& index) const noexcept;
        constexpr bool isFull() const  noexcept;
-       bool isLeaf() const noexcept; 
-       bool isTwoNode() const noexcept;
+       constexpr bool isLeaf() const noexcept; 
+       constexpr bool isTwoNode() const noexcept;
        void nullAllChildren() noexcept;
     };  
 
@@ -222,7 +222,7 @@ template<typename K> inline constexpr int Tree234<K>::Node234::getChildCount() c
    return totalItems + 1; 
 }
 
-template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const noexcept
+template<typename K> inline constexpr bool Tree234<K>::Node234::isTwoNode() const noexcept
 {
    return (totalItems == 1) ? true : false;
 }
@@ -753,17 +753,17 @@ template<typename K> inline constexpr  bool Tree234<K>::Node234::isFull() const 
    return totalItems == MAX_KEYS;
 }
 
-template<typename K> inline typename Tree234<K>::Node234 * Tree234<K>::Node234::getParent()   noexcept
+template<typename K> inline constexpr typename Tree234<K>::Node234 * Tree234<K>::Node234::getParent()   noexcept
 { 
    return parent;
 }
 
-template<typename K> inline const typename Tree234<K>::Node234 *Tree234<K>::Node234::getParent() const  noexcept
+template<typename K> inline constexpr const typename Tree234<K>::Node234 *Tree234<K>::Node234::getParent() const  noexcept
 { 
    return parent;
 }
 
-template<typename K> inline  bool Tree234<K>::Node234::isLeaf() const  noexcept
+template<typename K> inline constexpr  bool Tree234<K>::Node234::isLeaf() const  noexcept
 { 
    return !children[0] ? true : false;
 }

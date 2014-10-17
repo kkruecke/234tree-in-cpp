@@ -17,11 +17,23 @@
 using namespace std;
 template<typename T> class Tree;
 
+class X {
+    array<int, 3> children;
+public:
+    X();
+};
+
+X::X() : children()
+{
+    
+}
 int main(int argc, char** argv)
 {
+    X x;
    vector<int> v{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};  
    
    Tree234<int> test_default;
+   
   
   Tree234<int> tree{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};
 
