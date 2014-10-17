@@ -575,11 +575,9 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
 {
   children[childIndex] = std::move( child ); // Note: If children[childIndex] currently holds a managed pointer , it will be freed.
   
-  Node234 *pchild = children[childIndex].get();
+  if (children[childIndex] != nullptr) { 
 
-  if (pchild != nullptr) { 
-
-       pchild->parent = this; 
+       children[childIndex]->parent = this; 
   }
 
   /*  
