@@ -670,7 +670,7 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
 
   if (!isLeaf()) {
       
-     pChild->parent = this; // reset the child's parent pointer, too.
+     children[childNum]->parent = this; // reset the child's parent pointer, too.
   }
   
   return;
@@ -686,7 +686,7 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
 
 template<typename K> inline std::unique_ptr<typename Tree234<K>::Node234> Tree234<K>::Node234::disconnectChild(int childIndex) noexcept
 {
-  std::unique_ptr<Node234> node{ children[childIndex] }; // invokes move constructor.
+  std::unique_ptr<Node234> node = std::move(children[childIndex] ); // invokes move assignment.
 
   // shift children (whose last 0-based index is totalItems) left to overwrite removed child i.
   for(auto i = childIndex; i < totalItems; ++i) {
@@ -1358,9 +1358,9 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
  */
 template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node234 *parent, int node2_id, int sibling_id) noexcept
 {
-  Node234 *psibling = parent->children[sibling_id];
+  Node234 *psibling = parent->children[sibling_id].get();
 
-  Node234 *p2node = parent->children[node2_id];
+  Node234 *p2node = parent->children[node2_id].get();
 
   /* 
    * First we get the index of the parent's key value such that either 
@@ -1393,7 +1393,7 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
 
       int total_sibling_keys = psibling->totalItems; 
       
-      Node234 *pchild_of_sibling = psibling->disconnectChild(total_sibling_keys); // 4. disconnect right-most child of sibling
+      std::unique_ptr<Node234> pchild_of_sibling = psibling->disconnectChild(total_sibling_keys); // 4. disconnect right-most child of sibling
 
       K largest_sibling_key = psibling->removeKey(total_sibling_keys - 1); // remove the largest, the right-most, sibling's key.
 
@@ -1412,7 +1412,7 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
 
       p2node->totalItems = 2; // 2. increase total items
 
-      Node234 *pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
+      std::unique_ptr<Node234> pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
 
       // Remove smallest key in sibling
       K smallest_sibling_key = psibling->removeKey(0);
@@ -1470,15 +1470,15 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       p2node->totalItems = 3; // 3. increase total items
 
       // Add sibling's children to the former 2-node, now 4-node...
-      // TODO: These are move unique_ptrs and don't have copy assigment. Should I have a local unique_ptr for p2node?
-      p2node->children[3] = p2node->children[1];  // ... but first shift its children right two positions
-      p2node->children[2] = p2node->children[0];
+           
+      p2node->children[3] = std::move(p2node->children[1]);  // ... but first shift its children right two positions
+      p2node->children[2] = std::move(p2node->children[0]);
 
       // Insert sibling's first two child. Note: connectChild() will also reset the parent pointer of these children (to be p2node). 
       p2node->connectChild(1, psibling->children[1]); 
       p2node->connectChild(0, psibling->children[0]); 
 
-   // <-- automatic deletion of psibling in above after } immediately below
+   // <-- automatic deletion of psibling in above after the } immediately below
   } else { // sibling is to the right:
 
       
@@ -1505,8 +1505,6 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       p2node->connectChild(2, psibling->children[0]);  
       
   } // <-- automatic deletion of psibling
-
-  //delete psibling; // delete orphaned sibling. NOW NOT needed due to unique_ptr
 
   return p2node;
 } 
