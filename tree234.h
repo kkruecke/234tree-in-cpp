@@ -46,7 +46,7 @@ template<typename K> class Tree234 {
 
        std::array< std::unique_ptr<Node234>, 4 > children;
 
-       constexpr Node234 *getParent() noexcept; 
+       Node234 *getParent() noexcept; 
 
        /* 
         * Returns true if key is found in node and set index: this->keys[index] == key
@@ -78,7 +78,7 @@ template<typename K> class Tree234 {
        
      public:
          
-       constexpr const Node234 *getParent() const noexcept;
+       const Node234 *getParent() const noexcept;
 
        constexpr int getTotalItems() const noexcept;
        constexpr int getChildCount() const noexcept;
@@ -753,12 +753,12 @@ template<typename K> inline constexpr  bool Tree234<K>::Node234::isFull() const 
    return totalItems == MAX_KEYS;
 }
 
-template<typename K> inline constexpr typename Tree234<K>::Node234 * Tree234<K>::Node234::getParent()   noexcept
+template<typename K> inline typename Tree234<K>::Node234 * Tree234<K>::Node234::getParent()   noexcept
 { 
    return parent;
 }
 
-template<typename K> inline constexpr const typename Tree234<K>::Node234 *Tree234<K>::Node234::getParent() const  noexcept
+template<typename K> inline const typename Tree234<K>::Node234 *Tree234<K>::Node234::getParent() const  noexcept
 { 
    return parent;
 }
