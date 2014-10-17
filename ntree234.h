@@ -116,7 +116,10 @@ template<typename K> class Tree234 {
      Tree234() noexcept : root{nullptr} { } 
 
      Tree234(const Tree234& lhs) noexcept; 
-     Tree234(Tree234&& lhs) noexcept; 
+     Tree234(Tree234&& lhs) noexcept;     // move constructor
+
+     Tree234& operator=(const Tree234& lhs) noexcept; 
+     Tree234& operator=(Tree234&& lhs) noexcept;    // move assignment
 
      Tree234(std::initializer_list<K> list) noexcept; 
 
@@ -218,7 +221,21 @@ template<typename K> inline bool Tree234<K>::Node234::isTwoNode() const noexcept
    return (totalItems == 1) ? true : false;
 }
 
+template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
+{
+    Tree234<K>::Node234 *src =  lhs.root.get();
+    
+    Tree234<K>::Node234 *dest = root.get();
+            
+    CloneTree(src, dest);
+}
  
+// move constructor
+template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{std::move(lhs.root)} 
+{
+    root->parent = nullptr;
+}
+
 template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr) 
 {
     for (auto x: il) {
@@ -226,14 +243,30 @@ template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noe
     }
 }
 
-template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
+// copy assignment
+template<typename K> inline Tree234<K>& Tree234<K>::operator=(const Tree234& lhs) noexcept 
 {
-    //const Tree234<K>::Node234 *src =  const_cast<const Tree234<K>::Node234 *>( lhs.root.get() );
-    Tree234<K>::Node234 *src =  lhs.root.get();
+  if (root == lhs.root) { // are they the same?
+
+       return *this;
+  }
+
+  DestroyTree(root); // free all nodes and then clone lhs.
+
+  Tree234<K>::Node234 *src =  lhs.root.get();
     
-    Tree234<K>::Node234 *dest = root.get();
+  Tree234<K>::Node234 *dest = root.get();
             
-    CloneTree(src, dest);
+  CloneTree(src, dest);
+
+  return *this;
+}
+
+// move assignment
+template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noexcept 
+{
+    root = std::move(lhs.root);
+    root->parent = nullptr;
 }
 
 template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f) noexcept
@@ -1300,24 +1333,19 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
   keys[2] = children[1]->keys[0];       
 
   totalItems = 3;
-
-  Node234 *leftOrphan = children[0]; // so we can delete them later
-  Node234 *rightOrphan = children[1];
-
+  
+  std::unique_ptr<Node234> leftOrphan = std::move(children[0]); // so we can delete them later
+  std::unique_ptr<Node234> rightOrphan = std::move(children[1]); // so we can delete them later
+    
   // make grandchildren the children.
-
   connectChild(0, leftOrphan->children[0]); // connectChild() will also reset parent pointer of right parameter.
   connectChild(1, leftOrphan->children[1]);
   connectChild(2, rightOrphan->children[0]); 
   connectChild(3, rightOrphan->children[1]);
-
-  // delete previous children
-  delete leftOrphan;
-  delete rightOrphan;
-
-  //--return const_cast<Node234 *>(this);  
+    
   return this;  
-}
+  
+}// <-- automatic deletion of leftOrphan and rightOrphan
 /*
  * preconditions:
  * 1. sibling_id is a 3- or 4-node of parent. 
@@ -1413,7 +1441,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
 {
   Node234 *psibling;
 
-  Node234 *p2node = parent->children[node2_index];
+  Node234 *p2node = parent->children[node2_index].get();
 
   // First get the index of the parent's key value to be stolen and added into the 2-node
   int parent_key_index = std::min(node2_index, sibling_index); 
@@ -1442,6 +1470,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       p2node->totalItems = 3; // 3. increase total items
 
       // Add sibling's children to the former 2-node, now 4-node...
+      // TODO: These are move unique_ptrs and don't have copy assigment. Should I have a local unique_ptr for p2node?
       p2node->children[3] = p2node->children[1];  // ... but first shift its children right two positions
       p2node->children[2] = p2node->children[0];
 
@@ -1449,8 +1478,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       p2node->connectChild(1, psibling->children[1]); 
       p2node->connectChild(0, psibling->children[0]); 
 
-
-  } else { // sibling is to the right: 
+   // <-- automatic deletion of psibling in above after } immediately below
+  } else { // sibling is to the right:
 
       
       /* Next adjust parent:
@@ -1474,10 +1503,11 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
 
       p2node->connectChild(3, psibling->children[1]);  // Add sibling's children
       p2node->connectChild(2, psibling->children[0]);  
-  }
+      
+  } // <-- automatic deletion of psibling
 
   //delete psibling; // delete orphaned sibling. NOW NOT needed due to unique_ptr
 
   return p2node;
-}
+} 
 #endif
