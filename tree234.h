@@ -25,12 +25,14 @@ template<typename K> class Tree234 {
        friend class DebugPrinter;
        static int MAX_KEYS;   
 
+       Node234() noexcept;
        Node234(K small) noexcept;
        Node234(K small, K larger) noexcept;
        Node234(K small, K middle, K large) noexcept;
        Node234& operator=(const Node234& rhs) noexcept;
 
-       Node234 *parent; // parent is only used for navigation of the tree. It does not own the memory it points to.
+       Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
+                           it points to. */
 
        int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
 
@@ -113,7 +115,7 @@ template<typename K> class Tree234 {
 
   public:
 
-     Tree234() noexcept : root{nullptr} { } 
+     Tree234() noexcept : root{} { } 
 
      Tree234(const Tree234& lhs) noexcept; 
      Tree234(Tree234&& lhs) noexcept;     // move constructor
@@ -143,7 +145,10 @@ template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3;
  * Node234 constructors. Note: While all children are initialize to nullptr, this is not really necessary. 
  * Instead your can simply set children[0] = nullptr, since a Node234 is a leaf if and only if children[0] == 0
  */
-
+template<typename K> inline  Tree234<K>::Node234::Node234()  noexcept : totalItems(0), parent(nullptr)
+{ 
+   nullAllChildren();
+}
 template<typename K> inline  Tree234<K>::Node234::Node234(K small)  noexcept : totalItems(1), parent(nullptr)
 { 
    keys[0] = small; 
