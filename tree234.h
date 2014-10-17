@@ -656,10 +656,10 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
   // shift children right in order to insert pChild
   
   /*
-   * When insertChild() is called, totalItems will reflect the number of keys after a new key was added by insertKey(K key), but before a new
-   * child was inserted using insertChild(). Therefore, the index of the last child would be totalItems - 1. 
-   *    For example, if the prior totalIems was 1, and we made the 2-node a 3-node by calling insertKey(key), then totalItmes would be 2, but the
-   * last child index--before calling insertChild()--would still be 1, or "the new  totalItems" - 1.
+   * When insertChild() is called, totalItems will reflect the number of keys after a new key was added by insertKey(K key),
+   * but before a new child was inserted using insertChild(). Therefore, the index of the last child would be totalItems - 1. 
+   *    For example, if the prior totalIems was 1, and we made the 2-node a 3-node by calling insertKey(key), then totalItmes
+   * would be 2, but the last child index--before calling insertChild()--would still be 1, or "the new  totalItems" - 1.
    */
   for(auto i = totalItems - 1; i >= childNum ; i--) {
 
@@ -861,7 +861,8 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 }
 
 /* 
- * Insertion based on pseudo code at: http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
+ * Insertion based on pseudo code at:
+ * http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  */
 template<typename K> void Tree234<K>::insert(K key) noexcept
 {
@@ -926,12 +927,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
  *  3. We move the middle key up to the parent( which we know is not a 4-node; else it too would have been split)
  *  4. The two left-most children of the former 4-node become the left and right children of the 2-node holding the smallest key.
  *  5. The two right-most children of the former 4-node are move to become the left and right children of the 2-node holding the largest key.
- *  6. TODO: Q: How are the children of the parent shifted? Does the middle of pnode always become the middle item in the parent?
- *  OLD comments:
- *  7.  Rightmost children of original full node are disconnected and connected to new children as appropriate 
- *	    (They must be disconnected, since their parent data is changed)
- *            New connections conform to linkage conventions, as expected. 
- *  8. Insert new data item into the original leaf node.
+ *  6. Insert new data item into the original leaf node.
  *  
  */ 
 template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
@@ -974,7 +970,6 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
     if(pnode == root.get()) { 
 
         /* make new root two node using node's middle value */  
-        //--std::unique_ptr<Node234> p{ new Node234{itemB} };
         
        /*
         * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we must first call release(); 
@@ -1134,9 +1129,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
          /* 
           * Traverse down the left-most branch until we find a leaf.
           *  
-          *  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down (from the parent) to
-          *  the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may have shifted within found_node 
-          * (to keys[1]) if fuseWithChildren() gets called. 
+          *  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down
+          *  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
+          *  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
           */ 
          bool check_if_key_moved = true;
          
@@ -1174,8 +1169,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                        prospective_in_order_successor = convertedNode->children[0].get();
                    
              /* 
-              * If a rotation occurred, the key may have moved to the converted 2-node (now a 3-node). Also, if a fusion of the 2-node with
-              * its adjacent sibling 2-node sibling, together with a parent key, it again may have moved to the converted node.
+              * If a rotation occurred, the key may have moved to the converted 2-node (now a 3-node). Also, if a fusion of the 2-node
+              * with its adjacent sibling 2-node sibling, together with a parent key, it again may have moved to the converted node.
               */      
                    } else if ( convertedNode->findKey(key, index) )  { /* It is either in the converted node ...
                                                                                  ... or in its parent, found_node. */
@@ -1392,8 +1387,9 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
       p2node->totalItems = 2; // 3. increase total items
 
       int total_sibling_keys = psibling->totalItems; 
-      
-      std::unique_ptr<Node234> pchild_of_sibling = psibling->disconnectChild(total_sibling_keys); // 4. disconnect right-most child of sibling
+
+      // 4. disconnect right-most child of sibling
+      std::unique_ptr<Node234> pchild_of_sibling = psibling->disconnectChild(total_sibling_keys); 
 
       K largest_sibling_key = psibling->removeKey(total_sibling_keys - 1); // remove the largest, the right-most, sibling's key.
 
