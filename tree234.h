@@ -80,10 +80,11 @@ template<typename K> class Tree234 {
          
        const Node234 *getParent() const noexcept;
 
-       int getTotalItems() const noexcept;
-       int getChildCount() const noexcept;
+       constexpr int getTotalItems() const noexcept;
+       constexpr int getChildCount() const noexcept;
+
        bool findKey(K key, int& index) const noexcept;
-       bool isFull() const  noexcept;
+       constexpr bool isFull() const  noexcept;
        bool isLeaf() const noexcept; 
        bool isTwoNode() const noexcept;
        void nullAllChildren() noexcept;
@@ -199,7 +200,7 @@ template<typename K> typename Tree234<K>::Node234& Tree234<K>::Node234::operator
   children[i] = rhs.children[i];
 }
 
-template<typename K> inline int Tree234<K>::Node234::getTotalItems() const noexcept
+template<typename K> inline constexpr int Tree234<K>::Node234::getTotalItems() const noexcept
 {
    return totalItems; 
 }
@@ -216,7 +217,7 @@ template<typename K> inline bool Tree234<K>::Node234::findKey(K key, int& index)
    return false;
 }
 
-template<typename K> inline int Tree234<K>::Node234::getChildCount() const noexcept
+template<typename K> inline constexpr int Tree234<K>::Node234::getChildCount() const noexcept
 {
    return totalItems + 1; 
 }
@@ -243,7 +244,7 @@ template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{s
 
 template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr) 
 {
-    for (auto x: il) {
+    for (auto x: il) { // simply call insert(x)
           insert(x);
     }
 }
@@ -747,7 +748,7 @@ template<typename K> inline K Tree234<K>::Node234::removeKey(int index) noexcept
   return key;
 }
 
-template<typename K> inline  bool Tree234<K>::Node234::isFull() const  noexcept
+template<typename K> inline constexpr  bool Tree234<K>::Node234::isFull() const  noexcept
 { 
    return totalItems == MAX_KEYS;
 }
