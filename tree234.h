@@ -867,10 +867,8 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 template<typename K> void Tree234<K>::insert(K key) noexcept
 {
     if (root == nullptr) {
-    /*
-     * TODO: reset() first deletes object current being managed before the new'ed pointer begins to be managed. 
-     */
-       root.reset( new Node234{key} ); 
+    
+       root. reset( new Node234{key} ); 
        return; 
     } 
 
