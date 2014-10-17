@@ -45,28 +45,30 @@ template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index
     } 
     
     std::ostringstream oss;
-    std::string strLeaf = (current->isLeaf()) ? " <-- Leaf " : "";
+    std::string strLeaf = (current->isLeaf()) ? " <-- is Leaf " : "";
 
     strLeaf += std::string("\n");
     
-    oss << " address(" << current << "): key[" << index << "] = " << key <<  ": parent[";
+    if (parent != nullptr) {
 
-    if (parent == root) {
+        oss << " address(" << current << "): key[" << index << "] = " << key << ": parent[";
 
-       oss << "  root   ";
+        if (parent == root) {
+
+            oss << " root ";
+
+        } else {
+
+          oss << parent;
+        }
+
+        oss << "]->children[" << child_index << "]->keys[" << index << "] = " << key;
 
     } else {
 
-       oss << parent;
-    }   
-
-    oss   << "]->children[" << child_index << "]->keys[" << index << "] = " << key;
-
-    if (current == root) {
-
-        oss << "  { Root } ";
-    } 
-        
+        oss << " address(" << current << "): key[" << index << "] = " << key << ": {Root}";
+    }
+       
     std::string suffix = oss.str();
 
     suffix += strLeaf; 

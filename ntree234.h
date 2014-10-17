@@ -558,13 +558,21 @@ template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&
  */
 template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, std::unique_ptr<Node234>& child)  noexcept
 {
-  //TODO: assert(children[childIndex]) == nullptr;  
   children[childIndex] = std::move( child ); // Note: If children[childIndex] currently holds a managed pointer , it will be freed.
   
-  if (child != nullptr) {
+  Node234 *pchild = children[childIndex].get();
+
+  if (pchild != nullptr) { 
+
+       pchild->parent = this; 
+  }
+
+  /*  
+  if (child != nullptr) { // <-- BUG: After move assignment above, child was always nullptr
 
        child->parent = this; 
   }
+  */
 }
 
 /*
@@ -891,12 +899,16 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
         newRight->connectChild(0, pnode->children[2]); // set its left child to the 3rd child of node 
 
         newRight->connectChild(1, pnode->children[3]); // set its right child to the 4th child of node
+        
+        pnode->children[2] = std::move(std::unique_ptr<Node234>());  
+        pnode->children[3] = std::move(std::unique_ptr<Node234>()); 
+
     }
 
     /* node's left and right children will be the two left most children of the node being split. 
      * but first set node's two rightmost children to nullptr */
-    pnode->children[2] = std::move(std::unique_ptr<Node234>());  
-    pnode->children[3] = std::move(std::unique_ptr<Node234>()); 
+    //--pnode->children[2] = std::move(std::unique_ptr<Node234>());  // Moved above. Try commenting out.
+    //--pnode->children[3] = std::move(std::unique_ptr<Node234>()); 
 
     // if this is the root,
     if(pnode == root.get()) { 
@@ -908,18 +920,16 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
         * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we must first call release(); 
         * otherwise, node, which is root, the soon-to-be prior root, will be deleted. 
         */ 
-        Node234 *prior_root = root.release(); // stop managing raw pointer. 
+        Node234 *prior_root = root.release(); // This sets root to zero.
       
-//--    root = std::move(p); 
-
         root = std::move(std::unique_ptr<Node234>{ new Node234{itemB} }); 
          
         /* make new root two node using node's middle value, which we make root's left-most child */  
         root->children[0] = std::move(std::unique_ptr<Node234>{pnode}); 
-        root->children[0]->parent = prior_root; // root.get();
+        root->children[0]->parent = root.get(); 
         
         root->children[1] = std::move(newRight); 
-        root->children[1]->parent = prior_root; // root.get(); // TODO:
+        root->children[1]->parent = root.get(); 
 
     }  else {       
 
