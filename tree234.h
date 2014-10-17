@@ -1478,7 +1478,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       p2node->connectChild(1, psibling->children[1]); 
       p2node->connectChild(0, psibling->children[0]); 
 
-   // <-- automatic deletion of psibling in above after the } immediately below
+   // <-- automatic deletion of psibling in above after } immediately below
   } else { // sibling is to the right:
 
       
@@ -1505,6 +1505,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       p2node->connectChild(2, psibling->children[0]);  
       
   } // <-- automatic deletion of psibling
+
+  //delete psibling; // delete orphaned sibling. NOW NOT needed due to unique_ptr
 
   return p2node;
 } 
