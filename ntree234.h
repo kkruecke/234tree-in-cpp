@@ -1428,7 +1428,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
        * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKey() reduces. Therefore,
        * disconnectChild() must always be called before removeKey().
        */
-      psibling = parent->disconnectChild(sibling_index); // This will do #2.
+      std::unique_ptr<Node234> psibling = parent->disconnectChild(sibling_index); // This will do #2. TODO: 
       
       K parent_key = parent->removeKey(parent_key_index); //this will do #1
 
@@ -1461,7 +1461,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
        * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKey reduces. Therefore,
        * disconnectChild() must always be called before removeKey(), or children will not be shifted correctly.
        */
-      psibling = parent->disconnectChild(sibling_index); // this does #2
+      std::unique_ptr<Node234> psibling = parent->disconnectChild(sibling_index); // this does #2
       
       K parent_key = parent->removeKey(parent_key_index); // this will #1
 
@@ -1478,7 +1478,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       p2node->connectChild(2, psibling->children[0]);  
   }
 
-  delete psibling; // delete orphaned sibling
+  //delete psibling; // delete orphaned sibling. NOW NOT needed due to unique_ptr
 
   return p2node;
 }
