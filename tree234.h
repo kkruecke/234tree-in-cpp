@@ -146,32 +146,25 @@ template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3;
  * Node234 constructors. Note: While all children are initialize to nullptr, this is not really necessary. 
  * Instead your can simply set children[0] = nullptr, since a Node234 is a leaf if and only if children[0] == 0
  */
-template<typename K> inline  Tree234<K>::Node234::Node234()  noexcept : totalItems(0), parent(nullptr)
+template<typename K> inline  Tree234<K>::Node234::Node234()  noexcept : totalItems(0), parent(nullptr), children()
 { 
-   nullAllChildren();
 }
-template<typename K> inline  Tree234<K>::Node234::Node234(K small)  noexcept : totalItems(1), parent(nullptr)
+template<typename K> inline  Tree234<K>::Node234::Node234(K small)  noexcept : totalItems(1), parent(nullptr), children()
 { 
    keys[0] = small; 
-   //--children[0] = nullptr;
-   nullAllChildren();
 }
 
-template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle)  noexcept : totalItems(2), parent(nullptr)
+template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle)  noexcept : totalItems(2), parent(nullptr), children()
 { 
    keys[0] = small; 
    keys[1] = middle; 
-   //--children[0] = nullptr;
-   nullAllChildren();
 }
 
-template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large)  noexcept : totalItems(3), parent(nullptr)
+template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large)  noexcept : totalItems(3), parent(nullptr), children()
 { 
    keys[0] = small; 
    keys[1] = middle; 
    keys[2] = large; 
-   //children[0] = nullptr;
-   nullAllChildren();
 }
 
 template<typename K> inline void Tree234<K>::Node234::nullAllChildren()  noexcept
@@ -521,7 +514,7 @@ template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&
              
             pNodeCopy->parent = pNode2Copy->parent;
             
-            pNodeCopy->nullAllChildren(); // necessary?
+            //--pNodeCopy->nullAllChildren(); // necessary?
             
             /*
              * There is no implicit coversion from
@@ -548,7 +541,7 @@ template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&
             pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1]); 
 
             pNodeCopy->parent = pNode2Copy->parent;
-            pNodeCopy->nullAllChildren();
+            //--pNodeCopy->nullAllChildren();
             
             Node234 *src = pNode2Copy->children[0].get();
             Node234* dest =  pNodeCopy->children[0].get();
@@ -573,7 +566,7 @@ template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&
             pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]); 
 
             pNodeCopy->parent = pNode2Copy->parent;
-            pNodeCopy->nullAllChildren();
+            //--pNodeCopy->nullAllChildren();
             
             Node234 *src = pNode2Copy->children[0].get();
             Node234 *dest =  pNodeCopy->children[0].get();
@@ -603,8 +596,6 @@ template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&
     pNodeCopy = nullptr;
  } 
 }
-
-
 
 /*
  * precondition: childIndex is within the range for the type of node.
