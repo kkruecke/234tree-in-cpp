@@ -29,7 +29,6 @@ template<typename K> class Tree234 {
        Node234(K small) noexcept;
        Node234(K small, K larger) noexcept;
        Node234(K small, K middle, K large) noexcept;
-       Node234& operator=(const Node234& rhs) noexcept;
     
        Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
                            it points to. */
@@ -49,7 +48,7 @@ template<typename K> class Tree234 {
        Node234 *getParent() noexcept; 
 
        /* 
-        * Returns true if key is found in node and set index: this->keys[index] == key
+        * Returns true if key is found in node and sets index so this->keys[index] == key
         * Returns false if key is if not found; set next to the next in-order child.
         */
        bool searchNode(K key, int& index, Node234 *&next) noexcept;
@@ -165,24 +164,6 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
    keys[0] = small; 
    keys[1] = middle; 
    keys[2] = large; 
-}
-
-template<typename K> typename Tree234<K>::Node234& Tree234<K>::Node234::operator=(const Node234& rhs)  noexcept
-{
-  if (this == &rhs) {
-    return rhs;
-  }
-
-  parent = rhs.parent;
-  totalItems = rhs.totalItems;
-
-  auto i = 0;
-  for(; i < rhs.totalItems; ++i) {
-      keys[i] = rhs.keys[i];
-      children[i] = rhs.children[i];
-  }
-
-  children[i] = rhs.children[i];
 }
 
 template<typename K> inline constexpr int Tree234<K>::Node234::getTotalItems() const noexcept
