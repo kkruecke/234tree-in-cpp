@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
-#include "tree234.h"
+#include "ntree234.h"
 #include "TreePrinter.h"
 #include "DebugPrinter.h"
 
