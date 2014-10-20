@@ -10,26 +10,9 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
-#include "ntree234.h"
+#include "tree234.h"
 #include "TreePrinter.h"
 #include "DebugPrinter.h"
-
-#include <memory>
-namespace std {
-    
-     template<typename _Tp>
-    struct _MakeUniq
-    { typedef unique_ptr<_Tp> __single_object; };
-
-    
-    template<typename _Tp, typename... _Args> inline typename _MakeUniq<_Tp>::__single_object
-    make_unique(_Args&&... __args)
-    { 
-        return unique_ptr<_Tp>(new _Tp(std::forward<_Args>(__args)...)); 
-    }
-
-    
-}
 
 using namespace std;
 
