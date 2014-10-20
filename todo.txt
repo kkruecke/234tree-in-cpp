@@ -1,5 +1,0 @@
-1. Add destructor to Node234
-2. Add make::unique
-3. Rename CloneTree to Clone and get rid of naked new's and use make_unique instead.
-
-
