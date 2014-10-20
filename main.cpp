@@ -14,14 +14,31 @@
 #include "TreePrinter.h"
 #include "DebugPrinter.h"
 
+#include <memory>
+namespace std {
+    
+     template<typename _Tp>
+    struct _MakeUniq
+    { typedef unique_ptr<_Tp> __single_object; };
+
+    
+    template<typename _Tp, typename... _Args> inline typename _MakeUniq<_Tp>::__single_object
+    make_unique(_Args&&... __args)
+    { 
+        return unique_ptr<_Tp>(new _Tp(std::forward<_Args>(__args)...)); 
+    }
+
+    
+}
+
 using namespace std;
 
 int main(int argc, char** argv)
 {
-        
-   vector<int> v{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};  
    
-   Tree234<int> test_default;
+  vector<int> v{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};  
+   
+  Tree234<int> test_default;
      
   Tree234<int> tree{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};
 

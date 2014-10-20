@@ -30,7 +30,7 @@ template<typename K> class Tree234 {
        Node234(K small, K larger) noexcept;
        Node234(K small, K middle, K large) noexcept;
        Node234& operator=(const Node234& rhs) noexcept;
-
+    
        Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
                            it points to. */
 
@@ -64,7 +64,7 @@ template<typename K> class Tree234 {
        K removeKey(int index) noexcept;
 
        /*
-        * Removes child node andshifts its children to fill the gap. Returns child pointer.
+        * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
         */  
        std::unique_ptr<Node234> disconnectChild(int child_index) noexcept; 
 
@@ -87,7 +87,6 @@ template<typename K> class Tree234 {
        constexpr bool isFull() const  noexcept;
        constexpr bool isLeaf() const noexcept; 
        constexpr bool isTwoNode() const noexcept;
-       void nullAllChildren() noexcept;
     };  
 
     friend class DebugPrinter;
@@ -103,7 +102,7 @@ template<typename K> class Tree234 {
 
     void split(Node234 *node) noexcept;  // called during insert to split 4-nodes
     void DestroyTree(std::unique_ptr<Node234> &root) noexcept; 
-    void CloneTree(Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept; // called by copy ctor
+    void CloneTree(const Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept; // called by copy ctor
 
     // These methods are called during remove(K key)
     bool remove(K key, Node234 *location); 
@@ -165,14 +164,6 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
    keys[0] = small; 
    keys[1] = middle; 
    keys[2] = large; 
-}
-
-template<typename K> inline void Tree234<K>::Node234::nullAllChildren()  noexcept
-{
-  for(auto i = 0; i <= totalItems; ++i) {
-
-	children[i] = nullptr;
-  }
 }
 
 template<typename K> typename Tree234<K>::Node234& Tree234<K>::Node234::operator=(const Node234& rhs)  noexcept
@@ -500,7 +491,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraver
  * pre-order traversal
  */
 
-template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept
+template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, Node234 *&pNodeCopy) noexcept
 {
  if (pNode2Copy != nullptr) { 
                               
@@ -509,23 +500,12 @@ template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&
 
       case 1: // two node
       {    
-
             pNodeCopy = new Node234(pNode2Copy->keys[0]); 
              
             pNodeCopy->parent = pNode2Copy->parent;
             
-            //--pNodeCopy->nullAllChildren(); // necessary?
-            
-            /*
-             * There is no implicit coversion from
-             * 
-             *      unique_ptr<Tree234<int>::Node234> 
-             * to 
-             *      Tree234<int>::Node234 *
-             * 
-             */
-            Node234 *src = pNode2Copy->children[0].get();
-            Node234* dest = pNodeCopy->children[0].get();
+            const Node234 *src = pNode2Copy->children[0].get();
+            Node234      *dest = pNodeCopy->children[0].get();
             
             CloneTree(src, dest); 
             
@@ -541,9 +521,8 @@ template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&
             pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1]); 
 
             pNodeCopy->parent = pNode2Copy->parent;
-            //--pNodeCopy->nullAllChildren();
             
-            Node234 *src = pNode2Copy->children[0].get();
+            const Node234 *src = pNode2Copy->children[0].get();
             Node234* dest =  pNodeCopy->children[0].get();
 
             CloneTree(src, dest);
@@ -566,9 +545,8 @@ template<typename K>  void Tree234<K>::CloneTree(Node234 *pNode2Copy, Node234 *&
             pNodeCopy = new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]); 
 
             pNodeCopy->parent = pNode2Copy->parent;
-            //--pNodeCopy->nullAllChildren();
             
-            Node234 *src = pNode2Copy->children[0].get();
+            const Node234 *src = pNode2Copy->children[0].get();
             Node234 *dest =  pNodeCopy->children[0].get();
 
             CloneTree(src, dest);
@@ -609,13 +587,6 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
 
        children[childIndex]->parent = this; 
   }
-
-  /*  
-  if (child != nullptr) { // <-- BUG: After move assignment above, child was always nullptr
-
-       child->parent = this; 
-  }
-  */
 }
 
 /*
@@ -624,7 +595,7 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
  */
 template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& index, Node234 *&next) noexcept
 {
- bool hit = false;
+  bool hit = false;
 
   for(auto i = 0; i < totalItems; ++i) {
 
@@ -702,7 +673,6 @@ template<typename K> inline std::unique_ptr<typename Tree234<K>::Node234> Tree23
 template<typename K> inline int  Tree234<K>::Node234::insertKey(K key)  noexcept
 { 
   // start on right, examine items
-
   for(auto i = totalItems - 1; i >= 0 ; i--) {
 
       if (key < keys[i]) { // if key[i] is bigger
@@ -718,7 +688,6 @@ template<typename K> inline int  Tree234<K>::Node234::insertKey(K key)  noexcept
     } 
 
     // key is smaller than all keys, so insert it at position 0
-
     keys[0] = key;  
   ++totalItems; // increase the total item count
     return 0;
