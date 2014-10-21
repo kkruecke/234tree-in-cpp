@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
-#include "tree234.h"
+#include "ntree234.h"
 #include "TreePrinter.h"
 #include "DebugPrinter.h"
 
@@ -24,7 +24,7 @@ int main(int argc, char** argv)
   Tree234<int> test_default;
      
   Tree234<int> tree{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};
-
+   
   TreePrinter printTree(cout);
   
   cout << "Printing tree in pre order" << endl;
