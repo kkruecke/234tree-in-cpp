@@ -937,8 +937,6 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
         int last_index = parent->totalItems - 1;
     
         // ...move parent's connections right, starting from its last child index and stopping just before insert_index.
-        // TODO: We need to ensure that the right-most child was nullptr, so memory it not inadvertently freed when a child is moved.     
-        // TODO: This means, I believe, the ctors must set all children to nullptr.
         for(auto i = last_index; i > insert_index; i--)  {
     
             parent->connectChild(i + 1, parent->children[i]);       
@@ -1392,7 +1390,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
        * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKey() reduces. Therefore,
        * disconnectChild() must always be called before removeKey().
        */
-      std::unique_ptr<Node234> psibling = parent->disconnectChild(sibling_index); // This will do #2. TODO: 
+      std::unique_ptr<Node234> psibling = parent->disconnectChild(sibling_index); // This will do #2. 
       
       K parent_key = parent->removeKey(parent_key_index); //this will do #1
 
