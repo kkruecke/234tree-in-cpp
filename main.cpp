@@ -25,11 +25,11 @@ int main(int argc, char** argv)
      
   Tree234<int> tree{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};
 
-  TreePrinter printer(cout);
+  TreePrinter printTree(cout);
   
   cout << "Printing tree in pre order" << endl;
    
-  tree.preOrderTraverse(printer);
+  tree.preOrderTraverse(printTree);
   
   cout << "\n======================" << endl;
   
@@ -37,13 +37,13 @@ int main(int argc, char** argv)
    
   Tree234<int> newTree{tree};
   
-  newTree.inOrderTraverse(printer);
+  newTree.inOrderTraverse(printTree);
   
   cout << "\n======================" << endl;
   
   cout << "Printing tree in order" << endl;
    
-  tree.inOrderTraverse(printer);
+  tree.inOrderTraverse(printTree);
   
   cout << endl;
     
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 
     cout << "\n=================== Normal Tree Print =======================\n";
 
-    tree.inOrderTraverse(printer);
+    tree.inOrderTraverse(printTree);
     cout << "\n-----------------------\n";
 
     cout << endl;
