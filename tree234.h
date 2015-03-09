@@ -854,7 +854,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
         return;
     } 
  
-    // current is now a leaf and not full (because we split all four nodes while descending).
+    // current node is now a leaf and it is not full (because we split all four nodes while descending).
     current->insertKey(key); 
 }
 /* 
