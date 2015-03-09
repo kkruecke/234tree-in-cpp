@@ -18,7 +18,7 @@ class DebugPrinter;
 template<typename K> class Tree234 {
     
   protected:
-   class Node234 {
+   class Node234 { // nested node class
        
       private: 
        friend class Tree234<K>;             
@@ -197,8 +197,6 @@ template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
 {
     Tree234<K>::Node234 *src =  lhs.root.get();
     
-    //--Tree234<K>::Node234 *dest = root.get();
-            
     CloneTree(src, root);
 }
  
@@ -905,8 +903,6 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
 
     /* node's left and right children will be the two left most children of the node being split. 
      * but first set node's two rightmost children to nullptr */
-    //--pnode->children[2] = std::move(std::unique_ptr<Node234>());  // Moved above. Try commenting out.
-    //--pnode->children[3] = std::move(std::unique_ptr<Node234>()); 
 
     // if this is the root,
     if(pnode == root.get()) { 
