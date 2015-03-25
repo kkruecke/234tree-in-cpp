@@ -12,11 +12,6 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-   
-  vector<int> v{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};  
-   
-  Tree234<int> test_default;
-     
   Tree234<int> tree{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};
    
   TreePrinter printTree(cout);
@@ -50,11 +45,8 @@ int main(int argc, char** argv)
   
   cout << "\n============================" << endl;
   
-  vector< int > v_copy;
-
-  // make a copy of v, but in reverse order  
-  copy(v.rbegin(), v.rend(), back_inserter(v_copy));
-   
+  vector<int> v{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69};  
+     
   for (auto item : v) {
 
     bool rc = tree.remove(item);
