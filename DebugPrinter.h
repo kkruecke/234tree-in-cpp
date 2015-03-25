@@ -22,11 +22,11 @@ public:
 
     DebugPrinter(const DebugPrinter& tp) : ostr_(tp.ostr_) {}
 
-    template<class K> std::ostream& operator()(K k, int index, const typename Tree234<K>::Node234 *current,
+    template<class K> std::ostream& operator()(const K& k, int index, const typename Tree234<K>::Node234 *current,
                                                                const typename Tree234<K>::Node234 *const root);
 };
 
-template<class K> inline std::ostream& DebugPrinter::operator()(K key, int index, const typename Tree234<K>::Node234 *current,
+template<class K> inline std::ostream& DebugPrinter::operator()(const K& key, int index, const typename Tree234<K>::Node234 *current,
                                                                                   const typename Tree234<K>::Node234 *const root)
 {
     const typename Tree234<K>::Node234 *parent = current->getParent();
