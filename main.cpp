@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
-#include "ntree234.h"
+#include "tree234.h"
 #include "TreePrinter.h"
 #include "DebugPrinter.h"
 
@@ -41,9 +41,10 @@ int main(int argc, char** argv)
   
   cout << "\n======================" << endl;
   
-  cout << "Printing tree in order" << endl;
+  cout << "Printing tree in order, using lambda" << endl;
    
-  tree.inOrderTraverse(printTree);
+  // Here we print the print using a lambda instead of a function object.
+  tree.inOrderTraverse([&](int k) { cout << k << ' ';});
   
   cout << endl;
     
