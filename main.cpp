@@ -1,9 +1,3 @@
-/*
-* File: main.cpp
-* Author: kurt
-*
-* Created on August 13, 2014, 4:58 PM
-*/
 #include <cstdlib>
 #include <string>
 #include <iostream>
