@@ -20,6 +20,7 @@ template<typename K> class Tree234 {
   protected:
    class Node234 { // nested node class
        
+             
       private: 
        friend class Tree234<K>;             
        friend class DebugPrinter;
@@ -27,15 +28,16 @@ template<typename K> class Tree234 {
 
        Node234() noexcept;
        Node234(K small) noexcept;
-       Node234(K small, K larger) noexcept;
+       Node234(K small, K large) noexcept;
        Node234(K small, K middle, K large) noexcept;
-    
+   
+       // TODO: Should I use a managed pointer? 
        Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
                            it points to. */
 
        int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
 
-       std::array<K, 3> keys;
+       std::array<K, 3> keys; // <-- TODO: Use vector<K>
 
        /*
         * For 2-nodes, children[0] is left pointer and children[1] is right pointer.
@@ -148,6 +150,7 @@ template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3;
 template<typename K> inline  Tree234<K>::Node234::Node234()  noexcept : totalItems(0), parent(nullptr), children()
 { 
 }
+
 template<typename K> inline  Tree234<K>::Node234::Node234(K small)  noexcept : totalItems(1), parent(nullptr), children()
 { 
    keys[0] = small; 
@@ -879,9 +882,11 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
     
     pnode->totalItems = 1; // This effective removes all but the smallest key from node.
 
+    /* TODO: Change to use make_unique(). First I need to change Node234 to use std::vector<J> instead of std::array<K, 3>.
+       I may also need the technique of a protected constructor to enable std::make_unique<Node234>(K&&) to be a friend of Node234. */
     std::unique_ptr<Node234> newRight{ new Node234{itemC} }; // Move largest key to what will be the new right child of split node.
 
-    /* The "bool operator()" of unique_ptr tests whether a pointer is being managed, whether get() == nullptr. */
+    /* Note: The "bool operator()" of unique_ptr tests whether a pointer is being managed, whether get() == nullptr. */
     if (pnode->children[2] && pnode->children[3]) { // If neither are nullptr
        
         /* connectChild() same as:
@@ -915,7 +920,7 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
         */ 
         Node234 *prior_root = root.release(); // This sets root to zero.
       
-        root = std::move(std::unique_ptr<Node234>{ new Node234{itemB} }); 
+        root = std::move(std::unique_ptr<Node234>{ new Node234{itemB} }); // TODO: change to make_unique. See comment on prior TODO's.
          
         /* make new root two node using node's middle value, which we make root's left-most child */  
         root->children[0] = std::move(std::unique_ptr<Node234>{pnode}); 
@@ -998,8 +1003,10 @@ template<typename K> bool Tree234<K>::remove(K key)
  * remove the in-order successor from the leaf node.
  *
  * There is a problem, however: if the successor is a 2-node leaf, this leaves an empty leaf node, resulting in an
- * unbalanced tree. To prevent this, as we descend the tree we turn 2-nodes (other than the root) into 3-nodes or
+ * unbalanced tree. To prevent this, we descend the tree we turning 2-nodes (other than the root) into 3-nodes or
  * 4-nodes. 
+ *
+ * There are two cases to consider:  
  *
  * Case 1: If an adjacent sibling has 2 or 3 items (and the parent is a 3- or 4-node), we "steal" an item from sibling by
  * rotating items and moving subtree. See slide 51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
