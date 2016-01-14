@@ -20,17 +20,17 @@ template<typename K> class Tree234 {
   protected:
    class Node234 { // nested node class
        
-             
-      private: 
+             /* See http://rienajouter.blogspot.com/2014/10/makeshared-and-makeunique-for-classes.html for how to enable
+              * make_unique<> for a private ctor or private class. 
+              */ 
+              
+   
        friend class Tree234<K>;             
        friend class DebugPrinter;
        static int MAX_KEYS;   
-
-       Node234() noexcept;
-       Node234(K small) noexcept;
-       Node234(K small, K large) noexcept;
-       Node234(K small, K middle, K large) noexcept;
+       
    
+   private: 
        // TODO: Should I use a managed pointer? 
        Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
                            it points to. */
@@ -79,6 +79,10 @@ template<typename K> class Tree234 {
        
      public:
          
+       Node234() noexcept;
+       Node234(K small) noexcept;
+       Node234(K small, K large) noexcept;
+       Node234(K small, K middle, K large) noexcept;  
        const Node234 *getParent() const noexcept;
 
        constexpr int getTotalItems() const noexcept;
@@ -881,10 +885,8 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
     K itemB = pnode->keys[1]; 
     
     pnode->totalItems = 1; // This effective removes all but the smallest key from node.
-
-    /* TODO: Change to use make_unique(). First I need to change Node234 to use std::vector<J> instead of std::array<K, 3>.
-       I may also need the technique of a protected constructor to enable std::make_unique<Node234>(K&&) to be a friend of Node234. */
-    std::unique_ptr<Node234> newRight{ new Node234{itemC} }; // Move largest key to what will be the new right child of split node.
+    
+    std::unique_ptr<Node234> newRight{std::make_unique<Node234>(itemC) }; // Move largest key to what will be the new right child of split node.
 
     /* Note: The "bool operator()" of unique_ptr tests whether a pointer is being managed, whether get() == nullptr. */
     if (pnode->children[2] && pnode->children[3]) { // If neither are nullptr

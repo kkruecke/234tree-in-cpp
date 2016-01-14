@@ -1,0 +1,5 @@
+TODO:
+
+Change the implementation to use std::make_unique<Node234>(xyz) wherever "new Node234{ syx} is being used.
+ 
+Change the implementation of Node234<> to use std::vector<K> instead of std::array<K, 3>.
