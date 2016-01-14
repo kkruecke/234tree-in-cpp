@@ -482,7 +482,6 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
 
       case 1: // two node
       {    
-            //--std::unique_ptr<Node234> tmp{ new Node234(pNode2Copy->keys[0]) };
             std::unique_ptr<Node234> tmp = std::make_unique<Node234>(pNode2Copy->keys[0]);
             
             pNodeCopy = std::move(tmp); 
@@ -502,7 +501,6 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
       }   // end case
       case 2: // three node
       {
-            //--std::unique_ptr<Node234> tmp { new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1]) }; 
             std::unique_ptr<Node234> tmp = std::make_unique<Node234>( pNode2Copy->keys[0], pNode2Copy->keys[1]); 
             
             pNodeCopy = std::move( tmp ); 
@@ -526,7 +524,6 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
       case 3: // four node
       {
 
-            //--std::unique_ptr<Node234> tmp{ new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]) }; 
             std::unique_ptr<Node234> tmp = std::make_unique<Node234>( pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]); 
 
             pNodeCopy = std::move( tmp );
@@ -816,8 +813,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 template<typename K> void Tree234<K>::insert(K key) noexcept
 {
     if (root == nullptr) {
-    
-       //--root. reset( new Node234{key} ); 
+           
        root = std::make_unique<Node234>(key); 
        return; 
     } 
