@@ -24,12 +24,10 @@ template<typename K> class Tree234 {
               * make_unique<> for a private ctor or private class. 
               */ 
               
-   
        friend class Tree234<K>;             
        friend class DebugPrinter;
        static int MAX_KEYS;   
        
-   
    private: 
        // TODO: Should I use a managed pointer? 
        Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
@@ -471,7 +469,6 @@ template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraver
    }
 }
 
-
 /*
  * pre-order traversal
  */
@@ -485,7 +482,8 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
 
       case 1: // two node
       {    
-            std::unique_ptr<Node234> tmp{ new Node234(pNode2Copy->keys[0]) };
+            //--std::unique_ptr<Node234> tmp{ new Node234(pNode2Copy->keys[0]) };
+            std::unique_ptr<Node234> tmp = std::make_unique<Node234>(pNode2Copy->keys[0]);
             
             pNodeCopy = std::move(tmp); 
              
@@ -504,7 +502,8 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
       }   // end case
       case 2: // three node
       {
-            std::unique_ptr<Node234> tmp { new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1]) }; 
+            //--std::unique_ptr<Node234> tmp { new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1]) }; 
+            std::unique_ptr<Node234> tmp = std::make_unique<Node234>( pNode2Copy->keys[0], pNode2Copy->keys[1]); 
             
             pNodeCopy = std::move( tmp ); 
 
@@ -527,7 +526,8 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
       case 3: // four node
       {
 
-            std::unique_ptr<Node234> tmp{ new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]) }; 
+            //--std::unique_ptr<Node234> tmp{ new Node234(pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]) }; 
+            std::unique_ptr<Node234> tmp = std::make_unique<Node234>( pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]); 
 
             pNodeCopy = std::move( tmp );
 
@@ -601,7 +601,7 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
 
   return hit;
 }
-
+// TODO: Are unique_ptrs passed by reference? This seems to be O.K.
 template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept
 {
   // shift children right in order to insert pChild
@@ -683,7 +683,7 @@ template<typename K> inline K Tree234<K>::Node234::removeKey(int index) noexcept
   // shift to the left all keys to the right of index to the left
   for(auto i = index; i < totalItems - 1; ++i) {
 
-          keys[i] = keys[i + 1]; 
+      keys[i] = keys[i + 1]; 
   } 
 
   totalItems--;
@@ -817,7 +817,8 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
 {
     if (root == nullptr) {
     
-       root. reset( new Node234{key} ); 
+       //--root. reset( new Node234{key} ); 
+       root = std::make_unique<Node234>(key); 
        return; 
     } 
 
@@ -922,7 +923,7 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
         */ 
         Node234 *prior_root = root.release(); // This sets root to zero.
       
-        root = std::move(std::unique_ptr<Node234>{ new Node234{itemB} }); // TODO: change to make_unique. See comment on prior TODO's.
+        root = std::move(std::make_unique<Node234>(itemB)); 
          
         /* make new root two node using node's middle value, which we make root's left-most child */  
         root->children[0] = std::move(std::unique_ptr<Node234>{pnode}); 
@@ -1024,6 +1025,8 @@ template<typename K> bool Tree234<K>::remove(K key)
  * and http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  *
  */
+
+// TODO: Can this be simplified. It is quite convoluted with lots of flags.
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
    Node234 *next = nullptr;
@@ -1285,7 +1288,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
     
   return this;  
   
-}// <-- automatic deletion of leftOrphan and rightOrphan
+}// <-- automatic deletion of leftOrphan and rightOrphan because they are managed unique_ptr<Node234> pointers
 /*
  * preconditions:
  * 1. sibling_id is a 3- or 4-node of parent. 
