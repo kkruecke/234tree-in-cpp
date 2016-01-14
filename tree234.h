@@ -636,7 +636,7 @@ template<typename K> inline std::unique_ptr<typename Tree234<K>::Node234> Tree23
        children[i] = std::move(children[i + 1]); // shift remaining children to the left. Calls operator=(Node234&&)
   } 
 
-  return node; // invokes move constructor since node.
+  return node; // invokes move constructor since node is an rvalue.
 }
 /*
  * preconditions: node is not full, not a four node (full), and key is not already in node. It may or may not
@@ -887,17 +887,16 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
          *
          * newRight->children[0] = std::move(node->children[2]);
          * newRight->children[0]->parent = newRight; 
-         * newRight->children[1] = std::move(node->children[2]);
+         * newRight->children[1] = std::move(node->children[3]);
          * newRight->children[1]->parent = newRight; 
          *
          */  
         newRight->connectChild(0, pnode->children[2]); // set its left child to the 3rd child of node 
 
         newRight->connectChild(1, pnode->children[3]); // set its right child to the 4th child of node
-        
-        pnode->children[2] = std::move(std::unique_ptr<Node234>());  
-        pnode->children[3] = std::move(std::unique_ptr<Node234>()); 
-
+                  
+        pnode->children[2] = nullptr;
+        pnode->children[3] = nullptr;
     }
 
     /* node's left and right children will be the two left most children of the node being split. 
@@ -1017,7 +1016,7 @@ template<typename K> bool Tree234<K>::remove(K key)
  *
  */
 
-// TODO: Can this be simplified. It is quite convoluted with lots of flags.
+// TODO: Can this be simplified. It is quite convoluted because side effects of other member functions are being checked (and lots of flags thus set).
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
    Node234 *next = nullptr;
@@ -1058,7 +1057,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     // successor 
     Node234 *in_order_successor;
     
-    // If key found in an internal node, search for in_order_successor. 
+    // If key found in an internal node, search for in order successor. 
     if (!found_node->isLeaf()) {
     
          // The next largest item with be the smallest item, the left most left node, in the subtree rooted at
