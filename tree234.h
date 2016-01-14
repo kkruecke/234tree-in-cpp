@@ -20,10 +20,6 @@ template<typename K> class Tree234 {
   protected:
    class Node234 { // nested node class
        
-             /* See http://rienajouter.blogspot.com/2014/10/makeshared-and-makeunique-for-classes.html for how to enable
-              * make_unique<> for a private ctor or private class. 
-              */ 
-              
        friend class Tree234<K>;             
        friend class DebugPrinter;
        static int MAX_KEYS;   
