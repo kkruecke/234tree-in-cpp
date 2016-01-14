@@ -1071,7 +1071,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
           *  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
           *  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
           */ 
-         bool check_if_key_moved = true;
+         bool check_if_key_moved = true; // TODO: Try to get rid of this flag!!
          
          while (prospective_in_order_successor != nullptr) { 
 
