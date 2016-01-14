@@ -54,8 +54,28 @@ template<typename K> class Tree234 {
        void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
 
        /*
-        * Remove key, if found, from node, shifting remaining keys to fill its gap.
+        *
+        * TODO: Should I remove the shifting code, and just a another member variable to Node234:
+        *    class Node234 {
+        *       int index_start;
+        *       //...
+        *     };
+        *  
+        *  and this logic when examining the keys:
+        *  search_for_key(K value)
+        *  {   
+        *     for (auto index =in dex_start; index < totalItems; index = ++index_start % 3) { //
+        *              if (keys[index] == value) {
+        *                  return index;
+        *              } 
+        *     }
+        *     return totalItems; // end of 
+        *  }
+        * 
+        * Or ...
+        * just use vector<K> instead of array<K. int>?
         */  
+       // Remove key, if found, from node, shifting remaining keys to fill its gap.
        K removeKey(int index) noexcept;
 
        /*
