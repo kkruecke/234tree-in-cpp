@@ -22,7 +22,7 @@ template<typename K> class Tree234 {
        
        friend class Tree234<K>;             
        friend class DebugPrinter;
-       static int MAX_KEYS;   
+       static const int MAX_KEYS;   
        
    private: 
        // TODO: Should I use a managed pointer? 
@@ -41,7 +41,7 @@ template<typename K> class Tree234 {
 
        std::array< std::unique_ptr<Node234>, 4 > children;
 
-       Node234 *getParent() noexcept; 
+       constexpr Node234 *getParent() noexcept; 
 
        /* 
         * Returns true if key is found in node and sets index so this->keys[index] == key
@@ -52,29 +52,7 @@ template<typename K> class Tree234 {
        int insertKey(K key) noexcept;
        
        void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
-
-       /*
-        *
-        * TODO: Should I remove the shifting code, and just a another member variable to Node234:
-        *    class Node234 {
-        *       int index_start;
-        *       //...
-        *     };
-        *  
-        *  and this logic when examining the keys:
-        *  search_for_key(K value)
-        *  {   
-        *     for (auto index =in dex_start; index < totalItems; index = ++index_start % 3) { //
-        *              if (keys[index] == value) {
-        *                  return index;
-        *              } 
-        *     }
-        *     return totalItems; // end of 
-        *  }
-        * 
-        * Or ...
-        * just use vector<K> instead of array<K. int>?
-        */  
+       
        // Remove key, if found, from node, shifting remaining keys to fill its gap.
        K removeKey(int index) noexcept;
 
@@ -97,7 +75,7 @@ template<typename K> class Tree234 {
        Node234(K small) noexcept;
        Node234(K small, K large) noexcept;
        Node234(K small, K middle, K large) noexcept;  
-       const Node234 *getParent() const noexcept;
+       constexpr const Node234 *getParent() const noexcept;
 
        constexpr int getTotalItems() const noexcept;
        constexpr int getChildCount() const noexcept;
@@ -160,7 +138,7 @@ template<typename K> class Tree234 {
     bool remove(K key);
 };
 
-template<typename K> int  Tree234<K>::Node234::MAX_KEYS = 3; 
+template<typename K> const int  Tree234<K>::Node234::MAX_KEYS = 3; 
 /*
  * Node234 constructors. Note: While all children are initialize to nullptr, this is not really necessary. 
  * Instead your can simply set children[0] = nullptr, since a Node234 is a leaf if and only if children[0] == 0
@@ -709,12 +687,12 @@ template<typename K> inline constexpr  bool Tree234<K>::Node234::isFull() const 
    return totalItems == MAX_KEYS;
 }
 
-template<typename K> inline typename Tree234<K>::Node234 * Tree234<K>::Node234::getParent()   noexcept
+template<typename K> inline constexpr typename Tree234<K>::Node234 * Tree234<K>::Node234::getParent()   noexcept
 { 
    return parent;
 }
 
-template<typename K> inline const typename Tree234<K>::Node234 *Tree234<K>::Node234::getParent() const  noexcept
+template<typename K> inline constexpr const typename Tree234<K>::Node234 *Tree234<K>::Node234::getParent() const  noexcept
 { 
    return parent;
 }
