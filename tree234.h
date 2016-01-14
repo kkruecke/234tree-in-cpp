@@ -822,7 +822,9 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
     }
 }
 
-/* 
+/*
+ * Rather than search down the tree and then possibly promote and break up 4-nodes on the way back up, we split 4 nodes as we call searchNode()
+ * on the way down.
  * Insertion based on pseudo code at:
  * http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  */
@@ -840,7 +842,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
 
    while(true) {
        
-       if(current->isFull()) {// if four node, split it, moving a value up to parent.
+       if(current->isFull()) {// if four node encountered, split it, moving a value up to parent.
 
             split(current); 
       
@@ -857,18 +859,17 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
             Node234 *next;
             int index;
             
-            if (current->searchNode(key, index, next) ) {
-
-                // return if key is already in tree
+            if (current->searchNode(key, index, next) ) {// return if key is already in tree
+                
                 return;
             } 
 
             // set current to next   
-            current = next;  // can't copy assign a unique_ptr. You can only move-assign.
+            current = next;  
        }
     }
 
-    // Make sure key is not in the leaf node, which is 2- or 3-node.
+    // Make sure key is not in the leaf node that is 2- or 3-node.
     if (current->keys[0] == key || (current->totalItems == 2 && current->keys[1] == key)) {
 
         return;
