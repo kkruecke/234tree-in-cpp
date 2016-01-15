@@ -1,3 +1,1 @@
-TODO:
-
-Change the implementation of Node234<> to use std::vector<K> instead of std::array<K, 3>.
+The deletion code looks messy and confused, especially looking for the inorder successor.
