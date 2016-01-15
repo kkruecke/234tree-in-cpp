@@ -1,4 +1,19 @@
 The deletion code looks messy and confused, especially looking for the inorder successor.
 Consider a tree descend_iterator class to use in the implementation, and use it, say, for searching for a hit, etc?
 
-See key-descnt-finder.h
+See key-descent-iterator.h
+
+
+KeyDesentFinder finder(root);
+
+do { 
+
+  if (finder->found())
+         break; 
+
+   else if (finder->eot()) {
+         break;
+      
+} while (finder->next());
+
+    
