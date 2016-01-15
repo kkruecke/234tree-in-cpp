@@ -25,13 +25,13 @@ template<typename K> class Tree234 {
        static const int MAX_KEYS;   
        
    private: 
-       // TODO: Should I use a managed pointer? 
+
        Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
                            it points to. */
 
        int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
 
-       std::array<K, 3> keys; // <-- TODO: Use vector<K>
+       std::array<K, 3> keys;
 
        /*
         * For 2-nodes, children[0] is left pointer and children[1] is right pointer.
@@ -39,7 +39,7 @@ template<typename K> class Tree234 {
         * And so on for 4-nodes.
         */
 
-       std::array< std::unique_ptr<Node234>, 4 > children;
+       std::array<std::unique_ptr<Node234>, 4> children;
 
        constexpr Node234 *getParent() noexcept; 
 
@@ -592,7 +592,7 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
 
   return hit;
 }
-// TODO: Are unique_ptrs passed by reference? This seems to be O.K.
+
 template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept
 {
   // shift children right in order to insert pChild
