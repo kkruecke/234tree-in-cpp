@@ -1,1 +1,16 @@
 The deletion code looks messy and confused, especially looking for the inorder successor.
+Consider a tree iterator class to use in the implementation, and use it, say, for searching for a hit, etc.
+
+class iterator {
+
+    Node234* current;
+ 
+   public:
+
+     iterator(Node234 *root) : current{root} {}
+     
+     iterator operator++(int);
+     iterator operator++();
+
+};
+

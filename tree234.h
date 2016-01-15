@@ -567,7 +567,7 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
  * Returns true if key is found in node, and it set index so that this->keys[index] == key.
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the search.
  */
-template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& index, Node234 *&next) noexcept
+template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& found_index, Node234 *&next) noexcept
 {
   for(auto i = 0; i < totalItems; ++i) {
 
@@ -578,7 +578,7 @@ template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& i
 
      } else if (keys[i] == value) {
 
-         index = i;
+         found_index = i;
          return true;
      }
   }
