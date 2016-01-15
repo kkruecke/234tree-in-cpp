@@ -1,17 +1,4 @@
 The deletion code looks messy and confused, especially looking for the inorder successor.
 Consider a tree descend_iterator class to use in the implementation, and use it, say, for searching for a hit, etc?
 
-// Descend until it 
-class descend_iterator {
-
-    Node234* current;
- 
-   public:
-
-     descend_iterator(Node234 *root) : current{root} {}
-     
-     descend_iterator operator++(int);
-     descend_iterator operator++();
-
-};
-
+See key-descnt-finder.h
