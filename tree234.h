@@ -717,45 +717,12 @@ template<typename K> void Tree234<K>::DestroyTree(std::unique_ptr<Node234> &curr
 	return;
    }
 
-   switch (current->totalItems) {
+   for(auto i = 0; i < current->totalItems; ++i) {
 
-      case 1: // two node
-            DestroyTree(current->children[0]);
-
-            DestroyTree(current->children[1]);
-
-            //delete current;
-            current.reset();
-
-            break;
-
-      case 2: // three node
-            DestroyTree(current->children[0]);
-
-            DestroyTree(current->children[1]);
- 
-            DestroyTree(current->children[2]);
-
-            //delete current;
-            current.reset();
-
-            break;
-
-      case 3: // four node
-            DestroyTree(current->children[0]);
-
-            DestroyTree(current->children[1]);
- 
-            DestroyTree(current->children[2]);
-
-            DestroyTree(current->children[3]);
-
-            //delete current;
-            current.reset();
- 
-            break;
+        DestroyTree(current->children[i]);
    }
-  
+
+   current.reset();
 }
 
 template<typename K> inline bool Tree234<K>::search(K key) noexcept
