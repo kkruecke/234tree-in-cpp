@@ -47,7 +47,7 @@ template<typename K> class Tree234 {
         * Returns true if key is found in node and sets index so this->keys[index] == key
         * Returns false if key is if not found; set next to the next in-order child.
         */
-       bool searchNode(K key, int& index, Node234 *&next) noexcept;
+       bool NodeDescentSearch(K key, int& index, Node234 *&next) noexcept;
 
        int insertKey(K key) noexcept;
        
@@ -567,7 +567,7 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
  * Returns true if key is found in node, and it set index so that this->keys[index] == key.
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the search.
  */
-template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& found_index, Node234 *&next) noexcept
+template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value, int& found_index, Node234 *&next) noexcept
 {
   for(auto i = 0; i < totalItems; ++i) {
 
@@ -747,7 +747,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 
   while(true) {
  
-      if (current->searchNode(key, index, next)) {  
+      if (current->NodeDescentSearch(key, index, next)) {  
 
           location = current;
           return true; 
@@ -764,7 +764,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 }
 
 /*
- * Rather than search down the tree and then possibly promote and break up 4-nodes on the way back up, we split 4 nodes as we call searchNode()
+ * Rather than search down the tree and then possibly promote and break up 4-nodes on the way back up, we split 4 nodes as we call NodeDescentSearch()
  * on the way down.
  * Insertion based on pseudo code at:
  * http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
@@ -800,7 +800,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
             Node234 *next;
             int index;
             
-            if (current->searchNode(key, index, next) ) {// return if key is already in tree
+            if (current->NodeDescentSearch(key, index, next) ) {// return if key is already in tree
                 
                 return;
             } 
@@ -926,7 +926,7 @@ template<typename K> bool Tree234<K>::remove(K key)
 
          int index;
          Node234 *next = nullptr; 
-         bool found = root->searchNode(key, index, next);
+         bool found = root->NodeDescentSearch(key, index, next);
 
          if (found) { 
 
@@ -999,7 +999,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
             // convert 2-node into 3- or 4-node 
             current = convertTwoNode(current); 
       
-       } else if (current->searchNode(key, found_index, next)) { // ...search for item in current node. 
+       } else if (current->NodeDescentSearch(key, found_index, next)) { // ...search for item in current node. 
 
               found_node = current;
               break; // we found it.  
