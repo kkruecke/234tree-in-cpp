@@ -569,28 +569,24 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
  */
 template<typename K> inline bool Tree234<K>::Node234::searchNode(K value, int& index, Node234 *&next) noexcept
 {
-  bool hit = false;
-
   for(auto i = 0; i < totalItems; ++i) {
 
      if (value < keys[i]) {
             
            next = children[i].get(); 
-           break;
+           return false;
 
      } else if (keys[i] == value) {
 
-         hit = true;
          index = i;
-         break;
-
-     } else if (i == totalItems - 1) { // it is greater than the last key
-          
-          next = children[totalItems].get(); 
+         return true;
      }
-  } 
+  }
 
-  return hit;
+  // it is greater than the last key (because it is not less than or equal to it)
+  next = children[totalItems].get(); 
+
+  return false;
 }
 
 template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept
