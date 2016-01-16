@@ -10,10 +10,7 @@ do {
 
   if (finder->found())
          break; 
-
-   else if (finder->eot()) {
-         break;
       
-} while (finder->next());
+} while (finder->next() && !finder->eof());
 
     
