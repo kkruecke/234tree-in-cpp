@@ -1,7 +1,7 @@
 /*
     Usage:
  
-    KeyDesentFinder finder(root);
+    DescentSearchIterator finder(root, value);
     
     do { 
     
