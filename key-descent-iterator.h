@@ -14,14 +14,14 @@
     } while (finder->next());
 
  */
-class KeyDescentIterator {
+class DescentSearchIterator {
 
     Node234 *current;
     K& k;
     int index;
     
   public:
-   KeyDescentFinder(Node234 *root, K& key) : k{key} {}
+   DescentSearchIterator(Node234 *root, K& key) : k{key} {}
 
    const Node234 *current()  { return current; }
 

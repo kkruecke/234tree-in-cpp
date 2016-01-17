@@ -4,7 +4,7 @@ Consider a tree descend_iterator class to use in the implementation, and use it,
 See key-descent-iterator.h
 
 
-KeyDesentFinder finder(root);
+DesentSearchIterator finder(root);
 
 do { 
 
