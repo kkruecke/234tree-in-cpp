@@ -14,6 +14,11 @@
     } while (finder->next());
 
  */
+
+/*
+ K is value type
+ */
+template<class K>
 class DescentSearchIterator {
 
     Node234 *current;
