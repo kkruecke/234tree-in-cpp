@@ -35,6 +35,9 @@ class DescentSearchIterator {
    
    bool found() { return current[index] == k; }
 
+   // conversion operator
+   bool operator() { return current[index] == k; }
+
    // end of tree.
    bool eot() { return current->isLeaf(); } 
 
