@@ -745,8 +745,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
      return false;
   }
 
-  /*
-  while(true) {{
+  while(true) {
  
       if (current->NodeDescentSearch(key, index, next)) {  
 
@@ -762,20 +761,6 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
           current = next;
       }  
   }
-  */
-
-  for(; ; current = next) {
- 
-      if (current->NodeDescentSearch(key, index, next)) {  
-
-          location = current;
-          return true; 
-
-      } else if (current->isLeaf()) { 
-
-          return false; // wasn't found
-      } 
-    }
 }
 
 /*
@@ -931,6 +916,7 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
  * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the deleted key
  * with its in-order successor.
  */
+
 template<typename K> bool Tree234<K>::remove(K key) 
 {
    if (root == nullptr) {
@@ -946,10 +932,10 @@ template<typename K> bool Tree234<K>::remove(K key)
 
          if (found) { 
 
-           /*
-            * Remove key from root, when root is a leaf. This will also shift the in-order successor into
-            * its location.
-            */
+           // *
+           // * Remove key from root, when root is a leaf. This will also shift the in-order successor into
+           // * its location.
+            
             root->removeKey(index);
 
             if (root->totalItems == 0) {
@@ -960,43 +946,6 @@ template<typename K> bool Tree234<K>::remove(K key)
          }
  
          return found;
-
-   } else {
- 
-       return remove(key, root.get()); 
-  }
-}
-template<typename K> bool Tree234<K>::remove(K key) // new code
-{
-   if (root == nullptr) {
-
-       return false; 
-
-   } else if (root->isLeaf()) { 
-
-         int index;
-         Node234 *next = nullptr; 
-
-         if (root->NodeDescentSearch(key, index, next)) { // 
-
-           /*
-            * Remove key from root, when root is a leaf. This will also shift the in-order successor into
-            * its location.
-            */
-            root->removeKey(index);
-
-            if (root->totalItems == 0) {
-
-                root.reset(); // delete root 
-                root  = nullptr;
-            }  
-
-            return true;
-
-         } else {
- 
-            return false;
-         }
 
    } else {
  

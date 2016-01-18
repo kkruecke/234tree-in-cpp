@@ -72,6 +72,7 @@ int main(int argc, char** argv)
   tree.debug_dump(debug_printer);
 
   cout << endl;
+  cout << flush;
 
   return 0;
 }
