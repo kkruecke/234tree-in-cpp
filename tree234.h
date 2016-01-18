@@ -45,7 +45,7 @@ template<typename K> class Tree234 {
 
        /* 
         * Returns true if key is found in node and sets index so this->keys[index] == key
-        * Returns false if key is if not found; set next to the next in-order child.
+        * Returns false if key is if not found; sets next to the next in-order child if key not found.
         */
        bool NodeDescentSearch(K key, int& index, Node234 *&next) noexcept;
 
@@ -926,6 +926,7 @@ template<typename K> bool Tree234<K>::remove(K key)
 
          int index;
          Node234 *next = nullptr; 
+
          bool found = root->NodeDescentSearch(key, index, next);
 
          if (found) { 
@@ -950,7 +951,43 @@ template<typename K> bool Tree234<K>::remove(K key)
        return remove(key, root.get()); 
   }
 }
+template<typename K> bool Tree234<K>::remove(K key) // new code
+{
+   if (root == nullptr) {
 
+       return false; 
+
+   } else if (root->isLeaf()) { 
+
+         int index;
+         Node234 *next = nullptr; 
+
+         if (root->NodeDescentSearch(key, index, next)) { // 
+
+           /*
+            * Remove key from root, when root is a leaf. This will also shift the in-order successor into
+            * its location.
+            */
+            root->removeKey(index);
+
+            if (root->totalItems == 0) {
+
+                root.reset(); // delete root 
+                root  = nullptr;
+            }  
+
+            return true;
+
+         } else {
+ 
+            return false;
+         }
+
+   } else {
+ 
+       return remove(key, root.get()); 
+  }
+}
 /*
  * This pseudo code is taken from pages 50-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *
