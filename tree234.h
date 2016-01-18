@@ -583,7 +583,7 @@ template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value,
      }
   }
 
-  // it is greater than the last key (because it is not less than or equal to it)
+  // it must be greater than the last key (because it is not less than or equal to it).
   next = children[totalItems].get(); 
 
   return false;
@@ -642,6 +642,7 @@ template<typename K> inline std::unique_ptr<typename Tree234<K>::Node234> Tree23
 
 template<typename K> inline int  Tree234<K>::Node234::insertKey(K key)  noexcept
 { 
+    
   // start on right, examine items
   for(auto i = totalItems - 1; i >= 0 ; i--) {
 
