@@ -573,8 +573,8 @@ template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value,
 
      if (value < keys[i]) {
             
-           next = children[i].get(); 
-           return false;
+         next = children[i].get(); 
+         return false;
 
      } else if (keys[i] == value) {
 
@@ -745,7 +745,8 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
      return false;
   }
 
-  while(true) {
+  /*
+  while(true) {{
  
       if (current->NodeDescentSearch(key, index, next)) {  
 
@@ -760,6 +761,20 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 
           current = next;
       }  
+  }
+  */
+
+  for(; ; current = next) {
+ 
+      if (current->NodeDescentSearch(key, index, next)) {  
+
+          location = current;
+          return true; 
+
+      } else if (current->isLeaf()) { 
+
+          return false; // wasn't found
+      } 
     }
 }
 
