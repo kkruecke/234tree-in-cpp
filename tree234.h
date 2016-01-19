@@ -780,7 +780,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
 
    Node234 *current = root.get();
 
-   /* Descend until a leaf node is found, splitting four nodes as they are encountered */
+   // Descend until a leaf node is found, splitting four nodes as they are encountered 
 
    while(true) {
        
@@ -793,10 +793,10 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
                         
        }  else if( current->isLeaf() )  {
 
-            /* done descending. */
+            // done descending. 
             break;
 
-       } else { // internal node
+       } else { // internal node encountered
 
             Node234 *next;
             int index;
