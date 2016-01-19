@@ -1279,7 +1279,8 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
           * parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
           *
           */ 
-
+      // TODO: Make this a separate function: leftRotation(Node234 *pNode, Node234 *pSibling, int parent_key_index)
+      
       // Add the parent's key to 2-node, making it a 3-node
 
       // 1. But first shift the 2-node's sole key right one position
@@ -1305,7 +1306,9 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
    		 *
 		 *   parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
    		 */ 
-
+      
+      // TODO: Make this a separate function rightRotation(Node234 *pNode, Node234 *pSibling, int parent_key_index)
+      
       // pnode2->keys[0] doesn't change.
       p2node->keys[1] = parent->keys[parent_key_index];  // 1. insert parent key making 2-node a 3-node
 
