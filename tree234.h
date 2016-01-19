@@ -1168,6 +1168,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
    bool has3or4NodeSibling = false;
+   
    int sibling_index;
 
    int left_adjacent = node2_index - 1;
@@ -1192,14 +1193,13 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
         sibling_index = left_adjacent; 
    }
 
-   // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
-   // Check if its parent 2-node (or 3- or 4-node).
-   bool parentIsTwoNode = parent->isTwoNode();
-
    if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-nodes...
 
-         if (parentIsTwoNode) { //... as is the parent, which must be root; otherwise, it would have already been converted.
-
+       // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
+       // Check if its parent 2-node (or 3- or 4-node).
+       
+       if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
+         
 	     convertedNode = parent->fuseWithChildren();
 
         } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
