@@ -1329,8 +1329,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Nod
 
   p2node->keys[0] = parent->keys[parent_key_index];  // 2. Now bring down parent key
 
-  //--p2node->totalItems = 2; // 3. increase total items
-  p2node->totalItems = to_int(Tree234<K>::Node234::NodeMaxItems::three_node);// = 2; // 3. increase total items
+  p2node->totalItems = to_int(Tree234<K>::Node234::NodeMaxItems::three_node); // 3. increase total items
 
   int total_sibling_keys = psibling->totalItems; 
 
@@ -1353,8 +1352,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::leftRotation(Node
   // pnode2->keys[0] doesn't change.
   p2node->keys[1] = parent->keys[parent_key_index];  // 1. insert parent key making 2-node a 3-node
 
-  //--p2node->totalItems = 2; // 2. increase total items
-  p2node->totalItems = to_int(Tree234<K>::Node234::NodeMaxItems::three_node);// = 2; // 3. increase total items
+  p2node->totalItems = to_int(Tree234<K>::Node234::NodeMaxItems::three_node);// 3. increase total items
 
   std::unique_ptr<Node234> pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
 
