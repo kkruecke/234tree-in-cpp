@@ -569,7 +569,7 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
 
 /*
  * Returns true if key is found in node, and it set index so that this->keys[index] == key.
- * Returns false if key is if not found, and it sets next to point to next child with which to continue the search.
+ * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node).
  */
 template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value, int& found_index, Node234 *&next) noexcept
 {
@@ -1026,8 +1026,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     // successor 
     Node234 *in_order_successor;
     
-    // If key found in an internal node, search for in order successor. 
-    if (!found_node->isLeaf()) {
+    if (!found_node->isLeaf()) {// If key found in an internal node, search for in order successor. 
     
          // The next largest item with be the smallest item, the left most left node, in the subtree rooted at
          // found_node->children[found_index + 1].
@@ -1084,12 +1083,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                         found_node = convertedNode;
                         found_index = index;
                         prospective_in_order_successor = convertedNode->children[index + 1].get(); // root of subtree with next largest key 
-
-                   } else { /* This should never happen: Either the key didn't move from found_node->keys[found_index] or it moved within
-                             *  found_node or it moved within found_node.   */ 
-
-                        throw std::logic_error(std::string("Bug in remove(K key, Node234*current): 2-node converted, but key not found"));
-                   }          
+                   }         
 
              } else {
 
@@ -1122,11 +1116,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
              *   found_node->keys[found_index] = in_order_successor->keys[found_index + 1];
              *   found_node->totalItems--;  
              */
-
-    } else { // found_index + 1 > found_node->totalItems
-
-         throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K?::remove(Key k, Node234 *current"));
-    }
+    } 
 
     // Note, we did not need to disconnect a child because we are at a leaf node.
         
