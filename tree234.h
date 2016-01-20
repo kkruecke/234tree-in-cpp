@@ -997,7 +997,7 @@ template<typename K> bool Tree234<K>::remove(K key)
  * remove the in-order successor from the leaf node.
  *
  * There is a problem, however: if the successor is a 2-node leaf, this leaves an empty leaf node, resulting in an
- * unbalanced tree. To prevent this, we descend the tree we turning 2-nodes (other than the root) into 3-nodes or
+ * unbalanced tree. To prevent this, we descend the tree turning 2-nodes (other than the root) into 3-nodes or
  * 4-nodes. 
  *
  * There are two cases to consider:  
@@ -1156,7 +1156,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     return true;  
 }
 /*
- * preconditions: node is 2-node.
+ * input preconditions: node is 2-node.
  * output: node is converted into either a 3- or a 4-node.
  *
  * Code follows pages 51-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
@@ -1243,7 +1243,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 }
 /*
  * precondition: node is a 2-node. Its children are both 2-nodes.
- * output: 4-node. 
+ * output: 4-node resulting from fusing of the two 2-nodes. 
  * pseudo code: 
  * 1. Absorbs its children's keys as its own. 
  * 2. Makes its grandchildren its children and deletes its former, now orphaned child nodes.
