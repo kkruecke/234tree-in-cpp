@@ -111,6 +111,10 @@ template<typename K> class Tree234 {
     
     Node234 *doRotation(Node234 *parent, int node2_id, int sibling_id) noexcept;
 
+    Node234 *leftRotation(Node234 *p2node, Node234 *psibling, int parent_key_index) noexcept;
+
+    Node234 *rightRotation(Node234 *p2node, Node234 *psibling, int parent_key_index) noexcept;
+
   public:
 
      Tree234() noexcept : root{} { } 
@@ -1254,7 +1258,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
  * The siblings orphaned child is adopted by the converted 2- now 3-node. 
  * The converted 2-node is returned.
  */
-template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node234 *parent, int node2_id, int sibling_id) noexcept
+template<typename K> inline typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node234 *parent, int node2_id, int sibling_id) noexcept
 {
   Node234 *psibling = parent->children[sibling_id].get();
 
@@ -1275,59 +1279,74 @@ template<typename K> typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node2
   int parent_key_index = std::min(node2_id, sibling_id); 
 
   if (node2_id > sibling_id) { /* If sibling is to the left, then
-          *
-          * parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
-          *
-          */ 
-      // TODO: Make this a separate function: leftRotation(Node234 *pNode, Node234 *pSibling, int parent_key_index)
-      
-      // Add the parent's key to 2-node, making it a 3-node
+                                *
+                                *  parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
+                                *
+                                */ 
 
-      // 1. But first shift the 2-node's sole key right one position
-      p2node->keys[1] = p2node->keys[0];      
+      return rightRotation(p2node, psibling, parent_key_index);
 
-      p2node->keys[0] = parent->keys[parent_key_index];  // 2. Now bring down parent key
+  } else { /* else sibling is to the right: do a left rotation
+  	      sibling is to the right and therefore
+	      parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
+   	    */ 
 
-      p2node->totalItems = 2; // 3. increase total items
-
-      int total_sibling_keys = psibling->totalItems; 
-
-      // 4. disconnect right-most child of sibling
-      std::unique_ptr<Node234> pchild_of_sibling = psibling->disconnectChild(total_sibling_keys); 
-
-      K largest_sibling_key = psibling->removeKey(total_sibling_keys - 1); // remove the largest, the right-most, sibling's key.
-
-      parent->keys[parent_key_index] = largest_sibling_key;  // 5. overwrite parent item with largest sibling key
-
-      p2node->insertChild(0, pchild_of_sibling); // add former right-most child of sibling as its first child
-
-  } else { // sibling is to the right: do a left rotation
-  		/* sibling is to the right and therefore
-   		 *
-		 *   parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
-   		 */ 
-      
-      // TODO: Make this a separate function rightRotation(Node234 *pNode, Node234 *pSibling, int parent_key_index)
-      
-      // pnode2->keys[0] doesn't change.
-      p2node->keys[1] = parent->keys[parent_key_index];  // 1. insert parent key making 2-node a 3-node
-
-      p2node->totalItems = 2; // 2. increase total items
-
-      std::unique_ptr<Node234> pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
-
-      // Remove smallest key in sibling
-      K smallest_sibling_key = psibling->removeKey(0);
-
-      parent->keys[parent_key_index] = smallest_sibling_key;  // overwrite parent item with it.
-
-      // add former first child of silbing as right-most child of our 3-node.
-      p2node->insertChild(p2node->totalItems, pchild_of_sibling); 
+      return leftRotation(p2node, psibling, parent_key_index);
   }
+}
+/* 
+ * Sibling is to the left, therefore: parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
+ */
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Node234 *p2node, Node234 *psibling, int parent_key_index) noexcept
+{    
+  Node234 *parent = p2node->parent;
+
+  // Add the parent's key to 2-node, making it a 3-node
+
+  // 1. But first shift the 2-node's sole key right one position
+  p2node->keys[1] = p2node->keys[0];      
+
+  p2node->keys[0] = parent->keys[parent_key_index];  // 2. Now bring down parent key
+
+  p2node->totalItems = 2; // 3. increase total items
+
+  int total_sibling_keys = psibling->totalItems; 
+
+  // 4. disconnect right-most child of sibling
+  std::unique_ptr<Node234> pchild_of_sibling = psibling->disconnectChild(total_sibling_keys); 
+
+  K largest_sibling_key = psibling->removeKey(total_sibling_keys - 1); // remove the largest, the right-most, sibling's key.
+
+  parent->keys[parent_key_index] = largest_sibling_key;  // 5. overwrite parent item with largest sibling key
+
+  p2node->insertChild(0, pchild_of_sibling); // add former right-most child of sibling as its first child
 
   return p2node;
 }
+/* sibling is to the right therefore: parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
+ * Do a left rotation
+ */ 
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::leftRotation(Node234 *p2node, Node234 *psibling, int parent_key_index) noexcept
+{
+  Node234 *parent = p2node->parent; 
 
+  // pnode2->keys[0] doesn't change.
+  p2node->keys[1] = parent->keys[parent_key_index];  // 1. insert parent key making 2-node a 3-node
+
+  p2node->totalItems = 2; // 2. increase total items
+
+  std::unique_ptr<Node234> pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
+
+  // Remove smallest key in sibling
+  K smallest_sibling_key = psibling->removeKey(0);
+
+  parent->keys[parent_key_index] = smallest_sibling_key;  // overwrite parent item with it.
+
+  // add former first child of silbing as right-most child of our 3-node.
+  p2node->insertChild(p2node->totalItems, pchild_of_sibling); 
+
+  return p2node;
+}
 /*
  * Preconditions: 
  * 1. parent is a 3- or 4-node. 
