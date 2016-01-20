@@ -1281,15 +1281,16 @@ template<typename K> inline typename Tree234<K>::Node234 * Tree234<K>::doRotatio
   if (node2_id > sibling_id) { /* If sibling is to the left, then
                                 *
                                 *  parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
-                                *
+                                * 
+                                * and we do a right rotation
                                 */ 
 
       return rightRotation(p2node, psibling, parent, parent_key_index);
 
-  } else { /* else sibling is to the right: do a left rotation
-  	      sibling is to the right and therefore
-	      parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
-   	    */ 
+  } else { /* else sibling is to the right and 
+            *    parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
+            * therefore do a left rotation
+  	    */ 
 
       return leftRotation(p2node, psibling, parent, parent_key_index);
   }
