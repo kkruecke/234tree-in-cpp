@@ -14,6 +14,10 @@ template<typename T> class Tree234;
 template<typename K> class Node234; 
 
 class DebugPrinter; 
+/*
+ See http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
+ for pseudo code
+ */
 
 template<typename K> class Tree234 {
     
@@ -23,6 +27,10 @@ template<typename K> class Tree234 {
        friend class Tree234<K>;             
        friend class DebugPrinter;
        static const int MAX_KEYS;   
+
+       enum class NodeMaxItems : int { two_node=1, three_node=2, four_node=3 };
+    
+       int to_int(const NodeMaxItems x) const { return static_cast<int>(x); }
        
    private: 
 
@@ -40,7 +48,7 @@ template<typename K> class Tree234 {
         */
 
        std::array<std::unique_ptr<Node234>, 4> children;
-
+       
        constexpr Node234 *getParent() noexcept; 
 
        /* 
@@ -90,6 +98,8 @@ template<typename K> class Tree234 {
 
     friend class DebugPrinter;
   
+    int to_int(const typename Tree234<K>::Node234::NodeMaxItems x) const { return static_cast<int>(x); }
+
     std::unique_ptr<Node234>  root; 
     
     bool DoSearch(K key, Node234 *&location, int& index) noexcept;
@@ -107,6 +117,7 @@ template<typename K> class Tree234 {
     // These methods are called during remove(K key)
     bool remove(K key, Node234 *location); 
 
+    // Convert two-node to three- or four-node
     Node234 *convertTwoNode(Node234 *node) noexcept;
 
     Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id) noexcept;
@@ -196,17 +207,17 @@ template<typename K> inline constexpr int Tree234<K>::Node234::getChildCount() c
 
 template<typename K> inline constexpr bool Tree234<K>::Node234::isTwoNode() const noexcept
 {
-   return (totalItems == 1) ? true : false;
+   return (totalItems == to_int(NodeMaxItems::two_node)) ? true : false;
 }
 
 template<typename K> inline constexpr bool Tree234<K>::Node234::isThreeNode() const noexcept
 {
-   return (totalItems == 2) ? true : false;
+   return (totalItems == to_int(NodeMaxItems::three_node)) ? true : false;
 }
 
 template<typename K> inline constexpr bool Tree234<K>::Node234::isFourNode() const noexcept
 {
-   return (totalItems == 3) ? true : false;
+   return (totalItems == to_int(NodeMaxItems::four_node)) ? true : false;
 }
 
 template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
@@ -224,14 +235,14 @@ template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{s
 
 template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr) 
 {
-    for (auto x: il) { // simply call insert(x)
+    for (K& x: il) { // simply call insert(x)
           insert(x);
     }
 }
 
 template<typename K> inline Tree234<K>::Tree234(std::vector<K> vec) noexcept : root(nullptr) 
 {
-    for (auto& x: vec) { // simply call insert(x)
+    for (K& x: vec) { // simply call insert(x)
           insert(x);
     }
 }
@@ -1318,7 +1329,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Nod
 
   p2node->keys[0] = parent->keys[parent_key_index];  // 2. Now bring down parent key
 
-  p2node->totalItems = 2; // 3. increase total items
+  //--p2node->totalItems = 2; // 3. increase total items
+  p2node->totalItems = to_int(Tree234<K>::Node234::NodeMaxItems::three_node);// = 2; // 3. increase total items
 
   int total_sibling_keys = psibling->totalItems; 
 
@@ -1341,7 +1353,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::leftRotation(Node
   // pnode2->keys[0] doesn't change.
   p2node->keys[1] = parent->keys[parent_key_index];  // 1. insert parent key making 2-node a 3-node
 
-  p2node->totalItems = 2; // 2. increase total items
+  //--p2node->totalItems = 2; // 2. increase total items
+  p2node->totalItems = to_int(Tree234<K>::Node234::NodeMaxItems::three_node);// = 2; // 3. increase total items
 
   std::unique_ptr<Node234> pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
 
