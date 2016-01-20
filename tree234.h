@@ -84,6 +84,8 @@ template<typename K> class Tree234 {
        constexpr bool isFull() const  noexcept;
        constexpr bool isLeaf() const noexcept; 
        constexpr bool isTwoNode() const noexcept;
+       constexpr bool isThreeNode() const noexcept;
+       constexpr bool isFourNode() const noexcept;
     };  
 
     friend class DebugPrinter;
@@ -126,6 +128,7 @@ template<typename K> class Tree234 {
      Tree234& operator=(Tree234&& lhs) noexcept;    // move assignment
 
      Tree234(std::initializer_list<K> list) noexcept; 
+     Tree234(std::vector<K> vec) noexcept; 
 
     ~Tree234(); 
 
@@ -196,6 +199,16 @@ template<typename K> inline constexpr bool Tree234<K>::Node234::isTwoNode() cons
    return (totalItems == 1) ? true : false;
 }
 
+template<typename K> inline constexpr bool Tree234<K>::Node234::isThreeNode() const noexcept
+{
+   return (totalItems == 2) ? true : false;
+}
+
+template<typename K> inline constexpr bool Tree234<K>::Node234::isFourNode() const noexcept
+{
+   return (totalItems == 3) ? true : false;
+}
+
 template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
 {
     Tree234<K>::Node234 *src =  lhs.root.get();
@@ -212,6 +225,13 @@ template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{s
 template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr) 
 {
     for (auto x: il) { // simply call insert(x)
+          insert(x);
+    }
+}
+
+template<typename K> inline Tree234<K>::Tree234(std::vector<K> vec) noexcept : root(nullptr) 
+{
+    for (auto& x: vec) { // simply call insert(x)
           insert(x);
     }
 }
@@ -648,7 +668,7 @@ template<typename K> inline int  Tree234<K>::Node234::insertKey(K key)  noexcept
 { 
     
   // start on right, examine items
-  for(auto i = totalItems - 1; i >= 0 ; i--) {
+  for(auto i = totalItems - 1; i >= 0 ; --i) {
 
       if (key < keys[i]) { // if key[i] is bigger
 
@@ -815,8 +835,9 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
        }
     }
 
-    // Make sure key is not in the leaf node that is 2- or 3-node.
-    if (current->keys[0] == key || (current->totalItems == 2 && current->keys[1] == key)) {
+    // Make sure key is not in a leaf node that is 2- or 3-node.
+    //--if (current->keys[0] == key || (current->totalItems == 2 && current->keys[1] == key)) {
+    if ((!current->isFourNode() && current->keys[0] == key) || (current->isThreeNode() && current->keys[1] == key)) {
 
         return;
     } 
