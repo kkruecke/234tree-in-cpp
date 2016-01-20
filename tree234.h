@@ -111,9 +111,9 @@ template<typename K> class Tree234 {
     
     Node234 *doRotation(Node234 *parent, int node2_id, int sibling_id) noexcept;
 
-    Node234 *leftRotation(Node234 *p2node, Node234 *psibling, int parent_key_index) noexcept;
+    Node234 *leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
 
-    Node234 *rightRotation(Node234 *p2node, Node234 *psibling, int parent_key_index) noexcept;
+    Node234 *rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
 
   public:
 
@@ -1284,23 +1284,21 @@ template<typename K> inline typename Tree234<K>::Node234 * Tree234<K>::doRotatio
                                 *
                                 */ 
 
-      return rightRotation(p2node, psibling, parent_key_index);
+      return rightRotation(p2node, psibling, parent, parent_key_index);
 
   } else { /* else sibling is to the right: do a left rotation
   	      sibling is to the right and therefore
 	      parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
    	    */ 
 
-      return leftRotation(p2node, psibling, parent_key_index);
+      return leftRotation(p2node, psibling, parent, parent_key_index);
   }
 }
 /* 
  * Sibling is to the left, therefore: parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
  */
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Node234 *p2node, Node234 *psibling, int parent_key_index) noexcept
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
 {    
-  Node234 *parent = p2node->parent;
-
   // Add the parent's key to 2-node, making it a 3-node
 
   // 1. But first shift the 2-node's sole key right one position
@@ -1326,10 +1324,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Nod
 /* sibling is to the right therefore: parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
  * Do a left rotation
  */ 
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::leftRotation(Node234 *p2node, Node234 *psibling, int parent_key_index) noexcept
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
 {
-  Node234 *parent = p2node->parent; 
-
   // pnode2->keys[0] doesn't change.
   p2node->keys[1] = parent->keys[parent_key_index];  // 1. insert parent key making 2-node a 3-node
 
