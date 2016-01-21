@@ -4,8 +4,9 @@
 
  template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
-code looks messy and confused, especially looking for the inorder successor. It relies on flags to track whether the index of the in-order successor has moved due
-to side effects of calling other member functions. This makes the code awfully messing.
+code looks messy and confused, especially looking for the inorder successor. It relies on a check_if_key_moved flag to track whether the index of the in-order
+successor has moved due to side effects of calling other member functions. This makes the code awfully messy. And it uses a prospective_in_order successor pointer
+in a complex loop, again making it hard to read.
 
 
 3. Should I consider a tree descend_iterator class to use in the implementation, and use it, say, for searching for a hit, etc?
