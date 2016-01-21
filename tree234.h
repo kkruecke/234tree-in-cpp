@@ -1083,7 +1083,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
                    int index;
                                   
-                   if (convertedNode == found_node) { // fuseWithSiblings() was called. This only happens when leaves are fused with root.
+                   if (convertedNode == found_node) { // fuseWithChildren() was called. This only happens when leaves are fused with parent.
+                                                      // TODO: How do I know fuseWithChildren() was called? 
                              
                          found_node->findKey(key, found_index);
 
