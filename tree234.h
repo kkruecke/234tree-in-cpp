@@ -15,7 +15,8 @@ template<typename K> class Node234;
 
 class DebugPrinter; 
 /*
- See http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
+ * See www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
+ * and http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
  for pseudo code
  */
 
@@ -996,24 +997,26 @@ template<typename K> bool Tree234<K>::remove(K key)
  * is always in a leaf node. "Swap" means we overwrite the item to be deleted with its in-order successor and then
  * remove the in-order successor from the leaf node.
  *
- * There is a problem, however: if the successor is a 2-node leaf, this leaves an empty leaf node, resulting in an
- * unbalanced tree. To prevent this, we descend the tree turning 2-nodes (other than the root) into 3-nodes or
+ * There is a problem, however: if the in-order successor is a 2-node leaf, this leaves an empty leaf node, resulting in an
+ * unbalanced tree. To prevent this, as we descend the tree we turn 2-nodes (other than the root) into 3-nodes or
  * 4-nodes. 
  *
  * There are two cases to consider:  
  *
  * Case 1: If an adjacent sibling has 2 or 3 items (and the parent is a 3- or 4-node), we "steal" an item from sibling by
- * rotating items and moving subtree. See slide 51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ * rotating items and moving subtree. See slide #51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *         
  * Case 2: If each adjacent sibling (there are at most two) has only one item (and parent is a 3- or 4-node),
  * we fuse together the two, plus an item from parent, forming a 4-node and shifting the children appropriately. See
  * slide 52 of www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  * 
  * This technique is also explained and illustrated with several examples at pages 64-66 of
- * http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf and at:
+ * http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
  *
+ * and at:
+ * 
  * http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
- * and http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+ * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  *
  */
 
@@ -1022,7 +1025,7 @@ template<typename K> bool Tree234<K>::remove(K key)
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
    Node234 *next = nullptr;
-   Node234 *found_node;
+   Node234 *found_node = nullptr;
    int found_index;
 
    /* Search, looking for key, converting 2-nodes to 3- or 4-nodes as encountered */
