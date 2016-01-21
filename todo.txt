@@ -4,11 +4,13 @@
 
  template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
-code looks messy and confused, especially looking for the inorder successor.
-Consider a tree descend_iterator class to use in the implementation, and use it, say, for searching for a hit, etc?
+code looks messy and confused, especially looking for the inorder successor. It relies on flags to track whether the index of the in-order successor has moved due
+to side effects of calling other member functions. This makes the code awfully messing.
 
 
-3. See key-descent-iterator.h. Usage:
+3. Should I consider a tree descend_iterator class to use in the implementation, and use it, say, for searching for a hit, etc?
+
+ Usage:
 
 DesentSearchIterator finder(root);
 
