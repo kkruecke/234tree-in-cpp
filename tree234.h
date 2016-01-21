@@ -142,7 +142,7 @@ template<typename K> class Tree234 {
      Tree234& operator=(Tree234&& lhs) noexcept;    // move assignment
 
      Tree234(std::initializer_list<K> list) noexcept; 
-     Tree234(std::vector<K> vec) noexcept; 
+     Tree234(const std::vector<K>& vec) noexcept; 
 
     ~Tree234(); 
 
@@ -243,7 +243,7 @@ template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noe
     }
 }
 
-template<typename K> inline Tree234<K>::Tree234(std::vector<K> vec) noexcept : root(nullptr) 
+template<typename K> inline Tree234<K>::Tree234(const std::vector<K>& vec) noexcept : root(nullptr) 
 {
     for (K& x: vec) { // simply call insert(x)
           insert(x);
