@@ -1023,7 +1023,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 {
    Node234 *next = nullptr;
    Node234 *found_node = nullptr;
-   int found_index;
+   int key_index;
 
    /* Search, looking for key, converting 2-nodes to 3- or 4-nodes as encountered */
 
@@ -1037,11 +1037,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
             // convert 2-node into 3- or 4-node 
             current = convertTwoNode(current); 
+            continue;
       
-       } else if (current->NodeDescentSearch(key, found_index, next)) { // ...search for item in current node. 
+       } else if (current->NodeDescentSearch(key, key_index, next)) { // ...search for item in current node. 
 
-              found_node = current;
-              break; // we found it.  
+            found_node = current;
+            break; // we found it.  
 
        } else {
           // ... If not found, continue to descend. 
@@ -1050,19 +1051,19 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     }
 
     // Invariant checking: this should never happen. 
-    if (found_index + 1 > found_node->totalItems) {
+    if (key_index + 1 > found_node->totalItems) {
 
          throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K?::remove(Key k, Node234 *current"));
     }
 
-    // using found_index and node type, get the child pointer to follow in the search for the in-order
+    // using key_index and node type, get the child pointer to follow in the search for the in-order
     // successor 
     Node234 *in_order_successor;
     
-    if (!found_node->isLeaf()) {// If key found in an internal node, search for in order successor. 
-    
-         // The next largest item with be the smallest item, the left most left node, in the subtree rooted at
-         // found_node->children[found_index + 1].
+    if (!found_node->isLeaf()) {// The key is in an internal node, search for its in order successor, 
+            
+         // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
+         // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
          Node234 *prospective_in_order_successor = found_node->children[found_index + 1].get(); 
         
          /* 
@@ -1126,7 +1127,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
              } 
          }
 
-    } else { // else we are at a leaf and the in_order_successor is in the same node.
+    } else { // else we are at a leaf and the in_order_successor is in the same node (and we know that it is not a two node, as all two nodes encountered
+             // where convert to 3- or 4-nodes.
 
          in_order_successor = found_node;
     }
@@ -1137,7 +1139,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     // First, check if found_node is internal node
     if (!found_node->isLeaf() && found_node != in_order_successor) { // <-- the found_node may be the only node
 
-	    found_node->keys[found_index] = in_order_successor->removeKey(0);  // <-- wrong
+	    found_node->keys[found_index] = in_order_successor->removeKey(0);  // <-- wrong. TODO: Why did I make this comment?
 
     } else if (found_index < found_node->totalItems) { 
 
