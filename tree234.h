@@ -1235,7 +1235,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
         }
 
    } else { // it has a 3- or 4-node sibling.
-
+        // TODO: Don't I know from if-tests above whether a right or left rotation is to be done?   
         convertedNode = doRotation(parent, node2_index, sibling_index);
    }
    
