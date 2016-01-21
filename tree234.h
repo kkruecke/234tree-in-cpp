@@ -902,24 +902,25 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
     // if this is the root, then root was the pnode in all the code above. It will now become the first child a new root 2-node.
     if(pnode == root.get()) { 
 
-        /* make new root two node using about-to-be-prior roots's middle value itemB */  
-        Node234 *prior_root = root.release(); // This sets unique_ptr<Node234> to zero, so it won't be deleted when the move occurs below? 
+       /* We will now create a new root unique_ptr<Node234> that is a two node using the about-to-be-former roots's middle value itemB from above. */  
+        
+        root.release(); // This sets the stored pointer in unique_ptr<Node234> to nullptr. Again: pnode below is the about-to-be-former raw root pointer.
 
        /*
-        * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we must first call release(); 
-        * otherwise, node, which is root, the soon-to-be prior root, will be deleted. 
+        * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we first had to call release() above; 
+        * otherwise, pnode, the soon-to-be prior root, would have been deleted. 
         */
-      
         root = std::move(std::make_unique<Node234>(itemB)); 
          
-        /* make new root two node using node's middle value, which we make root's left-most child */  
+        /* make former root, whose raw pointer is pnode, the left-most child */  
         root->children[0] = std::move(std::unique_ptr<Node234>{pnode}); 
+
         root->children[0]->parent = root.get(); 
         
         root->children[1] = std::move(newRight); 
         root->children[1]->parent = root.get(); 
 
-    }  else {       
+    }  else { // pnode was not root, so we insert itemB into parent.
 
         Node234 *parent = pnode->getParent(); 
     
@@ -927,14 +928,14 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
     
         int last_index = parent->totalItems - 1;
     
-        // ...move parent's connections right, starting from its last child index and stopping just before insert_index.
+        // ...move its parent's connections right, starting from its last child index and stopping just before insert_index.
         for(auto i = last_index; i > insert_index; i--)  {
     
             parent->connectChild(i + 1, parent->children[i]);       
         }
     
         /* 
-         * ...and make newRight the 
+         * ...and add the newRight child 
          */ 
     
         parent->connectChild(insert_index + 1,  newRight);
