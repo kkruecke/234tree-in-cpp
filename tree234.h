@@ -53,8 +53,8 @@ template<typename K> class Tree234 {
        constexpr Node234 *getParent() noexcept; 
 
        /* 
-        * Returns true if key is found in node and sets index so this->keys[index] == key
-        * Returns false if key is if not found; sets next to the next in-order child if key not found.
+        * Returns true if key is found in node and sets index so pNode->keys[index] == key
+        * Returns false if key is if not found, and sets next to the next in-order child.
         */
        bool NodeDescentSearch(K key, int& index, Node234 *&next) noexcept;
 
@@ -81,6 +81,9 @@ template<typename K> class Tree234 {
      public:
          
        Node234() noexcept;
+
+       //Node234(Node234&& n);
+         
        Node234(K small) noexcept;
        Node234(K small, K large) noexcept;
        Node234(K small, K middle, K large) noexcept;  
@@ -90,7 +93,6 @@ template<typename K> class Tree234 {
        constexpr int getChildCount() const noexcept;
 
        bool findKey(K key, int& index) const noexcept;
-       constexpr bool isFull() const  noexcept;
        constexpr bool isLeaf() const noexcept; 
        constexpr bool isTwoNode() const noexcept;
        constexpr bool isThreeNode() const noexcept;
@@ -660,25 +662,24 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
 
 template<typename K> inline std::unique_ptr<typename Tree234<K>::Node234> Tree234<K>::Node234::disconnectChild(int childIndex) noexcept
 {
-  std::unique_ptr<Node234> node = std::move(children[childIndex] ); // invokes move assignment.
+  std::unique_ptr<Node234> node = std::move(children[childIndex] ); // invokes unique_ptr<Node234> move assignment.
 
   // shift children (whose last 0-based index is totalItems) left to overwrite removed child i.
   for(auto i = childIndex; i < totalItems; ++i) {
 
-       children[i] = std::move(children[i + 1]); // shift remaining children to the left. Calls operator=(Node234&&)
+       children[i] = std::move(children[i + 1]); // shift remaining children to the left. Calls unique_ptr<Node234>::operator=(unique_ptr<Node234>&&)
   } 
 
-  return node; // invokes move constructor since node is an rvalue.
+  return node; // invokes unique_ptr<Node234> move constructor since node is an rvalue.
 }
 /*
- * preconditions: node is not full, not a four node (full), and key is not already in node. It may or may not
+ * Preconditions: node is not full, not a four node, and key is not present in node, which may or may not
  * be a leaf node.  Shifts keys in node as needed so that key will be inserted in sorted position. Returns index
  * of inserted key.
  */
 
 template<typename K> inline int  Tree234<K>::Node234::insertKey(K key)  noexcept
 { 
-    
   // start on right, examine items
   for(auto i = totalItems - 1; i >= 0 ; --i) {
 
@@ -713,11 +714,6 @@ template<typename K> inline K Tree234<K>::Node234::removeKey(int index) noexcept
   totalItems--;
 
   return key;
-}
-
-template<typename K> inline constexpr  bool Tree234<K>::Node234::isFull() const  noexcept
-{ 
-   return totalItems == MAX_KEYS;
 }
 
 template<typename K> inline constexpr typename Tree234<K>::Node234 * Tree234<K>::Node234::getParent()   noexcept
@@ -808,11 +804,11 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
  */
 template<typename K> void Tree234<K>::insert(K key) noexcept
 {
-    if (root == nullptr) {
+   if (root == nullptr) {
            
-       root = std::make_unique<Node234>(key); 
-       return; 
-    } 
+      root = std::make_unique<Node234>(key); 
+      return; 
+   } 
 
    Node234 *current = root.get();
 
@@ -820,7 +816,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
 
    while(true) {
        
-       if(current->isFull()) {// if four node encountered, split it, moving a value up to parent.
+       if(current->isFourNode()) {// if four node encountered, split it, moving a value up to parent.
 
             split(current); 
       
@@ -860,13 +856,13 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
 /* 
  *  Split pseudocode: 
  *  
- *  Upon encountering a full node (searching for a place to insert…):
+ *  Upon encountering a four node: split it into a 2-node
  *  
  *  1. We move the largest key into a newly allocated 2-node
- *  2. We convert *pnode into a 2-node, holding its smallest key, by setting totalItems to 1. 
+ *  2. We convert pnode into a 2-node, holding its smallest key, by setting totalItems to 1. 
  *  3. We move the middle key up to the parent( which we know is not a 4-node; else it too would have been split)
  *  4. The two left-most children of the former 4-node become the left and right children of the 2-node holding the smallest key.
- *  5. The two right-most children of the former 4-node are move to become the left and right children of the 2-node holding the largest key.
+ *  5. The two right-most children of the former 4-node are moved to become the left and right children of the 2-node holding the largest key.
  *  6. Insert new data item into the original leaf node.
  *  
  */ 
@@ -877,7 +873,7 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
     K itemC = pnode->keys[2];
     K itemB = pnode->keys[1]; 
     
-    pnode->totalItems = 1; // This effective removes all but the smallest key from node.
+    pnode->totalItems = 1; // This effectively removes all but the smallest key from node.
     
     std::unique_ptr<Node234> newRight{std::make_unique<Node234>(itemC) }; // Move largest key to what will be the new right child of split node.
 
@@ -903,16 +899,16 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
     /* node's left and right children will be the two left most children of the node being split. 
      * but first set node's two rightmost children to nullptr */
 
-    // if this is the root,
+    // if this is the root, then root was the pnode in all the code above. It will now become the first child a new root 2-node.
     if(pnode == root.get()) { 
 
-        /* make new root two node using node's middle value */  
-        
+        /* make new root two node using about-to-be-prior roots's middle value itemB */  
+        Node234 *prior_root = root.release(); // This sets unique_ptr<Node234> to zero, so it won't be deleted when the move occurs below? 
+
        /*
         * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we must first call release(); 
         * otherwise, node, which is root, the soon-to-be prior root, will be deleted. 
-        */ 
-        Node234 *prior_root = root.release(); // This sets root to zero.
+        */
       
         root = std::move(std::make_unique<Node234>(itemB)); 
          
@@ -1245,9 +1241,9 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    return convertedNode;
 }
 /*
- * precondition: node is a 2-node. Its children are both 2-nodes.
+ * precondition: Parent node is a 2-node, and its two children are also both 2-nodes.
  * output: 4-node resulting from fusing of the two 2-nodes. 
- * pseudo code: 
+ * Pseudo code: 
  * 1. Absorbs its children's keys as its own. 
  * 2. Makes its grandchildren its children and deletes its former, now orphaned child nodes.
  */
@@ -1262,8 +1258,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
 
   totalItems = 3;
   
-  std::unique_ptr<Node234> leftOrphan = std::move(children[0]); // so we can delete them later
-  std::unique_ptr<Node234> rightOrphan = std::move(children[1]); // so we can delete them later
+  std::unique_ptr<Node234> leftOrphan = std::move(children[0]); 
+  std::unique_ptr<Node234> rightOrphan = std::move(children[1]); 
     
   // make grandchildren the children.
   connectChild(0, leftOrphan->children[0]); // connectChild() will also reset parent pointer of right parameter.
@@ -1273,7 +1269,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
     
   return this;  
   
-}// <-- automatic deletion of leftOrphan and rightOrphan because they are managed unique_ptr<Node234> pointers
+}// <-- leftOrphan and rightOrphan are automatically deleted because they are unique_ptr<Node234> pointers
 /*
  * preconditions:
  * 1. sibling_id is a 3- or 4-node of parent. 

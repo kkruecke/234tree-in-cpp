@@ -1,14 +1,14 @@
-Better document 
+1. Do I need to add or delete move ctor and move assignment to Node234 class? Some question for copy ctor and copy assignment.
+
+2. The code for
 
  template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
-so the strategy of converting 2-nodes to 3- or 4-nodes during descent is obvious. 
-
-The deletion code looks messy and confused, especially looking for the inorder successor.
+code looks messy and confused, especially looking for the inorder successor.
 Consider a tree descend_iterator class to use in the implementation, and use it, say, for searching for a hit, etc?
 
-See key-descent-iterator.h
 
+3. See key-descent-iterator.h. Usage:
 
 DesentSearchIterator finder(root);
 
@@ -19,4 +19,4 @@ do {
       
 } while (finder->next() != nullptr && !finder->eof());
 
-    
+Any need for it?    
