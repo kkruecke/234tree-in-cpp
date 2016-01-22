@@ -14,10 +14,20 @@ template<typename T> class Tree234;
 template<typename K> class Node234; 
 
 class DebugPrinter; 
-/*
- * See www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
- * and http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
- for pseudo code
+
+/* 
+  2 3 4 implementation discussions and pseudo code links:
+
+   Main link for remove() code: 
+  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
+
+  Other links:
+  http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
+  http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
+  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
+  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
+  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+
  */
 
 template<typename K> class Tree234 {
@@ -1156,7 +1166,18 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     return true;  
 }
 */
-// new prospective version
+
+/*
+ New prospective version. Consult all design/pseudo code URLS listed throughout this file:
+
+  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
+  http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
+  http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
+  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
+  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
+  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+ */
+
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
    Node234 *next = nullptr;
@@ -1173,13 +1194,13 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
        } else if (current != root.get() && current->isTwoNode()) {
 
-            // convert 2-node into 3- or 4-node 
-            current = convertTwoNode(current); 
+            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
+            current = convertTwoNode(current); // ..and resume the key search with the now converted node.
             continue;
       
        } else if (current->NodeDescentSearch(key, key_index, next)) { // ...search for item in current node. 
 
-            found_node = current;
+            found_node = current; 
             break; // we found it.  
 
        } else {
@@ -1188,17 +1209,22 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
        }
     }
    
-  if (found_node == nullptr) return false;
+  if (found_node == nullptr) return false; // Is this test necessary? Can this ever happen?
 
    
    if (!found_node->isLeaf()) {// The key is in an internal node, search for its in order successor, 
-            
-          Node234 *pSuccessor = findInorderSuccessorNode(found_node, key_index);
-   } else {
 
-     // swap key with successor. Remove key now in successor slot.
+          // Have findInorderSuccessor code convertTwoNodes as it descends.              
+          Node234 *pSuccessor = findInorderSuccessorNode(found_node, key_index);
+
+   } else { // We are at leaf, and we know it is not a two-node
+
+     // Place in-order successor in key_index, shifting keys as necessary, and remove value in key_index by reducing totalItems by one.
+     // Q: Is this exactyly what we will do inside the if-test above when it succeeds?
 
    }
+
+   return true;
 }
 /*
  * input preconditions: node is 2-node.

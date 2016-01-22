@@ -1019,6 +1019,7 @@ template<typename K> bool Tree234<K>::remove(K key)
 
 // TODO: Can this be simplified. It is quite convoluted because side effects of other member functions need to be checked, and this is done in way
 // that is not very readable. There are lots of checks, like that of checking the node's keys and setting lots of flags to track these checks.
+// See new-tree234.h for preliminary start of new verions of this method. 
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
    Node234 *next = nullptr;
