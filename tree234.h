@@ -120,8 +120,6 @@ template<typename K> class Tree234 {
     // These methods are called during remove(K key)
     bool remove(K key, Node234 *location); 
 
-    // TODO: Change code to use either "const unique_ptr<Node234>&" or "unique_ptr<Node234>&". But we can't return a reference to a local object.
-    // Which of these method's return value is actually used by the client code?
     // Convert two-node to three- or four-node
     Node234 *convertTwoNode(Node234 *node) noexcept;
 
