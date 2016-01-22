@@ -17,7 +17,7 @@ class DebugPrinter;
 /*
  * See www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
  * and http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
- for pseudo code
+ * for high level overview of the implementation. 
  */
 
 template<typename K> class Tree234 {
@@ -40,7 +40,7 @@ template<typename K> class Tree234 {
 
        int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
 
-       std::array<K, 3> keys;
+       std::array<K, 3> keys; // in static storage not the heap.
 
        /*
         * For 2-nodes, children[0] is left pointer and children[1] is right pointer.
@@ -120,6 +120,8 @@ template<typename K> class Tree234 {
     // These methods are called during remove(K key)
     bool remove(K key, Node234 *location); 
 
+    // TODO: Change code to use either "const unique_ptr<Node234>&" or "unique_ptr<Node234>&". But we can't return a reference to a local object.
+    // Which of these method's return value is actually used by the client code?
     // Convert two-node to three- or four-node
     Node234 *convertTwoNode(Node234 *node) noexcept;
 
@@ -1449,8 +1451,6 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
       p2node->connectChild(2, psibling->children[0]);  
       
   } // <-- automatic deletion of psibling
-
-  //delete psibling; // delete orphaned sibling. NOW NOT needed due to unique_ptr
 
   return p2node;
 } 

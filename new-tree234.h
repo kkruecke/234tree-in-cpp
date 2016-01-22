@@ -1187,36 +1187,18 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
            current = next; 
        }
     }
+   
+  if (found_node == nullptr) return false;
 
-    // Invariant checking: this should never happen. 
-    if (key_index + 1 > found_node->totalItems) {
-
-         throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K?::remove(Key k, Node234 *current"));
-    }
-    
-    if (!found_node->isLeaf()) {// The key is in an internal node, search for its in order successor, 
+   
+   if (!found_node->isLeaf()) {// The key is in an internal node, search for its in order successor, 
             
-         // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
-         // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
-         Node234 *psubtree = found_node->children[found_index + 1].get(); 
-        
-         /* 
-          * Traverse to left most leaf node of subtree.
-          *  
-          *  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down
-          *  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
-          *  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
-          */ 
+          Node234 *pSuccessor = findInorderSuccessorNode(found_node, key_index);
+   } else {
 
-         // TODO: work from pseudo code.
-         while(true) {
+     // swap key with successor. Remove key now in successor slot.
 
-            if (psubtree->isTwoNode())  {
-
-                psubtree = convertTwoNode(psubtree);  
-            } 
-
-         } 
+   }
 }
 /*
  * input preconditions: node is 2-node.

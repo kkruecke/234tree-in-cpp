@@ -1,4 +1,5 @@
-1. Do I need to add or delete move ctor and move assignment to Node234 class? Some question for copy ctor and copy assignment.
+1. Do I need to add or delete move ctor and move assignment to Node234 class? No, the don't handle any resources. 
+2. Try to remove the use of raw Node234 pointers as much as possible.
 
 2. The code for
 
