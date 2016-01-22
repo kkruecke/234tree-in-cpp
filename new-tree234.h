@@ -1075,7 +1075,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
     // using key_index and node type, get the child pointer to follow in the search for the in-order
     // successor 
-    Node234 //in_order_successor;
+    Node234 *in_order_successor;
     
     if (!found_node->isLeaf()) {// The key is in an internal node, search for its in order successor, 
             
@@ -1085,8 +1085,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
         
          // 
           // Traverse down the left-most branch until we find a leaf.
-          //  
-          //  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down
+          //  TODO: The comment below seems wrong because found_node will always be a 3- or 4-node because the search for the key is only done
+          //  after any 2-nodes have been converted.
+          //  Note: if prospective in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down
           //  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
           //  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
           ///
@@ -1237,9 +1238,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 }
 /*
  * Find in order successor for internal node at pfoundNode in key_index.
- * Preconditions: At least for now, pfound_node is an internal node. 
- * 
- * 
+ * Preconditions: pfound_node is an internal node that is always a 3- or 4-node never a 2-node because the search for the key (done in remove(K key, Node234 *)
+ * is only done after any 2-node have been converted to 3- or 4-nodes.
  * 
  * Promises: To find in order successor and convert all 2-nodes encountered in the process to 3- or 4-nodes.
  * 
@@ -1256,7 +1256,7 @@ template<typename K> Tree234<K>::Node234 *Tree234<K>::findInorderSuccessorNode(N
   // 
   // Traverse down the left-most branch until we find a leaf.
   //  
-  //  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down
+  //  Note: if we encounter a 2-node, the key (in found_node->keys[found_index]) may get moved down
   //  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
   //  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
   ///
