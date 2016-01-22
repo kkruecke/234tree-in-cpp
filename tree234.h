@@ -245,7 +245,7 @@ template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noe
 
 template<typename K> inline Tree234<K>::Tree234(const std::vector<K>& vec) noexcept : root(nullptr) 
 {
-    for (K& x: vec) { // simply call insert(x)
+    for (const K& x: vec) { // simply call insert(x)
           insert(x);
     }
 }
@@ -1064,7 +1064,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
             
          // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
          // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
-         Node234 *prospective_in_order_successor = found_node->children[found_index + 1].get(); 
+         Node234 *prospective_in_order_successor = found_node->children[key_index + 1].get(); 
         
          /* 
           * Traverse down the left-most branch until we find a leaf.
@@ -1088,7 +1088,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                    if (convertedNode == found_node) { // fuseWithChildren() was called. This only happens when leaves are fused with parent.
                                                       // TODO: How do I know fuseWithChildren() was called? 
                              
-                         found_node->findKey(key, found_index);
+                         found_node->findKey(key, key_index);
 
                          if (found_node->isLeaf()) { // This should always be true...
 
@@ -1097,13 +1097,13 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
                          } else { //..but this is extra insurance.
 
-                             prospective_in_order_successor = found_node->children[found_index + 1].get();   
+                             prospective_in_order_successor = found_node->children[key_index + 1].get();   
                          }
 
                     /*
                      * else Check if key moved.
 		     */
-                   } else if (!check_if_key_moved || (found_index < found_node->totalItems && found_node->keys[found_index] == key) )  { 
+                   } else if (!check_if_key_moved || (key_index < found_node->totalItems && found_node->keys[key_index] == key) )  { 
 
                         // We no longer need check if the key moved to 
                        check_if_key_moved  = false;
@@ -1116,7 +1116,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                    } else if ( convertedNode->findKey(key, index) )  { /* It is either in the converted node ...
                                                                                  ... or in its parent, found_node. */
                         found_node = convertedNode;
-                        found_index = index;
+                        key_index = index;
                         prospective_in_order_successor = convertedNode->children[index + 1].get(); // root of subtree with next largest key 
                    }         
 
@@ -1139,13 +1139,13 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     // First, check if found_node is internal node
     if (!found_node->isLeaf() && found_node != in_order_successor) { // <-- the found_node may be the only node
 
-	    found_node->keys[found_index] = in_order_successor->removeKey(0);  // <-- wrong. TODO: Why did I make this comment?
+	    found_node->keys[key_index] = in_order_successor->removeKey(0);  // <-- wrong. TODO: Why did I make this comment?
 
-    } else if (found_index < found_node->totalItems) { 
+    } else if (key_index < found_node->totalItems) { 
 
             // The in-order in_order_successor is in same leaf node, so simply remove it, which will also overwrite its position by
             // shifting all keys to right of it one position left.
-            in_order_successor->removeKey(found_index);
+            in_order_successor->removeKey(key_index);
 
             /* 
              * Note: The line above is equivalent to doing:

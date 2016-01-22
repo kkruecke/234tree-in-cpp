@@ -45,6 +45,7 @@ template<class K> inline std::ostream& DebugPrinter::operator()(const K& key, in
     } 
     
     std::ostringstream oss;
+    
     std::string strLeaf = (current->isLeaf()) ? " <-- is Leaf " : "";
 
     strLeaf += std::string("\n");
