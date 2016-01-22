@@ -1238,8 +1238,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 }
 /*
  * Find in order successor for internal node at pfoundNode in key_index.
- * Preconditions: pfound_node is an internal node that is always a 3- or 4-node never a 2-node because the search for the key (done in remove(K key, Node234 *)
- * is only done after any 2-node have been converted to 3- or 4-nodes.
+ * Preconditions: pfound_node is an internal node that is always a 3- or 4-node never a 2-node because the actual key search (done in remove(K key, Node234 *)
+ * occurs only done after any 2-node have been converted to 3- or 4-nodes. 
  * 
  * Promises: To find in order successor and convert all 2-nodes encountered in the process to 3- or 4-nodes.
  * 
@@ -1256,21 +1256,22 @@ template<typename K> Tree234<K>::Node234 *Tree234<K>::findInorderSuccessorNode(N
   // 
   // Traverse down the left-most branch until we find a leaf.
   //  
-  //  Note: if we encounter a 2-node, the key (in found_node->keys[found_index]) may get moved down
+  //  Note: if we encounter a 2-node, the key (in pfound_node->keys[found_index]) may get moved down
   //  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
   //  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
-  ///
+  //  TODO: Think of a example of the above comment (of the key moving). 
   
   while (!current->isLeaf()) {
 
-      if (current->isTwoNode()) { // TODO: Make a nice sensible loop that finds the left most leaf of the subtree--right?
+      if (current->isTwoNode()) { 
 
           current = convertTwoNode(current);
-      }
 
-      current = next in left most subtree.
+      } else {
+
+          current = current->children[0];  
+      } 
   }
-
 }
 /*
  * input preconditions: node is 2-node.
