@@ -33,7 +33,7 @@ class DebugPrinter;
 
 template<typename K> class Tree234 {
     
-  protected:
+  private:
    class Node234 { // nested node class
        
        friend class Tree234<K>;             
@@ -88,7 +88,11 @@ template<typename K> class Tree234 {
         * Merges the 2-node children of a parent 2-node into the parent, making a 4-node. 
         */
        Node234 *fuseWithChildren() noexcept; 
-       
+
+       /*
+        * Find in order successor for internal node at pfoundNode in key_index.
+        */
+       Node234 *findInorderSuccessorNode(Node234 *pfoundNode, key_index); 
      public:
          
        Node234() noexcept;
@@ -1183,7 +1187,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
   http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
   http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  */
-
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
    Node234 *next = nullptr;
@@ -1231,6 +1234,35 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
    }
 
    return true;
+}
+/*
+ * Find in order successor for internal node at pfoundNode in key_index.
+ */
+template<typename K> Tree234<K>::Node234 *Tree234<K>::findInorderSuccessorNode(Node234 *pfound_node, key_index)
+{
+
+  // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
+  // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
+  Node234 *current = pfound_node->children[key_index + 1].get(); 
+ 
+  // 
+  // Traverse down the left-most branch until we find a leaf.
+  //  
+  //  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down
+  //  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
+  //  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
+  ///
+  
+  while (!current->isLeaf()) {
+
+      if (current->isTwoNode()) { // TODO: Make a nice sensible loop that finds the left most leaf of the subtree--right?
+
+          current = convertTwoNode(current);
+      }
+
+      current = next in left most subtree.
+  }
+
 }
 /*
  * input preconditions: node is 2-node.
