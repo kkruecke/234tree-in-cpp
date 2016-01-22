@@ -1237,6 +1237,14 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 }
 /*
  * Find in order successor for internal node at pfoundNode in key_index.
+ * Preconditions: At least for now, pfound_node is an internal node. 
+ * 
+ * 
+ * 
+ * Promises: To find in order successor and convert all 2-nodes encountered in the process to 3- or 4-nodes.
+ * 
+ * 
+ * 
  */
 template<typename K> Tree234<K>::Node234 *Tree234<K>::findInorderSuccessorNode(Node234 *pfound_node, key_index)
 {
