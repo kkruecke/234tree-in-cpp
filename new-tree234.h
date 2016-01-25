@@ -1311,8 +1311,12 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    int parentKeyTotal = parent->totalItems;
    int parentChildrenTotal = parentKeyTotal + 1;
    
-   // First, we find the index of the 2-node such that parent->children[node2_index] == node, by comparing node's key to its
-   // parent's keys.
+   /* First, we find the index of the 2-node such that
+   
+         parent->children[node2_index] == node
+   
+      by comparing node's key to its parent's keys. */
+
    int node2_index = 0;
    
    for (; node2_index < parentKeyTotal; ++node2_index) {
@@ -1328,6 +1332,9 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    // We first determine is we can borrow or "steal" a key from a sibling. This is a rotation. If we cannot, then both siblings have one key and we
    // merge both siblings with a key from the parent to form a four node.
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
+   // TODO: The code in http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf and  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+   // give arbitrary preference to the left sibling. Change this code accordingly. 
+
    bool has3or4NodeSibling = false;
    
    int sibling_index;

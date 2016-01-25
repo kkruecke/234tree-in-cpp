@@ -1054,7 +1054,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     // Invariant checking: this should never happen. 
     if (key_index + 1 > found_node->totalItems) {
 
-         throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K?::remove(Key k, Node234 *current"));
+         throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K::remove(Key k, Node234 *current"));
     }
 
     // using key_index and node type, get the child pointer to follow in the search for the in-order

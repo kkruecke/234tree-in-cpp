@@ -34,8 +34,9 @@ TODOES/Thoughts
 ===============
 
 1. Q: Are doRotation() and fuseSiblings() identical code? 
-   A: Work from high level pseudo code and working example here http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf. Also consult the working pseudo code and
-   example here http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf--but change the example to use an in-order successor rather than predecessor.
+
+A: Work from high level pseudo code and working example here http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf. Also consult the working pseudo code and
+example here http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf--but change the example to use an in-order successor rather than predecessor.
 
 2. Q: Do I need to add or delete move ctor and move assignment to Node234 class? 
    A: No, the don't handle any resources. 
