@@ -18,17 +18,32 @@ class DebugPrinter;
 /* 
   2 3 4 implementation discussions and pseudo code links:
 
-  Main link for remove() code implementation: 
-  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
+This link has an excellent working example. The explanation is thorough and clear. It gives several example of deleting elements. It uses the in-order predecessor
+rather than the successor when deleting.
 
-  Other 2 3 4 tree design links:
-
-  http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
-  http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
-  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
-  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
   http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
 
+This link has a excellent working example and discusses how delete works, using descent restructuring. It uses the swap-with-successor for deletion of internal keys.
+It contains a working tree example. It shows that when converting 2-nodes, we first check if we can rotation else we do a merge (since both siblings are 2-nodes).
+
+  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
+
+This link has excellent pseudo code for both insertion and deletion with working example. But it does not restructure the key on the way down instead from the
+leaf upward.
+
+  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
+
+This link has a more high level pseudo code. 
+
+  http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
+
+This link discusses both 2 3 trees and 2 3 4 trees. It has examples and pseudo code, but the deletion logic points out that the root only can be a two node--I think?
+
+  http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
+
+This link has actual **Java implementation code** for insertion and for 2 3 4 tree interface and node interface, including members.
+
+  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  */
 
 template<typename K> class Tree234 {
@@ -1052,7 +1067,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
        } else if (current != root.get() && current->isTwoNode()) {
 
-            // convert 2-node into 3- or 4-node 
+            // convert all 2-nodes encountered into 3- or 4-node 
             current = convertTwoNode(current); 
             continue;
       
@@ -1178,7 +1193,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 }
 */
 
-/*
+/* 
+ This is the remove code for the case when the root is not a leaf node.
+
  New prospective version. Consult all design/pseudo code URLS listed throughout this file:
 
   www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
@@ -1194,7 +1211,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
    Node234 *found_node = nullptr;
    int key_index;
 
-   /* Search, looking for key, converting 2-nodes to 3- or 4-nodes as encountered */
+   /* Search, looking for key, converting 2-nodes encountered to 3- or 4-nodes. After the conversion, the node is searched for the key. */
 
    while(true) {
 
@@ -1204,7 +1221,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
        } else if (current != root.get() && current->isTwoNode()) {
 
-            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
+            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... TODO: why skip root? 
             current = convertTwoNode(current); // ..and resume the key search with the now converted node.
             continue;
       
@@ -1216,21 +1233,20 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
        } else {
           // ... If not found, continue to descend. 
            current = next; 
+           continue;
        }
     }
    
-  if (found_node == nullptr) return false; // Is this test necessary? Can this ever happen?
-
+  if (found_node == nullptr) return false; // Not in tree.
    
-   if (!found_node->isLeaf()) {// The key is in an internal node, search for its in order successor, 
+  if (!found_node->isLeaf()) {// The key is in an internal node, search for its in order successor, 
 
           // Have findInorderSuccessor code convertTwoNodes as it descends.              
           Node234 *pSuccessor = findInorderSuccessorNode(found_node, key_index);
 
    } else { // We are at leaf, and we know it is not a two-node
 
-     // Place in-order successor in key_index, shifting keys as necessary, and remove value in key_index by reducing totalItems by one.
-     // Q: Is this exactyly what we will do inside the if-test above when it succeeds?
+     // TODO: Simply delete the items from leaf and replace with its in-order successor
 
    }
 
@@ -1257,9 +1273,8 @@ template<typename K> Tree234<K>::Node234 *Tree234<K>::findInorderSuccessorNode(N
   // Traverse down the left-most branch until we find a leaf.
   //  
   //  Note: if we encounter a 2-node, the key (in pfound_node->keys[found_index]) may get moved down
-  //  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
-  //  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
-  //  TODO: Think of a example of the above comment (of the key moving). 
+  //  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(). Might the also
+  //  shift within found_node?
   
   while (!current->isLeaf()) {
 
@@ -1310,7 +1325,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
             break;                               
        } 
    }
-
+   // We first determine is we can borrow or "steal" a key from a sibling. This is a rotation. If we cannot, then both siblings have one key and we
+   // can merge both siblings with a key from the parent to form a four node.
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
    bool has3or4NodeSibling = false;
    
