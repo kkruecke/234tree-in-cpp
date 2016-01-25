@@ -102,7 +102,7 @@ template<typename K> class Tree234 {
         * Called during remove(K key).
         * Merges the 2-node children of a parent 2-node into the parent, making a 4-node. 
         */
-       Node234 *fuseWithChildren() noexcept; 
+       Node234 *fuseChildrenIntoParent() noexcept; 
 
        /*
         * Find in order successor for internal node at pfoundNode in key_index.
@@ -1104,7 +1104,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
           //  after any 2-nodes have been converted.
           //  Note: if prospective in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down
           //  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
-          //  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
+          //  have shifted within found_node (to keys[1]) if fuseChildrenIntoParent() gets called. 
           ///
          bool check_if_key_moved = true; // TODO: Try to get rid of this flag!!
          
@@ -1118,8 +1118,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
                    int index;
                                   
-                   if (convertedNode == found_node) { // fuseWithChildren() was called. This only happens when leaves are fused with parent.
-                                                      // TODO: How do I know fuseWithChildren() was called? 
+                   if (convertedNode == found_node) { // fuseChildrenIntoParent() was called. This only happens when leaves are fused with parent.
+                                                      // TODO: How do I know fuseChildrenIntoParent() was called? 
                              
                          found_node->findKey(key, key_index);
 
@@ -1326,7 +1326,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
        } 
    }
    // We first determine is we can borrow or "steal" a key from a sibling. This is a rotation. If we cannot, then both siblings have one key and we
-   // can merge both siblings with a key from the parent to form a four node.
+   // merge both siblings with a key from the parent to form a four node.
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
    bool has3or4NodeSibling = false;
    
@@ -1354,14 +1354,14 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
         sibling_index = left_adjacent; 
    }
 
-   if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-nodes...
+   if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-nodes. This does not imply the parent is a 2-node.
 
        // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
        // Check if its parent 2-node (or 3- or 4-node).
        
        if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
          
-	     convertedNode = parent->fuseWithChildren();
+	     convertedNode = parent->fuseChildrenIntoParent();
 
         } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
 
@@ -1377,12 +1377,12 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 }
 /*
  * precondition: Parent node is a 2-node, and its two children are also both 2-nodes.
- * output: 4-node resulting from fusing of the two 2-nodes. 
+ * output: 4-node resulting from fusing of the two child 2-nodes into the parent. 
  * Pseudo code: 
  * 1. Absorbs its children's keys as its own. 
  * 2. Makes its grandchildren its children and deletes its former, now orphaned child nodes.
  */
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWithChildren() noexcept
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseChildrenIntoParent() noexcept
 {
   // move key of 2-node 
   keys[1] = keys[0];
