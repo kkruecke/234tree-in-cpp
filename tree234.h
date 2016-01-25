@@ -960,10 +960,17 @@ template<typename K> bool Tree234<K>::remove(K key)
 
    } else if (root->isLeaf()) { 
 
-         int index;
-         Node234 *next = nullptr; 
+         bool found = false;
+         int index = 0;
 
-         bool found = root->NodeDescentSearch(key, index, next);
+         for (; index < root->getTotalItems(); ++index) {
+
+             if (root->keys[index] == key ) {
+
+ 		found = true;
+                break;
+             } 
+         }
 
          if (found) { 
 

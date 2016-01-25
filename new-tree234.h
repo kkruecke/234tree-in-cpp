@@ -990,16 +990,23 @@ template<typename K> bool Tree234<K>::remove(K key)
 
    } else if (root->isLeaf()) { 
 
-         int index;
-         Node234 //next = nullptr; 
+         bool found = false;
+         int index = 0;
 
-         bool found = root->NodeDescentSearch(key, index, next);
+         for (; index < root->getTotalItems(); ++index) {
+
+             if (root->keys[index] == key ) {
+
+ 		found = true;
+                break;
+             } 
+         }
 
          if (found) { 
 
-           // //
-           // // Remove key from root, when root is a leaf. This will also shift the in-order successor into
-           // // its location.
+           // *
+           // * Remove key from root, when root is a leaf. This will also shift the in-order successor into
+           // * its location.
             
             root->removeKey(index);
 
