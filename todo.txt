@@ -1,3 +1,15 @@
+Implementation links:
+
+  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
+  http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
+  http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
+  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
+  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
+  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+
+TODOES/Thoughts
+===============
+
 1. Do I need to add or delete move ctor and move assignment to Node234 class? No, the don't handle any resources. 
 2. Try to remove the use of raw Node234 pointers as much as possible.
 
