@@ -1298,16 +1298,16 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
         current = current->children[0]; // set current to left most child of the node, 
      }
 
-  } else if (pfound_node->TwoNode()) { // the key is in a leaf node. Convert it if it is a two node.
+  }  else { 
 
-      current = convertTwoNode(pfound_node);
+    // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey() */
+    pfound_node->removeKey(key_index);
+    return true;
+  }
 
-      // TODO: Do I need to check if the key moved again? Can I simply recurse: remove(key, current);
-  }      
-  // We have the item found in pfound_node->keys[key_index] and we have current->keys[0] as in order successor.
-
-  // TODO: Determine if we swap with internal node or simply call removeKey() because pfound_node is a leaf and not a two node. 
-  // current is now at the leaf or the in-order successor, and we know it is not a two-node
+  // We have the item found in pfound_node->keys[key_index], which is an internal node. We have current->keys[0] as in order successor leaf node, and we know
+  // current it is not a leaf node. 
+  // TODO: So we swap items, and then call removeKey
 
 
   return true;
