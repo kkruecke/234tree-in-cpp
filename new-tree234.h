@@ -1021,7 +1021,7 @@ template<typename K> bool Tree234<K>::remove(K key)
   }
 }
 /*
- * This pseudo code is taken from pages 50-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ * Pseudo code is from slides 50-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *
  * Deletion is similar to 2-3 trees: We "swap" the item to be deleted with its in-order successor, which
  * is always in a leaf node. "Swap" means we overwrite the item to be deleted with its in-order successor and then
@@ -1042,186 +1042,17 @@ template<typename K> bool Tree234<K>::remove(K key)
  * See slide 52 at:
  *     www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  * 
- * This technique is also explained and illustrated with several examples at pages 64-66 of
+ * An even more thorough explanationed illustrated with a several working examples is at pages 64-66 of
  *    http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
- *
- * and the link gives an excellent example with a thorough discussion:
- * 
  * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
- *
- */
 
-// TODO: Can this be simplified. It is quite convoluted because side effects of other member functions need to be checked, and this is done in way
-// that is not very readable. There are lots of checks, like that of checking the node's keys and setting lots of flags to track these checks.
-// See new-tree234.h for preliminary start of new verions of this method. 
-/*
-template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
-{
-   Node234 *next = nullptr;
-   Node234 *found_node = nullptr;
-   int key_index;
-
-   // Search, looking for key, converting 2-nodes to 3- or 4-nodes as encountered 
-
-   while(true) {
-
-       if (current == nullptr) {
-              
-            return false;
-
-       } else if (current != root.get() && current->isTwoNode()) {
-
-            // convert 2-node into 3- or 4-node 
-            current = convertTwoNode(current); 
-            continue;
-      
-       } else if (current->NodeDescentSearch(key, key_index, next)) { // ...search for item in current node. 
-
-            found_node = current;
-            break; // we found it.  
-
-       } else {
-          // ... If not found, continue to descend. 
-           current = next; 
-       }
-    }
-
-    // Invariant checking: this should never happen. 
-    if (key_index + 1 > found_node->totalItems) {
-
-         throw std::logic_error(std::string("Bug found: There is a logic error in Tree234<K::remove(Key k, Node234 *current"));
-    }
-
-    // using key_index and node type, get the child pointer to follow in the search for the in-order
-    // successor 
-    Node234 *in_order_successor;
-    
-    if (!found_node->isLeaf()) {// The key is in an internal node, search for its in order successor, 
-            
-         // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
-         // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
-         Node234 *prospective_in_order_successor = found_node->children[key_index + 1].get(); 
-        
-         /// 
-          // Traverse down the left-most branch until we find a leaf.
-          //  
-          //  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down
-          //  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
-          //  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
-          /// 
-         bool check_if_key_moved = true; // TODO: Try to get rid of this flag!!
-         
-         while (prospective_in_order_successor != nullptr) { 
-
-             in_order_successor = prospective_in_order_successor;
-        
-             if (in_order_successor->isTwoNode()) {
-
-                   Node234 *convertedNode = convertTwoNode(in_order_successor);
-
-                   int index;
-                                  
-                   if (convertedNode == found_node) { // fuseWithChildren() was called. This only happens when leaves are fused with parent.
-                                                      // TODO: How do I know fuseWithChildren() was called? 
-                             
-                         found_node->findKey(key, key_index);
-
-                         if (found_node->isLeaf()) { // This should always be true...
-
-                            in_order_successor = found_node;
-                            break;
-
-                         } else { //..but this is extra insurance.
-
-                             prospective_in_order_successor = found_node->children[key_index + 1].get();   
-                         }
-
-                    ///
-                     // else Check if key moved.
-		     ///
-                   } else if (!check_if_key_moved || (key_index < found_node->totalItems && found_node->keys[key_index] == key) )  { 
-
-                        // We no longer need check if the key moved to 
-                       check_if_key_moved  = false;
-                       prospective_in_order_successor = convertedNode->children[0].get();
-                   
-             /// 
-              // If a rotation occurred, the key may have moved to the converted 2-node (now a 3-node). Also, if a fusion of the 2-node
-              // with its adjacent sibling 2-node sibling, together with a parent key, it again may have moved to the converted node.
-              ///      
-                   } else if ( convertedNode->findKey(key, index) )  { // It is either in the converted node ...
-                                                                       //        ... or in its parent, found_node. 
-                        found_node = convertedNode;
-                        key_index = index;
-                        prospective_in_order_successor = convertedNode->children[index + 1].get(); // root of subtree with next largest key 
-                   }         
-
-             } else {
-
-                  check_if_key_moved = false; 
-                  prospective_in_order_successor = in_order_successor->children[0].get(); // it was not converted, so take smallest child.
-             } 
-         }
-
-    } else { // else we are at a leaf and the in_order_successor is in the same node (and we know that it is not a two node, as all two nodes encountered
-             // where convert to 3- or 4-nodes.
-
-         in_order_successor = found_node;
-    }
-    
-    // We are now at the in-order successor leaf node. 
-
-    // Remove in-order successor from leaf and overwrite key to be deleted with it. 
-    // First, check if found_node is internal node
-    if (!found_node->isLeaf() && found_node != in_order_successor) { // <-- the found_node may be the only node
-
-	    found_node->keys[key_index] = in_order_successor->removeKey(0);  // <-- wrong. TODO: Why did I make this comment?
-
-    } else if (key_index < found_node->totalItems) { 
-
-            // The in-order in_order_successor is in same leaf node, so simply remove it, which will also overwrite its position by
-            // shifting all keys to right of it one position left.
-            in_order_successor->removeKey(key_index);
-
-            /* 
-             // Note: The line above is equivalent to doing:
-             //   found_node->keys[found_index] = in_order_successor->keys[found_index + 1];
-             //   found_node->totalItems--;  
-             ///
-    } 
-
-    // Note, we did not need to disconnect a child because we are at a leaf node.
-        
-    return true;  
-}
-*/
-/*  New prospective code for remove...
+ New untested prospective code for remove(K key, Node234 *)
 
  This is the remove code for the case when the root is not a leaf node.
 
-Sources for implementation and pseudo code:
+TODO: 
 
-1. This link has an excellent working example. The explanation is thorough and clear. It gives several example of deleting elements. It uses the in-order predecessor
-rather than the successor when deleting.
-
-  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
-u
-2. This link has a excellent working example and discusses how delete works, using descent restructuring. It uses the swap-with-successor for deletion of internal keys.
-It contains a working tree example. It shows that when converting 2-nodes, we first check if we can rotation else we do a merge (since both siblings are 2-nodes).
-
-  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
-
-TODO: The main issues are:o
-
-1. Determining a technique and algorithm that includes determinig if the key moved as a result of a rotation or merge during the search for the in-order successor
- (when one of the immediate children of the found node is a two node and a rotation of merge occurs and the found key moves). Could a recursive approach be the answer?
-
-2. Determining if there is duplicate code in fuseChildrenWithParent() that is also in the left- and rightRotation code.
-
-
-Key moved test involving pfound_node and key_index: 
-
-   if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys[key_index] != key) { // then key moved
+ Determine if there is duplicate code in fuseChildrenWithParent() that is also in the left- and rightRotation code.
 
  */
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
@@ -1256,7 +1087,10 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
        }
   }
 
-  if (current == nullptr) return false; // key not found.
+  if (current == nullptr) {
+
+       return false; // key not found.
+  }
    
   if (!pfound_node->isLeaf()) {// The key is in an internal node, search for its in order successor, converting any 2-nodes encountered.
 
@@ -1294,26 +1128,27 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
             break;  
         } 
+
         current = current->children[0]; // set current to left most child of the node, 
      }
 
   }  else { 
 
-    // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey() */
-    pfound_node->removeKey(key_index);
-    return true;
-  }
+      // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey() */
+      pfound_node->removeKey(key_index);
+      return true;
+ }
 
   // We have the item found in pfound_node->keys[key_index], which is an internal node. We have current->keys[0] as in order successor leaf node, and we know
-  // current it is not a leaf node. 
-
-  // So we "swap" the in order successor with the key at pfound_node->keys[key_index]
-  // K tmp = pfound_node->keys[key_index];
+  // current it is not a leaf node.  So we "swap" the in order successor and the key at pfound_node->keys[key_index]. 
+  // Note: We don't actually save temporarily save the key to be deleted tmp and then overwrite the former in-order successor with it. Instead we simply delete
+  // the former in-order successor key. 
+  // K tmp = pfound_node->keys[key_index]; See Note above
 
   pfound_node->keys[key_index] = current->keys[0];
-  // current->keys[0] = tmp;
 
-  // Note: We don't actually save tmp and then overwrite the former in-order successor with it. Instead we simply delete the former in-order successor key. 
+  // current->keys[0] = tmp; See Note above.
+
   current->removeKey(0); 
   return true;
 }
