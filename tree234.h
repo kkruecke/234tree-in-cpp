@@ -124,8 +124,6 @@ template<typename K> class Tree234 {
     Node234 *convertTwoNode(Node234 *node) noexcept;
 
     Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id) noexcept;
-    
-    Node234 *doRotation(Node234 *parent, int node2_id, int sibling_id) noexcept;
 
     Node234 *leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
 
@@ -1239,7 +1237,43 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
    } else { // it has a 3- or 4-node sibling.
         // TODO: Don't I know from if-tests above whether a right or left rotation is to be done?   
-        convertedNode = doRotation(parent, node2_index, sibling_index);
+
+      Node234 *psibling = parent->children[sibling_index].get();
+    
+      Node234 *p2node = parent->children[node2_index].get();
+    
+      /* 
+       * First we get the index of the parent's key value such that either 
+       *
+       *   parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
+       *     
+       *  or  
+       *
+       *    parent->children[sibling_id]->keys[0]  <  parent->keys[index] <  parent->children[node2_index]->keys[0]
+       *
+       * by taking the minimum of the indecies.
+       */
+    
+      int parent_key_index = std::min(node2_index, sibling_index); 
+
+      if (node2_index > sibling_index) { /* If sibling is to the left, then
+                                    *
+                                    *  parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
+                                    * 
+                                    * and we do a right rotation
+                                    */ 
+    
+          convertedNode = rightRotation(p2node, psibling, parent, parent_key_index);
+    
+      } else { /* else sibling is to the right and 
+                *    parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
+                * therefore do a left rotation
+  	        */ 
+    
+          convertedNode = leftRotation(p2node, psibling, parent, parent_key_index);
+      }
+
+     //--convertedNode = doRotation(parent, node2_index, sibling_index);
    }
    
    return convertedNode;
@@ -1274,53 +1308,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
   return this;  
   
 }// <-- leftOrphan and rightOrphan are automatically deleted because they are unique_ptr<Node234> pointers
-/*
- * preconditions:
- * 1. sibling_id is a 3- or 4-node of parent. 
- * 2. node2_id is the node to convert from a 2-node to a 3-node
- * Returns:
- * A parent key is stolen and inserted into parent->children[node2_id], making it a 3-node. A key from the sibling replaces
- * the stolen parent key.
- * The siblings orphaned child is adopted by the converted 2- now 3-node. 
- * The converted 2-node is returned.
- */
-template<typename K> inline typename Tree234<K>::Node234 * Tree234<K>::doRotation(Node234 *parent, int node2_id, int sibling_id) noexcept
-{
-  Node234 *psibling = parent->children[sibling_id].get();
 
-  Node234 *p2node = parent->children[node2_id].get();
-
-  /* 
-   * First we get the index of the parent's key value such that either 
-   *
-   *   parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
-   *     
-   *  or  
-   *
-   *    parent->children[sibling_id]->keys[0]  <  parent->keys[index] <  parent->children[node2_index]->keys[0]
-   *
-   * by taking the minimum of the indecies.
-   */
-
-  int parent_key_index = std::min(node2_id, sibling_id); 
-
-  if (node2_id > sibling_id) { /* If sibling is to the left, then
-                                *
-                                *  parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
-                                * 
-                                * and we do a right rotation
-                                */ 
-
-      return rightRotation(p2node, psibling, parent, parent_key_index);
-
-  } else { /* else sibling is to the right and 
-            *    parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
-            * therefore do a left rotation
-  	    */ 
-
-      return leftRotation(p2node, psibling, parent, parent_key_index);
-  }
-}
 /* 
  * Sibling is to the left, therefore: parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
  */
