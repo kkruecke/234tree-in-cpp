@@ -88,16 +88,16 @@ template<typename K> class Tree234 {
        bool NodeDescentSearch(K key, int& index, Node234 *&next) noexcept;
 
        int insertKey(K key) noexcept;
-       
-       void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
-       
-       // Remove key, if found, from node, shifting remaining keys to fill its gap.
-       K removeKey(int index) noexcept;
-
+ 
        /*
         * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
         */  
        std::unique_ptr<Node234> disconnectChild(int child_index) noexcept; 
+      
+       void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
+       
+       // Remove key, if found, from node, shifting remaining keys to fill its gap.
+       K removeKey(int index) noexcept;
 
        void insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept;
 
@@ -620,7 +620,7 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
  */
 template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, std::unique_ptr<Node234>& child)  noexcept
 {
-  children[childIndex] = std::move( child ); // Note: If children[childIndex] currently holds a managed pointer , it will be freed.
+  children[childIndex] = std::move( child ); // Note: If children[childIndex] currently holds a managed unique_ptr<Node234>, it will be released and no longer owned.
   
   if (children[childIndex] != nullptr) { 
 
@@ -1063,7 +1063,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
               
             return false;
 
-       } else if (current != root.get() && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
+       //--} else if (current != root.get() && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
+       } else if (current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode()     
 
             // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... TODO: why skip root? 
             current = convertTwoNode(current); // ..and resume the key search with the now converted node.
@@ -1164,6 +1165,17 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  noexcept
 {                                                                         
    Node234 *convertedNode;
+   
+   // special case root, which has no parent.
+   if (node == root) {
+
+      // Do pseudo code....then implement. Not sure if this is correct.
+      std::unique_ptr<Node234> psibling_left = node->disconnectChild(0); 
+      std::unique_ptr<Node234> psibling_left = node->disconnectChild(1); 
+
+      return node;
+   }
+
    Node234 *parent = node->getParent();
 
    int parentKeyTotal = parent->totalItems;
