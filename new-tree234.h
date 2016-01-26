@@ -990,34 +990,25 @@ template<typename K> bool Tree234<K>::remove(K key)
 
    } else if (root->isLeaf()) { 
 
-         bool found = false;
          int index = 0;
 
          for (; index < root->getTotalItems(); ++index) {
 
              if (root->keys[index] == key ) {
 
- 		found = true;
-                break;
+                root->removeKey(index);
+
+                if (root->totalItems == 0) {
+
+                     root.reset(); // delete root 
+                     root  = nullptr;
+                }  
+
+                return true;
              } 
          }
 
-         if (found) { 
-
-           // *
-           // * Remove key from root, when root is a leaf. This will also shift the in-order successor into
-           // * its location.
-            
-            root->removeKey(index);
-
-            if (root->totalItems == 0) {
-
-                root.reset(); // delete root 
-                root  = nullptr;
-            }  
-         }
- 
-         return found;
+         return false;
 
    } else {
  
@@ -1261,13 +1252,11 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 }
 /*
  * Find in order successor for internal node at pfoundNode in key_index.
- * Preconditions: pfound_node is an internal node that is always a 3- or 4-node never a 2-node because the actual key search (done in remove(K key, Node234 *)
- * occurs only done after any 2-node have been converted to 3- or 4-nodes. 
+ * Preconditions: pfound_node is an internal node that is always a 3- or 4-node never a 2-node because the key search only occurs after any 2-node have 
+ * already been converted to 3- or 4-nodes. 
  * 
  * Promises: To find in order successor and convert all 2-nodes encountered in the process to 3- or 4-nodes.
- * 
- * 
- * 
+ * T
  */
 template<typename K> Tree234<K>::Node234 *Tree234<K>::findInorderSuccessorNode(Node234 *pfound_node, key_index)
 {

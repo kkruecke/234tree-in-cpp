@@ -959,35 +959,27 @@ template<typename K> bool Tree234<K>::remove(K key)
        return false; 
 
    } else if (root->isLeaf()) { 
-
-         bool found = false;
+       
          int index = 0;
 
          for (; index < root->getTotalItems(); ++index) {
 
              if (root->keys[index] == key ) {
+               // * Remove key from root, when root is a leaf. This will also shift the in-order successor into
+               // * its location.
+                root->removeKey(index);
+                              
+                if (root->totalItems == 0) {
 
- 		found = true;
-                break;
+                     root.reset(); // delete root 
+                     root  = nullptr;
+                }  
+
+                return true;
              } 
          }
 
-         if (found) { 
-
-           // *
-           // * Remove key from root, when root is a leaf. This will also shift the in-order successor into
-           // * its location.
-            
-            root->removeKey(index);
-
-            if (root->totalItems == 0) {
-
-                root.reset(); // delete root 
-                root  = nullptr;
-            }  
-         }
- 
-         return found;
+         return false;
 
    } else {
  
