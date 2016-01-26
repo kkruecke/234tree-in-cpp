@@ -1,34 +1,4 @@
-Implementation links:
-
-  2 3 4 implementation discussions and pseudo code links:
-
-This link has an excellent working example. The explanation is thorough and clear. It gives several example of deleting elements. It uses the in-order predecessor
-rather than the successor when deleting.
-
-  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
-
-This link has a excellent working example and discusses how delete works, using descent restructuring. It uses the swap-with-successor for deletion of internal keys.
-It contains a working tree example. It shows that when converting 2-nodes, we first check if we can rotation else we do a merge (since both siblings are 2-nodes).
-
-  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
-
-This link has excellent pseudo code for both insertion and deletion with working example. But it does not restructure the key on the way down instead from the
-leaf upward.
-
-  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
-
-This link has a more high level pseudo code. 
-
-  http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
-
-This link discusses both 2 3 trees and 2 3 4 trees. It has examples and pseudo code, but the deletion logic points out that the root only can be a two node--I think?
-
-  http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
-
-This link has actual **Java implementation code** for insertion and for 2 3 4 tree interface and node interface, including members.
-
-  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
-
+Test new remove(K key, Node234*) code in tree234.h
 
 TODOES/Thoughts
 ===============
