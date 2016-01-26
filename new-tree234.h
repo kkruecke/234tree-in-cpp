@@ -1191,17 +1191,29 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 }
 */
 
-/* 
+/*  New prospective code for remove...
+
  This is the remove code for the case when the root is not a leaf node.
 
- New prospective version. Consult all design/pseudo code URLS listed throughout this file:
+Sources for implementation and pseudo code:
+
+1. This link has an excellent working example. The explanation is thorough and clear. It gives several example of deleting elements. It uses the in-order predecessor
+rather than the successor when deleting.
+
+  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+
+2. This link has a excellent working example and discusses how delete works, using descent restructuring. It uses the swap-with-successor for deletion of internal keys.
+It contains a working tree example. It shows that when converting 2-nodes, we first check if we can rotation else we do a merge (since both siblings are 2-nodes).
 
   www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
-  http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
-  http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
-  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
-  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
-  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+
+TODO: The main issues are:
+
+1. Determining if the key moved as a result of a rotation or merge during the search for the in-order successor, when one of the immediate children of current is
+a 2-node that gets converted to a 3- or 4-node.  
+
+2. Determining if there is duplicate code in fuseChildrenWithParent() that is also in the rotation code.
+
  */
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
