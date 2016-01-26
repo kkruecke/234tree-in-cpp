@@ -1272,13 +1272,20 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
              current = convertTwoNode(current);
 
              // Did key move?
+
              if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys[key_index] != key) { // then key moved
 
-                /* 1. find it again: 
-                  // Double check this:                  
-                  while (pfound_node->NodeDescentSearch(key, key_index, pfound_node) != false && !pfound_node->isLeaf())
-                 */
+                // Technique #1...
+                //
+                // 1. find it again: 
+                //  Double check this:                  
+                //    while (pfound_node->NodeDescentSearch(key, key_index, pfound_node) != false && !pfound_node->isLeaf())
+                //
                 // 2. reset successor search: Node234 *current = pfound_node->children[key_index + 1].get(); 
+                // 
+                // ...or Technique #2
+                // simply recuse: start over but with new initial starting point:
+                // remove(key, pfound_node); // pfound_node is ok--right--since the key may have either shifted (is that right) or moved down to current.
              } 
         } else {
     
