@@ -1271,8 +1271,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     
              current = convertTwoNode(current);
 
-             // Did key move?
-
+             // Did key move as a result of conversion?
              if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys[key_index] != key) { // then key moved
 
                 // Technique #1...
@@ -1284,22 +1283,16 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                 // 2. reset successor search: Node234 *current = pfound_node->children[key_index + 1].get(); 
                 // 
                 // ...or Technique #2
-                // simply recuse: start over but with new initial starting point:
-                // remove(key, pfound_node); // pfound_node is ok--right--since the key may have either shifted (is that right) or moved down to current.
+                // simply recurse, starting with a new initial starting point of pfound_node:
+                //   return remove(key, pfound_node); // pfound_node is ok--right--since the key may have either shifted (is that right) or moved down to current.
+                   return remove(key, pfound_node); // pfound_node is ok--right--since the key may have either shifted (is that right) or moved down to current.
              } 
-        } else {
-    
-             current = current->children[0];  
         } 
-      }
-  }
     
+        current = current->children[0]; // set current to left most child of the node, 
+     }
 
-
-          // Have findInorderSuccessor code convertTwoNodes as it descends.              
-          Node234 *pSuccessor = findInorderSuccessorNode(found_node, key_index);
-
-   } else { // We are at leaf, and we know it is not a two-node
+  } else { // We are at leaf, and we know it is not a two-node
 
      // TODO: Simply delete the items from leaf and replace with its in-order successor
 
