@@ -1217,11 +1217,17 @@ TODO: The main issues are:o
  (when one of the immediate children of the found node is a two node and a rotation of merge occurs and the found key moves). Could a recursive approach be the answer?
 
 2. Determining if there is duplicate code in fuseChildrenWithParent() that is also in the left- and rightRotation code.
+
+
+Key moved test involving pfound_node and key_index: 
+
+   if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys[key_index] != key) { // then key moved
+
  */
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
    Node234 *next = nullptr;
-   Node234 *found_node = nullptr;
+   Node234 *pfound_node = nullptr;
    int key_index;
 
    /* Search, looking for key, converting 2-nodes encountered to 3- or 4-nodes. After the conversion, the node is searched for the key. */
@@ -1240,7 +1246,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
       
        } else if (current->NodeDescentSearch(key, key_index, next)) { // ...search for item in current node. 
 
-            found_node = current; 
+            pfound_node = current; 
             break; // we found it.  
 
        } else {
@@ -1250,9 +1256,38 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
        }
     }
    
-  if (found_node == nullptr) return false; // Not in tree.
+  if (pfound_node == nullptr) return false; // Not in tree.
    
-  if (!found_node->isLeaf()) {// The key is in an internal node, search for its in order successor, 
+  if (!pfound_node->isLeaf()) {// The key is in an internal node, search for its in order successor, 
+
+      // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
+      // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
+
+      Node234 *current = pfound_node->children[key_index + 1].get(); 
+
+      while (!current->isLeaf()) {
+
+        if (current->isTwoNode()) { 
+    
+             current = convertTwoNode(current);
+
+             // Did key move?
+             if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys[key_index] != key) { // then key moved
+
+                /* 1. find it again: 
+                  // Double check this:                  
+                  while (pfound_node->NodeDescentSearch(key, key_index, pfound_node) != false && !pfound_node->isLeaf())
+                 */
+                // 2. reset successor search: Node234 *current = pfound_node->children[key_index + 1].get(); 
+             } 
+        } else {
+    
+             current = current->children[0];  
+        } 
+      }
+  }
+    
+
 
           // Have findInorderSuccessor code convertTwoNodes as it descends.              
           Node234 *pSuccessor = findInorderSuccessorNode(found_node, key_index);
