@@ -1,4 +1,5 @@
-Test new remove(K key, Node234*) code in tree234.h. Much of it seems to work, but there is a bug, too.
+Test new remove(K key, Node234*) code in tree234.h, comparing out-old.txxt and old-new.txt. In the new version 79 disappears from tree after 60 is removed.
+Sounds like it is orphaned.
 
 TODOES/Thoughts
 ===============
