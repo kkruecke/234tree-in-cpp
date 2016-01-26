@@ -1,4 +1,4 @@
-Test new remove(K key, Node234*) code in tree234.h
+Test new remove(K key, Node234*) code in tree234.h. Much of it seems to work, but there is a bug, too.
 
 TODOES/Thoughts
 ===============
