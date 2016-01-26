@@ -1230,15 +1230,15 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
    Node234 *pfound_node = nullptr;
    int key_index;
 
-   /* Search, looking for key, converting 2-nodes encountered to 3- or 4-nodes. After the conversion, the node is searched for the key. */
-
+   /* Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found
+      the  cursor is advanced. */
    while(true) {
 
        if (current == nullptr) {
               
             return false;
 
-       } else if (current != root.get() && current->isTwoNode()) {
+       } else if (current != root.get() && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
 
             // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... TODO: why skip root? 
             current = convertTwoNode(current); // ..and resume the key search with the now converted node.
@@ -1254,18 +1254,18 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
            current = next; 
            continue;
        }
-    }
+  }
+
+  if (current == nullptr) return false; // key not found.
    
-  if (pfound_node == nullptr) return false; // Not in tree.
-   
-  if (!pfound_node->isLeaf()) {// The key is in an internal node, search for its in order successor, 
+  if (!pfound_node->isLeaf()) {// The key is in an internal node, search for its in order successor, converting any 2-nodes encountered.
 
       // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
       // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
 
       Node234 *current = pfound_node->children[key_index + 1].get(); 
 
-      while (!current->isLeaf()) {
+      while (true) {
 
         if (current->isTwoNode()) { 
     
@@ -1282,23 +1282,30 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                 //
                 // 2. reset successor search: Node234 *current = pfound_node->children[key_index + 1].get(); 
                 // 
-                // ...or Technique #2
-                // simply recurse, starting with a new initial starting point of pfound_node:
-                //   return remove(key, pfound_node); // pfound_node is ok--right--since the key may have either shifted (is that right) or moved down to current.
-                   return remove(key, pfound_node); // pfound_node is ok--right--since the key may have either shifted (is that right) or moved down to current.
+
+                /* ...or Technique #2
+                 * simply recurse, starting with a new initial starting point of pfound_node:
+                 *
+                 */
+                 return remove(key, pfound_node); // pfound_node is ok--right--since the key may have either shifted (is that right) or moved down to current.
              } 
         } 
-    
+
+        if (current->isLeaf()) {
+
+            break;  
+        } 
         current = current->children[0]; // set current to left most child of the node, 
      }
 
-  } else { // We are at leaf, and we know it is not a two-node
+  }  
+  // We have the item found in pfound_node->keys[key_index] and we have current->keys[0] as in order successor.
 
-     // TODO: Simply delete the items from leaf and replace with its in-order successor
+  // TODO: Determine if we swap with internal node or simply call removeKey() because pfound_node is a leaf and not a two node. 
+  // current is now at the leaf or the in-order successor, and we know it is not a two-node
 
-   }
 
-   return true;
+  return true;
 }
 /*
  * Find in order successor for internal node at pfoundNode in key_index.
