@@ -1274,7 +1274,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
              // Did key move as a result of conversion?
              if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys[key_index] != key) { // then key moved
 
-                // Technique #1...
+                // Either...
                 //
                 // 1. find it again: 
                 //  Double check this:                  
@@ -1283,8 +1283,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                 // 2. reset successor search: Node234 *current = pfound_node->children[key_index + 1].get(); 
                 // 
 
-                /* ...or Technique #2
-                 * simply recurse, starting with a new initial starting point of pfound_node:
+                /* ...or simply recurse, starting with a new initial starting point of pfound_node:
                  *
                  */
                  return remove(key, pfound_node); // pfound_node is ok--right--since the key may have either shifted (is that right) or moved down to current.
@@ -1307,9 +1306,15 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
   // We have the item found in pfound_node->keys[key_index], which is an internal node. We have current->keys[0] as in order successor leaf node, and we know
   // current it is not a leaf node. 
-  // TODO: So we swap items, and then call removeKey
 
+  // So we "swap" the in order successor with the key at pfound_node->keys[key_index]
+  // K tmp = pfound_node->keys[key_index];
 
+  pfound_node->keys[key_index] = current->keys[0];
+  // current->keys[0] = tmp;
+
+  // Note: We don't actually save tmp and then overwrite the former in-order successor with it. Instead we simply delete the former in-order successor key. 
+  current->removeKey(0); 
   return true;
 }
 /*
