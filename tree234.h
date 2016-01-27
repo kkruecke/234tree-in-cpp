@@ -1174,20 +1174,20 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
        debug_dump(debug_printer);
        std::cout << std::endl;
       // Note: node is root 
-      std::unique_ptr<Node234> child_left = std::move(node->children[0]);
-      std::unique_ptr<Node234> child_right = std::move(node->children[1]);
+      std::unique_ptr<Node234> child_left = std::move(root->children[0]);
+      std::unique_ptr<Node234> child_right = std::move(root->children[1]);
 
       // Shift node key to middle and put former children keys into parent.  
-      node->keys[1] = node->keys[0];
-      node->keys[0] = child_left->keys[0]; 
-      node->keys[2] = child_right->keys[0]; 
-      node->totalItems = 3;
+      root->keys[1] = root->keys[0];
+      root->keys[0] = child_left->keys[0]; 
+      root->keys[2] = child_right->keys[0]; 
+      root->totalItems = 3;
 
       // adopt grandchildren as new children.
-      node->connectChild(0, child_left->children[0]);
-      node->connectChild(1, child_left->children[1]);
-      node->connectChild(2, child_right->children[0]); 
-      node->connectChild(3, child_right->children[1]); 
+      root->connectChild(0, child_left->children[0]);
+      root->connectChild(1, child_left->children[1]);
+      root->connectChild(2, child_right->children[0]); 
+      root->connectChild(3, child_right->children[1]); 
       
       std::cout << "debug print after converting 2-node root" << std::endl;
       debug_dump(debug_printer);

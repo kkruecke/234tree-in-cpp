@@ -1,5 +1,6 @@
-Test new remove(K key, Node234*) code in tree234.h, comparing out-old.txxt and old-new.txt. In the new version 79 disappears from tree after 60 is removed.
-Sounds like it is orphaned.
+The neww remove(K key, Node234*) code in tree234.h, after comparing out-old.txxt and old-new.txt, is orphaning some nodes--so it seems--because some values that 
+should still be in the tree are not found. The only new code (I believe) is convertTwoNode(). I don't know if the part of the code in error is just the conversion of
+root 2-nodes to 3-nodes or elsewhere.
 
 TODOES/Thoughts
 ===============
