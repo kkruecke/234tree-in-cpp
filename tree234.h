@@ -1064,7 +1064,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
             return false;
 
        //--} else if (current != root.get() && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
-       } else if (current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode()     
+       } else if (current->isTwoNode()) { 
 
             // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... TODO: why skip root? 
             current = convertTwoNode(current); // ..and resume the key search with the now converted node.
@@ -1101,6 +1101,10 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
              current = convertTwoNode(current);
 
              // Did key move as a result of conversion?
+             // Q: Should I be checking current now? Could pnode_node have been deleted? 
+             // A: pfound_node is never a 2-node since remove( K key, Node234 *) first converts any 2-nodes to 3- or 4-nodes before calling
+             // NodeDescentSearch(). 
+             // Might pfound_node still have the key, but have been deleted or orphaned?
              if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys[key_index] != key) { // then key moved
 
                 // Either...
@@ -1112,10 +1116,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                 // 2. reset successor search: Node234 *current = pfound_node->children[key_index + 1].get(); 
                 // 
 
-                /* ...or simply recurse, starting with a new initial starting point of pfound_node:
-                 *
+                /* ...or simply recurse, starting with a new initial starting point of pfound_node.
+                 * TODO: Q: Is pfound_node still the place to start looking, or could pfound_node have been deleted after the 2-node conversion?
+                 * The big question is: Initially current is the first node in the in-order successor subtree.  
                  */
-                 return remove(key, pfound_node); // pfound_node is ok--right--since the key may have either shifted (is that right) or moved down to current.
+                 return remove(key, pfound_node); 
+                 
              } 
         } 
 
