@@ -15,6 +15,8 @@
 template<typename K> class Tree234;// fwd reference
 
 class DebugPrinter {
+    // TODO: create map of parent address to index that yields the value: parent->keys[index]
+    // std::map<int, int> 
     
     std::ostream& ostr_;
     
