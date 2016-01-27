@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <string>
 #include <sstream>
+#include "debug-printer.h"
 
 template<typename K> class Tree234;// fwd reference
 

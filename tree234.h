@@ -1168,7 +1168,11 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    
    // special case root, which has no parent.
    if (node == root.get()) { // TODO: This is not working?
-
+      //
+       DebugPrinter debug_printer(std::cout);
+       std::cout << "debug print before converting 2-node root" << std::endl;
+       debug_dump(debug_printer);
+       std::cout << std::endl;
       // Note: node is root 
       std::unique_ptr<Node234> child_left = std::move(node->children[0]);
       std::unique_ptr<Node234> child_right = std::move(node->children[1]);
@@ -1184,7 +1188,11 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
       node->connectChild(1, child_left->children[1]);
       node->connectChild(2, child_right->children[0]); 
       node->connectChild(3, child_right->children[1]); 
-
+      
+      std::cout << "debug print after converting 2-node root" << std::endl;
+      debug_dump(debug_printer);
+      std::cout << std::endl;
+      
       return node;
    } // <--former children of root, the left and right children of the former 2-node root, are freeed when unique_ptrs go out of scope.
 

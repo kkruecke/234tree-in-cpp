@@ -6,7 +6,7 @@
 #include <vector>
 #include "tree234.h"
 #include "TreePrinter.h"
-#include "DebugPrinter.h"
+#include "debug-printer.h"
 
 using namespace std;
 
