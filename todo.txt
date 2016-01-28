@@ -1,6 +1,19 @@
 The new convertTwoNode(Node234*) code in tree234.h, comparing its output to that the original code, is orphaning nodes because some values
-that should still be in the tree (and to be removed) are not being found. The only new code (I believe) is convertTwoNode(). It may be that the first part of the code is in
-error where the the root is converted from a 2-node into 3-nodes or elsewhere.
+that should still be in the tree (and to be removed).
+
+Comparing the before and after DebugPrinter output, shows all these tree values are missing after the removal of the first item 60:
+
+Two node:   address(0x74dea0): key[0] = 92: parent[0x74df20]->children[2]->keys[0] = 92 <-- is Leaf 
+
+Four node:  address(0x74df20): key[1] = 90: parent[ root ]->children[1]->keys[1] = 90
+
+Three node: address(0x74e060): key[0] = 100: parent[0x74df20]->children[3]->keys[0] = 100 <-- is Leaf 
+
+Three node: address(0x74e060): key[1] = 201: parent[0x74df20]->children[3]->keys[1] = 201 <-- is Leaf 
+
+Four node:  address(0x74df20): key[2] = 97: parent[ root ]->children[1]->keys[2] = 97
+
+Two node:   address(0x74e020): key[0] = 23: {Root}
 
 TODOES/Thoughts
 ===============
