@@ -1201,6 +1201,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
       
       return node;
    } // <--former children of root, the left and right children of the former 2-node root, are freeed when unique_ptrs go out of scope.
+   // TODO: The destructor for array<unique_ptr<Node234>> gets called during ~Node234()
 
    Node234 *parent = node->getParent();
 
