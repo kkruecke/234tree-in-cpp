@@ -1229,21 +1229,25 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
    int left_adjacent = node2_index - 1;
    int right_adjacent = node2_index  + 1;
-    
+   
+   // If there is a right adjacent that is a 3- or 4-node, use it
    if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
 
         has3or4NodeSibling = true;
         sibling_index = right_adjacent;  
-  
+        
+  // else if there is a left adjacent that is a 3- or 4-node, use it
    } else if (left_adjacent >= 0 && !parent->children[left_adjacent]->isTwoNode()) {
          
 	has3or4NodeSibling = true;
         sibling_index = left_adjacent;  
 
+   // else all adjacent siblings are 2-nodes. Check if we have a right adjacent sibling.     
    } else if (right_adjacent < parentChildrenTotal) { // There are no 3- or 4-nodes siblings. Therefore the all siblings 
                                                       // are 2-node(s).
         sibling_index = right_adjacent; 
-
+        
+   // else all adjacent siblings are 2-nodes. We must have a left adjacent sibling.
    } else { // sibling is to the left.
 
         sibling_index = left_adjacent; 
@@ -1253,7 +1257,10 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
        // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
        // Check if its parent 2-node (or 3- or 4-node).
-       
+             
+       // TODO: The next comment is wrong--right?
+      //  The parent can never be a two node even if it is the root because we handled the root at the top of this method. 
+      
        if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
          
 	     convertedNode = parent->fuseWithChildren();
