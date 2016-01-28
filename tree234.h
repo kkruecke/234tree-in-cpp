@@ -1261,17 +1261,16 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
        // TODO: The next comment is wrong--right?
       //  The parent can never be a two node even if it is the root because we handled the root at the top of this method. 
       
-       if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
+      //-- if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
          
-	     convertedNode = parent->fuseWithChildren();
+      //	convertedNode = parent->fuseWithChildren();
 
-        } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
+      //  } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
 
              convertedNode = fuseSiblings(parent, node2_index, sibling_index);
-        }
+      //  }
 
    } else { // it has a 3- or 4-node sibling.
-        // TODO: Don't I know from if-tests above whether a right or left rotation is to be done?   
 
       Node234 *psibling = parent->children[sibling_index].get();
     
