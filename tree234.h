@@ -1121,7 +1121,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                  * The big question is: Initially current is the first node in the in-order successor subtree.  
                  */
                  return remove(key, pfound_node); 
-                 
              } 
         } 
 
