@@ -51,7 +51,7 @@ This link has actual **Java implementation code** for insertion and for 2 3 4 tr
 
 template<typename K> class Tree234 {
     
-  protected:
+  private:
    class Node234 { // nested node class
        
        friend class Tree234<K>;             
@@ -126,13 +126,14 @@ template<typename K> class Tree234 {
        constexpr bool isTwoNode() const noexcept;
        constexpr bool isThreeNode() const noexcept;
        constexpr bool isFourNode() const noexcept;
-    };  
+    }; // end nested class Node234 
 
     friend class DebugPrinter;
   
     int to_int(const typename Tree234<K>::Node234::NodeMaxItems x) const { return static_cast<int>(x); }
 
     std::unique_ptr<Node234>  root; 
+    int tree_size;
     
     bool DoSearch(K key, Node234 *&location, int& index) noexcept;
 
@@ -182,6 +183,7 @@ template<typename K> class Tree234 {
     bool search(K key) noexcept;
 
     void insert(K key) noexcept; 
+    constexpr int size() const;
 
     bool remove(K key);
 };
@@ -248,6 +250,11 @@ template<typename K> inline constexpr bool Tree234<K>::Node234::isThreeNode() co
 template<typename K> inline constexpr bool Tree234<K>::Node234::isFourNode() const noexcept
 {
    return (totalItems == to_int(NodeMaxItems::four_node)) ? true : false;
+}
+
+template<typename K> inline constexpr int Tree234<K>::size() const
+{
+  return tree_size;
 }
 
 template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
@@ -834,6 +841,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
    if (root == nullptr) {
            
       root = std::make_unique<Node234>(key); 
+      ++tree_size;
       return; 
    } 
 
@@ -871,7 +879,6 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
     }
 
     // Make sure key is not in a leaf node that is 2- or 3-node.
-    //--if (current->keys[0] == key || (current->totalItems == 2 && current->keys[1] == key)) {
     if ((!current->isFourNode() && current->keys[0] == key) || (current->isThreeNode() && current->keys[1] == key)) {
 
         return;
@@ -879,6 +886,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
  
     // current node is now a leaf and it is not full (because we split all four nodes while descending).
     current->insertKey(key); 
+    ++tree_size;
 }
 /* 
  *  Split pseudocode: 
@@ -1002,7 +1010,7 @@ template<typename K> bool Tree234<K>::remove(K key)
                      root.reset(); // delete root 
                      root  = nullptr;
                 }  
-
+                --tree_size; 
                 return true;
              } 
          }
@@ -1136,6 +1144,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
       // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey() */
       pfound_node->removeKey(key_index);
+      --tree_size;
       return true;
  }
 
