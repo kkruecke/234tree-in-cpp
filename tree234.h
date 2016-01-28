@@ -1182,10 +1182,16 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    
    // special case root, which has no parent.
    if (node == root.get()) { // TODO: This is not working?
-      //
+
+       // Debug code
+       std::cout <<  "tree size before converting 2-node root = " << size() << std::endl;
+
        DebugPrinter debug_printer(std::cout);
+
        std::cout << "debug print before converting 2-node root" << std::endl;
+
        debug_dump(debug_printer);
+
        std::cout << std::endl;
       // Note: node is root 
       std::unique_ptr<Node234> child_left = std::move(root->children[0]);
@@ -1203,8 +1209,12 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
       root->connectChild(2, child_right->children[0]); 
       root->connectChild(3, child_right->children[1]); 
       
+      std::cout <<  "tree size after converting 2-node root = " << size() << std::endl;
+
       std::cout << "debug print after converting 2-node root" << std::endl;
+
       debug_dump(debug_printer);
+
       std::cout << std::endl;
       
       return node;
