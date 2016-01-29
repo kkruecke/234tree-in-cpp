@@ -5,7 +5,6 @@
 #include <iterator>
 #include <vector>
 #include "tree234.h"
-#include "TreePrinter.h"
 #include "debug-printer.h"
 
 using namespace std;

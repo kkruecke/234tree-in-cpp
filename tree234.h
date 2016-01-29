@@ -996,6 +996,9 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
 
 template<typename K> bool Tree234<K>::remove(K key) 
 {
+    //Debug code
+   std::cout << "Attempting to remove " << key << std::endl;
+   
    if (root == nullptr) {
 
        return false; 
