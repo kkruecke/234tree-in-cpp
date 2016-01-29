@@ -257,16 +257,17 @@ template<typename K> inline constexpr int Tree234<K>::size() const
   return tree_size;
 }
 
-template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
+template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept : tree_size{lhs.tree_size} 
 {
     Tree234<K>::Node234 *src =  lhs.root.get();
-    
+        
     CloneTree(src, root);
 }
  
 // move constructor
-template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{std::move(lhs.root)} 
+template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{std::move(lhs.root)}, tree_size{lhs.tree_size} 
 {
+    lhs.size = 0;
     root->parent = nullptr;
 }
 
@@ -295,6 +296,8 @@ template<typename K> inline Tree234<K>& Tree234<K>::operator=(const Tree234& lhs
   DestroyTree(root); // free all nodes and then clone lhs.
 
   const Tree234<K>::Node234 *src =  lhs.root.get();
+  
+  tree_size = lhs.tree_size;
             
   CloneTree(src, root);
 
@@ -304,7 +307,11 @@ template<typename K> inline Tree234<K>& Tree234<K>::operator=(const Tree234& lhs
 // move assignment
 template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noexcept 
 {
-    root = std::move(lhs.root);
+    tree_size = lhs.tree_size;
+    lhs.tree_size = 0;
+    
+    root = std::move(lhs.root); // TODO: I assume this sets lhs::root to be nullptr inside unique_ptr<Node234>
+    
     root->parent = nullptr;
 }
 

@@ -8,114 +8,232 @@ Printing tree in order, using lambda
 1 2 10 15 17 20 23 26 27 30 33 37 40 50 51 55 60 62 69 70 79 80 87 90 92 97 100 201 
 =======Tree Debug (PostOrder) Printer =====================
 
-Four node:  address(0xb15ca0): key[0] = 1: parent[0xb15d20]->children[0]->keys[0] = 1 <-- is Leaf 
+Four node:  address(0xc67ca0): key[0] = 1: parent[0xc67d20]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Four node:  address(0xb15ca0): key[1] = 2: parent[0xb15d20]->children[0]->keys[1] = 2 <-- is Leaf 
+Four node:  address(0xc67ca0): key[1] = 2: parent[0xc67d20]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Four node:  address(0xb15ca0): key[2] = 10: parent[0xb15d20]->children[0]->keys[2] = 10 <-- is Leaf 
+Four node:  address(0xc67ca0): key[2] = 10: parent[0xc67d20]->children[0]->keys[2] = 10 <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[0xb15d20]->children[1]->keys[0] = 17 <-- is Leaf 
+Three node: address(0xc67e60): key[0] = 17: parent[0xc67d20]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Three node: address(0xb15e60): key[1] = 20: parent[0xb15d20]->children[1]->keys[1] = 20 <-- is Leaf 
+Three node: address(0xc67e60): key[1] = 20: parent[0xc67d20]->children[1]->keys[1] = 20 <-- is Leaf 
 
-Two node:   address(0xb15d20): key[0] = 15: parent[0xb15e20]->children[0]->keys[0] = 15
+Two node:   address(0xc67d20): key[0] = 15: parent[0xc67e20]->children[0]->keys[0] = 15
 
-Three node: address(0xb15ee0): key[0] = 26: parent[0xb15f20]->children[0]->keys[0] = 26 <-- is Leaf 
+Three node: address(0xc67ee0): key[0] = 26: parent[0xc67f20]->children[0]->keys[0] = 26 <-- is Leaf 
 
-Three node: address(0xb15ee0): key[1] = 27: parent[0xb15f20]->children[0]->keys[1] = 27 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[0xc67f20]->children[0]->keys[1] = 27 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[0xb15f20]->children[1]->keys[0] = 33 <-- is Leaf 
+Four node:  address(0xc67ce0): key[0] = 33: parent[0xc67f20]->children[1]->keys[0] = 33 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[1] = 37: parent[0xb15f20]->children[1]->keys[1] = 37 <-- is Leaf 
+Four node:  address(0xc67ce0): key[1] = 37: parent[0xc67f20]->children[1]->keys[1] = 37 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[2] = 40: parent[0xb15f20]->children[1]->keys[2] = 40 <-- is Leaf 
+Four node:  address(0xc67ce0): key[2] = 40: parent[0xc67f20]->children[1]->keys[2] = 40 <-- is Leaf 
 
-Two node:   address(0xb15f20): key[0] = 30: parent[0xb15e20]->children[1]->keys[0] = 30
+Two node:   address(0xc67f20): key[0] = 30: parent[0xc67e20]->children[1]->keys[0] = 30
 
-Two node:   address(0xb15e20): key[0] = 23: parent[ root ]->children[0]->keys[0] = 23
+Two node:   address(0xc67e20): key[0] = 23: parent[ root ]->children[0]->keys[0] = 23
 
-Three node: address(0xb15d60): key[0] = 51: parent[0xb15de0]->children[0]->keys[0] = 51 <-- is Leaf 
+Three node: address(0xc67d60): key[0] = 51: parent[0xc67de0]->children[0]->keys[0] = 51 <-- is Leaf 
 
-Three node: address(0xb15d60): key[1] = 55: parent[0xb15de0]->children[0]->keys[1] = 55 <-- is Leaf 
+Three node: address(0xc67d60): key[1] = 55: parent[0xc67de0]->children[0]->keys[1] = 55 <-- is Leaf 
 
-Three node: address(0xb15f60): key[0] = 62: parent[0xb15de0]->children[1]->keys[0] = 62 <-- is Leaf 
+Three node: address(0xc67f60): key[0] = 62: parent[0xc67de0]->children[1]->keys[0] = 62 <-- is Leaf 
 
-Three node: address(0xb15f60): key[1] = 69: parent[0xb15de0]->children[1]->keys[1] = 69 <-- is Leaf 
+Three node: address(0xc67f60): key[1] = 69: parent[0xc67de0]->children[1]->keys[1] = 69 <-- is Leaf 
 
-Two node:   address(0xb15de0): key[0] = 60: parent[0xb15fe0]->children[0]->keys[0] = 60
+Two node:   address(0xc67de0): key[0] = 60: parent[0xc67fe0]->children[0]->keys[0] = 60
 
-Four node:  address(0xb15da0): key[0] = 79: parent[0xb15fa0]->children[0]->keys[0] = 79 <-- is Leaf 
+Four node:  address(0xc67da0): key[0] = 79: parent[0xc67fa0]->children[0]->keys[0] = 79 <-- is Leaf 
 
-Four node:  address(0xb15da0): key[1] = 80: parent[0xb15fa0]->children[0]->keys[1] = 80 <-- is Leaf 
+Four node:  address(0xc67da0): key[1] = 80: parent[0xc67fa0]->children[0]->keys[1] = 80 <-- is Leaf 
 
-Four node:  address(0xb15da0): key[2] = 87: parent[0xb15fa0]->children[0]->keys[2] = 87 <-- is Leaf 
+Four node:  address(0xc67da0): key[2] = 87: parent[0xc67fa0]->children[0]->keys[2] = 87 <-- is Leaf 
 
-Two node:   address(0xb15ea0): key[0] = 92: parent[0xb15fa0]->children[1]->keys[0] = 92 <-- is Leaf 
+Two node:   address(0xc67ea0): key[0] = 92: parent[0xc67fa0]->children[1]->keys[0] = 92 <-- is Leaf 
 
-Three node: address(0xb15fa0): key[0] = 90: parent[0xb15fe0]->children[1]->keys[0] = 90
+Three node: address(0xc67fa0): key[0] = 90: parent[0xc67fe0]->children[1]->keys[0] = 90
 
-Three node: address(0xb16060): key[0] = 100: parent[0xb15fa0]->children[2]->keys[0] = 100 <-- is Leaf 
+Three node: address(0xc68060): key[0] = 100: parent[0xc67fa0]->children[2]->keys[0] = 100 <-- is Leaf 
 
-Three node: address(0xb16060): key[1] = 201: parent[0xb15fa0]->children[2]->keys[1] = 201 <-- is Leaf 
+Three node: address(0xc68060): key[1] = 201: parent[0xc67fa0]->children[2]->keys[1] = 201 <-- is Leaf 
 
-Three node: address(0xb15fa0): key[1] = 97: parent[0xb15fe0]->children[1]->keys[1] = 97
+Three node: address(0xc67fa0): key[1] = 97: parent[0xc67fe0]->children[1]->keys[1] = 97
 
-Two node:   address(0xb15fe0): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
+Two node:   address(0xc67fe0): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
 
-Two node:   address(0xb16020): key[0] = 50: {Root}
+Two node:   address(0xc68020): key[0] = 50: {Root}
 
 ============================
+tree size before converting 2-node root = 65563
+debug print before converting 2-node root
+
+Four node:  address(0xc67ca0): key[0] = 1: parent[0xc67d20]->children[0]->keys[0] = 1 <-- is Leaf 
+
+Four node:  address(0xc67ca0): key[1] = 2: parent[0xc67d20]->children[0]->keys[1] = 2 <-- is Leaf 
+
+Four node:  address(0xc67ca0): key[2] = 10: parent[0xc67d20]->children[0]->keys[2] = 10 <-- is Leaf 
+
+Three node: address(0xc67e60): key[0] = 17: parent[0xc67d20]->children[1]->keys[0] = 17 <-- is Leaf 
+
+Three node: address(0xc67e60): key[1] = 20: parent[0xc67d20]->children[1]->keys[1] = 20 <-- is Leaf 
+
+Two node:   address(0xc67d20): key[0] = 15: parent[0xc67e20]->children[0]->keys[0] = 15
+
+Three node: address(0xc67ee0): key[0] = 26: parent[0xc67f20]->children[0]->keys[0] = 26 <-- is Leaf 
+
+Three node: address(0xc67ee0): key[1] = 27: parent[0xc67f20]->children[0]->keys[1] = 27 <-- is Leaf 
+
+Four node:  address(0xc67ce0): key[0] = 33: parent[0xc67f20]->children[1]->keys[0] = 33 <-- is Leaf 
+
+Four node:  address(0xc67ce0): key[1] = 37: parent[0xc67f20]->children[1]->keys[1] = 37 <-- is Leaf 
+
+Four node:  address(0xc67ce0): key[2] = 40: parent[0xc67f20]->children[1]->keys[2] = 40 <-- is Leaf 
+
+Two node:   address(0xc67f20): key[0] = 30: parent[0xc67e20]->children[1]->keys[0] = 30
+
+Two node:   address(0xc67e20): key[0] = 23: parent[ root ]->children[0]->keys[0] = 23
+
+Three node: address(0xc67d60): key[0] = 51: parent[0xc67de0]->children[0]->keys[0] = 51 <-- is Leaf 
+
+Three node: address(0xc67d60): key[1] = 55: parent[0xc67de0]->children[0]->keys[1] = 55 <-- is Leaf 
+
+Three node: address(0xc67f60): key[0] = 62: parent[0xc67de0]->children[1]->keys[0] = 62 <-- is Leaf 
+
+Three node: address(0xc67f60): key[1] = 69: parent[0xc67de0]->children[1]->keys[1] = 69 <-- is Leaf 
+
+Two node:   address(0xc67de0): key[0] = 60: parent[0xc67fe0]->children[0]->keys[0] = 60
+
+Four node:  address(0xc67da0): key[0] = 79: parent[0xc67fa0]->children[0]->keys[0] = 79 <-- is Leaf 
+
+Four node:  address(0xc67da0): key[1] = 80: parent[0xc67fa0]->children[0]->keys[1] = 80 <-- is Leaf 
+
+Four node:  address(0xc67da0): key[2] = 87: parent[0xc67fa0]->children[0]->keys[2] = 87 <-- is Leaf 
+
+Two node:   address(0xc67ea0): key[0] = 92: parent[0xc67fa0]->children[1]->keys[0] = 92 <-- is Leaf 
+
+Three node: address(0xc67fa0): key[0] = 90: parent[0xc67fe0]->children[1]->keys[0] = 90
+
+Three node: address(0xc68060): key[0] = 100: parent[0xc67fa0]->children[2]->keys[0] = 100 <-- is Leaf 
+
+Three node: address(0xc68060): key[1] = 201: parent[0xc67fa0]->children[2]->keys[1] = 201 <-- is Leaf 
+
+Three node: address(0xc67fa0): key[1] = 97: parent[0xc67fe0]->children[1]->keys[1] = 97
+
+Two node:   address(0xc67fe0): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
+
+Two node:   address(0xc68020): key[0] = 50: {Root}
+
+tree size after converting 2-node root = 65563
+debug print after converting 2-node root
+
+Four node:  address(0xc67ca0): key[0] = 1: parent[0xc67d20]->children[0]->keys[0] = 1 <-- is Leaf 
+
+Four node:  address(0xc67ca0): key[1] = 2: parent[0xc67d20]->children[0]->keys[1] = 2 <-- is Leaf 
+
+Four node:  address(0xc67ca0): key[2] = 10: parent[0xc67d20]->children[0]->keys[2] = 10 <-- is Leaf 
+
+Three node: address(0xc67e60): key[0] = 17: parent[0xc67d20]->children[1]->keys[0] = 17 <-- is Leaf 
+
+Three node: address(0xc67e60): key[1] = 20: parent[0xc67d20]->children[1]->keys[1] = 20 <-- is Leaf 
+
+Two node:   address(0xc67d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
+
+Three node: address(0xc67ee0): key[0] = 26: parent[0xc67f20]->children[0]->keys[0] = 26 <-- is Leaf 
+
+Three node: address(0xc67ee0): key[1] = 27: parent[0xc67f20]->children[0]->keys[1] = 27 <-- is Leaf 
+
+Four node:  address(0xc67ce0): key[0] = 33: parent[0xc67f20]->children[1]->keys[0] = 33 <-- is Leaf 
+
+Four node:  address(0xc67ce0): key[1] = 37: parent[0xc67f20]->children[1]->keys[1] = 37 <-- is Leaf 
+
+Four node:  address(0xc67ce0): key[2] = 40: parent[0xc67f20]->children[1]->keys[2] = 40 <-- is Leaf 
+
+Two node:   address(0xc67f20): key[0] = 30: parent[ root ]->children[1]->keys[0] = 30
+
+Four node:  address(0xc68020): key[0] = 23: {Root}
+
+Three node: address(0xc67d60): key[0] = 51: parent[0xc67de0]->children[0]->keys[0] = 51 <-- is Leaf 
+
+Three node: address(0xc67d60): key[1] = 55: parent[0xc67de0]->children[0]->keys[1] = 55 <-- is Leaf 
+
+Three node: address(0xc67f60): key[0] = 62: parent[0xc67de0]->children[1]->keys[0] = 62 <-- is Leaf 
+
+Three node: address(0xc67f60): key[1] = 69: parent[0xc67de0]->children[1]->keys[1] = 69 <-- is Leaf 
+
+Two node:   address(0xc67de0): key[0] = 60: parent[ root ]->children[2]->keys[0] = 60
+
+Four node:  address(0xc68020): key[1] = 50: {Root}
+
+Four node:  address(0xc67da0): key[0] = 79: parent[0xc67fa0]->children[0]->keys[0] = 79 <-- is Leaf 
+
+Four node:  address(0xc67da0): key[1] = 80: parent[0xc67fa0]->children[0]->keys[1] = 80 <-- is Leaf 
+
+Four node:  address(0xc67da0): key[2] = 87: parent[0xc67fa0]->children[0]->keys[2] = 87 <-- is Leaf 
+
+Two node:   address(0xc67ea0): key[0] = 92: parent[0xc67fa0]->children[1]->keys[0] = 92 <-- is Leaf 
+
+Three node: address(0xc67fa0): key[0] = 90: parent[ root ]->children[3]->keys[0] = 90
+
+Three node: address(0xc68060): key[0] = 100: parent[0xc67fa0]->children[2]->keys[0] = 100 <-- is Leaf 
+
+Three node: address(0xc68060): key[1] = 201: parent[0xc67fa0]->children[2]->keys[1] = 201 <-- is Leaf 
+
+Three node: address(0xc67fa0): key[1] = 97: parent[ root ]->children[3]->keys[1] = 97
+
+Four node:  address(0xc68020): key[2] = 70: {Root}
+
 item 60 successfully removed 
 
 =======Tree Debug =====================
 
-Four node:  address(0xb15ca0): key[0] = 1: parent[0xb15d20]->children[0]->keys[0] = 1 <-- is Leaf 
+Four node:  address(0xc67ca0): key[0] = 1: parent[0xc67d20]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Four node:  address(0xb15ca0): key[1] = 2: parent[0xb15d20]->children[0]->keys[1] = 2 <-- is Leaf 
+Four node:  address(0xc67ca0): key[1] = 2: parent[0xc67d20]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Four node:  address(0xb15ca0): key[2] = 10: parent[0xb15d20]->children[0]->keys[2] = 10 <-- is Leaf 
+Four node:  address(0xc67ca0): key[2] = 10: parent[0xc67d20]->children[0]->keys[2] = 10 <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[0xb15d20]->children[1]->keys[0] = 17 <-- is Leaf 
+Three node: address(0xc67e60): key[0] = 17: parent[0xc67d20]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Three node: address(0xb15e60): key[1] = 20: parent[0xb15d20]->children[1]->keys[1] = 20 <-- is Leaf 
+Three node: address(0xc67e60): key[1] = 20: parent[0xc67d20]->children[1]->keys[1] = 20 <-- is Leaf 
 
-Two node:   address(0xb15d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
+Two node:   address(0xc67d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
 
-Three node: address(0xb15ee0): key[0] = 26: parent[0xb15f20]->children[0]->keys[0] = 26 <-- is Leaf 
+Three node: address(0xc67ee0): key[0] = 26: parent[0xc67f20]->children[0]->keys[0] = 26 <-- is Leaf 
 
-Three node: address(0xb15ee0): key[1] = 27: parent[0xb15f20]->children[0]->keys[1] = 27 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[0xc67f20]->children[0]->keys[1] = 27 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[0xb15f20]->children[1]->keys[0] = 33 <-- is Leaf 
+Four node:  address(0xc67ce0): key[0] = 33: parent[0xc67f20]->children[1]->keys[0] = 33 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[1] = 37: parent[0xb15f20]->children[1]->keys[1] = 37 <-- is Leaf 
+Four node:  address(0xc67ce0): key[1] = 37: parent[0xc67f20]->children[1]->keys[1] = 37 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[2] = 40: parent[0xb15f20]->children[1]->keys[2] = 40 <-- is Leaf 
+Four node:  address(0xc67ce0): key[2] = 40: parent[0xc67f20]->children[1]->keys[2] = 40 <-- is Leaf 
 
-Two node:   address(0xb15f20): key[0] = 30: parent[ root ]->children[1]->keys[0] = 30
+Two node:   address(0xc67f20): key[0] = 30: parent[ root ]->children[1]->keys[0] = 30
 
-Four node:  address(0xb16020): key[0] = 23: {Root}
+Four node:  address(0xc68020): key[0] = 23: {Root}
 
-Three node: address(0xb15d60): key[0] = 51: parent[0xb15de0]->children[0]->keys[0] = 51 <-- is Leaf 
+Three node: address(0xc67d60): key[0] = 51: parent[0xc67de0]->children[0]->keys[0] = 51 <-- is Leaf 
 
-Three node: address(0xb15d60): key[1] = 55: parent[0xb15de0]->children[0]->keys[1] = 55 <-- is Leaf 
+Three node: address(0xc67d60): key[1] = 55: parent[0xc67de0]->children[0]->keys[1] = 55 <-- is Leaf 
 
-Three node: address(0xb15f60): key[0] = 62: parent[0xb15de0]->children[1]->keys[0] = 62 <-- is Leaf 
+Three node: address(0xc67f60): key[0] = 62: parent[0xc67de0]->children[1]->keys[0] = 62 <-- is Leaf 
 
-Three node: address(0xb15f60): key[1] = 69: parent[0xb15de0]->children[1]->keys[1] = 69 <-- is Leaf 
+Three node: address(0xc67f60): key[1] = 69: parent[0xc67de0]->children[1]->keys[1] = 69 <-- is Leaf 
 
-Two node:   address(0xb15de0): key[0] = 70: parent[ root ]->children[2]->keys[0] = 70
+Two node:   address(0xc67de0): key[0] = 70: parent[ root ]->children[2]->keys[0] = 70
 
-Four node:  address(0xb16020): key[1] = 50: {Root}
+Four node:  address(0xc68020): key[1] = 50: {Root}
 
-Two node:   address(0xb15ea0): key[0] = 92: parent[0xb15fa0]->children[0]->keys[0] = 92 <-- is Leaf 
+Two node:   address(0xc67ea0): key[0] = 92: parent[0xc67fa0]->children[0]->keys[0] = 92 <-- is Leaf 
 
-Three node: address(0xb16060): key[0] = 100: parent[0xb15fa0]->children[1]->keys[0] = 100 <-- is Leaf 
+Three node: address(0xc68060): key[0] = 100: parent[0xc67fa0]->children[1]->keys[0] = 100 <-- is Leaf 
 
-Three node: address(0xb16060): key[1] = 201: parent[0xb15fa0]->children[1]->keys[1] = 201 <-- is Leaf 
+Three node: address(0xc68060): key[1] = 201: parent[0xc67fa0]->children[1]->keys[1] = 201 <-- is Leaf 
 
-Two node:   address(0xb15fa0): key[0] = 97: parent[ root ]->children[3]->keys[0] = 97
+Two node:   address(0xc67fa0): key[0] = 97: parent[ root ]->children[3]->keys[0] = 97
 
-Four node:  address(0xb16020): key[2] = 90: {Root}
+Four node:  address(0xc68020): key[2] = 90: {Root}
 
 =================== Normal Tree Print =======================
 1 2 10 15 17 20 23 26 27 30 33 37 40 50 51 55 70 62 69 90 92 97 100 201 
@@ -125,47 +243,47 @@ item 30 successfully removed
 
 =======Tree Debug =====================
 
-Four node:  address(0xb15ca0): key[0] = 1: parent[0xb15d20]->children[0]->keys[0] = 1 <-- is Leaf 
+Four node:  address(0xc67ca0): key[0] = 1: parent[0xc67d20]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Four node:  address(0xb15ca0): key[1] = 2: parent[0xb15d20]->children[0]->keys[1] = 2 <-- is Leaf 
+Four node:  address(0xc67ca0): key[1] = 2: parent[0xc67d20]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Four node:  address(0xb15ca0): key[2] = 10: parent[0xb15d20]->children[0]->keys[2] = 10 <-- is Leaf 
+Four node:  address(0xc67ca0): key[2] = 10: parent[0xc67d20]->children[0]->keys[2] = 10 <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[0xb15d20]->children[1]->keys[0] = 17 <-- is Leaf 
+Three node: address(0xc67e60): key[0] = 17: parent[0xc67d20]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Three node: address(0xb15e60): key[1] = 20: parent[0xb15d20]->children[1]->keys[1] = 20 <-- is Leaf 
+Three node: address(0xc67e60): key[1] = 20: parent[0xc67d20]->children[1]->keys[1] = 20 <-- is Leaf 
 
-Two node:   address(0xb15d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
+Two node:   address(0xc67d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
 
-Three node: address(0xb15ee0): key[0] = 26: parent[0xb15f20]->children[0]->keys[0] = 26 <-- is Leaf 
+Three node: address(0xc67ee0): key[0] = 26: parent[0xc67f20]->children[0]->keys[0] = 26 <-- is Leaf 
 
-Three node: address(0xb15ee0): key[1] = 27: parent[0xb15f20]->children[0]->keys[1] = 27 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[0xc67f20]->children[0]->keys[1] = 27 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[0xb15f20]->children[1]->keys[0] = 33 <-- is Leaf 
+Four node:  address(0xc67ce0): key[0] = 33: parent[0xc67f20]->children[1]->keys[0] = 33 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[1] = 37: parent[0xb15f20]->children[1]->keys[1] = 37 <-- is Leaf 
+Four node:  address(0xc67ce0): key[1] = 37: parent[0xc67f20]->children[1]->keys[1] = 37 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[2] = 40: parent[0xb15f20]->children[1]->keys[2] = 40 <-- is Leaf 
+Four node:  address(0xc67ce0): key[2] = 40: parent[0xc67f20]->children[1]->keys[2] = 40 <-- is Leaf 
 
-Three node: address(0xb15f20): key[0] = 50: parent[ root ]->children[1]->keys[0] = 50
+Three node: address(0xc67f20): key[0] = 50: parent[ root ]->children[1]->keys[0] = 50
 
-Three node: address(0xb15d60): key[0] = 51: parent[0xb15f20]->children[2]->keys[0] = 51 <-- is Leaf 
+Three node: address(0xc67d60): key[0] = 51: parent[0xc67f20]->children[2]->keys[0] = 51 <-- is Leaf 
 
-Three node: address(0xb15d60): key[1] = 55: parent[0xb15f20]->children[2]->keys[1] = 55 <-- is Leaf 
+Three node: address(0xc67d60): key[1] = 55: parent[0xc67f20]->children[2]->keys[1] = 55 <-- is Leaf 
 
-Three node: address(0xb15f20): key[1] = 70: parent[ root ]->children[1]->keys[1] = 70
+Three node: address(0xc67f20): key[1] = 70: parent[ root ]->children[1]->keys[1] = 70
 
-Three node: address(0xb16020): key[0] = 23: {Root}
+Three node: address(0xc68020): key[0] = 23: {Root}
 
-Two node:   address(0xb15ea0): key[0] = 92: parent[0xb15fa0]->children[0]->keys[0] = 92 <-- is Leaf 
+Two node:   address(0xc67ea0): key[0] = 92: parent[0xc67fa0]->children[0]->keys[0] = 92 <-- is Leaf 
 
-Three node: address(0xb16060): key[0] = 100: parent[0xb15fa0]->children[1]->keys[0] = 100 <-- is Leaf 
+Three node: address(0xc68060): key[0] = 100: parent[0xc67fa0]->children[1]->keys[0] = 100 <-- is Leaf 
 
-Three node: address(0xb16060): key[1] = 201: parent[0xb15fa0]->children[1]->keys[1] = 201 <-- is Leaf 
+Three node: address(0xc68060): key[1] = 201: parent[0xc67fa0]->children[1]->keys[1] = 201 <-- is Leaf 
 
-Two node:   address(0xb15fa0): key[0] = 97: parent[ root ]->children[2]->keys[0] = 97
+Two node:   address(0xc67fa0): key[0] = 97: parent[ root ]->children[2]->keys[0] = 97
 
-Three node: address(0xb16020): key[1] = 90: {Root}
+Three node: address(0xc68020): key[1] = 90: {Root}
 
 =================== Normal Tree Print =======================
 1 2 10 15 17 20 23 26 27 50 33 37 40 70 51 55 90 92 97 100 201 
@@ -175,45 +293,45 @@ item 10 successfully removed
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[0xb15d20]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc67ca0): key[0] = 1: parent[0xc67d20]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[0xb15d20]->children[0]->keys[1] = 2 <-- is Leaf 
+Three node: address(0xc67ca0): key[1] = 2: parent[0xc67d20]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[0xb15d20]->children[1]->keys[0] = 17 <-- is Leaf 
+Three node: address(0xc67e60): key[0] = 17: parent[0xc67d20]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Three node: address(0xb15e60): key[1] = 20: parent[0xb15d20]->children[1]->keys[1] = 20 <-- is Leaf 
+Three node: address(0xc67e60): key[1] = 20: parent[0xc67d20]->children[1]->keys[1] = 20 <-- is Leaf 
 
-Three node: address(0xb15d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
+Three node: address(0xc67d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
 
-Three node: address(0xb15ee0): key[0] = 26: parent[0xb15d20]->children[2]->keys[0] = 26 <-- is Leaf 
+Three node: address(0xc67ee0): key[0] = 26: parent[0xc67d20]->children[2]->keys[0] = 26 <-- is Leaf 
 
-Three node: address(0xb15ee0): key[1] = 27: parent[0xb15d20]->children[2]->keys[1] = 27 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[0xc67d20]->children[2]->keys[1] = 27 <-- is Leaf 
 
-Three node: address(0xb15d20): key[1] = 23: parent[ root ]->children[0]->keys[1] = 23
+Three node: address(0xc67d20): key[1] = 23: parent[ root ]->children[0]->keys[1] = 23
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[0xb15f20]->children[0]->keys[0] = 33 <-- is Leaf 
+Four node:  address(0xc67ce0): key[0] = 33: parent[0xc67f20]->children[0]->keys[0] = 33 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[1] = 37: parent[0xb15f20]->children[0]->keys[1] = 37 <-- is Leaf 
+Four node:  address(0xc67ce0): key[1] = 37: parent[0xc67f20]->children[0]->keys[1] = 37 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[2] = 40: parent[0xb15f20]->children[0]->keys[2] = 40 <-- is Leaf 
+Four node:  address(0xc67ce0): key[2] = 40: parent[0xc67f20]->children[0]->keys[2] = 40 <-- is Leaf 
 
-Three node: address(0xb15d60): key[0] = 51: parent[0xb15f20]->children[1]->keys[0] = 51 <-- is Leaf 
+Three node: address(0xc67d60): key[0] = 51: parent[0xc67f20]->children[1]->keys[0] = 51 <-- is Leaf 
 
-Three node: address(0xb15d60): key[1] = 55: parent[0xb15f20]->children[1]->keys[1] = 55 <-- is Leaf 
+Three node: address(0xc67d60): key[1] = 55: parent[0xc67f20]->children[1]->keys[1] = 55 <-- is Leaf 
 
-Two node:   address(0xb15f20): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
+Two node:   address(0xc67f20): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
 
-Three node: address(0xb16020): key[0] = 50: {Root}
+Three node: address(0xc68020): key[0] = 50: {Root}
 
-Two node:   address(0xb15ea0): key[0] = 92: parent[0xb15fa0]->children[0]->keys[0] = 92 <-- is Leaf 
+Two node:   address(0xc67ea0): key[0] = 92: parent[0xc67fa0]->children[0]->keys[0] = 92 <-- is Leaf 
 
-Three node: address(0xb16060): key[0] = 100: parent[0xb15fa0]->children[1]->keys[0] = 100 <-- is Leaf 
+Three node: address(0xc68060): key[0] = 100: parent[0xc67fa0]->children[1]->keys[0] = 100 <-- is Leaf 
 
-Three node: address(0xb16060): key[1] = 201: parent[0xb15fa0]->children[1]->keys[1] = 201 <-- is Leaf 
+Three node: address(0xc68060): key[1] = 201: parent[0xc67fa0]->children[1]->keys[1] = 201 <-- is Leaf 
 
-Two node:   address(0xb15fa0): key[0] = 97: parent[ root ]->children[2]->keys[0] = 97
+Two node:   address(0xc67fa0): key[0] = 97: parent[ root ]->children[2]->keys[0] = 97
 
-Three node: address(0xb16020): key[1] = 90: {Root}
+Three node: address(0xc68020): key[1] = 90: {Root}
 
 =================== Normal Tree Print =======================
 1 2 15 17 20 23 26 27 50 33 37 40 70 51 55 90 92 97 100 201 
@@ -223,43 +341,43 @@ item 20 successfully removed
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[0xb15d20]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc67ca0): key[0] = 1: parent[0xc67d20]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[0xb15d20]->children[0]->keys[1] = 2 <-- is Leaf 
+Three node: address(0xc67ca0): key[1] = 2: parent[0xc67d20]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Two node:   address(0xb15e60): key[0] = 17: parent[0xb15d20]->children[1]->keys[0] = 17 <-- is Leaf 
+Two node:   address(0xc67e60): key[0] = 17: parent[0xc67d20]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Three node: address(0xb15d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
+Three node: address(0xc67d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
 
-Three node: address(0xb15ee0): key[0] = 26: parent[0xb15d20]->children[2]->keys[0] = 26 <-- is Leaf 
+Three node: address(0xc67ee0): key[0] = 26: parent[0xc67d20]->children[2]->keys[0] = 26 <-- is Leaf 
 
-Three node: address(0xb15ee0): key[1] = 27: parent[0xb15d20]->children[2]->keys[1] = 27 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[0xc67d20]->children[2]->keys[1] = 27 <-- is Leaf 
 
-Three node: address(0xb15d20): key[1] = 23: parent[ root ]->children[0]->keys[1] = 23
+Three node: address(0xc67d20): key[1] = 23: parent[ root ]->children[0]->keys[1] = 23
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[0xb15f20]->children[0]->keys[0] = 33 <-- is Leaf 
+Four node:  address(0xc67ce0): key[0] = 33: parent[0xc67f20]->children[0]->keys[0] = 33 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[1] = 37: parent[0xb15f20]->children[0]->keys[1] = 37 <-- is Leaf 
+Four node:  address(0xc67ce0): key[1] = 37: parent[0xc67f20]->children[0]->keys[1] = 37 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[2] = 40: parent[0xb15f20]->children[0]->keys[2] = 40 <-- is Leaf 
+Four node:  address(0xc67ce0): key[2] = 40: parent[0xc67f20]->children[0]->keys[2] = 40 <-- is Leaf 
 
-Three node: address(0xb15d60): key[0] = 51: parent[0xb15f20]->children[1]->keys[0] = 51 <-- is Leaf 
+Three node: address(0xc67d60): key[0] = 51: parent[0xc67f20]->children[1]->keys[0] = 51 <-- is Leaf 
 
-Three node: address(0xb15d60): key[1] = 55: parent[0xb15f20]->children[1]->keys[1] = 55 <-- is Leaf 
+Three node: address(0xc67d60): key[1] = 55: parent[0xc67f20]->children[1]->keys[1] = 55 <-- is Leaf 
 
-Two node:   address(0xb15f20): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
+Two node:   address(0xc67f20): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
 
-Three node: address(0xb16020): key[0] = 50: {Root}
+Three node: address(0xc68020): key[0] = 50: {Root}
 
-Two node:   address(0xb15ea0): key[0] = 92: parent[0xb15fa0]->children[0]->keys[0] = 92 <-- is Leaf 
+Two node:   address(0xc67ea0): key[0] = 92: parent[0xc67fa0]->children[0]->keys[0] = 92 <-- is Leaf 
 
-Three node: address(0xb16060): key[0] = 100: parent[0xb15fa0]->children[1]->keys[0] = 100 <-- is Leaf 
+Three node: address(0xc68060): key[0] = 100: parent[0xc67fa0]->children[1]->keys[0] = 100 <-- is Leaf 
 
-Three node: address(0xb16060): key[1] = 201: parent[0xb15fa0]->children[1]->keys[1] = 201 <-- is Leaf 
+Three node: address(0xc68060): key[1] = 201: parent[0xc67fa0]->children[1]->keys[1] = 201 <-- is Leaf 
 
-Two node:   address(0xb15fa0): key[0] = 97: parent[ root ]->children[2]->keys[0] = 97
+Two node:   address(0xc67fa0): key[0] = 97: parent[ root ]->children[2]->keys[0] = 97
 
-Three node: address(0xb16020): key[1] = 90: {Root}
+Three node: address(0xc68020): key[1] = 90: {Root}
 
 =================== Normal Tree Print =======================
 1 2 15 17 23 26 27 50 33 37 40 70 51 55 90 92 97 100 201 
@@ -269,37 +387,37 @@ item 50 successfully removed
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[0xb15d20]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc67ca0): key[0] = 1: parent[0xc67d20]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[0xb15d20]->children[0]->keys[1] = 2 <-- is Leaf 
+Three node: address(0xc67ca0): key[1] = 2: parent[0xc67d20]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Two node:   address(0xb15e60): key[0] = 17: parent[0xb15d20]->children[1]->keys[0] = 17 <-- is Leaf 
+Two node:   address(0xc67e60): key[0] = 17: parent[0xc67d20]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Two node:   address(0xb15d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
+Two node:   address(0xc67d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
 
-Three node: address(0xb15ee0): key[0] = 26: parent[0xb15f20]->children[0]->keys[0] = 26 <-- is Leaf 
+Three node: address(0xc67ee0): key[0] = 26: parent[0xc67f20]->children[0]->keys[0] = 26 <-- is Leaf 
 
-Three node: address(0xb15ee0): key[1] = 27: parent[0xb15f20]->children[0]->keys[1] = 27 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[0xc67f20]->children[0]->keys[1] = 27 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[0xb15f20]->children[1]->keys[0] = 33 <-- is Leaf 
+Four node:  address(0xc67ce0): key[0] = 33: parent[0xc67f20]->children[1]->keys[0] = 33 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[1] = 37: parent[0xb15f20]->children[1]->keys[1] = 37 <-- is Leaf 
+Four node:  address(0xc67ce0): key[1] = 37: parent[0xc67f20]->children[1]->keys[1] = 37 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[2] = 40: parent[0xb15f20]->children[1]->keys[2] = 40 <-- is Leaf 
+Four node:  address(0xc67ce0): key[2] = 40: parent[0xc67f20]->children[1]->keys[2] = 40 <-- is Leaf 
 
-Two node:   address(0xb15f20): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
+Two node:   address(0xc67f20): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
 
-Three node: address(0xb16020): key[0] = 23: {Root}
+Three node: address(0xc68020): key[0] = 23: {Root}
 
-Two node:   address(0xb15ea0): key[0] = 92: parent[0xb15fa0]->children[0]->keys[0] = 92 <-- is Leaf 
+Two node:   address(0xc67ea0): key[0] = 92: parent[0xc67fa0]->children[0]->keys[0] = 92 <-- is Leaf 
 
-Three node: address(0xb16060): key[0] = 100: parent[0xb15fa0]->children[1]->keys[0] = 100 <-- is Leaf 
+Three node: address(0xc68060): key[0] = 100: parent[0xc67fa0]->children[1]->keys[0] = 100 <-- is Leaf 
 
-Three node: address(0xb16060): key[1] = 201: parent[0xb15fa0]->children[1]->keys[1] = 201 <-- is Leaf 
+Three node: address(0xc68060): key[1] = 201: parent[0xc67fa0]->children[1]->keys[1] = 201 <-- is Leaf 
 
-Two node:   address(0xb15fa0): key[0] = 97: parent[ root ]->children[2]->keys[0] = 97
+Two node:   address(0xc67fa0): key[0] = 97: parent[ root ]->children[2]->keys[0] = 97
 
-Three node: address(0xb16020): key[1] = 90: {Root}
+Three node: address(0xc68020): key[1] = 90: {Root}
 
 =================== Normal Tree Print =======================
 1 2 15 17 23 26 27 70 33 37 40 90 92 97 100 201 
@@ -309,575 +427,449 @@ item 40 not successfully removed
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[0xb15d20]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc67ca0): key[0] = 1: parent[0xc67d20]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[0xb15d20]->children[0]->keys[1] = 2 <-- is Leaf 
+Three node: address(0xc67ca0): key[1] = 2: parent[0xc67d20]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Two node:   address(0xb15e60): key[0] = 17: parent[0xb15d20]->children[1]->keys[0] = 17 <-- is Leaf 
+Two node:   address(0xc67e60): key[0] = 17: parent[0xc67d20]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Two node:   address(0xb15d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
+Two node:   address(0xc67d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
 
-Three node: address(0xb15ee0): key[0] = 26: parent[0xb15f20]->children[0]->keys[0] = 26 <-- is Leaf 
+Three node: address(0xc67ee0): key[0] = 26: parent[0xc67f20]->children[0]->keys[0] = 26 <-- is Leaf 
 
-Three node: address(0xb15ee0): key[1] = 27: parent[0xb15f20]->children[0]->keys[1] = 27 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[0xc67f20]->children[0]->keys[1] = 27 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[0xb15f20]->children[1]->keys[0] = 33 <-- is Leaf 
+Four node:  address(0xc67ce0): key[0] = 33: parent[0xc67f20]->children[1]->keys[0] = 33 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[1] = 37: parent[0xb15f20]->children[1]->keys[1] = 37 <-- is Leaf 
+Four node:  address(0xc67ce0): key[1] = 37: parent[0xc67f20]->children[1]->keys[1] = 37 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[2] = 40: parent[0xb15f20]->children[1]->keys[2] = 40 <-- is Leaf 
+Four node:  address(0xc67ce0): key[2] = 40: parent[0xc67f20]->children[1]->keys[2] = 40 <-- is Leaf 
 
-Four node:  address(0xb15f20): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
+Four node:  address(0xc67f20): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
 
-Two node:   address(0xb15ea0): key[0] = 92: parent[0xb15f20]->children[2]->keys[0] = 92 <-- is Leaf 
+Two node:   address(0xc67ea0): key[0] = 92: parent[0xc67f20]->children[2]->keys[0] = 92 <-- is Leaf 
 
-Four node:  address(0xb15f20): key[1] = 90: parent[ root ]->children[1]->keys[1] = 90
+Four node:  address(0xc67f20): key[1] = 90: parent[ root ]->children[1]->keys[1] = 90
 
-Three node: address(0xb16060): key[0] = 100: parent[0xb15f20]->children[3]->keys[0] = 100 <-- is Leaf 
+Three node: address(0xc68060): key[0] = 100: parent[0xc67f20]->children[3]->keys[0] = 100 <-- is Leaf 
 
-Three node: address(0xb16060): key[1] = 201: parent[0xb15f20]->children[3]->keys[1] = 201 <-- is Leaf 
+Three node: address(0xc68060): key[1] = 201: parent[0xc67f20]->children[3]->keys[1] = 201 <-- is Leaf 
 
-Four node:  address(0xb15f20): key[2] = 97: parent[ root ]->children[1]->keys[2] = 97
+Four node:  address(0xc67f20): key[2] = 97: parent[ root ]->children[1]->keys[2] = 97
 
-Two node:   address(0xb16020): key[0] = 23: {Root}
+Two node:   address(0xc68020): key[0] = 23: {Root}
 
 =================== Normal Tree Print =======================
 1 2 15 17 23 26 27 70 33 37 40 90 92 97 100 201 
 -----------------------
 
+tree size before converting 2-node root = 65561
+debug print before converting 2-node root
+
+Three node: address(0xc67ca0): key[0] = 1: parent[0xc67d20]->children[0]->keys[0] = 1 <-- is Leaf 
+
+Three node: address(0xc67ca0): key[1] = 2: parent[0xc67d20]->children[0]->keys[1] = 2 <-- is Leaf 
+
+Two node:   address(0xc67e60): key[0] = 17: parent[0xc67d20]->children[1]->keys[0] = 17 <-- is Leaf 
+
+Two node:   address(0xc67d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
+
+Three node: address(0xc67ee0): key[0] = 26: parent[0xc67f20]->children[0]->keys[0] = 26 <-- is Leaf 
+
+Three node: address(0xc67ee0): key[1] = 27: parent[0xc67f20]->children[0]->keys[1] = 27 <-- is Leaf 
+
+Four node:  address(0xc67ce0): key[0] = 33: parent[0xc67f20]->children[1]->keys[0] = 33 <-- is Leaf 
+
+Four node:  address(0xc67ce0): key[1] = 37: parent[0xc67f20]->children[1]->keys[1] = 37 <-- is Leaf 
+
+Four node:  address(0xc67ce0): key[2] = 40: parent[0xc67f20]->children[1]->keys[2] = 40 <-- is Leaf 
+
+Four node:  address(0xc67f20): key[0] = 70: parent[ root ]->children[1]->keys[0] = 70
+
+Two node:   address(0xc67ea0): key[0] = 92: parent[0xc67f20]->children[2]->keys[0] = 92 <-- is Leaf 
+
+Four node:  address(0xc67f20): key[1] = 90: parent[ root ]->children[1]->keys[1] = 90
+
+Three node: address(0xc68060): key[0] = 100: parent[0xc67f20]->children[3]->keys[0] = 100 <-- is Leaf 
+
+Three node: address(0xc68060): key[1] = 201: parent[0xc67f20]->children[3]->keys[1] = 201 <-- is Leaf 
+
+Four node:  address(0xc67f20): key[2] = 97: parent[ root ]->children[1]->keys[2] = 97
+
+Two node:   address(0xc68020): key[0] = 23: {Root}
+
+tree size after converting 2-node root = 65561
+debug print after converting 2-node root
+
+Three node: address(0xc67ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+
+Three node: address(0xc67ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
+
+Two node:   address(0xc67e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
+
+Four node:  address(0xc68020): key[0] = 15: {Root}
+
+Three node: address(0xc67ee0): key[0] = 26: parent[ root ]->children[2]->keys[0] = 26 <-- is Leaf 
+
+Three node: address(0xc67ee0): key[1] = 27: parent[ root ]->children[2]->keys[1] = 27 <-- is Leaf 
+
+Four node:  address(0xc68020): key[1] = 23: {Root}
+
+Four node:  address(0xc67ce0): key[0] = 33: parent[ root ]->children[3]->keys[0] = 33 <-- is Leaf 
+
+Four node:  address(0xc67ce0): key[1] = 37: parent[ root ]->children[3]->keys[1] = 37 <-- is Leaf 
+
+Four node:  address(0xc67ce0): key[2] = 40: parent[ root ]->children[3]->keys[2] = 40 <-- is Leaf 
+
+Four node:  address(0xc68020): key[2] = 70: {Root}
+
 item 70 successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[0xb15d20]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc67ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[0xb15d20]->children[0]->keys[1] = 2 <-- is Leaf 
+Three node: address(0xc67ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Two node:   address(0xb15e60): key[0] = 17: parent[0xb15d20]->children[1]->keys[0] = 17 <-- is Leaf 
+Two node:   address(0xc67e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Two node:   address(0xb15d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
+Three node: address(0xc68020): key[0] = 23: {Root}
 
-Three node: address(0xb15ee0): key[0] = 26: parent[0xb15f20]->children[0]->keys[0] = 26 <-- is Leaf 
+Three node: address(0xc67ee0): key[0] = 26: parent[ root ]->children[2]->keys[0] = 26 <-- is Leaf 
 
-Three node: address(0xb15ee0): key[1] = 27: parent[0xb15f20]->children[0]->keys[1] = 27 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[ root ]->children[2]->keys[1] = 27 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[0xb15f20]->children[1]->keys[0] = 33 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[1] = 37: parent[0xb15f20]->children[1]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[0xb15f20]->children[1]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb15f20): key[0] = 90: parent[ root ]->children[1]->keys[0] = 90
-
-Two node:   address(0xb15ea0): key[0] = 92: parent[0xb15f20]->children[2]->keys[0] = 92 <-- is Leaf 
-
-Three node: address(0xb15f20): key[1] = 97: parent[ root ]->children[1]->keys[1] = 97
-
-Two node:   address(0xb16020): key[0] = 23: {Root}
+Three node: address(0xc68020): key[1] = 15: {Root}
 
 =================== Normal Tree Print =======================
-1 2 15 17 23 26 27 90 33 37 40 97 92 
+1 2 23 17 15 26 27 
 -----------------------
 
 item 80 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[0xb15d20]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc67ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[0xb15d20]->children[0]->keys[1] = 2 <-- is Leaf 
+Three node: address(0xc67ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Two node:   address(0xb15e60): key[0] = 17: parent[0xb15d20]->children[1]->keys[0] = 17 <-- is Leaf 
+Two node:   address(0xc67e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Two node:   address(0xb15d20): key[0] = 15: parent[ root ]->children[0]->keys[0] = 15
+Three node: address(0xc68020): key[0] = 23: {Root}
 
-Three node: address(0xb15ee0): key[0] = 26: parent[0xb15f20]->children[0]->keys[0] = 26 <-- is Leaf 
+Three node: address(0xc67ee0): key[0] = 26: parent[ root ]->children[2]->keys[0] = 26 <-- is Leaf 
 
-Three node: address(0xb15ee0): key[1] = 27: parent[0xb15f20]->children[0]->keys[1] = 27 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[ root ]->children[2]->keys[1] = 27 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[0xb15f20]->children[1]->keys[0] = 33 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[1] = 37: parent[0xb15f20]->children[1]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[0xb15f20]->children[1]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb15f20): key[0] = 90: parent[ root ]->children[1]->keys[0] = 90
-
-Two node:   address(0xb15ea0): key[0] = 92: parent[0xb15f20]->children[2]->keys[0] = 92 <-- is Leaf 
-
-Three node: address(0xb15f20): key[1] = 97: parent[ root ]->children[1]->keys[1] = 97
-
-Two node:   address(0xb16020): key[0] = 23: {Root}
+Three node: address(0xc68020): key[1] = 15: {Root}
 
 =================== Normal Tree Print =======================
-1 2 15 17 23 26 27 90 33 37 40 97 92 
+1 2 23 17 15 26 27 
 -----------------------
 
-item 15 successfully removed 
+item 15 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[0xb15d20]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc67ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[0xb15d20]->children[0]->keys[1] = 2 <-- is Leaf 
+Three node: address(0xc67ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[0xb15d20]->children[1]->keys[0] = 17 <-- is Leaf 
+Two node:   address(0xc67e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Three node: address(0xb15e60): key[1] = 23: parent[0xb15d20]->children[1]->keys[1] = 23 <-- is Leaf 
+Three node: address(0xc68020): key[0] = 23: {Root}
 
-Two node:   address(0xb15d20): key[0] = 26: parent[ root ]->children[0]->keys[0] = 26
+Three node: address(0xc67ee0): key[0] = 26: parent[ root ]->children[2]->keys[0] = 26 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[0xb15f20]->children[0]->keys[0] = 33 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[ root ]->children[2]->keys[1] = 27 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[1] = 37: parent[0xb15f20]->children[0]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[0xb15f20]->children[0]->keys[2] = 40 <-- is Leaf 
-
-Two node:   address(0xb15ea0): key[0] = 92: parent[0xb15f20]->children[1]->keys[0] = 92 <-- is Leaf 
-
-Two node:   address(0xb15f20): key[0] = 97: parent[ root ]->children[1]->keys[0] = 97
-
-Two node:   address(0xb16020): key[0] = 90: {Root}
+Three node: address(0xc68020): key[1] = 15: {Root}
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 90 33 37 40 97 92 
+1 2 23 17 15 26 27 
 -----------------------
 
-item 90 successfully removed 
+item 90 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc67ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
+Three node: address(0xc67ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
+Two node:   address(0xc67e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
+Three node: address(0xc68020): key[0] = 23: {Root}
 
-Three node: address(0xb16020): key[0] = 26: {Root}
+Three node: address(0xc67ee0): key[0] = 26: parent[ root ]->children[2]->keys[0] = 26 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[ root ]->children[2]->keys[0] = 33 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[ root ]->children[2]->keys[1] = 27 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[1] = 37: parent[ root ]->children[2]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[ root ]->children[2]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 97: {Root}
+Three node: address(0xc68020): key[1] = 15: {Root}
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 97 33 37 40 
+1 2 23 17 15 26 27 
 -----------------------
 
 item 100 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc67ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
+Three node: address(0xc67ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
+Two node:   address(0xc67e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
+Three node: address(0xc68020): key[0] = 23: {Root}
 
-Three node: address(0xb16020): key[0] = 26: {Root}
+Three node: address(0xc67ee0): key[0] = 26: parent[ root ]->children[2]->keys[0] = 26 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[ root ]->children[2]->keys[0] = 33 <-- is Leaf 
+Three node: address(0xc67ee0): key[1] = 27: parent[ root ]->children[2]->keys[1] = 27 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[1] = 37: parent[ root ]->children[2]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[ root ]->children[2]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 97: {Root}
+Three node: address(0xc68020): key[1] = 15: {Root}
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 97 33 37 40 
+1 2 23 17 15 26 27 
 -----------------------
 
-item 27 not successfully removed 
+item 27 successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc67ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
+Three node: address(0xc67ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
+Two node:   address(0xc67e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
+Three node: address(0xc68020): key[0] = 23: {Root}
 
-Three node: address(0xb16020): key[0] = 26: {Root}
+Two node:   address(0xc67ee0): key[0] = 26: parent[ root ]->children[2]->keys[0] = 26 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[ root ]->children[2]->keys[0] = 33 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[1] = 37: parent[ root ]->children[2]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[ root ]->children[2]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 97: {Root}
+Three node: address(0xc68020): key[1] = 15: {Root}
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 97 33 37 40 
+1 2 23 17 15 26 
 -----------------------
 
 item 62 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc67ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
+Three node: address(0xc67ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
+Four node:  address(0xc67ee0): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
 
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
+Four node:  address(0xc67ee0): key[1] = 15: parent[ root ]->children[1]->keys[1] = 15 <-- is Leaf 
 
-Three node: address(0xb16020): key[0] = 26: {Root}
+Four node:  address(0xc67ee0): key[2] = 26: parent[ root ]->children[1]->keys[2] = 26 <-- is Leaf 
 
-Four node:  address(0xb15ce0): key[0] = 33: parent[ root ]->children[2]->keys[0] = 33 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[1] = 37: parent[ root ]->children[2]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[ root ]->children[2]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 97: {Root}
+Two node:   address(0xc68020): key[0] = 23: {Root}
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 97 33 37 40 
+1 2 23 17 15 26 
 -----------------------
+
+tree size before converting 2-node root = 65560
+debug print before converting 2-node root
+
+Three node: address(0xc67ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+
+Three node: address(0xc67ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
+
+Four node:  address(0xc67ee0): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
+
+Four node:  address(0xc67ee0): key[1] = 15: parent[ root ]->children[1]->keys[1] = 15 <-- is Leaf 
+
+Four node:  address(0xc67ee0): key[2] = 26: parent[ root ]->children[1]->keys[2] = 26 <-- is Leaf 
+
+Two node:   address(0xc68020): key[0] = 23: {Root}
+
+tree size after converting 2-node root = 65560
+debug print after converting 2-node root
+
+Four node:  address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
+
+Four node:  address(0xc68020): key[1] = 23: {Root} <-- is Leaf 
+
+Four node:  address(0xc68020): key[2] = 17: {Root} <-- is Leaf 
 
 item 87 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+Four node:  address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
+Four node:  address(0xc68020): key[1] = 23: {Root} <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Three node: address(0xb16020): key[0] = 26: {Root}
-
-Four node:  address(0xb15ce0): key[0] = 33: parent[ root ]->children[2]->keys[0] = 33 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[1] = 37: parent[ root ]->children[2]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[ root ]->children[2]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 97: {Root}
+Four node:  address(0xc68020): key[2] = 17: {Root} <-- is Leaf 
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 97 33 37 40 
+1 23 17 
 -----------------------
 
 item 37 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+Four node:  address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
+Four node:  address(0xc68020): key[1] = 23: {Root} <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Three node: address(0xb16020): key[0] = 26: {Root}
-
-Four node:  address(0xb15ce0): key[0] = 33: parent[ root ]->children[2]->keys[0] = 33 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[1] = 37: parent[ root ]->children[2]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[ root ]->children[2]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 97: {Root}
+Four node:  address(0xc68020): key[2] = 17: {Root} <-- is Leaf 
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 97 33 37 40 
+1 23 17 
 -----------------------
 
 item 27 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+Four node:  address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
+Four node:  address(0xc68020): key[1] = 23: {Root} <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Three node: address(0xb16020): key[0] = 26: {Root}
-
-Four node:  address(0xb15ce0): key[0] = 33: parent[ root ]->children[2]->keys[0] = 33 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[1] = 37: parent[ root ]->children[2]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[ root ]->children[2]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 97: {Root}
+Four node:  address(0xc68020): key[2] = 17: {Root} <-- is Leaf 
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 97 33 37 40 
+1 23 17 
 -----------------------
 
 item 92 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+Four node:  address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
+Four node:  address(0xc68020): key[1] = 23: {Root} <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Three node: address(0xb16020): key[0] = 26: {Root}
-
-Four node:  address(0xb15ce0): key[0] = 33: parent[ root ]->children[2]->keys[0] = 33 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[1] = 37: parent[ root ]->children[2]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[ root ]->children[2]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 97: {Root}
+Four node:  address(0xc68020): key[2] = 17: {Root} <-- is Leaf 
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 97 33 37 40 
+1 23 17 
 -----------------------
 
 item 79 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+Four node:  address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
+Four node:  address(0xc68020): key[1] = 23: {Root} <-- is Leaf 
 
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Three node: address(0xb16020): key[0] = 26: {Root}
-
-Four node:  address(0xb15ce0): key[0] = 33: parent[ root ]->children[2]->keys[0] = 33 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[1] = 37: parent[ root ]->children[2]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[ root ]->children[2]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 97: {Root}
+Four node:  address(0xc68020): key[2] = 17: {Root} <-- is Leaf 
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 97 33 37 40 
+1 23 17 
 -----------------------
 
-item 23 not successfully removed 
+item 23 successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
+Three node: address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
 
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
-
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Three node: address(0xb16020): key[0] = 26: {Root}
-
-Four node:  address(0xb15ce0): key[0] = 33: parent[ root ]->children[2]->keys[0] = 33 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[1] = 37: parent[ root ]->children[2]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[ root ]->children[2]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 97: {Root}
+Three node: address(0xc68020): key[1] = 17: {Root} <-- is Leaf 
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 97 33 37 40 
+1 17 
 -----------------------
 
-item 17 not successfully removed 
+item 17 successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
-
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
-
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Three node: address(0xb16020): key[0] = 26: {Root}
-
-Four node:  address(0xb15ce0): key[0] = 33: parent[ root ]->children[2]->keys[0] = 33 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[1] = 37: parent[ root ]->children[2]->keys[1] = 37 <-- is Leaf 
-
-Four node:  address(0xb15ce0): key[2] = 40: parent[ root ]->children[2]->keys[2] = 40 <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 97: {Root}
+Two node:   address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 97 33 37 40 
+1 
 -----------------------
 
-item 97 successfully removed 
+item 97 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
-
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
-
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Two node:   address(0xb16020): key[0] = 26: {Root}
+Two node:   address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 
+1 
 -----------------------
 
 item 55 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
-
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
-
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Two node:   address(0xb16020): key[0] = 26: {Root}
+Two node:   address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 
+1 
 -----------------------
 
 item 51 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
-
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
-
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Two node:   address(0xb16020): key[0] = 26: {Root}
+Two node:   address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 
+1 
 -----------------------
 
 item 69 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb15ca0): key[0] = 1: parent[ root ]->children[0]->keys[0] = 1 <-- is Leaf 
-
-Three node: address(0xb15ca0): key[1] = 2: parent[ root ]->children[0]->keys[1] = 2 <-- is Leaf 
-
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Two node:   address(0xb16020): key[0] = 26: {Root}
+Two node:   address(0xc68020): key[0] = 1: {Root} <-- is Leaf 
 
 =================== Normal Tree Print =======================
-1 2 26 17 23 
+1 
 -----------------------
 
 item 1 successfully removed 
 
 =======Tree Debug =====================
 
-Two node:   address(0xb15ca0): key[0] = 2: parent[ root ]->children[0]->keys[0] = 2 <-- is Leaf 
-
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Two node:   address(0xb16020): key[0] = 26: {Root}
-
 =================== Normal Tree Print =======================
-2 26 17 23 
+
 -----------------------
 
 item 201 not successfully removed 
 
 =======Tree Debug =====================
 
-Two node:   address(0xb15ca0): key[0] = 2: parent[ root ]->children[0]->keys[0] = 2 <-- is Leaf 
-
-Three node: address(0xb15e60): key[0] = 17: parent[ root ]->children[1]->keys[0] = 17 <-- is Leaf 
-
-Three node: address(0xb15e60): key[1] = 23: parent[ root ]->children[1]->keys[1] = 23 <-- is Leaf 
-
-Two node:   address(0xb16020): key[0] = 26: {Root}
-
 =================== Normal Tree Print =======================
-2 26 17 23 
+
 -----------------------
 
-item 2 successfully removed 
+item 2 not successfully removed 
 
 =======Tree Debug =====================
 
-Two node:   address(0xb15ca0): key[0] = 26: parent[ root ]->children[0]->keys[0] = 26 <-- is Leaf 
-
-Two node:   address(0xb15e60): key[0] = 23: parent[ root ]->children[1]->keys[0] = 23 <-- is Leaf 
-
-Two node:   address(0xb16020): key[0] = 17: {Root}
-
 =================== Normal Tree Print =======================
-26 17 23 
+
 -----------------------
 
 item 33 not successfully removed 
 
 =======Tree Debug =====================
 
-Four node:  address(0xb16020): key[0] = 26: {Root} <-- is Leaf 
-
-Four node:  address(0xb16020): key[1] = 17: {Root} <-- is Leaf 
-
-Four node:  address(0xb16020): key[2] = 23: {Root} <-- is Leaf 
-
 =================== Normal Tree Print =======================
-26 17 23 
+
 -----------------------
 
-item 26 successfully removed 
+item 26 not successfully removed 
 
 =======Tree Debug =====================
 
-Three node: address(0xb16020): key[0] = 17: {Root} <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 23: {Root} <-- is Leaf 
-
 =================== Normal Tree Print =======================
-17 23 
+
 -----------------------
 
 
 ==== Final Tree ========
 
-
-Three node: address(0xb16020): key[0] = 17: {Root} <-- is Leaf 
-
-Three node: address(0xb16020): key[1] = 23: {Root} <-- is Leaf 
 
