@@ -13,28 +13,31 @@ using namespace std;
 int main(int argc, char** argv)
 {
   vector<int> input{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69, 1, 201, 2, 33, 26};
+  
   Tree234<int> tree{ input };
    
-  TreePrinter printTree(cout);
-  
   cout << "Printing tree in pre order" << endl;
+
+  // Lambda for printing ints in Tree234
+  auto lambda = [&](int i) -> ostream& { cout << i << ' '; return cout; };
    
-  tree.preOrderTraverse(printTree);
+  //tree.preOrderTraverse(printTree);
+  tree.preOrderTraverse(lambda);
   
   cout << "\n======================" << endl;
-  
+    
   cout << "Printing copy of tree" << endl;
    
   Tree234<int> newTree{tree};
   
-  newTree.inOrderTraverse(printTree);
+  newTree.inOrderTraverse(lambda);
   
   cout << "\n======================" << endl;
-  
+    
   cout << "Printing tree in order, using lambda" << endl;
    
   // Here we print the print using a lambda instead of a function object.
-  tree.inOrderTraverse([&](int k) { cout << k << ' ';});
+  tree.inOrderTraverse(lambda);
   
   cout << endl;
     
@@ -60,7 +63,7 @@ int main(int argc, char** argv)
 
     cout << "\n=================== Normal Tree Print =======================\n";
 
-    tree.inOrderTraverse(printTree);
+    tree.inOrderTraverse(lambda);
     cout << "\n-----------------------\n";
 
     cout << endl;
