@@ -271,14 +271,14 @@ template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{s
     root->parent = nullptr;
 }
 
-template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr) 
+template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr), tree_size{0} 
 {
     for (K& x: il) { // simply call insert(x)
           insert(x);
     }
 }
 
-template<typename K> inline Tree234<K>::Tree234(const std::vector<K>& vec) noexcept : root(nullptr) 
+template<typename K> inline Tree234<K>::Tree234(const std::vector<K>& vec) noexcept : root(nullptr), tree_size{0} 
 {
     for (const K& x: vec) { // simply call insert(x)
           insert(x);
