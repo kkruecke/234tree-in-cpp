@@ -1189,16 +1189,16 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  noexcept
 {                                                                         
    Node234 *convertedNode;
+   // Debug code
+   DebugPrinter debug_printer(std::cout);
    
    // special case root, which has no parent.
    if (node == root.get()) { // TODO: This is not working?
 
        // Debug code
-       std::cout <<  "tree size before converting 2-node root = " << size() << std::endl;
-
-       DebugPrinter debug_printer(std::cout);
-
-       std::cout << "debug print before converting 2-node root" << std::endl;
+       std::cout <<  "In convertTwoNode(). Tree size before converting 2-node root = " << size() << std::endl;
+       
+       std::cout << "Debug print before converting 2-node root" << std::endl;
 
        debug_dump(debug_printer);
 
@@ -1219,9 +1219,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
       root->connectChild(2, child_right->children[0]); 
       root->connectChild(3, child_right->children[1]); 
       
-      std::cout <<  "tree size after converting 2-node root = " << size() << std::endl;
-
-      std::cout << "debug print after converting 2-node root" << std::endl;
+      std::cout << "In convertTwoNode. Debug print after converting 2-node root" << std::endl;
 
       debug_dump(debug_printer);
 
@@ -1230,6 +1228,14 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
       return node;
    } // <--former children of root, the left and right children of the former 2-node root, are freeed when unique_ptrs go out of scope.
    // TODO: The destructor for array<unique_ptr<Node234>> gets called during ~Node234()
+   // Debug code
+   std::cout <<  "In convertTwoNode(). Tree size before converting 2-node root = " << size() << std::endl;
+
+   std::cout << "Debug print before converting 2-node root" << std::endl;
+
+   debug_dump(debug_printer);
+
+   std::cout << std::endl;
 
    Node234 *parent = node->getParent();
 
@@ -1338,7 +1344,15 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
      //--convertedNode = doRotation(parent, node2_index, sibling_index);
    }
-   
+        // Debug code
+   std::cout <<  "In convertTwoNode(). Tree size before converting 2-node root = " << size() << std::endl;
+
+   std::cout << "Debug print before converting 2-node root" << std::endl;
+
+   debug_dump(debug_printer);
+
+   std::cout << std::endl;
+
    return convertedNode;
 }
 /*
