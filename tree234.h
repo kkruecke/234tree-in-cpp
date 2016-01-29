@@ -20,6 +20,7 @@ class DebugPrinter;
   2 3 4 implementation discussions and pseudo code links:
 
 This link has an excellent working example. The explanation is thorough and clear. It gives several example of deleting elements. It uses the in-order predecessor
+       in
 rather than the successor when deleting.
 
   http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
@@ -1189,20 +1190,26 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  noexcept
 {                                                                         
    Node234 *convertedNode;
-   // Debug code
-   DebugPrinter debug_printer(std::cout);
    
+   // Debug code start
+   DebugPrinter debug_printer(std::cout);
+   int total_items = 0;
+   auto lambda = [&total_items](int x) { ++total_items; };
+   
+   std::cout << "In convertTwoNode. Debug print before converting 2-node" << std::endl;
+       
+   inOrderTraverse(lambda);
+
+   std::cout << "total items in tree = " << total_items << std::endl;  
+
+   debug_dump(debug_printer);
+
+   std::cout << std::endl;
+   // Debug code end
+      
    // special case root, which has no parent.
    if (node == root.get()) { // TODO: This is not working?
-
-       // Debug code
-       std::cout <<  "In convertTwoNode(). Tree size before converting 2-node root = " << size() << std::endl;
        
-       std::cout << "Debug print before converting 2-node root" << std::endl;
-
-       debug_dump(debug_printer);
-
-       std::cout << std::endl;
       // Note: node is root 
       std::unique_ptr<Node234> child_left = std::move(root->children[0]);
       std::unique_ptr<Node234> child_right = std::move(root->children[1]);
@@ -1219,14 +1226,21 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
       root->connectChild(2, child_right->children[0]); 
       root->connectChild(3, child_right->children[1]); 
       
-      std::cout << "In convertTwoNode. Debug print after converting 2-node root" << std::endl;
+      // Debug code start
+      std::cout << "\n-------------------------\nDebug print after converting 2-mode root" << std::endl;      
+              
+      total_items = 0;
+      inOrderTraverse(lambda);
 
+      std::cout << "total items in tree = " << total_items << std::endl;  
       debug_dump(debug_printer);
 
       std::cout << std::endl;
+      // Debug code end.
       
       return node;
    } // <--former children of root, the left and right children of the former 2-node root, are freeed when unique_ptrs go out of scope.
+   
    // TODO: The destructor for array<unique_ptr<Node234>> gets called during ~Node234()
    // Debug code
    std::cout <<  "In convertTwoNode(). Tree size before converting 2-node root = " << size() << std::endl;
@@ -1236,6 +1250,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    debug_dump(debug_printer);
 
    std::cout << std::endl;
+   // end Debug code.
 
    Node234 *parent = node->getParent();
 
@@ -1344,14 +1359,19 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
      //--convertedNode = doRotation(parent, node2_index, sibling_index);
    }
-        // Debug code
-   std::cout <<  "In convertTwoNode(). Tree size before converting 2-node root = " << size() << std::endl;
+   
+   // Debug code start
+     
+   std::cout << "Debug print after converting 2-node non-root node" << std::endl;
+   total_items = 0;
+   inOrderTraverse(lambda);
 
-   std::cout << "Debug print before converting 2-node root" << std::endl;
+   std::cout << "total items in tree = " << total_items << std::endl;  
 
    debug_dump(debug_printer);
 
    std::cout << std::endl;
+   // Debug code end
 
    return convertedNode;
 }

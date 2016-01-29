@@ -53,8 +53,18 @@ int main(int argc, char** argv)
     bool rc = tree.remove(item);
        
     string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
-
+    
     cout << "item " << item << str_remove_status;
+    
+    if (str_remove_status == string{" not successfully removed "}) {
+         
+        cerr << "Exiting upon remove error!!!" << endl;
+        cout << "\n\n=======Tree Debug =====================" << endl;
+
+        tree.debug_dump(debug_printer);
+        return 0;
+    }
+
 
     cout << "\n\n=======Tree Debug =====================" << endl;
 
