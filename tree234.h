@@ -147,7 +147,7 @@ template<typename K> class Tree234 {
     ~Tree234(); 
 
     // Breadth-first traversals
-    teamplate<typename Functor> void levelOrderTraverse(Functor f) noexcept;
+    template<typename Functor> void levelOrderTraverse(Functor f) noexcept;
 
     // Depth-first traversals
     template<typename Functor> void inOrderTraverse(Functor f) noexcept;
@@ -293,16 +293,17 @@ template<typename K> template<typename Functor> void Tree234<K>::DoLevelOrderTra
 
         Node234 *current = q.front();
 
-        f(current); // print out all the keys in current for example.
+        f(current); // For example: print out all the keys in current.
 
         if (!current->isLeaf()) {
 
-          for(auto i = 0; i < current->getChildCount(); ++i) {
+            for(auto i = 0; i < current->getChildCount(); ++i) {
 
-            q.push(current->children[i].get();  
+               q.push(current->children[i].get());  
+            }
         }
 
-        q.pop(); // TODO: Do I need to pop all the children like I pushed them?
+        q.pop(); // I think this is correct.
    }
 }
 
