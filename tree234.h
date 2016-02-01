@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <array>
+#include <queue>
 #include <iosfwd>
 
 // fwd declarations
@@ -107,6 +108,7 @@ template<typename K> class Tree234 {
     
     bool DoSearch(K key, Node234 *&location, int& index) noexcept;
 
+    template<typename Functor> void DoLevelOrderTraverse(Functor f, Node234 *root) noexcept;
     template<typename Functor> void DoInorderTraverse(Functor f, Node234 *root) noexcept;
     template<typename Functor> void DoPostOrderTraverse(Functor f, Node234 *root) noexcept;
     template<typename Functor> void DoPreOrderTraverse(Functor f, Node234 *root) noexcept;
@@ -281,6 +283,29 @@ template<typename K> template<typename Functor> inline void Tree234<K>::levelOrd
    DoLevelOrderTraverse(f, root.get());
 }
 
+template<typename K> template<typename Functor> void Tree234<K>::DoLevelOrderTraverse(Functor f, Node234 *current) noexcept
+{
+   if (current == nullptr) return;
+   
+   std::queue<Node234*> q; 
+
+   while (!q.empty()) {
+
+        Node234 *current = q.front();
+
+        f(current); // print out all the keys in current for example.
+
+        if (!current->isLeaf()) {
+
+          for(auto i = 0; i < current->getChildCount(); ++i) {
+
+            q.push(current->children[i].get();  
+        }
+
+        q.pop(); // TODO: Do I need to pop all the children like I pushed them?
+   }
+}
+
 template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f) noexcept
 {
    DoInorderTraverse(f, root.get());
@@ -300,7 +325,6 @@ template<typename K> template<typename Functor> inline void Tree234<K>::debug_du
 {
    DoPostOrder4Debug(f, root.get());
 }
-
 /*
  * post order traversal 
  */
