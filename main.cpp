@@ -19,25 +19,22 @@ int main(int argc, char** argv)
   cout << "Printing tree in pre order" << endl;
 
   // Lambda for printing ints in Tree234
-  auto lambda = [&](int i) -> ostream& { cout << i << ' '; return cout; };
+  auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
    
-  //tree.preOrderTraverse(printTree);
-  tree.preOrderTraverse(lambda);
-  
   cout << "\n======================" << endl;
     
   cout << "Printing copy of tree" << endl;
    
   Tree234<int> newTree{tree};
   
-  newTree.inOrderTraverse(lambda);
+  newTree.inOrderTraverse(print_keys);
   
   cout << "\n======================" << endl;
     
-  cout << "Printing tree in order, using lambda" << endl;
+  cout << "Printing tree in order, using print_keys" << endl;
    
-  // Here we print the print using a lambda instead of a function object.
-  tree.inOrderTraverse(lambda);
+  // Here we print the print using a print_keys instead of a function object.
+  tree.inOrderTraverse(print_keys);
   
   cout << endl;
     
@@ -83,7 +80,7 @@ int main(int argc, char** argv)
 
     cout << "\n=================== Normal Tree Print =======================\n";
 
-    tree.inOrderTraverse(lambda);
+    tree.inOrderTraverse(print_keys);
     cout << "\n-----------------------\n";
 
     cout << endl;

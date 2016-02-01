@@ -1,4 +1,8 @@
-Draw the tree out and follow it step by step. Consider adding another parameter for node level-in-tree to DoPostorder4Debug(), something like
+Draw the tree out and follow it step by step. Consider adding breadth-first traversal 
+
+  https://www.youtube.com/watch?v=9RHO6jU--GU
+
+in addition to the depth-rist traversals.  
 
    DoPostorder4Debug(..., int depth =0), and then increment the depth during recursive invocations:
    {
