@@ -1,15 +1,8 @@
-Draw the tree out and follow it step by step. Consider adding breadth-first traversal 
+Implement breadth-first traversal :
+ 
+  https://www.youtube.com/watch?v=86g8jAQug04
 
-  https://www.youtube.com/watch?v=9RHO6jU--GU
-
-in addition to the depth-rist traversals.  
-
-   DoPostorder4Debug(..., int depth =0), and then increment the depth during recursive invocations:
-   {
-       //. . . 
-       DoPostorder4Debug(..., depth + 1);
-
-   }
+Print out the tree breadth-first using it.  
 
 The new convertTwoNode(Node234*) code in tree234.h, comparing its output to that the original code, is orphaning nodes because some values
 that should still be in the tree (and to be removed).

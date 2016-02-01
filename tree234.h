@@ -144,6 +144,10 @@ template<typename K> class Tree234 {
 
     ~Tree234(); 
 
+    // Breadth-first traversals
+    teamplate<typename Functor> void levelOrderTraverse(Functor f) noexcept;
+
+    // Depth-first traversals
     template<typename Functor> void inOrderTraverse(Functor f) noexcept;
     template<typename Functor> void postOrderTraverse(Functor f) noexcept;
     template<typename Functor> void preOrderTraverse(Functor f) noexcept;
@@ -270,6 +274,11 @@ template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noe
 {
     root = std::move(lhs.root);
     root->parent = nullptr;
+}
+
+template<typename K> template<typename Functor> inline void Tree234<K>::levelOrderTraverse(Functor f) noexcept
+{
+   DoLevelOrderTraverse(f, root.get());
 }
 
 template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f) noexcept
