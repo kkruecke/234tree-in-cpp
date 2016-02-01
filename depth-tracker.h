@@ -8,13 +8,13 @@ class DepthTracker {
        int depth;
   public:
       DepthTracker() : depth{0} {}
-      DepthTracker(const DepthTracker& lhs) : depth{ lhs.depth + 1} {}
+      DepthTracker(const DepthTracker& lhs) : depth{lhs.depth + 1} {}
      ~DepthTracker() {}
       void operator()(int key);
 };
 
 inline void DepthTracker::operator()(int key)
 {
-   std::cout << "key = " << key << " is a node depth = " << depth << std::endl;
+  std::cout << "key = " << key << " is at depth " << depth << std::endl;
 }
 #endif

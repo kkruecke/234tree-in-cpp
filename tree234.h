@@ -1025,8 +1025,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
    /* Search, looking for key, converting 2-nodes to 3- or 4-nodes as encountered */
 
-//   while (current != nullptr) { //++
-
    while(true) {
 
        if (current == nullptr) {
@@ -1034,8 +1032,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
             return false;
 
        } else if (current != root.get() && current->isTwoNode()) { 
-
-
 
             // convert 2-node into 3- or 4-node 
             current = convertTwoNode(current); 
@@ -1051,8 +1047,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
            current = next; 
        }
     }
-
-  //  if (current == nullptr) return false; //++
 
     // Invariant checking: this should never happen. 
     if (key_index + 1 > found_node->totalItems) {
