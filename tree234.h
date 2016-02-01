@@ -23,9 +23,10 @@ class DebugPrinter;
 
 template<typename K> class Tree234 {
     
-  protected:
-   class Node234 { // nested node class
-       
+  public:
+      
+   class Node234 { // public nested node class Tree<K>::Node234
+     private:  
        friend class Tree234<K>;             
        friend class DebugPrinter;
        static const int MAX_KEYS;   
@@ -34,72 +35,72 @@ template<typename K> class Tree234 {
     
        int to_int(const NodeMaxItems x) const { return static_cast<int>(x); }
        
-   private: 
+       private: 
 
-       Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
-                           it points to. */
-
-       int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
-
-       std::array<K, 3> keys; // in static storage not the heap.
-
-       /*
-        * For 2-nodes, children[0] is left pointer and children[1] is right pointer.
-        * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
-        * And so on for 4-nodes.
-        */
-
-       std::array<std::unique_ptr<Node234>, 4> children;
+           Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
+                               it points to. */
+    
+           int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
+    
+           std::array<K, 3> keys; // in static storage not the heap.
+    
+           /*
+            * For 2-nodes, children[0] is left pointer and children[1] is right pointer.
+            * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
+            * And so on for 4-nodes.
+            */
+    
+           std::array<std::unique_ptr<Node234>, 4> children;
+           
+           constexpr Node234 *getParent() noexcept; 
+    
+           /* 
+            * Returns true if key is found in node and sets index so pNode->keys[index] == key
+            * Returns false if key is if not found, and sets next to the next in-order child.
+            */
+           bool NodeDescentSearch(K key, int& index, Node234 *&next) noexcept;
+    
+           int insertKey(K key) noexcept;
+           
+           void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
+           
+           // Remove key, if found, from node, shifting remaining keys to fill its gap.
+           K removeKey(int index) noexcept;
+    
+           /*
+            * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
+            */  
+           std::unique_ptr<Node234> disconnectChild(int child_index) noexcept; 
+    
+           void insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept;
+    
+           /* 
+            * Called during remove(K key).
+            * Merges the 2-node children of a parent 2-node into the parent, making a 4-node. 
+            */
+           Node234 *fuseWithChildren() noexcept; 
        
-       constexpr Node234 *getParent() noexcept; 
-
-       /* 
-        * Returns true if key is found in node and sets index so pNode->keys[index] == key
-        * Returns false if key is if not found, and sets next to the next in-order child.
-        */
-       bool NodeDescentSearch(K key, int& index, Node234 *&next) noexcept;
-
-       int insertKey(K key) noexcept;
-       
-       void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
-       
-       // Remove key, if found, from node, shifting remaining keys to fill its gap.
-       K removeKey(int index) noexcept;
-
-       /*
-        * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
-        */  
-       std::unique_ptr<Node234> disconnectChild(int child_index) noexcept; 
-
-       void insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept;
-
-       /* 
-        * Called during remove(K key).
-        * Merges the 2-node children of a parent 2-node into the parent, making a 4-node. 
-        */
-       Node234 *fuseWithChildren() noexcept; 
-       
-     public:
-         
-       Node234() noexcept;
-
-       //Node234(Node234&& n);
-         
-       Node234(K small) noexcept;
-       Node234(K small, K large) noexcept;
-       Node234(K small, K middle, K large) noexcept;  
-       constexpr const Node234 *getParent() const noexcept;
-
-       constexpr int getTotalItems() const noexcept;
-       constexpr int getChildCount() const noexcept;
-
-       bool findKey(K key, int& index) const noexcept;
-       constexpr bool isLeaf() const noexcept; 
-       constexpr bool isTwoNode() const noexcept;
-       constexpr bool isThreeNode() const noexcept;
-       constexpr bool isFourNode() const noexcept;
-    };  
-
+        public:
+             
+           Node234() noexcept;
+    
+           //Node234(Node234&& n);
+             
+           Node234(K small) noexcept;
+           Node234(K small, K large) noexcept;
+           Node234(K small, K middle, K large) noexcept;  
+           constexpr const Node234 *getParent() const noexcept;
+    
+           constexpr int getTotalItems() const noexcept;
+           constexpr int getChildCount() const noexcept;
+    
+           bool findKey(K key, int& index) const noexcept;
+           constexpr bool isLeaf() const noexcept; 
+           constexpr bool isTwoNode() const noexcept;
+           constexpr bool isThreeNode() const noexcept;
+           constexpr bool isFourNode() const noexcept;
+  }; // end class Tree<K>::Node234  
+ private:
     friend class DebugPrinter;
   
     int to_int(const typename Tree234<K>::Node234::NodeMaxItems x) const { return static_cast<int>(x); }
@@ -108,11 +109,11 @@ template<typename K> class Tree234 {
     
     bool DoSearch(K key, Node234 *&location, int& index) noexcept;
 
-    template<typename Functor> void DoLevelOrderTraverse(Functor f, Node234 *root) noexcept;
-    template<typename Functor> void DoInorderTraverse(Functor f, Node234 *root) noexcept;
-    template<typename Functor> void DoPostOrderTraverse(Functor f, Node234 *root) noexcept;
-    template<typename Functor> void DoPreOrderTraverse(Functor f, Node234 *root) noexcept;
-    template<typename Functor> void DoPostOrder4Debug(Functor f, Node234 *root) noexcept;
+    template<typename Functor> void DoLevelOrderTraverse(Functor f, const Node234 *root) const noexcept;
+    template<typename Functor> void DoInorderTraverse(Functor f, const Node234 *root) const noexcept;
+    template<typename Functor> void DoPostOrderTraverse(Functor f, const Node234 *root) const noexcept;
+    template<typename Functor> void DoPreOrderTraverse(Functor f, const Node234 *root) const noexcept;
+    template<typename Functor> void DoPostOrder4Debug(Functor f, const Node234 *root) noexcept;
 
     void split(Node234 *node) noexcept;  // called during insert to split 4-nodes
     void DestroyTree(std::unique_ptr<Node234> &root) noexcept; 
@@ -147,12 +148,12 @@ template<typename K> class Tree234 {
     ~Tree234(); 
 
     // Breadth-first traversals
-    template<typename Functor> void levelOrderTraverse(Functor f) noexcept;
+    template<typename Functor> void levelOrderTraverse(Functor f) const noexcept;
 
     // Depth-first traversals
-    template<typename Functor> void inOrderTraverse(Functor f) noexcept;
-    template<typename Functor> void postOrderTraverse(Functor f) noexcept;
-    template<typename Functor> void preOrderTraverse(Functor f) noexcept;
+    template<typename Functor> void inOrderTraverse(Functor f) const noexcept;
+    template<typename Functor> void postOrderTraverse(Functor f) const noexcept;
+    template<typename Functor> void preOrderTraverse(Functor f) const noexcept;
 
     template<typename Functor> void debug_dump(Functor f) noexcept;
 
@@ -278,12 +279,12 @@ template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noe
     root->parent = nullptr;
 }
 
-template<typename K> template<typename Functor> inline void Tree234<K>::levelOrderTraverse(Functor f) noexcept
+template<typename K> template<typename Functor> inline void Tree234<K>::levelOrderTraverse(Functor f) const noexcept
 {
    DoLevelOrderTraverse(f, root.get());
 }
 
-template<typename K> template<typename Functor> void Tree234<K>::DoLevelOrderTraverse(Functor f, Node234 *current) noexcept
+template<typename K> template<typename Functor> void Tree234<K>::DoLevelOrderTraverse(Functor f, const Node234 *current) const noexcept
 {
    if (current == nullptr) return;
    
@@ -307,17 +308,17 @@ template<typename K> template<typename Functor> void Tree234<K>::DoLevelOrderTra
    }
 }
 
-template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f) noexcept
+template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f) const noexcept
 {
    DoInorderTraverse(f, root.get());
 }
 
-template<typename K> template<typename Functor> inline void Tree234<K>::postOrderTraverse(Functor f) noexcept
+template<typename K> template<typename Functor> inline void Tree234<K>::postOrderTraverse(Functor f) const noexcept
 {
    DoPostOrderTraverse(f, root.get());
 }
 
-template<typename K> template<typename Functor> inline void Tree234<K>::preOrderTraverse(Functor f) noexcept
+template<typename K> template<typename Functor> inline void Tree234<K>::preOrderTraverse(Functor f) const noexcept
 {
    DoPreOrderTraverse(f, root.get());
 }
@@ -329,7 +330,7 @@ template<typename K> template<typename Functor> inline void Tree234<K>::debug_du
 /*
  * post order traversal 
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTraverse(Functor f, Node234 *current) noexcept
+template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTraverse(Functor f, const Node234 *current) const noexcept
 {  
    if (current == nullptr) {
 
@@ -379,7 +380,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTrav
 /*
  * pre order traversal 
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTraverse(Functor f, Node234 *current) noexcept
+template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTraverse(Functor f, const Node234 *current) const noexcept
 {  
 
   if (current == nullptr) {
@@ -433,7 +434,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTrave
 /*
  * post order traversal for debugging purposes
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Debug(Functor f, Node234 *current) noexcept
+template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Debug(Functor f, const Node234 *current) noexcept
 {     
    
    if (current == nullptr) {
@@ -485,14 +486,14 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
 /*
  * In order traversal
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraverse(Functor f, Node234 *current) noexcept
+template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraverse(Functor f, const Node234 *current) const noexcept
 {     
    if (current == nullptr) {
 
 	return;
    }
 
-   switch (current->totalItems) {
+   switch (current->getTotalItems()) {
 
       case 1: // two node
             DoInorderTraverse(f, current->children[0].get());
