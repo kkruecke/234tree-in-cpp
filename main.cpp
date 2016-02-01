@@ -6,6 +6,7 @@
 #include <vector>
 #include "tree234.h"
 #include "debug-printer.h"
+#include "depth-tracker.h"
 
 using namespace std;
 
@@ -40,8 +41,18 @@ int main(int argc, char** argv)
   
   cout << endl;
     
-  cout << "=======Tree Debug (PostOrder) Printer =====================" << endl;
+  cout << "=======Tree Depth Tracker =====================" << endl;
+   
+  // Here we the depth of each node's key
+
+  tree.inOrderTraverse(DepthTracker{});
   
+  cout << endl;
+    
+  return 0; 
+    
+  cout << "=======Tree Debug =====================" << endl;
+
   DebugPrinter debug_printer(cout);
   
   tree.debug_dump(debug_printer);
