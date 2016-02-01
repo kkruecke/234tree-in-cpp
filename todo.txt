@@ -1,8 +1,4 @@
-Implement breadth-first traversal :
- 
-  https://www.youtube.com/watch?v=86g8jAQug04
-
-Try printing out the breadth-first view of the tree using a functor class. 
+How can I do breadth-first traversal and print the level?
 
 The new convertTwoNode(Node234*) code in tree234.h, comparing its output to that the original code, is orphaning nodes because some values
 that should still be in the tree (and to be removed).

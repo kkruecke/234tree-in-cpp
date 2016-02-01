@@ -6,15 +6,41 @@
 #include <vector>
 #include "tree234.h"
 #include "debug-printer.h"
-#include "depth-tracker.h"
+//#include "depth-tracker.h"
 
 using namespace std;
+
+class NodePrinter {
+    
+public:
+    
+    void operator()(const Tree234<int>::Node234 *current)
+    {
+        cout << " [ ";
+        
+        for(auto i = 0; i < current->getTotalItems(); ++i) {
+            
+            cout << current->getKey(i);
+            
+            if (i != current->getTotalItems() - 1) {
+                
+                cout << ", ";
+            }
+        }
+        
+        cout << " ] ";
+    }
+};
 
 int main(int argc, char** argv)
 {
   vector<int> input{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69, 1, 201, 2, 33, 26};
   
   Tree234<int> tree{ input };
+  
+  tree.levelOrderTraverse(NodePrinter{});
+  
+  return 0;
 
   cout << "Printing tree in pre order" << endl;
 
@@ -41,13 +67,13 @@ int main(int argc, char** argv)
   cout << "=======Tree Depth Tracker =====================" << endl;
    
   // Here we the depth of each node's key
-
+/*
   tree.inOrderTraverse(DepthTracker{});
   
   cout << endl;
     
   return 0; 
-    
+*/    
   cout << "=======Tree Debug =====================" << endl;
 
   DebugPrinter debug_printer(cout);

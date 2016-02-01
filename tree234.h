@@ -8,6 +8,7 @@
 #include <memory>
 #include <array>
 #include <queue>
+#include <exception>
 #include <iosfwd>
 
 // fwd declarations
@@ -95,6 +96,7 @@ template<typename K> class Tree234 {
            constexpr int getChildCount() const noexcept;
     
            bool findKey(K key, int& index) const noexcept;
+           constexpr K getKey(int i) const;
            constexpr bool isLeaf() const noexcept; 
            constexpr bool isTwoNode() const noexcept;
            constexpr bool isThreeNode() const noexcept;
@@ -109,7 +111,6 @@ template<typename K> class Tree234 {
     
     bool DoSearch(K key, Node234 *&location, int& index) noexcept;
 
-    template<typename Functor> void DoLevelOrderTraverse(Functor f, const Node234 *root) const noexcept;
     template<typename Functor> void DoInorderTraverse(Functor f, const Node234 *root) const noexcept;
     template<typename Functor> void DoPostOrderTraverse(Functor f, const Node234 *root) const noexcept;
     template<typename Functor> void DoPreOrderTraverse(Functor f, const Node234 *root) const noexcept;
@@ -196,11 +197,22 @@ template<typename K> inline constexpr int Tree234<K>::Node234::getTotalItems() c
    return totalItems; 
 }
 
+template<typename K> inline constexpr K Tree234<K>::Node234::getKey(int i) const 
+{
+    if (0 <= i && i < getTotalItems()) {
+        
+        return keys[i];
+    }
+    
+    throw std::range_error{"key of Node234 not in range"};     
+}
+
 template<typename K> inline bool Tree234<K>::Node234::findKey(K key, int& index) const noexcept
 {
    for(index = 0; index < totalItems; ++index) {
        
        if (keys[index] == key) {
+           
            return true;
        }
    }   
@@ -281,18 +293,15 @@ template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noe
 
 template<typename K> template<typename Functor> inline void Tree234<K>::levelOrderTraverse(Functor f) const noexcept
 {
-   DoLevelOrderTraverse(f, root.get());
-}
-
-template<typename K> template<typename Functor> void Tree234<K>::DoLevelOrderTraverse(Functor f, const Node234 *current) const noexcept
-{
-   if (current == nullptr) return;
+   if (root.get() == nullptr) return;
    
-   std::queue<Node234*> q; 
+   std::queue<const Node234*> q; 
+
+   q.push(root.get());
 
    while (!q.empty()) {
 
-        Node234 *current = q.front();
+        const Node234 *current = q.front();
 
         f(current); // For example: print out all the keys in current.
 
@@ -304,7 +313,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoLevelOrderTra
             }
         }
 
-        q.pop(); // I think this is correct.
+        q.pop(); 
    }
 }
 
