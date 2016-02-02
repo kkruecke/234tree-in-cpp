@@ -18,6 +18,37 @@ template<typename K> class Node234;
 
 class DebugPrinter; 
 /*
+  Implementation links:
+
+1.  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+
+This link has an excellent working example. The explanation is thorough and clear. It gives several example of deleting elements. It uses the in-order predecessor
+rather than the successor when deleting.
+
+2.  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
+
+This link has a excellent working example and discusses how delete works, using descent restructuring. It uses the swap-with-successor for deletion of internal keys.
+It contains a working tree example. It shows that when converting 2-nodes, we first check if we can rotation else we do a merge (since both siblings are 2-nodes).
+
+3.  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
+
+This link has excellent pseudo code for both insertion and deletion with working example. But it does not restructure the key on the way down instead from the
+leaf upward.
+
+4. http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
+
+This link has a more high level pseudo code. 
+
+5. http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
+
+This link discusses both 2 3 trees and 2 3 4 trees. It has examples and pseudo code, but the deletion logic points out that the root only can be a two node--I think?
+
+6.  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
+
+This link has actual **Java implementation code** for insertion and for 2 3 4 tree interface and node interface, including members.
+ */
+
+/*
  * See www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
  * and http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
  * for high level overview of the implementation. 
@@ -86,8 +117,6 @@ template<typename K> class Tree234 {
              
            Node234() noexcept;
     
-           //Node234(Node234&& n);
-             
            Node234(K small) noexcept;
            Node234(K small, K large) noexcept;
            Node234(K small, K middle, K large) noexcept;  
@@ -109,6 +138,7 @@ template<typename K> class Tree234 {
     int to_int(const typename Tree234<K>::Node234::NodeMaxItems x) const { return static_cast<int>(x); }
 
     std::unique_ptr<Node234>  root; 
+    int  tree_size;
     
     bool DoSearch(K key, Node234 *&location, int& index) noexcept;
 
@@ -146,6 +176,7 @@ template<typename K> class Tree234 {
 
      Tree234(std::initializer_list<K> list) noexcept; 
      Tree234(const std::vector<K>& vec) noexcept; 
+     constexpr int size() const;
 
     ~Tree234(); 
 
@@ -241,7 +272,7 @@ template<typename K> inline constexpr bool Tree234<K>::Node234::isFourNode() con
    return (totalItems == to_int(NodeMaxItems::four_node)) ? true : false;
 }
 
-template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
+template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept : tree_size{lhs.tree_size} 
 {
     Tree234<K>::Node234 *src =  lhs.root.get();
     
@@ -249,19 +280,19 @@ template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept
 }
  
 // move constructor
-template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{std::move(lhs.root)} 
+template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{std::move(lhs.root)}, tree_size{lhs.tree_size}  
 {
     root->parent = nullptr;
 }
 
-template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr) 
+template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr), tree_size{0} 
 {
     for (K& x: il) { // simply call insert(x)
           insert(x);
     }
 }
 
-template<typename K> inline Tree234<K>::Tree234(const std::vector<K>& vec) noexcept : root(nullptr) 
+template<typename K> inline Tree234<K>::Tree234(const std::vector<K>& vec) noexcept : root(nullptr), tree_size{0} 
 {
     for (const K& x: vec) { // simply call insert(x)
           insert(x);
@@ -279,16 +310,29 @@ template<typename K> inline Tree234<K>& Tree234<K>::operator=(const Tree234& lhs
   DestroyTree(root); // free all nodes and then clone lhs.
 
   const Tree234<K>::Node234 *src =  lhs.root.get();
-            
+
+  tree_size = lhs.tree_size;         
+
   CloneTree(src, root);
 
   return *this;
 }
 
+template<typename K> inline constexpr int Tree234<K>::size() const
+{
+  return tree_size;
+}
+             
 // move assignment
 template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noexcept 
 {
+ 
+    tree_size = lhs.tree_size;
+
+    lhs.tree_size = 0;
+
     root = std::move(lhs.root);
+
     root->parent = nullptr;
 }
 /*
@@ -885,6 +929,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
    if (root == nullptr) {
            
       root = std::make_unique<Node234>(key); 
+      ++tree_size;
       return; 
    } 
 
@@ -930,6 +975,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
  
     // current node is now a leaf and it is not full (because we split all four nodes while descending).
     current->insertKey(key); 
+    ++tree_size;
 }
 /* 
  *  Split pseudocode: 
@@ -1052,7 +1098,7 @@ template<typename K> bool Tree234<K>::remove(K key)
                      root.reset(); // delete root 
                      root  = nullptr;
                 }  
-
+                --tree_size;
                 return true;
              } 
          }
@@ -1233,9 +1279,145 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     } 
 
     // Note, we did not need to disconnect a child because we are at a leaf node.
-        
+   --tree_size;     
     return true;  
 }
+/*
+ * Pseudo code is from slides 50-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ *
+ * Deletion is similar to 2-3 trees: We "swap" the item to be deleted with its in-order successor, which
+ * is always in a leaf node. "Swap" means we overwrite the item to be deleted with its in-order successor and then
+ * remove the in-order successor from the leaf node.
+ *
+ * There is a problem, however: if the in-order successor is a 2-node leaf, this leaves an empty leaf node, resulting in an
+ * unbalanced tree. To prevent this, as we descend the tree we turn 2-nodes (other than the root) into 3-nodes or
+ * 4-nodes. 
+ *
+ * There are two cases to consider:  
+ *
+ * Case 1: If an adjacent sibling has 2 or 3 items (and the parent is a 3- or 4-node), we "steal" an item from sibling by
+ * rotating items and moving subtree. See slide #51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ *         
+ * Case 2: If each adjacent sibling (there are at most two) has only one item (and parent is a 3- or 4-node),
+ * we fuse together the two siblings, plus an item we bring down from parent, forming a 4-node and shifting all children effected appropriately. 
+ *
+ * See slide 52 at:
+ *     www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ * 
+ * An even more thorough explanationed illustrated with a several working examples is at pages 64-66 of
+ *    http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
+ * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+ New untested prospective code for remove(K key, Node234 *)
+ This is the remove code for the case when the root is not a leaf node.
+TODO: 
+ Determine if there is duplicate code in fuseChildrenWithParent() that is also in the left- and rightRotation code.
+ */
+/* New prospective code, not yet tested.
+template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
+{
+   Node234 *next = nullptr;
+   Node234 *pfound_node = nullptr;
+   int key_index;
+
+   // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found
+   //   the  cursor is advanced. 
+   while(true) {
+
+       if (current == nullptr) {
+              
+            return false;
+
+       //--} else if (current != root.get() && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
+       } else if (current->isTwoNode()) { 
+
+            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... TODO: why skip root? 
+            current = convertTwoNode(current); // ..and resume the key search with the now converted node.
+            continue;
+      
+       } else if (current->NodeDescentSearch(key, key_index, next)) { // ...search for item in current node. 
+
+            pfound_node = current; 
+            break; // we found it.  
+
+       } else {
+          // ... If not found, continue to descend. 
+           current = next; 
+           continue;
+       }
+  }
+
+  if (current == nullptr) {
+
+       return false; // key not found.
+  }
+   
+  if (!pfound_node->isLeaf()) {// The key is in an internal node, search for its in order successor, converting any 2-nodes encountered.
+
+      // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
+      // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
+
+      Node234 *current = pfound_node->children[key_index + 1].get(); 
+
+      while (true) {
+
+        if (current->isTwoNode()) { 
+    
+             current = convertTwoNode(current);
+
+             // Did key move as a result of conversion?
+             // Q: Should I be checking current now? Could pnode_node have been deleted? 
+             // A: pfound_node is never a 2-node since remove( K key, Node234 *) first converts any 2-nodes to 3- or 4-nodes before calling
+             // NodeDescentSearch(). 
+             // Might pfound_node still have the key, but have been deleted or orphaned?
+             if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys[key_index] != key) { // then key moved
+
+                // Either...
+                //
+                // 1. find it again: 
+                //  Double check this:                  
+                //    while (pfound_node->NodeDescentSearch(key, key_index, pfound_node) != false && !pfound_node->isLeaf())
+                //
+                // 2. reset successor search: Node234 *current = pfound_node->children[key_index + 1].get(); 
+                // 
+
+                // ...or simply recurse, starting with a new initial starting point of pfound_node.
+                // TODO: Q: Is pfound_node still the place to start looking, or could pfound_node have been deleted after the 2-node conversion?
+                // The big question is: Initially current is the first node in the in-order successor subtree.  
+                ///
+                 return remove(key, pfound_node); 
+             } 
+        } 
+
+        if (current->isLeaf()) {
+
+            break;  
+        } 
+
+        current = current->children[0].get(); // set current to left most child of the node, 
+     }
+
+  }  else { 
+
+      // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey()
+      pfound_node->removeKey(key_index);
+      --tree_size;
+      return true;
+ }
+
+  // We have the item found in pfound_node->keys[key_index], which is an internal node. We have current->keys[0] as in order successor leaf node, and we know
+  // current it is not a leaf node.  So we "swap" the in order successor and the key at pfound_node->keys[key_index]. 
+  // Note: We don't actually save temporarily save the key to be deleted tmp and then overwrite the former in-order successor with it. Instead we simply delete
+  // the former in-order successor key. 
+  // K tmp = pfound_node->keys[key_index]; See Note above
+
+  pfound_node->keys[key_index] = current->keys[0];
+
+  // current->keys[0] = tmp; See Note above.
+
+  current->removeKey(0); 
+  return true;
+}
+*/
 /*
  * input preconditions: node is 2-node.
  * output: node is converted into either a 3- or a 4-node.
@@ -1254,6 +1436,29 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  noexcept
 {                                                                         
    Node234 *convertedNode;
+        
+   // special case root, which has no parent.
+   if (node == root.get()) { // TODO: This is not working?
+       
+      // Note: node is root 
+      std::unique_ptr<Node234> child_left = std::move(root->children[0]);
+      std::unique_ptr<Node234> child_right = std::move(root->children[1]);
+
+      // Shift node key to middle and put former children keys into parent.  
+      root->keys[1] = root->keys[0];
+      root->keys[0] = child_left->keys[0]; 
+      root->keys[2] = child_right->keys[0]; 
+      root->totalItems = 3;
+
+      // adopt grandchildren as new children.
+      root->connectChild(0, child_left->children[0]);
+      root->connectChild(1, child_left->children[1]);
+      root->connectChild(2, child_right->children[0]); 
+      root->connectChild(3, child_right->children[1]); 
+      
+      return node;
+   } // <--former children of root, the left and right children of the former 2-node root, are freeed when unique_ptrs go out of scope.
+   
    Node234 *parent = node->getParent();
 
    int parentKeyTotal = parent->totalItems;
@@ -1281,21 +1486,25 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
    int left_adjacent = node2_index - 1;
    int right_adjacent = node2_index  + 1;
-    
+   
+   // If there is a right adjacent that is a 3- or 4-node, use it
    if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
 
         has3or4NodeSibling = true;
         sibling_index = right_adjacent;  
-  
+        
+  // else if there is a left adjacent that is a 3- or 4-node, use it
    } else if (left_adjacent >= 0 && !parent->children[left_adjacent]->isTwoNode()) {
          
 	has3or4NodeSibling = true;
         sibling_index = left_adjacent;  
 
+   // else all adjacent siblings are 2-nodes. Check if we have a right adjacent sibling.     
    } else if (right_adjacent < parentChildrenTotal) { // There are no 3- or 4-nodes siblings. Therefore the all siblings 
                                                       // are 2-node(s).
         sibling_index = right_adjacent; 
-
+        
+   // else all adjacent siblings are 2-nodes. We must have a left adjacent sibling.
    } else { // sibling is to the left.
 
         sibling_index = left_adjacent; 
@@ -1305,18 +1514,20 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
        // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
        // Check if its parent 2-node (or 3- or 4-node).
-       
-       if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
+             
+       // TODO: The next comment is wrong--right?
+      //  The parent can never be a two node even if it is the root because we handled the root at the top of this method. 
+      
+      //-- if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
          
-	     convertedNode = parent->fuseWithChildren();
+      //	convertedNode = parent->fuseWithChildren();
 
-        } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
+      //  } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
 
              convertedNode = fuseSiblings(parent, node2_index, sibling_index);
-        }
+      //  }
 
    } else { // it has a 3- or 4-node sibling.
-        // TODO: Don't I know from if-tests above whether a right or left rotation is to be done?   
 
       Node234 *psibling = parent->children[sibling_index].get();
     

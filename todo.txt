@@ -1,4 +1,4 @@
-Add more TreePrinter debugging into code.
+The new remove(K key, Node234 *current) code is commented out. Add more TreePrinter debugging code in it and test it.
 
 Comparing the before and after DebugPrinter output, shows all these tree values are missing after the removal of the first item 60:
 
