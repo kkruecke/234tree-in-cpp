@@ -53,28 +53,29 @@ int main(int argc, char** argv)
     
     cout<< "item " << item << str_remove_status;
     
-    if (str_remove_status == string{" not successfully removed "}) {
-         
-        cerr << "Exiting upon remove error!!!" << endl;
-        cout << "\n\n=======Tree Debug =====================" << endl;
-
-        return 0;
-    }
-
-    cout << "\n\n=======Tree level order print =====================" << endl;
+     cout << "\n\n=======Tree level order print =====================" << endl;
 
     tree.levelOrderTraverse(TreePrinter{});
-
+/*
     cout << "\n\n=======Tree Debug Print ==============================\n";
 
     tree.debug_dump(debug_printer);
-
+*/
     cout << "\n=================== Normal Tree Print =======================\n";
 
     tree.inOrderTraverse(print_keys);
+
     cout << "\n-----------------------\n";
 
     cout << endl;
+
+    if (str_remove_status == string{" not successfully removed "}) {
+         
+        cerr << "Exiting upon remove error!!!" << endl;
+        //--cout << "\n\n=======Tree Debug =====================" << endl;
+
+        return 0;
+    }
   }
 
   cout << "\n==== Final Tree ========\n" << endl;
