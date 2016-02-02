@@ -6,7 +6,7 @@
 #include <vector>
 #include "tree234.h"
 #include "debug-printer.h"
-#include "tree-printer.h"
+#include "basic-tree-printer.h"
 
 using namespace std;
 
@@ -19,9 +19,9 @@ int main(int argc, char** argv)
   
   cout << "Printing tree in level order" << endl;
   
-  TreePrinter<int> tree_printer{tree};
+  BasicTreePrinter<int> tree_printer{tree};
 
-  //tree.levelOrderTraverse(TreePrinter<int>(tree));
+  //tree.levelOrderTraverse(BasicTreePrinter<int>(tree));
   tree_printer.print_level_order();
   
   // Lambda for printing ints in Tree234
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 
   cout << "\n==== Final Tree ========\n" << endl;
 
-  //tree.levelOrderTraverse(TreePrinter{});
+  //tree.levelOrderTraverse(BasicTreePrinter{});
   tree_printer.print_level_order();
   
   cout << endl;

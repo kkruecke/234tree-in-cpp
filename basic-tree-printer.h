@@ -1,57 +1,59 @@
-#ifndef tree_printer_h
-#define tree_printer_h
+#ifndef basic_tree_printer_h
+#define basic_tree_printer_h
 
+#include "tree-printer-interface.h"
 #include <iostream>
 #include <string>
 #include "tree234.h"
 
-template<class K> class TreePrinter {
+template<class K> class BasicTreePrinter : TreePrinterInterface {
+
    const Tree234<K>& tree;    
    int prior_level; 
    int depth;
+   void operator()(const typename Tree234<K>::Node234 *current, int level);
 
 public:
-    TreePrinter(const Tree234<K>& t);
+    BasicTreePrinter(const Tree234<K>& t);
     
-    TreePrinter(const TreePrinter<K>& np) : prior_level{np.prior_level}, depth{np.depth}, tree{np.tree} {}
+    BasicTreePrinter(const BasicTreePrinter<K>& np) : prior_level{np.prior_level}, depth{np.depth}, tree{np.tree} {}
     
-    void print_level_order();
-    void print_in_order();
-    void print_pre_order();
-    void print_post_order();
+    void print_level_order() override;
+    void print_in_order() override;
+    void print_pre_order() override;
+    void print_post_order() override;
     
-    void operator()(const typename Tree234<K>::Node234 *current, int level);
 };
 
 
-template<class K> inline TreePrinter<K>::TreePrinter(const Tree234<K>& t) : prior_level{0}, tree{t}
+template<class K> inline BasicTreePrinter<K>::BasicTreePrinter(const Tree234<K>& t) : prior_level{0}, tree{t}
 {
   // Determine how many levels the tree has.
   depth = tree.getDepth();
 }
 
-template<class K> inline void TreePrinter<K>::print_level_order() 
+template<class K> inline void BasicTreePrinter<K>::print_level_order() 
 {
   auto lambda = [this](const typename Tree234<K>::Node234 *current, int level) { return operator()(current, level); }; 
  
   tree.levelOrderTraverse(lambda);    
 }
 
-template<class K> inline void TreePrinter<K>::print_in_order() 
+template<class K> inline void BasicTreePrinter<K>::print_in_order() 
 {
   auto lambda = [&](K k) -> std::ostream& { std::cout << k << ' '; return std::cout; };
   
   tree.inOrderTraverse(lambda);    
 }
 
-template<class K> inline void TreePrinter<K>::print_pre_order() 
+template<class K> inline void BasicTreePrinter<K>::print_pre_order() 
 {
   auto lambda = [&](K k) -> std::ostream& { std::cout << k << ' '; return std::cout; };
   
   tree.preOrderTraverse(lambda);    
 }
 
-template<class K> inline void TreePrinter<K>::print_post_order() 
+template<class K> inline void BasicTreePrinter<K>::print_post_order() 
 {
   auto lambda = [&](K k) -> std::ostream& { std::cout << k << ' '; return std::cout; };
   
@@ -59,7 +61,7 @@ template<class K> inline void TreePrinter<K>::print_post_order()
 }
 
 // for level order print of tree
-template<class K> void TreePrinter<K>::operator()(const typename Tree234<K>::Node234 *current, int level)
+template<class K> void BasicTreePrinter<K>::operator()(const typename Tree234<K>::Node234 *current, int level)
 {
     
     // Did level change?
