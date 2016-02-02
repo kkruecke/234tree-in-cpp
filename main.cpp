@@ -6,41 +6,9 @@
 #include <vector>
 #include "tree234.h"
 #include "debug-printer.h"
-//#include "depth-tracker.h"
+#include "tree-printer.h"
 
 using namespace std;
-
-class NodePrinter {
-    
-   int prior_level; 
-public:
-    NodePrinter() : prior_level(0) {}
-    NodePrinter(const NodePrinter& np) : prior_level{np.prior_level} {}
-    
-    void operator()(const Tree234<int>::Node234 *current, int level)
-    {
-        // Did level change?
-        if (level != prior_level) {
-
-            cout << "\n";
-            prior_level = level;
-        }
-        
-        cout << "level = " <<  level << " [ ";
-        
-        for(auto i = 0; i < current->getTotalItems(); ++i) {
-            
-            cout << current->getKey(i);
-            
-            if (i != current->getTotalItems() - 1) {
-                
-                cout << ", ";
-            }
-        }
-        
-        cout << " ] ";
-    }
-};
 
 int main(int argc, char** argv)
 {
@@ -48,10 +16,8 @@ int main(int argc, char** argv)
   
   Tree234<int> tree{ input };
   
-  tree.levelOrderTraverse(NodePrinter{});
+  tree.levelOrderTraverse(TreePrinter{});
   
-  return 0;
-
   cout << "Printing tree in pre order" << endl;
 
   // Lambda for printing ints in Tree234
@@ -73,17 +39,9 @@ int main(int argc, char** argv)
   tree.inOrderTraverse(print_keys);
   
   cout << endl;
-    
-  cout << "=======Tree Depth Tracker =====================" << endl;
-   
+ 
   // Here we the depth of each node's key
-/*
-  tree.inOrderTraverse(DepthTracker{});
-  
-  cout << endl;
-    
-  return 0; 
-*/    
+   
   cout << "=======Tree Debug =====================" << endl;
 
   DebugPrinter debug_printer(cout);
