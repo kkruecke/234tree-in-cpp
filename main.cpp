@@ -22,17 +22,18 @@ int main(int argc, char** argv)
   TreePrinter<int> tree_printer{tree};
 
   //tree.levelOrderTraverse(TreePrinter<int>(tree));
-  tree_printer.print();
+  tree_printer.print_level_order();
   
   // Lambda for printing ints in Tree234
-  auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
+ // auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
    
   cout << "\n======================" << endl;
     
   cout << "\nPrinting actual tree in order, using lambda closure\n" << endl;
    
   // Here we print the print using a print_keys instead of a function object.
-  tree.inOrderTraverse(print_keys);
+  //tree.inOrderTraverse(print_keys);
+  tree_printer.print_in_order();
   
   cout << endl;
  
@@ -58,11 +59,9 @@ int main(int argc, char** argv)
     
     cout<< "item " << item << str_remove_status;
     
-     cout << "\n\n=======Tree level order print =====================" << endl;
-
-    //tree.levelOrderTraverse(TreePrinter{});
+    cout << "\n\n=======Tree level order print =====================" << endl;
         
-    tree_printer.print();
+    tree_printer.print_level_order();
 /*
     cout << "\n\n=======Tree Debug Print ==============================\n";
 
@@ -70,7 +69,7 @@ int main(int argc, char** argv)
 */
    cout << "\n\n=================== Normal Tree Print using lambda closure =======================\n\n";
 
-    tree.inOrderTraverse(print_keys);
+   tree_printer.print_in_order();
 
     if (str_remove_status == string{" not successfully removed "}) {
          
@@ -85,7 +84,7 @@ int main(int argc, char** argv)
   cout << "\n==== Final Tree ========\n" << endl;
 
   //tree.levelOrderTraverse(TreePrinter{});
-  tree_printer.print();
+  tree_printer.print_level_order();
   
   cout << endl;
   cout << flush;
