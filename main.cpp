@@ -12,13 +12,17 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+
   vector<int> input{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69, 1, 201, 2, 33, 26};
   
   Tree234<int> tree{ input };
   
   cout << "Printing tree in level order" << endl;
+  
+  TreePrinter<int> tree_printer{tree};
 
-  tree.levelOrderTraverse(TreePrinter{});
+  //tree.levelOrderTraverse(TreePrinter<int>(tree));
+  tree_printer.print();
   
   // Lambda for printing ints in Tree234
   auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
@@ -42,7 +46,8 @@ int main(int argc, char** argv)
   
   cout << "\n============================" << endl;
   */
-
+  
+  
   DebugPrinter debug_printer(cout);
 
   for (auto& item : input) {
@@ -55,7 +60,9 @@ int main(int argc, char** argv)
     
      cout << "\n\n=======Tree level order print =====================" << endl;
 
-    tree.levelOrderTraverse(TreePrinter{});
+    //tree.levelOrderTraverse(TreePrinter{});
+        
+    tree_printer.print();
 /*
     cout << "\n\n=======Tree Debug Print ==============================\n";
 
@@ -80,8 +87,9 @@ int main(int argc, char** argv)
 
   cout << "\n==== Final Tree ========\n" << endl;
 
-  tree.levelOrderTraverse(TreePrinter{});
-
+  //tree.levelOrderTraverse(TreePrinter{});
+  tree_printer.print();
+  
   cout << endl;
   cout << flush;
 

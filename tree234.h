@@ -176,7 +176,9 @@ template<typename K> class Tree234 {
 
      Tree234(std::initializer_list<K> list) noexcept; 
      Tree234(const std::vector<K>& vec) noexcept; 
+
      constexpr int size() const;
+     int getDepth() const noexcept; // get depth of tree from root to leaf.
 
     ~Tree234(); 
 
@@ -323,6 +325,17 @@ template<typename K> inline constexpr int Tree234<K>::size() const
   return tree_size;
 }
              
+template<typename K> inline int Tree234<K>::getDepth() const noexcept
+{
+  int depth = 0;
+
+  for (auto current = root.get(); current != nullptr; current = current->children[0].get()) {
+
+       ++depth;
+  }
+
+  return depth;
+}
 // move assignment
 template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noexcept 
 {
