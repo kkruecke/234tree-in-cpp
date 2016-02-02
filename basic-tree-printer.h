@@ -22,9 +22,7 @@ public:
     void print_in_order() override;
     void print_pre_order() override;
     void print_post_order() override;
-    
 };
-
 
 template<class K> inline BasicTreePrinter<K>::BasicTreePrinter(const Tree234<K>& t) : prior_level{0}, tree{t}
 {
@@ -37,6 +35,7 @@ template<class K> inline void BasicTreePrinter<K>::print_level_order()
   auto lambda = [this](const typename Tree234<K>::Node234 *current, int level) { return operator()(current, level); }; 
  
   tree.levelOrderTraverse(lambda);    
+  std::cout << std::flush;
 }
 
 template<class K> inline void BasicTreePrinter<K>::print_in_order() 
@@ -44,6 +43,7 @@ template<class K> inline void BasicTreePrinter<K>::print_in_order()
   auto lambda = [&](K k) -> std::ostream& { std::cout << k << ' '; return std::cout; };
   
   tree.inOrderTraverse(lambda);    
+  std::cout << std::flush;
 }
 
 template<class K> inline void BasicTreePrinter<K>::print_pre_order() 
@@ -51,6 +51,7 @@ template<class K> inline void BasicTreePrinter<K>::print_pre_order()
   auto lambda = [&](K k) -> std::ostream& { std::cout << k << ' '; return std::cout; };
   
   tree.preOrderTraverse(lambda);    
+  std::cout << std::flush;
 }
 
 template<class K> inline void BasicTreePrinter<K>::print_post_order() 
@@ -58,6 +59,7 @@ template<class K> inline void BasicTreePrinter<K>::print_post_order()
   auto lambda = [&](K k) -> std::ostream& { std::cout << k << ' '; return std::cout; };
   
   tree.postOrderTraverse(lambda);    
+  std::cout << std::flush;
 }
 
 // for level order print of tree
@@ -67,7 +69,7 @@ template<class K> void BasicTreePrinter<K>::operator()(const typename Tree234<K>
     // Did level change?
     if (level != prior_level) {
 
-        std::cout << "\n" << "level = " <<  level; 
+        std::cout << "\n\n" << "level = " <<  level; 
         prior_level = level;
         
         // Provide some basic spacing to tree appearance.
