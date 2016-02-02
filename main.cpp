@@ -16,24 +16,16 @@ int main(int argc, char** argv)
   
   Tree234<int> tree{ input };
   
+  cout << "Printing tree in level order" << endl;
+
   tree.levelOrderTraverse(TreePrinter{});
   
-  cout << "Printing tree in pre order" << endl;
-
   // Lambda for printing ints in Tree234
   auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
    
   cout << "\n======================" << endl;
     
-  cout << "Printing copy of tree" << endl;
-   
-  Tree234<int> newTree{tree};
-  
-  newTree.inOrderTraverse(print_keys);
-  
-  cout << "\n======================" << endl;
-    
-  cout << "Printing tree in order, using print_keys" << endl;
+  cout << "Printing actual tree in order, using print_keys" << endl;
    
   // Here we print the print using a print_keys instead of a function object.
   tree.inOrderTraverse(print_keys);
@@ -41,7 +33,7 @@ int main(int argc, char** argv)
   cout << endl;
  
   // Here we the depth of each node's key
-   
+  /* 
   cout << "=======Tree Debug =====================" << endl;
 
   DebugPrinter debug_printer(cout);
@@ -49,26 +41,31 @@ int main(int argc, char** argv)
   tree.debug_dump(debug_printer);
   
   cout << "\n============================" << endl;
-  
+  */
+
+  DebugPrinter debug_printer(cout);
+
   for (auto& item : input) {
 
     bool rc = tree.remove(item);
        
     string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
     
-    cout << "item " << item << str_remove_status;
+    cout<< "item " << item << str_remove_status;
     
     if (str_remove_status == string{" not successfully removed "}) {
          
         cerr << "Exiting upon remove error!!!" << endl;
         cout << "\n\n=======Tree Debug =====================" << endl;
 
-        tree.debug_dump(debug_printer);
         return 0;
     }
 
+    cout << "\n\n=======Tree level order print =====================" << endl;
 
-    cout << "\n\n=======Tree Debug =====================" << endl;
+    tree.levelOrderTraverse(TreePrinter{});
+
+    cout << "\n\n=======Tree Debug Print ==============================\n";
 
     tree.debug_dump(debug_printer);
 
@@ -82,7 +79,7 @@ int main(int argc, char** argv)
 
   cout << "\n==== Final Tree ========\n" << endl;
 
-  tree.debug_dump(debug_printer);
+  tree.levelOrderTraverse(TreePrinter{});
 
   cout << endl;
   cout << flush;

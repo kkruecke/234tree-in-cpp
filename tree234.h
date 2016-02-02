@@ -1089,7 +1089,7 @@ template<typename K> bool Tree234<K>::remove(K key)
          for (; index < root->getTotalItems(); ++index) {
 
              if (root->keys[index] == key ) {
-               // * Remove key from root, when root is a leaf. This will also shift the in-order successor into
+               // * Remove key from root, if root is a leaf. This also shifts the in-order successor into
                // * its location.
                 root->removeKey(index);
                               
@@ -1143,13 +1143,14 @@ template<typename K> bool Tree234<K>::remove(K key)
 // TODO: Can this be simplified. It is quite convoluted because side effects of other member functions need to be checked, and this is done in way
 // that is not very readable. There are lots of checks, like that of checking the node's keys and setting lots of flags to track these checks.
 // See new-tree234.h for preliminary start of new verions of this method. 
+/*
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
    Node234 *next = nullptr;
    Node234 *found_node = nullptr;
    int key_index;
 
-   /* Search, looking for key, converting 2-nodes to 3- or 4-nodes as encountered */
+   // Search, looking for key, converting 2-nodes to 3- or 4-nodes as encountered 
 
    while(true) {
 
@@ -1190,13 +1191,13 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
          // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
          Node234 *prospective_in_order_successor = found_node->children[key_index + 1].get(); 
         
-         /* 
-          * Traverse down the left-most branch until we find a leaf.
-          *  
-          *  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down
-          *  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
-          *  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
-          */ 
+         // 
+         // Traverse down the left-most branch until we find a leaf.
+         //  
+         //  Note: if prospective_in_order_successor is a 2-node, the key (in found_node->keys[found_index]) may get moved down
+         //  (from the parent) to the child after the 2-node has been converted to a 3- or 4-node by doRotation(), or the key may
+         //  have shifted within found_node (to keys[1]) if fuseWithChildren() gets called. 
+         // 
          bool check_if_key_moved = true; // TODO: Try to get rid of this flag!!
          
          while (prospective_in_order_successor != nullptr) { 
@@ -1224,21 +1225,21 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                              prospective_in_order_successor = found_node->children[key_index + 1].get();   
                          }
 
-                    /*
-                     * else Check if key moved.
-		     */
+                    //
+                    // else Check if key moved.
+		    ///
                    } else if (!check_if_key_moved || (key_index < found_node->totalItems && found_node->keys[key_index] == key) )  { 
 
                         // We no longer need check if the key moved to 
                        check_if_key_moved  = false;
                        prospective_in_order_successor = convertedNode->children[0].get();
                    
-             /* 
-              * If a rotation occurred, the key may have moved to the converted 2-node (now a 3-node). Also, if a fusion of the 2-node
-              * with its adjacent sibling 2-node sibling, together with a parent key, it again may have moved to the converted node.
-              */      
-                   } else if ( convertedNode->findKey(key, index) )  { /* It is either in the converted node ...
-                                                                                 ... or in its parent, found_node. */
+             // 
+             // If a rotation occurred, the key may have moved to the converted 2-node (now a 3-node). Also, if a fusion of the 2-node
+             // with its adjacent sibling 2-node sibling, together with a parent key, it again may have moved to the converted node.
+             ///      
+                   } else if ( convertedNode->findKey(key, index) )  { // It is either in the converted node ...
+                                                                       //        ... or in its parent, found_node. 
                         found_node = convertedNode;
                         key_index = index;
                         prospective_in_order_successor = convertedNode->children[index + 1].get(); // root of subtree with next largest key 
@@ -1271,17 +1272,18 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
             // shifting all keys to right of it one position left.
             in_order_successor->removeKey(key_index);
 
-            /* 
-             * Note: The line above is equivalent to doing:
-             *   found_node->keys[found_index] = in_order_successor->keys[found_index + 1];
-             *   found_node->totalItems--;  
-             */
+            // 
+            // Note: The line above is equivalent to doing:
+            //   found_node->keys[found_index] = in_order_successor->keys[found_index + 1];
+            //   found_node->totalItems--;  
+            //
     } 
 
     // Note, we did not need to disconnect a child because we are at a leaf node.
    --tree_size;     
     return true;  
 }
+*/
 /*
  * Pseudo code is from slides 50-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *
@@ -1312,7 +1314,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 TODO: 
  Determine if there is duplicate code in fuseChildrenWithParent() that is also in the left- and rightRotation code.
  */
-/* New prospective code, not yet tested.
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
    Node234 *next = nullptr;
@@ -1417,7 +1418,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
   current->removeKey(0); 
   return true;
 }
-*/
 /*
  * input preconditions: node is 2-node.
  * output: node is converted into either a 3- or a 4-node.
