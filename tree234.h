@@ -10,6 +10,7 @@
 #include <queue>
 #include <exception>
 #include <iosfwd>
+#include <utility>
 
 // fwd declarations
 template<typename T> class Tree234;    
@@ -290,7 +291,7 @@ template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noe
     root = std::move(lhs.root);
     root->parent = nullptr;
 }
-
+/*
 template<typename K> template<typename Functor> inline void Tree234<K>::levelOrderTraverse(Functor f) const noexcept
 {
    if (root.get() == nullptr) return;
@@ -316,6 +317,41 @@ template<typename K> template<typename Functor> inline void Tree234<K>::levelOrd
         q.pop(); 
    }
 }
+*/
+
+template<typename K> template<typename Functor> inline void Tree234<K>::levelOrderTraverse(Functor f) const noexcept
+{
+   if (root.get() == nullptr) return;
+   
+   // part of Node234 pointer and level of tree.
+   std::queue<std::pair<const Node234*, int>> q; 
+
+   int level = 1;
+
+   q.push(std::make_pair(root.get(), level));
+
+   while (!q.empty()) {
+
+        std::pair<const Node234 *, int> pair_ = q.front();
+
+        const Node234 *current = pair_.first;
+
+        int tree_level = pair_.second;
+
+        f(current, tree_level); // For example: print out all the keys in current.
+         
+        if (!current->isLeaf()) {
+            
+            for(auto i = 0; i < current->getChildCount(); ++i) {
+
+               q.push(std::make_pair(current->children[i].get(), tree_level + 1));  
+            }
+        }
+        q.pop(); 
+    
+   }
+}
+
 
 template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f) const noexcept
 {

@@ -12,11 +12,21 @@ using namespace std;
 
 class NodePrinter {
     
+   int prior_level; 
 public:
+    NodePrinter() : prior_level(0) {}
+    NodePrinter(const NodePrinter& np) : prior_level{np.prior_level} {}
     
-    void operator()(const Tree234<int>::Node234 *current)
+    void operator()(const Tree234<int>::Node234 *current, int level)
     {
-        cout << " [ ";
+        // Did level change?
+        if (level != prior_level) {
+
+            cout << "\n";
+            prior_level = level;
+        }
+        
+        cout << "level = " <<  level << " [ ";
         
         for(auto i = 0; i < current->getTotalItems(); ++i) {
             
