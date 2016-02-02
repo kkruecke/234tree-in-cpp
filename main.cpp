@@ -29,7 +29,7 @@ int main(int argc, char** argv)
    
   cout << "\n======================" << endl;
     
-  cout << "Printing actual tree in order, using lambda closure\n" << endl;
+  cout << "\nPrinting actual tree in order, using lambda closure\n" << endl;
    
   // Here we print the print using a print_keys instead of a function object.
   tree.inOrderTraverse(print_keys);
@@ -68,13 +68,9 @@ int main(int argc, char** argv)
 
     tree.debug_dump(debug_printer);
 */
-    cout << "\n=================== Normal Tree Print using lambda closure =======================\n";
+   cout << "\n\n=================== Normal Tree Print using lambda closure =======================\n\n";
 
     tree.inOrderTraverse(print_keys);
-
-    cout << "\n-----------------------\n";
-
-    cout << endl;
 
     if (str_remove_status == string{" not successfully removed "}) {
          
