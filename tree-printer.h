@@ -51,7 +51,7 @@ template<class K> void TreePrinter<K>::operator()(const typename Tree234<K>::Nod
         // Provide some basic spacing to tree appearance.
         std::size_t num = depth - level + 1;
         
-        std::string str(num, ' ');
+        std::string str( num, ' ');
         
         std::cout << str;
     }
