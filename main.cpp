@@ -14,12 +14,12 @@ int main(int argc, char** argv)
 {
 
   vector<int> input{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 27, 92, 79,23, 17, 97, 55, 51, 69, 1, 201, 2, 33, 26};
-  
-  Tree234<int> tree{ input };
-  
-  cout << "Printing tree in level order" << endl;
+
+  Tree234<int> tree {input};
   
   BasicTreePrinter<int> tree_printer{tree};
+
+  cout << "Printing tree in level order" << endl;
 
   //tree.levelOrderTraverse(BasicTreePrinter<int>(tree));
   tree_printer.print_level_order();
