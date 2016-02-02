@@ -57,7 +57,7 @@ int main(int argc, char** argv)
        
     string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
     
-    cout<< "item " << item << str_remove_status;
+    cout<< "\n\nitem " << item << str_remove_status;
     
     cout << "\n\n=======Tree level order print =====================" << endl;
         
