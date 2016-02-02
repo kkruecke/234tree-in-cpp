@@ -1,4 +1,4 @@
-The new remove(K key, Node234 *current) code is commented out. Add more TreePrinter debugging code in it and test it.
+Test new remove(K key, Node234 *) code. Use TreePrinter and debug printing. Compare output with out-old.txt, too.
 
 Comparing the before and after DebugPrinter output, shows all these tree values are missing after the removal of the first item 60:
 
@@ -14,37 +14,36 @@ Four node:  address(0x74df20): key[2] = 97: parent[ root ]->children[1]->keys[2]
 
 Two node:   address(0x74e020): key[0] = 23: {Root}
 
-TODOES/Thoughts
-===============
 
-1. Q: Are doRotation() and fuseSiblings() identical code? 
+Sources
+=======
 
-A: Work from high level pseudo code and working example here http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf. Also consult the working pseudo code and
-example here http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf--but change the example to use an in-order successor rather than predecessor.
+  Implementation links:
 
-2. Q: Do I need to add or delete move ctor and move assignment to Node234 class? 
-   A: No, the don't handle any resources. 
+1.  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
 
-2. The code for
+This link has an excellent working example. The explanation is thorough and clear. It gives several example of deleting elements. It uses the in-order predecessor
+rather than the successor when deleting.
 
- template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
+2.  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
 
-code looks messy and confused, especially looking for the inorder successor. It relies on a check_if_key_moved flag to track whether the index of the in-order
-successor has moved due to side effects of calling other member functions. This makes the code awfully messy. And it uses a prospective_in_order successor pointer
-in a complex loop, again making it hard to read.
+This link has a excellent working example and discusses how delete works, using descent restructuring. It uses the swap-with-successor for deletion of internal keys.
+It contains a working tree example. It shows that when converting 2-nodes, we first check if we can rotation else we do a merge (since both siblings are 2-nodes).
 
+3.  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
 
-3. Should I consider a tree descend_iterator class to use in the implementation, and use it, say, for searching for a hit, etc?
+This link has excellent pseudo code for both insertion and deletion with working example. But it does not restructure the key on the way down instead from the
+leaf upward.
 
- Usage:
+4. http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
 
-DesentSearchIterator finder(root);
+This link has a more high level pseudo code. 
 
-do { 
+5. http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
 
-  if (finder->found())
-         break; 
-      
-} while (finder->next() != nullptr && !finder->eof());
+This link discusses both 2 3 trees and 2 3 4 trees. It has examples and pseudo code, but the deletion logic points out that the root only can be a two node--I think?
 
-Any need for it?    
+6.  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
+
+This link has actual **Java implementation code** for insertion and for 2 3 4 tree interface and node interface, including members.
+
