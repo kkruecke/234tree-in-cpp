@@ -1,4 +1,4 @@
-Test new remove(K key, Node234 *) code. Use TreePrinter and debug printing. Compare output with out-old.txt, too.
+Test new remove(K key, Node234 *) code. See TODO before convertTwoNode().
 
 Comparing the before and after DebugPrinter output, shows all these tree values are missing after the removal of the first item 60:
 

@@ -132,12 +132,14 @@ template<typename K> class Tree234 {
            constexpr bool isThreeNode() const noexcept;
            constexpr bool isFourNode() const noexcept;
   }; // end class Tree<K>::Node234  
+
  private:
     friend class DebugPrinter;
   
     int to_int(const typename Tree234<K>::Node234::NodeMaxItems x) const { return static_cast<int>(x); }
 
     std::unique_ptr<Node234>  root; 
+
     int  tree_size;
     
     bool DoSearch(K key, Node234 *&location, int& index) noexcept;
@@ -147,13 +149,14 @@ template<typename K> class Tree234 {
     template<typename Functor> void DoPreOrderTraverse(Functor f, const Node234 *root) const noexcept;
     template<typename Functor> void DoPostOrder4Debug(Functor f, const Node234 *root) noexcept;
 
-    void split(Node234 *node) noexcept;  // called during insert to split 4-nodes
     void DestroyTree(std::unique_ptr<Node234> &root) noexcept; 
 
     void CloneTree(const Node234 *pNode2Copy, std::unique_ptr<Node234> &pNodeCopy) noexcept; // called by copy ctor
 
     // These methods are called during remove(K key)
     bool remove(K key, Node234 *location); 
+
+    void split(Node234 *node) noexcept;  // called during insert to split 4-nodes
 
     // Convert two-node to three- or four-node
     Node234 *convertTwoNode(Node234 *node) noexcept;
@@ -348,33 +351,6 @@ template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noe
 
     root->parent = nullptr;
 }
-/*
-template<typename K> template<typename Functor> inline void Tree234<K>::levelOrderTraverse(Functor f) const noexcept
-{
-   if (root.get() == nullptr) return;
-   
-   std::queue<const Node234*> q; 
-
-   q.push(root.get());
-
-   while (!q.empty()) {
-
-        const Node234 *current = q.front();
-
-        f(current); // For example: print out all the keys in current.
-
-        if (!current->isLeaf()) {
-
-            for(auto i = 0; i < current->getChildCount(); ++i) {
-
-               q.push(current->children[i].get());  
-            }
-        }
-
-        q.pop(); 
-   }
-}
-*/
 
 template<typename K> template<typename Functor> inline void Tree234<K>::levelOrderTraverse(Functor f) const noexcept
 {
@@ -408,7 +384,6 @@ template<typename K> template<typename Functor> inline void Tree234<K>::levelOrd
     
    }
 }
-
 
 template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f) const noexcept
 {
@@ -690,7 +665,6 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
       } // end case
       case 3: // four node
       {
-
             std::unique_ptr<Node234> tmp = std::make_unique<Node234>( pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]); 
 
             pNodeCopy = std::move( tmp );
@@ -1322,10 +1296,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
  * An even more thorough explanationed illustrated with a several working examples is at pages 64-66 of
  *    http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
  * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
- New untested prospective code for remove(K key, Node234 *)
- This is the remove code for the case when the root is not a leaf node.
-TODO: 
- Determine if there is duplicate code in fuseChildrenWithParent() that is also in the left- and rightRotation code.
+
+ New untested prospective code for remove(K key, Node234 *). This is the remove code for the case when the root is not a leaf node.
  */
 template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
@@ -1345,6 +1317,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
        } else if (current->isTwoNode()) { 
 
             // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... TODO: why skip root? 
+
+            // TODO: Do before and after BasicTreePrinter::print_level_order(std::ostream&)
             current = convertTwoNode(current); // ..and resume the key search with the now converted node.
             continue;
       
