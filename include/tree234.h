@@ -1390,7 +1390,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
       // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
       // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
 
-      Node234 *current = pfound_node->children[key_index + 1].get(); 
+      current = pfound_node->children[key_index + 1].get(); 
 
       while (true) {
 
