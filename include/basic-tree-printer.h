@@ -4,7 +4,8 @@
 #include "tree-printer-interface.h"
 #include <iostream>
 #include <string>
-#include "tree234.h"
+
+template<class K> class Tree234; // fwd ref.
 
 template<class K> class BasicTreePrinter : TreePrinterInterface {
 

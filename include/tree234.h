@@ -11,6 +11,7 @@
 #include <exception>
 #include <iosfwd>
 #include <utility>
+#include "basic-tree-printer.h" // Deubg only
 
 // fwd declarations
 template<typename T> class Tree234;    
@@ -1318,8 +1319,23 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
             // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... TODO: why skip root? 
 
-            // TODO: Do before and after BasicTreePrinter::print_level_order(std::ostream&)
+            // Deubg start
+           
+            BasicTreePrinter<K> tree_printer(*this);
+
+            std::cout << "\nTree before convertTwoNode called " << std::endl;
+
+            tree_printer.print_level_order(std::cout);
+            std::cout << std::endl;
+
             current = convertTwoNode(current); // ..and resume the key search with the now converted node.
+
+            std::cout << "\nTree after convertTwoNode called " << std::endl;
+
+            tree_printer.print_level_order(std::cout);
+            std::cout << std::endl;
+            
+            // Debug end
             continue;
       
        } else if (current->NodeDescentSearch(key, key_index, next)) { // ...search for item in current node. 

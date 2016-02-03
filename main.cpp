@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
-#include "tree234.h"
-#include "debug-printer.h"
-#include "basic-tree-printer.h"
+#include "include/tree234.h"
+#include "include/debug-printer.h"
+#include "include/basic-tree-printer.h"
 
 using namespace std;
 
