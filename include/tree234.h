@@ -69,50 +69,49 @@ template<typename K> class Tree234 {
     
        int to_int(const NodeMaxItems x) const { return static_cast<int>(x); }
        
-       private: 
 
-           Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
-                               it points to. */
+       Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
+                           it points to. */
     
-           int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
+       int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
     
-           std::array<K, 3> keys; // in static storage not the heap.
+       std::array<K, 3> keys; // in static storage not the heap.
     
-           /*
-            * For 2-nodes, children[0] is left pointer and children[1] is right pointer.
-            * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
-            * And so on for 4-nodes.
-            */
+       /*
+        * For 2-nodes, children[0] is left pointer and children[1] is right pointer.
+        * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
+        * And so on for 4-nodes.
+        */
     
-           std::array<std::unique_ptr<Node234>, 4> children;
-           
-           constexpr Node234 *getParent() noexcept; 
+       std::array<std::unique_ptr<Node234>, 4> children;
+       
+       constexpr Node234 *getParent() noexcept; 
     
-           /* 
-            * Returns true if key is found in node and sets index so pNode->keys[index] == key
-            * Returns false if key is if not found, and sets next to the next in-order child.
-            */
-           bool NodeDescentSearch(K key, int& index, Node234 *&next) noexcept;
+       /* 
+        * Returns true if key is found in node and sets index so pNode->keys[index] == key
+        * Returns false if key is if not found, and sets next to the next in-order child.
+        */
+       bool NodeDescentSearch(K key, int& index, Node234 *&next) noexcept;
     
-           int insertKey(K key) noexcept;
-           
-           void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
-           
-           // Remove key, if found, from node, shifting remaining keys to fill its gap.
-           K removeKey(int index) noexcept;
+       int insertKey(K key) noexcept;
+       
+       void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
+       
+       // Remove key, if found, from node, shifting remaining keys to fill its gap.
+       K removeKey(int index) noexcept;
     
-           /*
-            * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
-            */  
-           std::unique_ptr<Node234> disconnectChild(int child_index) noexcept; 
+       /*
+        * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
+        */  
+       std::unique_ptr<Node234> disconnectChild(int child_index) noexcept; 
     
-           void insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept;
+       void insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept;
     
-           /* 
-            * Called during remove(K key).
-            * Merges the 2-node children of a parent 2-node into the parent, making a 4-node. 
-            */
-           Node234 *fuseWithChildren() noexcept; 
+       /* 
+        * Called during remove(K key).
+        * Merges the 2-node children of a parent 2-node into the parent, making a 4-node. 
+        */
+       Node234 *fuseWithChildren() noexcept; 
        
         public:
              
@@ -125,6 +124,9 @@ template<typename K> class Tree234 {
     
            constexpr int getTotalItems() const noexcept;
            constexpr int getChildCount() const noexcept;
+
+           // method to help in debugging
+           void printKeys(std::ostream&);
     
            bool findKey(K key, int& index) const noexcept;
            constexpr K getKey(int i) const;
@@ -228,6 +230,23 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
    keys[0] = small; 
    keys[1] = middle; 
    keys[2] = large; 
+}
+
+template<typename K> inline void Tree234<K>::Node234::printKeys(std::ostream& ostr)
+{
+  ostr << "["; 
+
+  for(auto i = 0; i < getTotalItems(); ++i) {
+
+      ostr << getKey(i);
+
+      if (i < getTotalItems() - 1)       {
+
+         ostr << ", ";
+      } 
+  }
+
+  ostr << "]";
 }
 
 template<typename K> inline constexpr int Tree234<K>::Node234::getTotalItems() const noexcept
@@ -1323,16 +1342,27 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
            
             BasicTreePrinter<K> tree_printer(*this);
 
-            std::cout << "\nTree before convertTwoNode called " << std::endl;
+            std::cout << "\n\nTree before convertTwoNode called during remove(" << key << "," << current << ") ";
+            std::cout << " where " << current << " is ";
+
+            current->printKeys(std::cout);
 
             tree_printer.print_level_order(std::cout);
+
             std::cout << std::endl;
 
             current = convertTwoNode(current); // ..and resume the key search with the now converted node.
 
-            std::cout << "\nTree after convertTwoNode called " << std::endl;
+            std::cout << "\nNode after convertTwoNode() called during remove(" << key << "," << current << ") is ";
+
+            current->printKeys(std::cout);
+
+            std::cout << std::endl;
+
+            std::cout << "\nTree after convertTwoNode called node is:" << std::endl;
 
             tree_printer.print_level_order(std::cout);
+
             std::cout << std::endl;
             
             // Debug end

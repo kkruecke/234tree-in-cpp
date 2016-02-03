@@ -53,7 +53,7 @@ int main(int argc, char** argv)
 
   for (auto& item : input) {
 
-    cout << "\nTree size before removing item " << item << " is " << tree.size() << endl;
+    cout << "\nTree size is " << tree.size() << " before removing item " << item << endl;
 
     bool rc = tree.remove(item);
        
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
     
     cout<< "\nitem " << item << str_remove_status;
     
-    cout << "\nTree size after attempting to remove item " << item << " is " << tree.size() << "\n" << endl;
+    cout << "\nTree size is " << tree.size() << " after attempting to remove item " << item << "\n" << endl;
 
     cout << "\n\n=======Tree level order print =====================" << endl;
         
