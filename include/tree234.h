@@ -1138,7 +1138,8 @@ template<typename K> bool Tree234<K>::remove(K key)
  * slide 52 of www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  * 
  * This technique is also explained and illustrated with several examples at pages 64-66 of
- * http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
+ * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+ *
  *
  * and at:
  * 

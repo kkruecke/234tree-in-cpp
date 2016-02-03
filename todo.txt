@@ -1,7 +1,10 @@
 Bug Found during removal of item 23:
 
 During removal of item 23, when the root of [51] is converted from a 2-node, the tree loses several nodes. It had 16 items before the conversion. After it has only
-eight.
+eight. Q: Should converting the root be skipped except when the item to be removed is in it? What did the prior code do--as it worked removing all items.
+
+Idea: Skip converting the root if it is a 2-node, but change the logic so we don't fail to search the root node as we descend and convert 2-nodes below the root.
+Read the links below to get understand deletion and examine the deletion examples comparing them with my current remove implementation.
 
 Sources
 =======
