@@ -1,41 +1,4 @@
-Bug Found during removal of item 23:
-
-During removal of item 23, when the root of [51] is converted from a 2-node, the tree loses several nodes. It had 16 items before the conversion. After it has only
-eight. Q: Should converting the root be skipped except when the item to be removed is in it? What did the prior code do--as it worked removing all items.
-
-Idea: Skip converting the root if it is a 2-node. We won't fail to search the root node as we descend. We only convert 2-nodes encountered below the root.
-Read the links below to get understand deletion and examine the deletion examples comparing them with my current remove implementation.
-
- Or.. add back the " } else if (current != root.get() && current->isTwoNode()) {", but handle the special case when fuseWithChildren() fuses the root with its 
-children. Currently, fuseWithChildren() is not even called. So we will also have to add back the code that checks whether the parent is a 2-node (which only happens
-if it is the root) and calls fuseWithChildren(). This is the code that needs to be added back into convertTwoNode():
-
-   // snip. . .
-   } else { // sibling is to the left.
-
-        sibling_index = left_adjacent; 
-   }
-   // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
-   // Check if its parent 2-node (or 3- or 4-node).
-   bool parentIsTwoNode = parent->isTwoNode();
-
-   if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-nodes...
-
-         if (parentIsTwoNode) { //... as is the parent, which must be root; otherwise, it would have already been converted.
-
-	     convertedNode = parent->fuseWithChildren();
-
-        } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
-
-             convertedNode = fuseSiblings(parent, node2_index, sibling_index);
-        }
-
-   } else { // it has a 3- or 4-node sibling.
-
-        convertedNode = doRotation(parent, node2_index, sibling_index);
-   }
-   
-
+Code seems to work now. Test whether the recursive call to remove(K key, Node234 *) ever occurs.  
 
 Sources
 =======

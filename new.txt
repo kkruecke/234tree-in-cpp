@@ -17,7 +17,7 @@ Printing actual tree in order, using lambda closure
 Tree size is 28 before removing item 60
 
 
-Tree before convertTwoNode called during remove(60,0x204dfe0)  where 0x204dfe0 is [70]
+Tree before convertTwoNode called during remove(60,0x9cbfe0)  where 0x9cbfe0 is [70]
 
 level = 1     [ 50 ] 
 
@@ -27,42 +27,36 @@ level = 3   [ 15 ]  [ 30 ]  [ 60 ]  [ 90, 97 ]
 
 level = 4  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 62, 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
-Node after convertTwoNode() called during remove(60,0x204dfe0) is [23, 50, 70]
+Node after convertTwoNode() called during remove(60,0x9cc020) is [23, 50, 70]
 
 Tree after convertTwoNode called node is:
 
 
-level = 1     [  ] 
+level = 1     [ 23, 50, 70 ] 
 
-level = 2    [ 23, 50, 70 ] 
+level = 2    [ 15 ]  [ 30 ]  [ 60 ]  [ 90, 97 ] 
 
-level = 3   [ 15 ]  [ 30 ]  [ 60 ]  [ 90, 97 ] 
-
-level = 4  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 62, 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3   [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 62, 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 
-Tree before convertTwoNode called during remove(60,0x204dde0)  where 0x204dde0 is [60]
+Tree before convertTwoNode called during remove(60,0x9cbde0)  where 0x9cbde0 is [60]
 
-level = 1     [  ] 
+level = 1    [ 23, 50, 70 ] 
 
-level = 2    [ 23, 50, 70 ] 
+level = 2   [ 15 ]  [ 30 ]  [ 60 ]  [ 90, 97 ] 
 
-level = 3   [ 15 ]  [ 30 ]  [ 60 ]  [ 90, 97 ] 
+level = 3  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 62, 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
-level = 4  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 62, 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
-
-Node after convertTwoNode() called during remove(60,0x204dde0) is [60, 70]
+Node after convertTwoNode() called during remove(60,0x9cbde0) is [60, 70]
 
 Tree after convertTwoNode called node is:
 
 
-level = 1     [  ] 
+level = 1    [ 23, 50, 90 ] 
 
-level = 2    [ 23, 50, 90 ] 
+level = 2   [ 15 ]  [ 30 ]  [ 60, 70 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 30 ]  [ 60, 70 ]  [ 97 ] 
-
-level = 4  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 62, 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 62, 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 item 60 successfully removed 
 Tree size is 28 after attempting to remove item 60
@@ -72,42 +66,36 @@ Tree size is 28 after attempting to remove item 60
 =======Tree level order print =====================
 
 
-level = 1     [  ] 
+level = 1     [ 23, 50, 90 ] 
 
-level = 2    [ 23, 50, 90 ] 
+level = 2    [ 15 ]  [ 30 ]  [ 62, 70 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 30 ]  [ 62, 70 ]  [ 97 ] 
-
-level = 4  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3   [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 =================== Normal Tree Print using lambda closure =======================
 
-
+1 2 10 15 17 20 23 26 27 30 33 37 40 50 51 55 62 69 70 79 80 87 90 92 97 100 201 
 Tree size is 28 before removing item 30
 
 
-Tree before convertTwoNode called during remove(30,0x204df20)  where 0x204df20 is [30]
+Tree before convertTwoNode called during remove(30,0x9cbf20)  where 0x9cbf20 is [30]
 
-level = 1     [  ] 
+level = 1    [ 23, 50, 90 ] 
 
-level = 2    [ 23, 50, 90 ] 
+level = 2   [ 15 ]  [ 30 ]  [ 62, 70 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 30 ]  [ 62, 70 ]  [ 97 ] 
+level = 3  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
-level = 4  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
-
-Node after convertTwoNode() called during remove(30,0x204df20) is [30, 50]
+Node after convertTwoNode() called during remove(30,0x9cbf20) is [30, 50]
 
 Tree after convertTwoNode called node is:
 
 
-level = 1     [  ] 
+level = 1    [ 23, 62, 90 ] 
 
-level = 2    [ 23, 62, 90 ] 
+level = 2   [ 15 ]  [ 30, 50 ]  [ 70 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 30, 50 ]  [ 70 ]  [ 97 ] 
-
-level = 4  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 33, 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 item 30 successfully removed 
 Tree size is 28 after attempting to remove item 30
@@ -117,42 +105,36 @@ Tree size is 28 after attempting to remove item 30
 =======Tree level order print =====================
 
 
-level = 1     [  ] 
+level = 1     [ 23, 62, 90 ] 
 
-level = 2    [ 23, 62, 90 ] 
+level = 2    [ 15 ]  [ 33, 50 ]  [ 70 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 33, 50 ]  [ 70 ]  [ 97 ] 
-
-level = 4  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3   [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 =================== Normal Tree Print using lambda closure =======================
 
-
+1 2 10 15 17 20 23 26 27 33 37 40 50 51 55 62 69 70 79 80 87 90 92 97 100 201 
 Tree size is 28 before removing item 10
 
 
-Tree before convertTwoNode called during remove(10,0x204dd20)  where 0x204dd20 is [15]
+Tree before convertTwoNode called during remove(10,0x9cbd20)  where 0x9cbd20 is [15]
 
-level = 1     [  ] 
+level = 1    [ 23, 62, 90 ] 
 
-level = 2    [ 23, 62, 90 ] 
+level = 2   [ 15 ]  [ 33, 50 ]  [ 70 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 33, 50 ]  [ 70 ]  [ 97 ] 
+level = 3  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
-level = 4  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
-
-Node after convertTwoNode() called during remove(10,0x204dd20) is [15, 23]
+Node after convertTwoNode() called during remove(10,0x9cbd20) is [15, 23]
 
 Tree after convertTwoNode called node is:
 
 
-level = 1     [  ] 
+level = 1    [ 33, 62, 90 ] 
 
-level = 2    [ 33, 62, 90 ] 
+level = 2   [ 15, 23 ]  [ 50 ]  [ 70 ]  [ 97 ] 
 
-level = 3   [ 15, 23 ]  [ 50 ]  [ 70 ]  [ 97 ] 
-
-level = 4  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3  [ 1, 2, 10 ]  [ 17, 20 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 item 10 successfully removed 
 Tree size is 27 after attempting to remove item 10
@@ -162,17 +144,15 @@ Tree size is 27 after attempting to remove item 10
 =======Tree level order print =====================
 
 
-level = 1     [  ] 
+level = 1     [ 33, 62, 90 ] 
 
-level = 2    [ 33, 62, 90 ] 
+level = 2    [ 15, 23 ]  [ 50 ]  [ 70 ]  [ 97 ] 
 
-level = 3   [ 15, 23 ]  [ 50 ]  [ 70 ]  [ 97 ] 
-
-level = 4  [ 1, 2 ]  [ 17, 20 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3   [ 1, 2 ]  [ 17, 20 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 =================== Normal Tree Print using lambda closure =======================
 
-
+1 2 15 17 20 23 26 27 33 37 40 50 51 55 62 69 70 79 80 87 90 92 97 100 201 
 Tree size is 27 before removing item 20
 
 item 20 successfully removed 
@@ -183,42 +163,36 @@ Tree size is 26 after attempting to remove item 20
 =======Tree level order print =====================
 
 
-level = 1     [  ] 
+level = 1     [ 33, 62, 90 ] 
 
-level = 2    [ 33, 62, 90 ] 
+level = 2    [ 15, 23 ]  [ 50 ]  [ 70 ]  [ 97 ] 
 
-level = 3   [ 15, 23 ]  [ 50 ]  [ 70 ]  [ 97 ] 
-
-level = 4  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3   [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 =================== Normal Tree Print using lambda closure =======================
 
-
+1 2 15 17 23 26 27 33 37 40 50 51 55 62 69 70 79 80 87 90 92 97 100 201 
 Tree size is 26 before removing item 50
 
 
-Tree before convertTwoNode called during remove(50,0x204df20)  where 0x204df20 is [50]
+Tree before convertTwoNode called during remove(50,0x9cbf20)  where 0x9cbf20 is [50]
 
-level = 1     [  ] 
+level = 1    [ 33, 62, 90 ] 
 
-level = 2    [ 33, 62, 90 ] 
+level = 2   [ 15, 23 ]  [ 50 ]  [ 70 ]  [ 97 ] 
 
-level = 3   [ 15, 23 ]  [ 50 ]  [ 70 ]  [ 97 ] 
+level = 3  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
-level = 4  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
-
-Node after convertTwoNode() called during remove(50,0x204df20) is [33, 50]
+Node after convertTwoNode() called during remove(50,0x9cbf20) is [33, 50]
 
 Tree after convertTwoNode called node is:
 
 
-level = 1     [  ] 
+level = 1    [ 23, 62, 90 ] 
 
-level = 2    [ 23, 62, 90 ] 
+level = 2   [ 15 ]  [ 33, 50 ]  [ 70 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 33, 50 ]  [ 70 ]  [ 97 ] 
-
-level = 4  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37, 40 ]  [ 51, 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 item 50 successfully removed 
 Tree size is 26 after attempting to remove item 50
@@ -228,17 +202,15 @@ Tree size is 26 after attempting to remove item 50
 =======Tree level order print =====================
 
 
-level = 1     [  ] 
+level = 1     [ 23, 62, 90 ] 
 
-level = 2    [ 23, 62, 90 ] 
+level = 2    [ 15 ]  [ 33, 51 ]  [ 70 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 33, 51 ]  [ 70 ]  [ 97 ] 
-
-level = 4  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37, 40 ]  [ 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3   [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37, 40 ]  [ 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 =================== Normal Tree Print using lambda closure =======================
 
-
+1 2 15 17 23 26 27 33 37 40 51 55 62 69 70 79 80 87 90 92 97 100 201 
 Tree size is 26 before removing item 40
 
 item 40 successfully removed 
@@ -249,42 +221,36 @@ Tree size is 25 after attempting to remove item 40
 =======Tree level order print =====================
 
 
-level = 1     [  ] 
+level = 1     [ 23, 62, 90 ] 
 
-level = 2    [ 23, 62, 90 ] 
+level = 2    [ 15 ]  [ 33, 51 ]  [ 70 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 33, 51 ]  [ 70 ]  [ 97 ] 
-
-level = 4  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3   [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 =================== Normal Tree Print using lambda closure =======================
 
-
+1 2 15 17 23 26 27 33 37 51 55 62 69 70 79 80 87 90 92 97 100 201 
 Tree size is 25 before removing item 70
 
 
-Tree before convertTwoNode called during remove(70,0x204dde0)  where 0x204dde0 is [70]
+Tree before convertTwoNode called during remove(70,0x9cbde0)  where 0x9cbde0 is [70]
 
-level = 1     [  ] 
+level = 1    [ 23, 62, 90 ] 
 
-level = 2    [ 23, 62, 90 ] 
+level = 2   [ 15 ]  [ 33, 51 ]  [ 70 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 33, 51 ]  [ 70 ]  [ 97 ] 
+level = 3  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
-level = 4  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
-
-Node after convertTwoNode() called during remove(70,0x204dde0) is [62, 70]
+Node after convertTwoNode() called during remove(70,0x9cbde0) is [62, 70]
 
 Tree after convertTwoNode called node is:
 
 
-level = 1     [  ] 
+level = 1    [ 23, 51, 90 ] 
 
-level = 2    [ 23, 51, 90 ] 
+level = 2   [ 15 ]  [ 33 ]  [ 62, 70 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 33 ]  [ 62, 70 ]  [ 97 ] 
-
-level = 4  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 79, 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 item 70 successfully removed 
 Tree size is 25 after attempting to remove item 70
@@ -294,17 +260,15 @@ Tree size is 25 after attempting to remove item 70
 =======Tree level order print =====================
 
 
-level = 1     [  ] 
+level = 1     [ 23, 51, 90 ] 
 
-level = 2    [ 23, 51, 90 ] 
+level = 2    [ 15 ]  [ 33 ]  [ 62, 79 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 33 ]  [ 62, 79 ]  [ 97 ] 
-
-level = 4  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 80, 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3   [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 80, 87 ]  [ 92 ]  [ 100, 201 ] 
 
 =================== Normal Tree Print using lambda closure =======================
 
-
+1 2 15 17 23 26 27 33 37 51 55 62 69 79 80 87 90 92 97 100 201 
 Tree size is 25 before removing item 80
 
 item 80 successfully removed 
@@ -315,42 +279,36 @@ Tree size is 24 after attempting to remove item 80
 =======Tree level order print =====================
 
 
-level = 1     [  ] 
+level = 1     [ 23, 51, 90 ] 
 
-level = 2    [ 23, 51, 90 ] 
+level = 2    [ 15 ]  [ 33 ]  [ 62, 79 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 33 ]  [ 62, 79 ]  [ 97 ] 
-
-level = 4  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3   [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 92 ]  [ 100, 201 ] 
 
 =================== Normal Tree Print using lambda closure =======================
 
-
+1 2 15 17 23 26 27 33 37 51 55 62 69 79 87 90 92 97 100 201 
 Tree size is 24 before removing item 15
 
 
-Tree before convertTwoNode called during remove(15,0x204dd20)  where 0x204dd20 is [15]
+Tree before convertTwoNode called during remove(15,0x9cbd20)  where 0x9cbd20 is [15]
 
-level = 1     [  ] 
+level = 1    [ 23, 51, 90 ] 
 
-level = 2    [ 23, 51, 90 ] 
+level = 2   [ 15 ]  [ 33 ]  [ 62, 79 ]  [ 97 ] 
 
-level = 3   [ 15 ]  [ 33 ]  [ 62, 79 ]  [ 97 ] 
+level = 3  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 92 ]  [ 100, 201 ] 
 
-level = 4  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 92 ]  [ 100, 201 ] 
-
-Node after convertTwoNode() called during remove(15,0x204dd20) is [15, 23, 33]
+Node after convertTwoNode() called during remove(15,0x9cbd20) is [15, 23, 33]
 
 Tree after convertTwoNode called node is:
 
 
-level = 1     [  ] 
+level = 1    [ 51, 90 ] 
 
-level = 2    [ 51, 90 ] 
+level = 2   [ 15, 23, 33 ]  [ 62, 79 ]  [ 97 ] 
 
-level = 3   [ 15, 23, 33 ]  [ 62, 79 ]  [ 97 ] 
-
-level = 4  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3  [ 1, 2 ]  [ 17 ]  [ 26, 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 92 ]  [ 100, 201 ] 
 
 item 15 successfully removed 
 Tree size is 24 after attempting to remove item 15
@@ -360,17 +318,15 @@ Tree size is 24 after attempting to remove item 15
 =======Tree level order print =====================
 
 
-level = 1     [  ] 
+level = 1     [ 51, 90 ] 
 
-level = 2    [ 51, 90 ] 
+level = 2    [ 17, 26, 33 ]  [ 62, 79 ]  [ 97 ] 
 
-level = 3   [ 17, 26, 33 ]  [ 62, 79 ]  [ 97 ] 
-
-level = 4  [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 92 ]  [ 100, 201 ] 
+level = 3   [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 92 ]  [ 100, 201 ] 
 
 =================== Normal Tree Print using lambda closure =======================
 
-
+1 2 17 23 26 27 33 37 51 55 62 69 79 87 90 92 97 100 201 
 Tree size is 24 before removing item 90
 
 item 90 successfully removed 
@@ -381,42 +337,36 @@ Tree size is 24 after attempting to remove item 90
 =======Tree level order print =====================
 
 
-level = 1     [  ] 
+level = 1     [ 51, 79 ] 
 
-level = 2    [ 51, 79 ] 
+level = 2    [ 17, 26, 33 ]  [ 62 ]  [ 92, 100 ] 
 
-level = 3   [ 17, 26, 33 ]  [ 62 ]  [ 92, 100 ] 
-
-level = 4  [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97 ]  [ 201 ] 
+level = 3   [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97 ]  [ 201 ] 
 
 =================== Normal Tree Print using lambda closure =======================
 
-
+1 2 17 23 26 27 33 37 51 55 62 69 79 87 92 97 100 201 
 Tree size is 24 before removing item 100
 
 
-Tree before convertTwoNode called during remove(100,0x204dfa0)  where 0x204dfa0 is [92]
+Tree before convertTwoNode called during remove(100,0x9cbfa0)  where 0x9cbfa0 is [92]
 
-level = 1     [  ] 
+level = 1    [ 51, 79 ] 
 
-level = 2    [ 51, 79 ] 
+level = 2   [ 17, 26, 33 ]  [ 62 ]  [ 92 ] 
 
-level = 3   [ 17, 26, 33 ]  [ 62 ]  [ 92 ] 
+level = 3  [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97, 100, 201 ] 
 
-level = 4  [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97, 100, 201 ] 
-
-Node after convertTwoNode() called during remove(100,0x204dfa0) is [62, 79, 92]
+Node after convertTwoNode() called during remove(100,0x9cbfa0) is [62, 79, 92]
 
 Tree after convertTwoNode called node is:
 
 
-level = 1     [  ] 
+level = 1    [ 51 ] 
 
-level = 2    [ 51 ] 
+level = 2   [ 17, 26, 33 ]  [ 62, 79, 92 ] 
 
-level = 3   [ 17, 26, 33 ]  [ 62, 79, 92 ] 
-
-level = 4  [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97, 100, 201 ] 
+level = 3  [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97, 100, 201 ] 
 
 item 100 successfully removed 
 Tree size is 23 after attempting to remove item 100
@@ -426,26 +376,486 @@ Tree size is 23 after attempting to remove item 100
 =======Tree level order print =====================
 
 
-level = 1     [  ] 
+level = 1     [ 51 ] 
 
-level = 2    [ 51 ] 
+level = 2    [ 17, 26, 33 ]  [ 62, 79, 92 ] 
 
-level = 3   [ 17, 26, 33 ]  [ 62, 79, 92 ] 
+level = 3   [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97, 201 ] 
 
-level = 4  [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97, 201 ] 
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 17 23 26 27 33 37 51 55 62 69 79 87 92 97 201 
+Tree size is 23 before removing item 27
+
+
+Tree before convertTwoNode called during remove(27,0x9cbee0)  where 0x9cbee0 is [27]
+
+level = 1    [ 51 ] 
+
+level = 2   [ 17, 26, 33 ]  [ 62, 79, 92 ] 
+
+level = 3  [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97, 201 ] 
+
+Node after convertTwoNode() called during remove(27,0x9cbee0) is [27, 33, 37]
+
+Tree after convertTwoNode called node is:
+
+
+level = 1    [ 51 ] 
+
+level = 2   [ 17, 26 ]  [ 62, 79, 92 ] 
+
+level = 3  [ 1, 2 ]  [ 23 ]  [ 27, 33, 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97, 201 ] 
+
+item 27 successfully removed 
+Tree size is 22 after attempting to remove item 27
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 51 ] 
+
+level = 2    [ 17, 26 ]  [ 62, 79, 92 ] 
+
+level = 3   [ 1, 2 ]  [ 23 ]  [ 33, 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97, 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 17 23 26 33 37 51 55 62 69 79 87 92 97 201 
+Tree size is 22 before removing item 62
+
+item 62 successfully removed 
+Tree size is 22 after attempting to remove item 62
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 51 ] 
+
+level = 2    [ 17, 26 ]  [ 69, 92 ] 
+
+level = 3   [ 1, 2 ]  [ 23 ]  [ 33, 37 ]  [ 55 ]  [ 79, 87 ]  [ 97, 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 17 23 26 33 37 51 55 69 79 87 92 97 201 
+Tree size is 22 before removing item 87
+
+item 87 successfully removed 
+Tree size is 21 after attempting to remove item 87
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 51 ] 
+
+level = 2    [ 17, 26 ]  [ 69, 92 ] 
+
+level = 3   [ 1, 2 ]  [ 23 ]  [ 33, 37 ]  [ 55 ]  [ 79 ]  [ 97, 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 17 23 26 33 37 51 55 69 79 92 97 201 
+Tree size is 21 before removing item 37
+
+item 37 successfully removed 
+Tree size is 20 after attempting to remove item 37
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 51 ] 
+
+level = 2    [ 17, 26 ]  [ 69, 92 ] 
+
+level = 3   [ 1, 2 ]  [ 23 ]  [ 33 ]  [ 55 ]  [ 79 ]  [ 97, 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 17 23 26 33 51 55 69 79 92 97 201 
+Tree size is 20 before removing item 92
+
+item 92 successfully removed 
+Tree size is 20 after attempting to remove item 92
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 51 ] 
+
+level = 2    [ 17, 26 ]  [ 69, 97 ] 
+
+level = 3   [ 1, 2 ]  [ 23 ]  [ 33 ]  [ 55 ]  [ 79 ]  [ 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 17 23 26 33 51 55 69 79 97 201 
+Tree size is 20 before removing item 79
+
+
+Tree before convertTwoNode called during remove(79,0x9cbf60)  where 0x9cbf60 is [79]
+
+level = 1    [ 51 ] 
+
+level = 2   [ 17, 26 ]  [ 69, 97 ] 
+
+level = 3  [ 1, 2 ]  [ 23 ]  [ 33 ]  [ 55 ]  [ 79 ]  [ 201 ] 
+
+Node after convertTwoNode() called during remove(79,0x9cbf60) is [79, 97, 201]
+
+Tree after convertTwoNode called node is:
+
+
+level = 1    [ 51 ] 
+
+level = 2   [ 17, 26 ]  [ 69 ] 
+
+level = 3  [ 1, 2 ]  [ 23 ]  [ 33 ]  [ 55 ]  [ 79, 97, 201 ] 
+
+item 79 successfully removed 
+Tree size is 19 after attempting to remove item 79
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 51 ] 
+
+level = 2    [ 17, 26 ]  [ 69 ] 
+
+level = 3   [ 1, 2 ]  [ 23 ]  [ 33 ]  [ 55 ]  [ 97, 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 17 23 26 33 51 55 69 97 201 
+Tree size is 19 before removing item 23
+
+
+Tree before convertTwoNode called during remove(23,0x9cbe60)  where 0x9cbe60 is [23]
+
+level = 1    [ 51 ] 
+
+level = 2   [ 17, 26 ]  [ 69 ] 
+
+level = 3  [ 1, 2 ]  [ 23 ]  [ 33 ]  [ 55 ]  [ 97, 201 ] 
+
+Node after convertTwoNode() called during remove(23,0x9cbe60) is [17, 23]
+
+Tree after convertTwoNode called node is:
+
+
+level = 1    [ 51 ] 
+
+level = 2   [ 2, 26 ]  [ 69 ] 
+
+level = 3  [ 1 ]  [ 17, 23 ]  [ 33 ]  [ 55 ]  [ 97, 201 ] 
+
+item 23 successfully removed 
+Tree size is 18 after attempting to remove item 23
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 51 ] 
+
+level = 2    [ 2, 26 ]  [ 69 ] 
+
+level = 3   [ 1 ]  [ 17 ]  [ 33 ]  [ 55 ]  [ 97, 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 17 26 33 51 55 69 97 201 
+Tree size is 18 before removing item 17
+
+
+Tree before convertTwoNode called during remove(17,0x9cbe60)  where 0x9cbe60 is [17]
+
+level = 1    [ 51 ] 
+
+level = 2   [ 2, 26 ]  [ 69 ] 
+
+level = 3  [ 1 ]  [ 17 ]  [ 33 ]  [ 55 ]  [ 97, 201 ] 
+
+Node after convertTwoNode() called during remove(17,0x9cbe60) is [17, 26, 33]
+
+Tree after convertTwoNode called node is:
+
+
+level = 1    [ 51 ] 
+
+level = 2   [ 2 ]  [ 69 ] 
+
+level = 3  [ 1 ]  [ 17, 26, 33 ]  [ 55 ]  [ 97, 201 ] 
+
+item 17 successfully removed 
+Tree size is 17 after attempting to remove item 17
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 51 ] 
+
+level = 2    [ 2 ]  [ 69 ] 
+
+level = 3   [ 1 ]  [ 26, 33 ]  [ 55 ]  [ 97, 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 26 33 51 55 69 97 201 
+Tree size is 17 before removing item 97
+
+
+Tree before convertTwoNode called during remove(97,0x9cbfa0)  where 0x9cbfa0 is [69]
+
+level = 1    [ 51 ] 
+
+level = 2   [ 2 ]  [ 69 ] 
+
+level = 3  [ 1 ]  [ 26, 33 ]  [ 55 ]  [ 97, 201 ] 
+
+Node after convertTwoNode() called during remove(97,0x9cc020) is [2, 51, 69]
+
+Tree after convertTwoNode called node is:
+
+
+level = 1    [ 2, 51, 69 ] 
+
+level = 2   [ 1 ]  [ 26, 33 ]  [ 55 ]  [ 97, 201 ] 
+
+item 97 successfully removed 
+Tree size is 16 after attempting to remove item 97
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 2, 51, 69 ] 
+
+level = 2    [ 1 ]  [ 26, 33 ]  [ 55 ]  [ 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 26 33 51 55 69 201 
+Tree size is 16 before removing item 55
+
+
+Tree before convertTwoNode called during remove(55,0x9cbd60)  where 0x9cbd60 is [55]
+
+level = 1   [ 2, 51, 69 ] 
+
+level = 2  [ 1 ]  [ 26, 33 ]  [ 55 ]  [ 201 ] 
+
+Node after convertTwoNode() called during remove(55,0x9cbd60) is [51, 55]
+
+Tree after convertTwoNode called node is:
+
+
+level = 1   [ 2, 33, 69 ] 
+
+level = 2  [ 1 ]  [ 26 ]  [ 51, 55 ]  [ 201 ] 
+
+item 55 successfully removed 
+Tree size is 15 after attempting to remove item 55
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 2, 33, 69 ] 
+
+level = 2    [ 1 ]  [ 26 ]  [ 51 ]  [ 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 26 33 51 69 201 
+Tree size is 15 before removing item 51
+
+
+Tree before convertTwoNode called during remove(51,0x9cbd60)  where 0x9cbd60 is [51]
+
+level = 1   [ 2, 33, 69 ] 
+
+level = 2  [ 1 ]  [ 26 ]  [ 51 ]  [ 201 ] 
+
+Node after convertTwoNode() called during remove(51,0x9cbd60) is [51, 69, 201]
+
+Tree after convertTwoNode called node is:
+
+
+level = 1   [ 2, 33 ] 
+
+level = 2  [ 1 ]  [ 26 ]  [ 51, 69, 201 ] 
+
+item 51 successfully removed 
+Tree size is 14 after attempting to remove item 51
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 2, 33 ] 
+
+level = 2    [ 1 ]  [ 26 ]  [ 69, 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 26 33 69 201 
+Tree size is 14 before removing item 69
+
+item 69 successfully removed 
+Tree size is 13 after attempting to remove item 69
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 2, 33 ] 
+
+level = 2    [ 1 ]  [ 26 ]  [ 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+1 2 26 33 201 
+Tree size is 13 before removing item 1
+
+
+Tree before convertTwoNode called during remove(1,0x9cbca0)  where 0x9cbca0 is [1]
+
+level = 1   [ 2, 33 ] 
+
+level = 2  [ 1 ]  [ 26 ]  [ 201 ] 
+
+Node after convertTwoNode() called during remove(1,0x9cbca0) is [1, 2, 26]
+
+Tree after convertTwoNode called node is:
+
+
+level = 1   [ 33 ] 
+
+level = 2  [ 1, 2, 26 ]  [ 201 ] 
+
+item 1 successfully removed 
+Tree size is 12 after attempting to remove item 1
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 33 ] 
+
+level = 2    [ 2, 26 ]  [ 201 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+2 26 33 201 
+Tree size is 12 before removing item 201
+
+
+Tree before convertTwoNode called during remove(201,0x9cbd60)  where 0x9cbd60 is [201]
+
+level = 1   [ 33 ] 
+
+level = 2  [ 2, 26 ]  [ 201 ] 
+
+Node after convertTwoNode() called during remove(201,0x9cbd60) is [33, 201]
+
+Tree after convertTwoNode called node is:
+
+
+level = 1   [ 26 ] 
+
+level = 2  [ 2 ]  [ 33, 201 ] 
+
+item 201 successfully removed 
+Tree size is 11 after attempting to remove item 201
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 26 ] 
+
+level = 2    [ 2 ]  [ 33 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+2 26 33 
+Tree size is 11 before removing item 2
+
+
+Tree before convertTwoNode called during remove(2,0x9cbca0)  where 0x9cbca0 is [2]
+
+level = 1   [ 26 ] 
+
+level = 2  [ 2 ]  [ 33 ] 
+
+Node after convertTwoNode() called during remove(2,0x9cc020) is [2, 26, 33]
+
+Tree after convertTwoNode called node is:
+
+
+level = 1   [ 2, 26, 33 ] 
+
+item 2 successfully removed 
+Tree size is 10 after attempting to remove item 2
+
+
+
+=======Tree level order print =====================
+
+
+level = 1     [ 26, 33 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+26 33 
+Tree size is 10 before removing item 33
+
+item 33 successfully removed 
+Tree size is 9 after attempting to remove item 33
+
+
+
+=======Tree level order print =====================
+ [ 26 ] 
+
+=================== Normal Tree Print using lambda closure =======================
+
+26 
+Tree size is 9 before removing item 26
+
+item 26 successfully removed 
+Tree size is 8 after attempting to remove item 26
+
+
+
+=======Tree level order print =====================
+
 
 =================== Normal Tree Print using lambda closure =======================
 
 
-Tree size is 23 before removing item 27
+==== Final Tree ========
 
 
-Tree before convertTwoNode called during remove(27,0x204dfe0)  where 0x204dfe0 is [51]
-
-level = 1     [  ] 
-
-level = 2    [ 51 ] 
-
-level = 3   [ 17, 26, 33 ]  [ 62, 79, 92 ] 
-
-level = 4  [ 1, 2 ]  [ 23 ]  [ 27 ]  [ 37 ]  [ 55 ]  [ 69 ]  [ 87 ]  [ 97, 201 ] 
