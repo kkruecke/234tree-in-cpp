@@ -16,15 +16,15 @@
 // fwd declarations
 template<typename T> class Tree234;    
 template<typename K> class Node234; 
-
 class DebugPrinter; 
+
 /*
   Implementation links:
 
 1.  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
 
 This link has an excellent working example. The explanation is thorough and clear. It gives several example of deleting elements. It uses the in-order predecessor
-rather than the successor when deleting.
+rather than the successor for the deletion algorithm.
 
 2.  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
 
@@ -33,8 +33,7 @@ It contains a working tree example. It shows that when converting 2-nodes, we fi
 
 3.  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
 
-This link has excellent pseudo code for both insertion and deletion with working example. But it does not restructure the key on the way down instead from the
-leaf upward.
+This link has excellent pseudo code for both insertion and deletion with working example.
 
 4. http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
 
@@ -42,17 +41,12 @@ This link has a more high level pseudo code.
 
 5. http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
 
-This link discusses both 2 3 trees and 2 3 4 trees. It has examples and pseudo code, but the deletion logic points out that the root only can be a two node--I think?
+This link discusses both 2 3 trees and 2 3 4 trees. It has examples and pseudo code, but the deletion logic points out that the root only can be the only 2-node that
+has two 2-node children.
 
 6.  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
 
 This link has actual **Java implementation code** for insertion and for 2 3 4 tree interface and node interface, including members.
- */
-
-/*
- * See www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
- * and http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
- * for high level overview of the implementation. 
  */
 
 template<typename K> class Tree234 {
@@ -108,8 +102,8 @@ template<typename K> class Tree234 {
        void insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept;
     
        /* 
-        * Called during remove(K key).
-        * Merges the 2-node children of a parent 2-node into the parent, making a 4-node. 
+        * Called during remove(K keym, Node234 *).
+        * Merges the 2-node children of a parent 2-node into the parent, making the parent a 4-node. 
         */
        Node234 *fuseWithChildren() noexcept; 
        
@@ -161,9 +155,10 @@ template<typename K> class Tree234 {
 
     void split(Node234 *node) noexcept;  // called during insert to split 4-nodes
 
-    // Convert two-node to three- or four-node
+    // Convert two-node to three- or four-node during descent of tree when removing an item.
     Node234 *convertTwoNode(Node234 *node) noexcept;
 
+    // These methods are called from convertTwoNode
     Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id) noexcept;
 
     Node234 *leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
@@ -207,8 +202,8 @@ template<typename K> class Tree234 {
 
 template<typename K> const int  Tree234<K>::Node234::MAX_KEYS = 3; 
 /*
- * Node234 constructors. Note: While all children are initialize to nullptr, this is not really necessary. 
- * Instead your can simply set children[0] = nullptr, since a Node234 is a leaf if and only if children[0] == 0
+ * Node234 constructors. Note: While all children are initialized to nullptr, this is not really necessary. 
+ * Instead your can simply set children[0] = nullptr, since a Node234 is a leaf if and only if children[0] == 0'
  */
 template<typename K> inline  Tree234<K>::Node234::Node234()  noexcept : totalItems(0), parent(nullptr), children()
 { 
@@ -371,15 +366,17 @@ template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noe
 
     root->parent = nullptr;
 }
-
+/*
+ * F is a functor whose function call operator takes two parameters: a Node234 * and an int indicating the depth of the node from the root, which has depth 1.
+ */
 template<typename K> template<typename Functor> inline void Tree234<K>::levelOrderTraverse(Functor f) const noexcept
 {
    if (root.get() == nullptr) return;
    
-   // part of Node234 pointer and level of tree.
+   // pair of: 1. Node234 pointer and 2. level of tree.
    std::queue<std::pair<const Node234*, int>> q; 
 
-   int level = 1;
+   auto level = 1;
 
    q.push(std::make_pair(root.get(), level));
 
