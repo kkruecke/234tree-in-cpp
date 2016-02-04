@@ -105,7 +105,8 @@ template<typename K> class Tree234 {
         * Called during remove(K keym, Node234 *).
         * Merges the 2-node children of a parent 2-node into the parent, making the parent a 4-node. 
         */
-       Node234 *fuseWithChildren() noexcept; 
+       //--Node234 *fuseWithChildren() noexcept; 
+       Node234 *fuseWithChildren(Node234 *&pfoundNode, int& key_index) noexcept; 
        
         public:
              
@@ -156,7 +157,7 @@ template<typename K> class Tree234 {
     void split(Node234 *node) noexcept;  // called during insert to split 4-nodes
 
     // Convert two-node to three- or four-node during descent of tree when removing an item.
-    Node234 *convertTwoNode(Node234 *node) noexcept;
+    Node234 *convertTwoNode(Node234 *node, Node234 *&pfoundNode, int& key_index) noexcept;
 
     // These methods are called from convertTwoNode
     Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id) noexcept;
@@ -1190,8 +1191,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
         if (current->isTwoNode()) { 
     
-             current = convertTwoNode(current);
-             //current = convertTwoNode(current, pfound_node, key_index); // prospective code to reset extra ref. parameters.
+             //--current = convertTwoNode(current);
+             current = convertTwoNode(current, pfound_node, key_index); //++
 
 
              // Did key move as a result of conversion?
@@ -1199,6 +1200,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
              // A: pfound_node is never a 2-node since remove( K key, Node234 *) first converts any 2-nodes to 3- or 4-nodes before calling
              // NodeDescentSearch(). 
              // Might pfound_node still have the key, but have been deleted or orphaned?
+             /*
              if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys[key_index] != key) { // then key moved
 
                 // Either...
@@ -1215,14 +1217,15 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                 // The big question is: Initially current is the first node in the in-order successor subtree.  
                 ///
                  return remove(key, pfound_node); 
-             } 
+             }
+             */ 
         } 
 
         if (current->isLeaf()) {
 
             break;  
         } 
-
+        // TODO: current is the convert 2-node. But the hard-coded [0] is not necessarily correct!!!
         current = current->children[0].get(); // set current to left most child of the node, 
      }
 
@@ -1262,7 +1265,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
  * we fuse the three together into a 4-node. In either case, we shift the children as required.
  * 
  */
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  noexcept
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node, Node234 *&pfoundNode, int& key_index)  noexcept
 {                                                                         
    Node234 *convertedNode;
    Node234 *parent = node->getParent();
@@ -1383,7 +1386,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
  * 1. Absorbs its children's keys as its own. 
  * 2. Makes its grandchildren its children and deletes its former, now orphaned child nodes.
  */
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWithChildren() noexcept
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWithChildren(Node234 *&pfoundNode, int& key_index, int key) noexcept
 {
   // move key of 2-node 
   keys[1] = keys[0];
@@ -1392,11 +1395,27 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
   keys[0] = children[0]->keys[0];    
   keys[2] = children[1]->keys[0];       
 
+
   totalItems = 3;
   
   std::unique_ptr<Node234> leftOrphan = std::move(children[0]); 
   std::unique_ptr<Node234> rightOrphan = std::move(children[1]); 
-    
+  // new code start  
+  if (pfoundNode == leftOrphan.get()) {
+
+      pfoundNode = this;
+      key_index = 0; 
+
+  } else if (pfoundNode == rightOrphan()) {
+
+      pfoundNode = this;
+      key_index = 2; 
+
+  } else if (pfoundNode == this) { // nothing to do. pfoundNode won't get deleted
+
+  }
+  // new code end
+
   // make grandchildren the children.
   connectChild(0, leftOrphan->children[0]); // connectChild() will also reset parent pointer of right parameter.
   connectChild(1, leftOrphan->children[1]);
