@@ -12,6 +12,7 @@ prospective code to handle the above situation might be to pass another paramete
   convertTwoNode(...., Node234 *&pfound_node_ref)
 
 Questions: What is the difference between fuseSiblings() and left- or rightRotation()?
+A: fuseSibling() is called when all adjacent siblings are two nodes--I believe; otherwise, right- or leftRotation() is called.
 
 
 Prospective code:
