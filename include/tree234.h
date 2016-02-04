@@ -1267,8 +1267,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    Node234 *convertedNode;
    Node234 *parent = node->getParent();
 
-   int parentKeyTotal = parent->totalItems;
-   int parentChildrenTotal = parentKeyTotal + 1;
+   int parentKeyTotal = parent->getTotalItems();
+   int parentChildrenTotal = parent->getChildCount();
    
    // First, we find the index of the 2-node such that parent->children[node2_index] == node, by comparing node's key to its
    // parent's keys.
