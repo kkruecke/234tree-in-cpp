@@ -1326,7 +1326,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
              convertedNode = fuseSiblings(parent, node2_index, sibling_index);
         }
 
-     } else { // it has a 3- or 4-node sibling.
+   } else { // it has a 3- or 4-node sibling.
 
       Node234 *psibling = parent->children[sibling_index].get();
     
@@ -1362,7 +1362,6 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
     
           convertedNode = leftRotation(p2node, psibling, parent, parent_key_index);
       }
-
    }
    
    return convertedNode;
@@ -1397,23 +1396,22 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    // parent is a two node and only other sibling is a 2-node, too, fuse both children into the parent
    if (parent->isTwoNode() && parent->children[node2_index == 1 ? 0 : 1]->isTwoNode()) {
 
-        
        return  parent->fuseWithChildren();
    
    } else if (node2_index + 1 < parentChildrenTotal && !parent->children[node2_index + 1]->isTwoNode() ) { // check if right sibling exists and is not a 2-node
 
-       Node234 *psibling = parent->children[node2_index + 1];
+       Node234 *pRightSibling = parent->children[node2_index + 1];
 
-       return  leftRotation(p2node, psibling, parent, parent_key_index);
+       return  leftRotation(p2node, pRightSibling, parent, node2_index);
 
    } else if (node2_index - 1 < 0 && !parent->children[node2_index -1 1]->isTwoNode() ) { // check if right sibling exists and is not a 2-node
 
-       Node234 *psibling = parent->children[node2_index - 1];
+       Node234 *pLeftSibling = parent->children[node2_index - 1];
 
-       return  rightRotation(p2node, psibling, parent, parent_key_index);
+       return  rightRotation(p2node, pLeftSibling, parent, node2_index - 1);
 
    } else {
-
+        // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
         return fuseSiblings(parent, node2_index, sibling_index);
    }
 }
