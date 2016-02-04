@@ -1158,36 +1158,9 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
        } else if (current != root.get() && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
 
             // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... We special case the root inside of convertTwoNode().
-            /* Debug-only code
-            BasicTreePrinter<K> tree_printer(*this);
-
-            std::cout << "\n\nTree before convertTwoNode called during remove(" << key << "," << current << ") ";
-            std::cout << " where " << current << " is ";
-
-            current->printKeys(std::cout);
-
-            tree_printer.print_level_order(std::cout);
-
-            std::cout << std::endl;
-             */ 
-
             current = convertTwoNode(current); // ..and resume the key search with the now converted node.
             
-            /*
-            std::cout << "\nNode after convertTwoNode() called during remove(" << key << "," << current << ") is ";
-
-            current->printKeys(std::cout);
-
-            std::cout << std::endl;
-
-            std::cout << "\nTree after convertTwoNode called node is:" << std::endl;
-
-            tree_printer.print_level_order(std::cout);
-
-            std::cout << std::endl;
-            
-            */
-            continue;
+           continue;
       
        } else if (current->NodeDescentSearch(key, key_index, next)) { // ...search for item in current node. 
 
@@ -1236,7 +1209,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
                 // 
 
                 // ...or simply recurse, starting with a new initial starting point of pfound_node.
-                // TODO: Q: Is pfound_node still the place to start looking, or could pfound_node have been deleted after the 2-node conversion?
+                // : Q: Is pfound_node still the place to start looking, or could pfound_node have been deleted after the 2-node conversion?
                 // The big question is: Initially current is the first node in the in-order successor subtree.  
                 ///
                  return remove(key, pfound_node); 
