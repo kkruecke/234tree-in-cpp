@@ -13,6 +13,28 @@ prospective code to handle the above situation might be to pass another paramete
 
 Questions: What is the difference between fuseSiblings() and left- or rightRotation()?
 
+
+Prospective code:
+
+  convertTwoNode(...., Node234 *&pfoudnNode)
+
+      parent->fuseWithChildren(Node234 *&pfoudnNode)
+ //...
+template<class K> void typename Tree234<K>::Node234::fuseWithChildren(Node234 *&pfoundNode)
+ {
+   // ...snip pof prior code
+
+
+
+    if (children[0].get() == pfoundNode || children[1].get() == pfoundNode) {
+
+       pfoundNode = this; // reset pfoundNode
+       // Do I search for the key again here within pfoundNode?
+    }
+    
+  } // end prior code block 
+ }
+
 Sources
 =======
 
