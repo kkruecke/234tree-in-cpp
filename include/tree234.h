@@ -1394,107 +1394,30 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    }
    
    // new: simplify code to four if-cases.
-   // parent is a two node and only other sibling is a 2-node, too
+   // parent is a two node and only other sibling is a 2-node, too, fuse both children into the parent
    if (parent->isTwoNode() && parent->children[node2_index == 1 ? 0 : 1]->isTwoNode()) {
+
         
        return  parent->fuseWithChildren();
+   
+   } else if (node2_index + 1 < parentChildrenTotal && !parent->children[node2_index + 1]->isTwoNode() ) { // check if right sibling exists and is not a 2-node
 
-   } else if () {
+       Node234 *psibling = parent->children[node2_index + 1];
 
-       return rightRotation();
+       return  leftRotation(p2node, psibling, parent, parent_key_index);
 
-   } else if () {
+   } else if (node2_index - 1 < 0 && !parent->children[node2_index -1 1]->isTwoNode() ) { // check if right sibling exists and is not a 2-node
 
-       return leftRotation();  
+       Node234 *psibling = parent->children[node2_index - 1];
+
+       return  rightRotation(p2node, psibling, parent, parent_key_index);
 
    } else {
 
-       return fuseSiblings();
+        return fuseSiblings(parent, node2_index, sibling_index);
    }
-   // end new code. End function.
-
-   // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
-   bool has3or4NodeSibling = false;
-   int sibling_index;
-
-   int left_adjacent = node2_index - 1;
-   int right_adjacent = node2_index  + 1;
-    
-   if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
-
-	has3or4NodeSibling = true;
-        sibling_index = right_adjacent;  
-
-   } else if (!has3or4NodeSibling && left_adjacent >= 0 && !parent->children[left_adjacent]->isTwoNode()) {
-
-	has3or4NodeSibling = true;
-        sibling_index = left_adjacent;  
-
-   } else if (right_adjacent < parentChildrenTotal) { // There are no 3- or 4-nodes siblings. Therefore the all siblings 
-                                                      // are 2-node(s).
-        sibling_index = right_adjacent; 
-
-   } else { // sibling is to the left.
-
-        sibling_index = left_adjacent; 
-   }
-
-   // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
-   // Check if its parent 2-node (or 3- or 4-node).
-   bool parentIsTwoNode = parent->isTwoNode();
-
-   if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-nodes...
-
-         if (parentIsTwoNode) { //... as is the parent, which must be root; otherwise, it would have already been converted.
-
-	     convertedNode = parent->fuseWithChildren();
-
-        } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
-
-             convertedNode = fuseSiblings(parent, node2_index, sibling_index);
-        }
-
-     } else { // it has a 3- or 4-node sibling.
-
-      Node234 *psibling = parent->children[sibling_index].get();
-    
-      Node234 *p2node = parent->children[node2_index].get();
-    
-      // 
-       // First we get the index of the parent's key value such that either 
-       //
-       //   parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
-       //     
-       //  or  
-       //
-       //    parent->children[sibling_id]->keys[0]  <  parent->keys[index] <  parent->children[node2_index]->keys[0]
-       //
-       // by taking the minimum of the indecies.
-    
-      int parent_key_index = std::min(node2_index, sibling_index); 
-
-      if (node2_index > sibling_index) { // If sibling is to the left, then
-                                    //
-                                    //  parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
-                                    // 
-                                    // and we do a right rotation
-    
-          convertedNode = rightRotation(p2node, psibling, parent, parent_key_index);
-    
-      } else {  // else sibling is to the right and 
-                //    parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
-                // therefore do a left rotation
-  	        //  
-    
-          convertedNode = leftRotation(p2node, psibling, parent, parent_key_index);
-      }
-
-   }
-   
-   return convertedNode;
 }
 */
-
 
 /*
  * Requirements: 
