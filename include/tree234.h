@@ -1169,9 +1169,11 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
             tree_printer.print_level_order(std::cout);
 
             std::cout << std::endl;
+             */ 
 
             current = convertTwoNode(current); // ..and resume the key search with the now converted node.
-
+            
+            /*
             std::cout << "\nNode after convertTwoNode() called during remove(" << key << "," << current << ") is ";
 
             current->printKeys(std::cout);

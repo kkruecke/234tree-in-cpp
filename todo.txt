@@ -1,4 +1,4 @@
-Code seems to work now. Test whether the recursive call to remove(K key, Node234 *) ever occurs.  
+Tree234<K>::size() does not seem to be working correctly.
 
 Sources
 =======
