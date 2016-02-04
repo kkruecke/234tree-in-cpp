@@ -1,6 +1,7 @@
 1. Tree234<K>::size() does not seem to be working correctly.
+2. Work on new simplified version of convertTwoNode().
 
-2. On pfound_node becoming invalid after conrtTwodNoe is called. 
+3. On pfound_node becoming invalid after conrtTwodNoe is called. 
    The node is always searched, in remove(K key, Node234 *) after first bneing converted from a 2-node except in one case: where the root is a 2-node and has two 2-node children.
    Then pfoundd_node -- if it is one of the 2-node children of the rootwill be deleted after fuseWithChjildren() is called.
    
