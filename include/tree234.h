@@ -1367,9 +1367,17 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 }
 
 /*
- * precondition: Parent node is a 2-node, and its two children are also both 2-nodes.
- * output: 4-node resulting from fusing of the two 2-nodes. 
+ * Requirements: 
+ * 1. Parent node is a 2-node, and its two children are also both 2-nodes. Parent must be the tree's root (this is an inherent property of the
+ *    2 3 4 tree insertion algorithm).
+ *
+ * Promises: 
+ * 1. 4-node resulting from fusing of the two 2-nodes' keys into the parent. 
+ * 2. Deletion of the 2-node children from the tree
+ * 3. Adoption of the 2-node children's children as children of parent.
+ *
  * Pseudo code: 
+ *
  * 1. Absorbs its children's keys as its own. 
  * 2. Makes its grandchildren its children and deletes its former, now orphaned child nodes.
  */
@@ -1447,15 +1455,22 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::leftRotation(Node
   return p2node;
 }
 /*
- * Preconditions: 
+ * Requirements: 
+ *
  * 1. parent is a 3- or 4-node. 
- * 2. parent->children[sibling_index] is the 2-node sibling to be fused, along with a parent key,
- *    into the 2-node, to make a 4-node.
+ * 2. parent->children[node2_index] and parent->children[sibling_index] are both 2-nodes
+ * 
+ * Promises:
+ * 
+ * 1. The 2-node at parent->children[node2_index] is converted into a 4-node by fusing it with the 2-node at parent->children[sibling_index] along with
+ *    a key from the parent located at parent->keys[parent_key_index]
+ *
+ * 2. The 2-node sibling at parent->children[silbing_index] is then deleted from the tree, and its children are connected to the converted 2-node (into a 4-node)
+ *
  * 3. parent->childen[node2_id] is the 2-node being converted (into a 3- or 4-node).
  *
- * Returns: node2_id is converted into 4-node by adding sibling's sole key together with a key "stolen" from the parent. The 
- * siblings children are connected to the former 2- now 4-node. The parent becomes a 2-node, if it was a 3-node; or a 3-node, if it 
- * was a 4-node.
+ * 4. The parent becomes either a 2-node, if it was a 3-node, or a 2-node if it was a 4-node?
+ *
  */
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node234 *parent, int node2_index, int sibling_index) noexcept
 {
