@@ -1195,10 +1195,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
 
              // Did key move as a result of conversion?
-             // Q: Should I be checking current now? Could pnode_node have been deleted? 
-             // A: pfound_node is never a 2-node since remove( K key, Node234 *) first converts any 2-nodes to 3- or 4-nodes before calling
-             // NodeDescentSearch(). 
-             // Might pfound_node still have the key, but have been deleted or orphaned?
+             // pfound_node is never a 2-node since remove( K key, Node234 *) first converts any 2-nodes to 3- or 4-nodes before calling
+             // NodeDescentSearch()--except in the case when the root is a 2-node. The root does not get immediately converted from a 2-node
+             // But this code handles that.
+             // pfound_node is not deleted if pfound_node is the root (and the root is a 2-node), and no nodes get deleted when either a
+             // rightRotation or leftRotation occurs. So pfound_node is safe then. Finally, pfound_node is notr deleted during fuseSiblings().
+             // fuseSiblings() deletes a 2-node sibling but not pfound_node. 
              if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys[key_index] != key) { // then key moved
 
                 // Either...
@@ -1313,11 +1315,9 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
    // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
    // Check if its parent 2-node (or 3- or 4-node).
-   //--bool parentIsTwoNode = parent->isTwoNode();
 
    if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-nodes...
 
-        //--if (parentIsTwoNode) { //... as is the parent, which must be root; otherwise, it would have already been converted.
         if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
 
 	     convertedNode = parent->fuseWithChildren();

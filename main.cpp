@@ -13,7 +13,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
 
-  vector<int> input{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 92, 79,23, 17, 97, 55, 51, 69, 1, 201, 2, 33, 26, 150, 5, 82};
+  vector<int> input{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 92, 79,23, 17, 97, 55, 51, 69, 1, 201, 2, 33, 26, 150, 5};
 
   Tree234<int> tree {input};
   
@@ -23,6 +23,24 @@ int main(int argc, char** argv)
 
   //tree.levelOrderTraverse(BasicTreePrinter<int>(tree));
   tree_printer.print_level_order(cout);
+
+  int item = 50;
+
+  bool rc = tree.remove(item);
+     
+  string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
+  
+  cout<< "\nitem " << item << str_remove_status;
+  
+  cout << "\nTree size is " << tree.size() << " after attempting to remove item " << item << "\n" << endl;
+
+  cout << "\n\n=======Tree level order print =====================" << endl;
+      
+  tree_printer.print_level_order(cout);
+  
+  cout << flush;
+ 
+  return 0;
   
   // Lambda for printing ints in Tree234
  // auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };

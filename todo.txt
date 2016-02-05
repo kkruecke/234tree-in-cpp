@@ -1,9 +1,8 @@
 1. Tree234<K>::size() does not seem to be working correctly.
-2. Work on new simplified version of convertTwoNode().
 
-3. On pfound_node becoming invalid after conrtTwodNoe is called. 
-   The node is always searched, in remove(K key, Node234 *) after first bneing converted from a 2-node except in one case: where the root is a 2-node and has two 2-node children.
-   Then pfoundd_node -- if it is one of the 2-node children of the rootwill be deleted after fuseWithChjildren() is called.
+2. On whether pfound_node becoming invalid after convertTwodNode() is called. 
+   The node is always searched, in remove(K key, Node234 *) after first being converted from a 2-node except in one case: where the root is a 2-node and has two 2-node children.
+   Then pfound_node--if it is one of the 2-node children of the root--will be deleted after fuseWithChjildren() is called.
    
    I'm not sure what would happen when fuseSiblings() gets called, whether pfound_node might become invalid. When either left- or roghtRotation() is called for a 
    child node of pfoudn_node, may move the key; however, pfound_node is still valid--right--as the rotation might delte the silobing that is robbed, but only it.
