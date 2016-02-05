@@ -11,7 +11,7 @@
 #include <exception>
 #include <iosfwd>
 #include <utility>
-#include "basic-tree-printer.h" // Deubg only
+//#include "basic-tree-printer.h" // Deubg only
 
 // fwd declarations
 template<typename T> class Tree234;    
@@ -72,7 +72,7 @@ template<typename K> class Tree234 {
        std::array<K, 3> keys; // in static storage not the heap.
     
        /*
-        * For 2-nodes, children[0] is left pointer and children[1] is right pointer.
+        * For 2-nodes, children[0] is left pointer, children[1] is right pointer.
         * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
         * And so on for 4-nodes.
         */
@@ -103,7 +103,8 @@ template<typename K> class Tree234 {
     
        /* 
         * Called during remove(K keym, Node234 *).
-        * Merges the 2-node children of a parent 2-node into the parent, making the parent a 4-node. 
+        * Merges the 2-node children of a parent 2-node into the parent, making the parent a 4-node. The parent adopts the "grand children". The children
+        * after having been merged into the parent are deleted. 
         */
        Node234 *fuseWithChildren() noexcept; 
        
@@ -132,13 +133,15 @@ template<typename K> class Tree234 {
 
  private:
     friend class DebugPrinter;
-  
+
+    // converts from class enum to int.  
     int to_int(const typename Tree234<K>::Node234::NodeMaxItems x) const { return static_cast<int>(x); }
 
     std::unique_ptr<Node234>  root; 
 
     int  tree_size;
-    
+
+    // implementations of several public methods    
     bool DoSearch(K key, Node234 *&location, int& index) noexcept;
 
     template<typename Functor> void DoInorderTraverse(Functor f, const Node234 *root) const noexcept;
@@ -150,15 +153,15 @@ template<typename K> class Tree234 {
 
     void CloneTree(const Node234 *pNode2Copy, std::unique_ptr<Node234> &pNodeCopy) noexcept; // called by copy ctor
 
+    void split(Node234 *node) noexcept;  // called during insert to split 4-nodes
+
     // These methods are called during remove(K key)
     bool remove(K key, Node234 *location); 
-
-    void split(Node234 *node) noexcept;  // called during insert to split 4-nodes
 
     // Convert two-node to three- or four-node during descent of tree when removing an item.
     Node234 *convertTwoNode(Node234 *node) noexcept;
 
-    // These methods are called from convertTwoNode
+    // These private methods below are called from convertTwoNode
     Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id) noexcept;
 
     Node234 *leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
@@ -268,7 +271,7 @@ template<typename K> inline bool Tree234<K>::Node234::findKey(K key, int& index)
            return true;
        }
    }   
-   
+
    return false;
 }
 
@@ -357,7 +360,6 @@ template<typename K> inline int Tree234<K>::getDepth() const noexcept
 // move assignment
 template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noexcept 
 {
- 
     tree_size = lhs.tree_size;
 
     lhs.tree_size = 0;
@@ -398,7 +400,6 @@ template<typename K> template<typename Functor> inline void Tree234<K>::levelOrd
             }
         }
         q.pop(); 
-    
    }
 }
 
@@ -714,8 +715,15 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
 }
 
 /*
- * precondition: childIndex is within the range for the type of node.
+ * Requires: childIndex is within the range for the type of node.
  * child is not nullptr.
+ * connectChild() is equivalent to doing:
+ *
+ * newRight->children[0] = std::move(node->children[2]);
+ * newRight->children[0]->parent = newRight; 
+ * newRight->children[1] = std::move(node->children[3]);
+ * newRight->children[1]->parent = newRight; 
+ *
  */
 template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, std::unique_ptr<Node234>& child)  noexcept
 {
@@ -747,7 +755,7 @@ template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value,
      }
   }
 
-  // it must be greater than the last key (because it is not less than or equal to it).
+  // It must be greater than the last key (because it is not less than or equal to it).
   next = children[totalItems].get(); 
 
   return false;
@@ -780,8 +788,8 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
 
 
 /*
- * precondition: childIndex is within the range for the type of node.
- * returns child pointer.
+ * Require: childIndex is within the range for the type of node.
+ * Returns: child pointer.
  * Note: Always call disconnectChild() before removeItem(), or it will not work correctly because totalItems
  * will have been altered.
  */
@@ -1007,14 +1015,6 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
     /* Note: The "bool operator()" of unique_ptr tests whether a pointer is being managed, whether get() == nullptr. */
     if (pnode->children[2] && pnode->children[3]) { // If neither are nullptr
        
-        /* connectChild() same as doing:
-         *
-         * newRight->children[0] = std::move(node->children[2]);
-         * newRight->children[0]->parent = newRight; 
-         * newRight->children[1] = std::move(node->children[3]);
-         * newRight->children[1]->parent = newRight; 
-         *
-         */  
         newRight->connectChild(0, pnode->children[2]); // set its left child to the 3rd child of node 
 
         newRight->connectChild(1, pnode->children[3]); // set its right child to the 4th child of node
@@ -1165,7 +1165,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
        } else if (current->NodeDescentSearch(key, key_index, next)) { // ...search for item in current node. 
 
             pfound_node = current; 
-            break; // we found it.  
+            break; // We found it.  
 
        } else {
           // ... If not found, continue to descend. 
@@ -1192,7 +1192,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
     
              current = convertTwoNode(current);
 
-             // Did key move as a result of conversion?
+             // Check if key move as a result of conversion?
+             // Comments:
              // pfound_node is never a 2-node since remove( K key, Node234 *) first converts any 2-nodes to 3- or 4-nodes before calling
              // NodeDescentSearch()--except in the case when the root is a 2-node. The root does not get immediately converted from a 2-node
              // But this code handles that by detecting that the key has moved and recursively calling "remove(key, pfound_node)".
@@ -1236,8 +1237,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
   return true;
 }
 /*
- * input preconditions: node is 2-node.
- * output: node is converted into either a 3- or a 4-node.
+ * Requires: node is 2-node.
+ * Promises: node is converted into either a 3- or a 4-node. 
  *
  * Code follows pages 51-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  * and pages 64-66 of http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf
@@ -1393,7 +1394,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
 }// <-- leftOrphan and rightOrphan are automatically deleted because they are unique_ptr<Node234> pointers
 
 /* 
- * Sibling is to the left, therefore: parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
+ * Requires: sibling is to the left, therefore: parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
  */
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
 {    
@@ -1419,7 +1420,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Nod
 
   return p2node;
 }
-/* sibling is to the right therefore: parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
+/* Requires: sibling is to the right therefore: parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
  * Do a left rotation
  */ 
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
