@@ -1,4 +1,7 @@
 1. Tree234<K>::size() does not seem to be working correctly.
+2. Make a manipulator to do
+
+ostream << level_order(tree) << in_order(tree) << post_order(tree) ... etc.
 
 Sources
 =======
