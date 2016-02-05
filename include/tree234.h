@@ -1191,8 +1191,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
         if (current->isTwoNode()) { 
     
              current = convertTwoNode(current);
-             //current = convertTwoNode(current, pfound_node, key_index); // prospective code to reset extra ref. parameters.
-
 
              // Did key move as a result of conversion?
              // pfound_node is never a 2-node since remove( K key, Node234 *) first converts any 2-nodes to 3- or 4-nodes before calling
