@@ -1197,7 +1197,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
              // Did key move as a result of conversion?
              // pfound_node is never a 2-node since remove( K key, Node234 *) first converts any 2-nodes to 3- or 4-nodes before calling
              // NodeDescentSearch()--except in the case when the root is a 2-node. The root does not get immediately converted from a 2-node
-             // But this code handles that.
+             // But this code handles that by detecting that the key has moved and recursively calling "remove(key, pfound_node)".
              // pfound_node is not deleted if pfound_node is the root (and the root is a 2-node), and no nodes get deleted when either a
              // rightRotation or leftRotation occurs. So pfound_node is safe then. Finally, pfound_node is notr deleted during fuseSiblings().
              // fuseSiblings() deletes a 2-node sibling but not pfound_node. 
