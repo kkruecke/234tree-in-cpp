@@ -1201,19 +1201,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
              // fuseSiblings() deletes a 2-node sibling but not pfound_node. 
              if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys[key_index] != key) { // then key moved
 
-                // Either...
-                //
-                // 1. find it again: 
-                //  Double check this:                  
-                //    while (pfound_node->NodeDescentSearch(key, key_index, pfound_node) != false && !pfound_node->isLeaf())
-                //
-                // 2. reset successor search: Node234 *current = pfound_node->children[key_index + 1].get(); 
-                // 
-
-                // ...or simply recurse, starting with a new initial starting point of pfound_node.
-                // : Q: Is pfound_node still the place to start looking, or could pfound_node have been deleted after the 2-node conversion?
-                // The big question is: Initially current is the first node in the in-order successor subtree.  
-                ///
+                 // ...simply recurse, starting with a new initial starting point of pfound_node.
                  return remove(key, pfound_node); 
              } 
         } 
