@@ -1367,7 +1367,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    return convertedNode;
 }
 /*
-// new version of convertTwoNode()
+// new untested simplified version of convertTwoNode()
 template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  noexcept
 {                                                                         
    Node234 *convertedNode;
@@ -1376,9 +1376,9 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
    int parentKeyTotal = parent->getTotalItems();
    int parentChildrenTotal = parent->getChildCount();
 
-   
-   // First, we find the index of the 2-node such that parent->children[node2_index] == node, by comparing node's key to its
-   // parent's keys.
+   // First, we find the index of the 2-node, node2_index, such that parent->children[node2_index] == node, by comparing node's key to its
+   // parent's keys. Since it has only one key, we look for the smallest index, say, node2_index such that 
+   // node->keys[0] < parent->keys[node2_index] 
    int node2_index = 0;
    
    for (; node2_index < parentKeyTotal; ++node2_index) {
@@ -1392,7 +1392,12 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
        } 
    }
    
-   // new: simplify code to four if-cases.
+   // Four cases to consider: 
+   // 1. parent and other sibling are also both 2-nodes. This occurs only when the parent is also the root of the tree as a by product of the insert algorthim.
+   // 2. There is an right sibling--we check arbitrarily the right sibling, if any, first--that is not a 2-node.
+   // 3. There is an left sibling that is not a 2-node.
+   // 4. All adjacent siblings are also 2-nodes and the parent is not.
+   //
    // parent is a two node and only other sibling is a 2-node, too, fuse both children into the parent
    if (parent->isTwoNode() && parent->children[node2_index == 1 ? 0 : 1]->isTwoNode()) {
 
