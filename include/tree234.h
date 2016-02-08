@@ -112,7 +112,7 @@ template<typename K> class Tree234 {
              
            Node234() noexcept;
     
-           Node234(K small) noexcept;
+           explicit Node234(K small) noexcept;
            Node234(K small, K large) noexcept;
            Node234(K small, K middle, K large) noexcept;  
            constexpr const Node234 *getParent() const noexcept;
