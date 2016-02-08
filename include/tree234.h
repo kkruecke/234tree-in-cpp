@@ -113,8 +113,8 @@ template<typename K> class Tree234 {
            Node234() noexcept;
     
            explicit Node234(K small) noexcept;
-           Node234(K small, K large) noexcept;
-           Node234(K small, K middle, K large) noexcept;  
+           explicit Node234(K small, K large) noexcept;
+           explicit Node234(K small, K middle, K large) noexcept;  
            constexpr const Node234 *getParent() const noexcept;
     
            constexpr int getTotalItems() const noexcept;
@@ -170,7 +170,7 @@ template<typename K> class Tree234 {
 
   public:
 
-     Tree234() noexcept : root{} { } 
+     explicit Tree234() noexcept : root{} { } 
 
      Tree234(const Tree234& lhs) noexcept; 
      Tree234(Tree234&& lhs) noexcept;     // move constructor
