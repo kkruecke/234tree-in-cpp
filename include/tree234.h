@@ -17,38 +17,7 @@
 template<typename T> class Tree234;    
 template<typename K> class Node234; 
 class DebugPrinter; 
-
-/*
-  Implementation links:
-
-1.  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
-
-This link has an excellent working example. The explanation is thorough and clear. It gives several example of deleting elements. It uses the in-order predecessor
-rather than the successor for the deletion algorithm.
-
-2.  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
-
-This link has a excellent working example and discusses how delete works, using descent restructuring. It uses the swap-with-successor for deletion of internal keys.
-It contains a working tree example. It shows that when converting 2-nodes, we first check if we can rotation else we do a merge (since both siblings are 2-nodes).
-
-3.  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
-
-This link has excellent pseudo code for both insertion and deletion with working example.
-
-4. http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
-
-This link has a more high level pseudo code. 
-
-5. http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
-
-This link discusses both 2 3 trees and 2 3 4 trees. It has examples and pseudo code, but the deletion logic points out that the root only can be the only 2-node that
-has two 2-node children.
-
-6.  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
-
-This link has actual **Java implementation code** for insertion and for 2 3 4 tree interface and node interface, including members.
- */
-
+    
 template<typename K> class Tree234 {
     
   public:
@@ -141,7 +110,7 @@ template<typename K> class Tree234 {
 
     int  tree_size;
 
-    // implementations of several public methods    
+    // implementations of the public depth-frist traversal methods    
     bool DoSearch(K key, Node234 *&location, int& index) noexcept;
 
     template<typename Functor> void DoInorderTraverse(Functor f, const Node234 *root) const noexcept;
@@ -153,15 +122,15 @@ template<typename K> class Tree234 {
 
     void CloneTree(const Node234 *pNode2Copy, std::unique_ptr<Node234> &pNodeCopy) noexcept; // called by copy ctor
 
-    void split(Node234 *node) noexcept;  // called during insert to split 4-nodes
+    void split(Node234 *node) noexcept;  // called during insert(K key) to split 4-nodes encountered.
 
-    // These methods are called during remove(K key)
+    // Called during remove(K key)
     bool remove(K key, Node234 *location); 
 
-    // Convert two-node to three- or four-node during descent of tree when removing an item.
+    // Called during remove(K key, Node234 *) to convert two-node to three- or four-node during descent of tree.
     Node234 *convertTwoNode(Node234 *node) noexcept;
 
-    // These private methods below are called from convertTwoNode
+    // These methods are called by convertTwoNode()
     Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id) noexcept;
 
     Node234 *leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
@@ -186,14 +155,15 @@ template<typename K> class Tree234 {
 
     ~Tree234(); 
 
-    // Breadth-first traversals
+    // Breadth-first traversal
     template<typename Functor> void levelOrderTraverse(Functor f) const noexcept;
 
     // Depth-first traversals
     template<typename Functor> void inOrderTraverse(Functor f) const noexcept;
     template<typename Functor> void postOrderTraverse(Functor f) const noexcept;
     template<typename Functor> void preOrderTraverse(Functor f) const noexcept;
-
+   
+    // Used during development and testing 
     template<typename Functor> void debug_dump(Functor f) noexcept;
 
     bool search(K key) noexcept;
@@ -534,7 +504,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
    
    if (current == nullptr) {
 
-	return;
+ return;
    }
 
    switch (current->totalItems) {
@@ -585,7 +555,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraver
 {     
    if (current == nullptr) {
 
-	return;
+ return;
    }
 
    switch (current->getTotalItems()) {
@@ -877,7 +847,7 @@ template<typename K> void Tree234<K>::DestroyTree(std::unique_ptr<Node234> &curr
 {
   if (current == nullptr) {
 
-	return;
+ return;
    }
 
    for(auto i = 0; i < current->totalItems; ++i) {
@@ -1283,12 +1253,12 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
     
    if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
 
-	has3or4NodeSibling = true;
+ has3or4NodeSibling = true;
         sibling_index = right_adjacent;  
 
    } else if (left_adjacent >= 0 && !parent->children[left_adjacent]->isTwoNode()) {
 
-	has3or4NodeSibling = true;
+ has3or4NodeSibling = true;
         sibling_index = left_adjacent;  
 
    } else if (right_adjacent < parentChildrenTotal) { // There are no 3- or 4-nodes siblings. Therefore the all siblings 
@@ -1307,7 +1277,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
 
         if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
 
-	     convertedNode = parent->fuseWithChildren();
+      convertedNode = parent->fuseWithChildren();
 
         } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
 
@@ -1346,7 +1316,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
       } else { /* else sibling is to the right and 
                 *    parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
                 * therefore do a left rotation
-  	        */ 
+           */ 
     
           convertedNode = leftRotation(p2node, psibling, parent, parent_key_index);
       }

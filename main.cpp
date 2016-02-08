@@ -24,26 +24,8 @@ int main(int argc, char** argv)
   //tree.levelOrderTraverse(BasicTreePrinter<int>(tree));
   tree_printer.print_level_order(cout);
 
-  int item = 50;
-
-  bool rc = tree.remove(item);
-     
-  string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
-  
-  cout<< "\nitem " << item << str_remove_status;
-  
-  cout << "\nTree size is " << tree.size() << " after attempting to remove item " << item << "\n" << endl;
-
-  cout << "\n\n=======Tree level order print =====================" << endl;
-      
-  tree_printer.print_level_order(cout);
-  
-  cout << flush;
- 
-  return 0;
-  
   // Lambda for printing ints in Tree234
- // auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
+  // auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
    
   cout << "\n======================" << endl;
     
