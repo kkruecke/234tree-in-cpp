@@ -7,12 +7,12 @@
 #include "include/tree234.h"
 #include "include/debug-printer.h"
 #include "include/basic-tree-printer.h"
-
 using namespace std;
+
 
 int main(int argc, char** argv)
 {
-
+ 
   vector<int> input{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 92, 79,23, 17, 97, 55, 51, 69, 1, 201, 2, 33, 26, 150, 5};
 
   Tree234<int> tree {input};

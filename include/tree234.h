@@ -80,7 +80,6 @@ template<typename K> class Tree234 {
         public:
              
            Node234() noexcept;
-    
            explicit Node234(K small) noexcept;
            explicit Node234(K small, K large) noexcept;
            explicit Node234(K small, K middle, K large) noexcept;  
