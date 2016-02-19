@@ -846,10 +846,10 @@ template<typename K> void Tree234<K>::DestroyTree(std::unique_ptr<Node234> &curr
 {
   if (current == nullptr) {
 
- return;
-   }
+      return;
+  }
 
-   for(auto i = 0; i < current->totalItems; ++i) {
+  for(auto i = 0; i < current->totalItems; ++i) {
 
         DestroyTree(current->children[i]);
    }
