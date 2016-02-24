@@ -112,14 +112,17 @@ template<typename K> class Tree234 {
     // implementations of the public depth-frist traversal methods    
     bool DoSearch(K key, Node234 *&location, int& index) noexcept;
 
-    template<typename Functor> void DoInorderTraverse(Functor f, const Node234 *root) const noexcept;
-    template<typename Functor> void DoPostOrderTraverse(Functor f, const Node234 *root) const noexcept;
-    template<typename Functor> void DoPreOrderTraverse(Functor f, const Node234 *root) const noexcept;
-    template<typename Functor> void DoPostOrder4Debug(Functor f, const Node234 *root) noexcept;
+    template<typename Functor> void DoInorderTraverse(Functor f, const std::unique_ptr<Node234>& root) const noexcept;
+
+    template<typename Functor> void DoPostOrderTraverse(Functor f,  const std::unique_ptr<Node234>& root) const noexcept;
+
+    template<typename Functor> void DoPreOrderTraverse(Functor f, const std::unique_ptr<Node234>& root) const noexcept;
+
+    template<typename Functor> void DoPostOrder4Debug(Functor f, const std::unique_ptr<Node234>& root) noexcept;
 
     void DestroyTree(std::unique_ptr<Node234> &root) noexcept; 
 
-    void CloneTree(const Node234 *pNode2Copy, std::unique_ptr<Node234> &pNodeCopy) noexcept; // called by copy ctor
+    void CloneTree(const std::unique_ptr<Node234>& pNode2Copy, std::unique_ptr<Node234> &pNodeCopy) noexcept; // called by copy ctor
 
     void split(Node234 *node) noexcept;  // called during insert(K key) to split 4-nodes encountered.
 
@@ -199,6 +202,50 @@ template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K l
    keys[2] = large; 
 }
 
+template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept : tree_size{lhs.tree_size} 
+{
+   CloneTree(lhs.root, root);
+}
+ 
+// move constructor
+template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{std::move(lhs.root)}, tree_size{lhs.tree_size}  
+{
+    root->parent = nullptr;
+    lhs.tree_size = 0;
+}
+
+template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr), tree_size{0} 
+{
+    for (K& x: il) { // simply call insert(x)
+          insert(x);
+    }
+}
+
+template<typename K> inline Tree234<K>::Tree234(const std::vector<K>& vec) noexcept : root(nullptr), tree_size{0} 
+{
+    for (const K& x: vec) { // simply call insert(x)
+          insert(x);
+    }
+}
+
+// copy assignment
+template<typename K> inline Tree234<K>& Tree234<K>::operator=(const Tree234& lhs) noexcept 
+{
+  if (root == lhs.root) { // are they the same?
+
+       return *this;
+  }
+
+  DestroyTree(root); // free all nodes and then clone lhs.
+
+  tree_size = lhs.tree_size;         
+
+  CloneTree(lhs.root, root);
+
+  return *this;
+}
+
+
 template<typename K> inline void Tree234<K>::Node234::printKeys(std::ostream& ostr)
 {
   ostr << "["; 
@@ -263,53 +310,6 @@ template<typename K> inline constexpr bool Tree234<K>::Node234::isFourNode() con
 {
    return (totalItems == to_int(NodeMaxItems::four_node)) ? true : false;
 }
-
-template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept : tree_size{lhs.tree_size} 
-{
-    Tree234<K>::Node234 *src =  lhs.root.get();
-    
-    CloneTree(src, root);
-}
- 
-// move constructor
-template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{std::move(lhs.root)}, tree_size{lhs.tree_size}  
-{
-    root->parent = nullptr;
-}
-
-template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr), tree_size{0} 
-{
-    for (K& x: il) { // simply call insert(x)
-          insert(x);
-    }
-}
-
-template<typename K> inline Tree234<K>::Tree234(const std::vector<K>& vec) noexcept : root(nullptr), tree_size{0} 
-{
-    for (const K& x: vec) { // simply call insert(x)
-          insert(x);
-    }
-}
-
-// copy assignment
-template<typename K> inline Tree234<K>& Tree234<K>::operator=(const Tree234& lhs) noexcept 
-{
-  if (root == lhs.root) { // are they the same?
-
-       return *this;
-  }
-
-  DestroyTree(root); // free all nodes and then clone lhs.
-
-  const Tree234<K>::Node234 *src =  lhs.root.get();
-
-  tree_size = lhs.tree_size;         
-
-  CloneTree(src, root);
-
-  return *this;
-}
-
 template<typename K> inline constexpr int Tree234<K>::size() const
 {
   return tree_size;
@@ -374,27 +374,27 @@ template<typename K> template<typename Functor> inline void Tree234<K>::levelOrd
 
 template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f) const noexcept
 {
-   DoInorderTraverse(f, root.get());
+   DoInorderTraverse(f, root);
 }
 
 template<typename K> template<typename Functor> inline void Tree234<K>::postOrderTraverse(Functor f) const noexcept
 {
-   DoPostOrderTraverse(f, root.get());
+   DoPostOrderTraverse(f, root);
 }
 
 template<typename K> template<typename Functor> inline void Tree234<K>::preOrderTraverse(Functor f) const noexcept
 {
-   DoPreOrderTraverse(f, root.get());
+   DoPreOrderTraverse(f, root);
 }
 
 template<typename K> template<typename Functor> inline void Tree234<K>::debug_dump(Functor f) noexcept
 {
-   DoPostOrder4Debug(f, root.get());
+   DoPostOrder4Debug(f, root);
 }
 /*
  * post order traversal 
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTraverse(Functor f, const Node234 *current) const noexcept
+template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTraverse(Functor f, const std::unique_ptr<Node234>& current) const noexcept
 {  
    if (current == nullptr) {
 
@@ -404,37 +404,37 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTrav
    switch (current->totalItems) {
 
       case 1: // two node
-            DoPostOrderTraverse(f, current->children[0].get());
+            DoPostOrderTraverse(f, current->children[0]);
 
-            DoPostOrderTraverse(f, current->children[1].get());
+            DoPostOrderTraverse(f, current->children[1]);
 
             f(current->keys[0]);
             break;
 
       case 2: // three node
-            DoPostOrderTraverse(f, current->children[0].get());
+            DoPostOrderTraverse(f, current->children[0]);
 
-            DoPostOrderTraverse(f, current->children[1].get());
+            DoPostOrderTraverse(f, current->children[1]);
 
             f(current->keys[0]);
 
-            DoPostOrderTraverse(f, current->children[2].get());
+            DoPostOrderTraverse(f, current->children[2]);
 
             f(current->keys[1]);
             break;
 
       case 3: // four node
-            DoPostOrderTraverse(f, current->children[0].get());
+            DoPostOrderTraverse(f, current->children[0]);
 
-            DoPostOrderTraverse(f, current->children[1].get());
+            DoPostOrderTraverse(f, current->children[1]);
 
             f(current->keys[0]);
 
-            DoPostOrderTraverse(f, current->children[2].get());
+            DoPostOrderTraverse(f, current->children[2]);
 
             f(current->keys[1]);
 
-            DoPostOrderTraverse(f, current->children[3].get());
+            DoPostOrderTraverse(f, current->children[3]);
 
             f(current->keys[2]);
  
@@ -444,7 +444,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTrav
 /*
  * pre order traversal 
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTraverse(Functor f, const Node234 *current) const noexcept
+template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTraverse(Functor f, const std::unique_ptr<Node234>& current) const noexcept
 {  
 
   if (current == nullptr) {
@@ -457,39 +457,39 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTrave
       case 1: // two node
             f(current->keys[0]);
 
-            DoPreOrderTraverse(f, current->children[0].get());
+            DoPreOrderTraverse(f, current->children[0]);
 
-            DoPreOrderTraverse(f, current->children[1].get());
+            DoPreOrderTraverse(f, current->children[1]);
 
             break;
 
       case 2: // three node
             f(current->keys[0]);
 
-            DoPreOrderTraverse(f, current->children[0].get());
+            DoPreOrderTraverse(f, current->children[0]);
 
-            DoPreOrderTraverse(f, current->children[1].get());
+            DoPreOrderTraverse(f, current->children[1]);
 
             f(current->keys[1]);
 
-            DoPreOrderTraverse(f, current->children[2].get());
+            DoPreOrderTraverse(f, current->children[2]);
 
             break;
 
       case 3: // four node
             f(current->keys[0]);
 
-            DoPreOrderTraverse(f, current->children[0].get());
+            DoPreOrderTraverse(f, current->children[0]);
 
-            DoPreOrderTraverse(f, current->children[1].get());
+            DoPreOrderTraverse(f, current->children[1]);
 
             f(current->keys[1]);
 
-            DoPreOrderTraverse(f, current->children[2].get());
+            DoPreOrderTraverse(f, current->children[2]);
 
             f(current->keys[2]);
 
-            DoPreOrderTraverse(f, current->children[3].get());
+            DoPreOrderTraverse(f, current->children[3]);
 
             break;
    }
@@ -498,7 +498,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTrave
 /*
  * post order traversal for debugging purposes
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Debug(Functor f, const Node234 *current) noexcept
+template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Debug(Functor f, const std::unique_ptr<Node234>& current) noexcept
 {     
    
    if (current == nullptr) {
@@ -509,100 +509,47 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
    switch (current->totalItems) {
 
       case 1: // two node
-            DoPostOrder4Debug(f, current->children[0].get());
+            DoPostOrder4Debug(f, current->children[0]);
 
-            DoPostOrder4Debug(f, current->children[1].get());
+            DoPostOrder4Debug(f, current->children[1]);
 
-            f(current->keys[0], 0, current, root.get());
+            f(current->keys[0], 0, current, root);
             break;
 
       case 2: // three node
-            DoPostOrder4Debug(f, current->children[0].get());
+            DoPostOrder4Debug(f, current->children[0]);
 
-            DoPostOrder4Debug(f, current->children[1].get());
+            DoPostOrder4Debug(f, current->children[1]);
 
-            f(current->keys[0], 0, current, root.get());
+            f(current->keys[0], 0, current, root);
 
-            DoPostOrder4Debug(f, current->children[2].get());
+            DoPostOrder4Debug(f, current->children[2]);
 
-            f(current->keys[1], 1, current, root.get());
+            f(current->keys[1], 1, current, root);
             break;
 
       case 3: // four node
-            DoPostOrder4Debug(f, current->children[0].get());
+            DoPostOrder4Debug(f, current->children[0]);
 
-            DoPostOrder4Debug(f, current->children[1].get());
+            DoPostOrder4Debug(f, current->children[1]);
 
-            f(current->keys[0], 0, current, root.get());
+            f(current->keys[0], 0, current, root);
 
-            DoPostOrder4Debug(f, current->children[2].get());
+            DoPostOrder4Debug(f, current->children[2]);
 
-            f(current->keys[1], 1, current, root.get());
+            f(current->keys[1], 1, current, root);
 
-            DoPostOrder4Debug(f, current->children[3].get());
+            DoPostOrder4Debug(f, current->children[3]);
 
-            f(current->keys[2], 2, current, root.get());
+            f(current->keys[2], 2, current, root);
  
             break;
    }
 }
-
-/*
- * In order traversal
- */
-template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraverse(Functor f, const Node234 *current) const noexcept
-{     
-   if (current == nullptr) {
-
- return;
-   }
-
-   switch (current->getTotalItems()) {
-
-      case 1: // two node
-            DoInorderTraverse(f, current->children[0].get());
-
-            f(current->keys[0]);
-
-            DoInorderTraverse(f, current->children[1].get());
-            break;
-
-      case 2: // three node
-            DoInorderTraverse(f, current->children[0].get());
-
-            f(current->keys[0]);
-
-            DoInorderTraverse(f, current->children[1].get());
- 
-            f(current->keys[1]);
-
-            DoInorderTraverse(f, current->children[2].get());
-            break;
-
-      case 3: // four node
-            DoInorderTraverse(f, current->children[0].get());
-
-            f(current->keys[0]);
-
-            DoInorderTraverse(f, current->children[1].get());
- 
-            f(current->keys[1]);
-
-            DoInorderTraverse(f, current->children[2].get());
-
-            f(current->keys[2]);
-
-            DoInorderTraverse(f, current->children[3].get());
- 
-            break;
-   }
-}
-
 /*
  * pre-order traversal
  */
-
-template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std::unique_ptr<Node234> &pNodeCopy) noexcept
+template<typename K>  void Tree234<K>::CloneTree(const std::unique_ptr<Node234>& pNode2Copy, std::unique_ptr<Node234> &pNodeCopy) noexcept
 {
  if (pNode2Copy != nullptr) { 
                               
@@ -617,13 +564,9 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
              
             pNodeCopy->parent = pNode2Copy->parent;
             
-            const Node234 *src = pNode2Copy->children[0].get();
+            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]); 
             
-            CloneTree(src, pNodeCopy->children[0]); 
-            
-            src = pNode2Copy->children[1].get();
-
-            CloneTree(src, pNodeCopy->children[1]); 
+            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]); 
 
             break;
 
@@ -632,21 +575,15 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
       {
             std::unique_ptr<Node234> tmp = std::make_unique<Node234>( pNode2Copy->keys[0], pNode2Copy->keys[1]); 
             
-            pNodeCopy = std::move( tmp ); 
+            pNodeCopy = std::move(tmp); 
 
             pNodeCopy->parent = pNode2Copy->parent;
             
-            const Node234 *src = pNode2Copy->children[0].get();
-
-            CloneTree(src, pNodeCopy->children[0]);
+            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]);
             
-            src = pNode2Copy->children[1].get();
-
-            CloneTree(src, pNodeCopy->children[1]);
+            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]);
             
-            src = pNode2Copy->children[2].get();
- 
-            CloneTree(src, pNodeCopy->children[2]);
+            CloneTree(pNode2Copy->children[2], pNodeCopy->children[2]);
 
             break;
       } // end case
@@ -654,25 +591,17 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
       {
             std::unique_ptr<Node234> tmp = std::make_unique<Node234>( pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]); 
 
-            pNodeCopy = std::move( tmp );
+            pNodeCopy = std::move(tmp);
 
             pNodeCopy->parent = pNode2Copy->parent;
             
-            const Node234 *src = pNode2Copy->children[0].get();
-
-            CloneTree(src, pNodeCopy->children[0]);
+            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]);
             
-            src = pNode2Copy->children[1].get();
-
-            CloneTree(src, pNodeCopy->children[1]);
+            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]);
             
-            src = pNode2Copy->children[2].get();
- 
-            CloneTree(src, pNodeCopy->children[2]);
+            CloneTree(pNode2Copy->children[2], pNodeCopy->children[2]);
             
-            src = pNode2Copy->children[3].get();
-
-            CloneTree(src, pNodeCopy->children[3]);
+            CloneTree(pNode2Copy->children[3], pNodeCopy->children[3]);
  
             break;
       } // end case
@@ -683,6 +612,57 @@ template<typename K>  void Tree234<K>::CloneTree(const Node234 *pNode2Copy, std:
  } 
 }
 
+/*
+ * In order traversal
+ */
+//template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraverse(Functor f, const Node234 *current) const noexcept
+template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraverse(Functor f, const std::unique_ptr<Node234>& current) const noexcept
+{     
+   if (current == nullptr) {
+
+ return;
+   }
+
+   switch (current->getTotalItems()) {
+
+      case 1: // two node
+            DoInorderTraverse(f, current->children[0]);
+
+            f(current->keys[0]);
+
+            DoInorderTraverse(f, current->children[1]);
+            break;
+
+      case 2: // three node
+            DoInorderTraverse(f, current->children[0]);
+
+            f(current->keys[0]);
+
+            DoInorderTraverse(f, current->children[1]);
+ 
+            f(current->keys[1]);
+
+            DoInorderTraverse(f, current->children[2]);
+            break;
+
+      case 3: // four node
+            DoInorderTraverse(f, current->children[0]);
+
+            f(current->keys[0]);
+
+            DoInorderTraverse(f, current->children[1]);
+ 
+            f(current->keys[1]);
+
+            DoInorderTraverse(f, current->children[2]);
+
+            f(current->keys[2]);
+
+            DoInorderTraverse(f, current->children[3]);
+ 
+            break;
+   }
+}
 /*
  * Requires: childIndex is within the range for the type of node.
  * child is not nullptr.

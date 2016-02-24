@@ -23,32 +23,45 @@ int main(int argc, char** argv)
 
   //tree.levelOrderTraverse(BasicTreePrinter<int>(tree));
   tree_printer.print_level_order(cout);
-
+  
   // Lambda for printing ints in Tree234
   // auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
    
   cout << "\n======================" << endl;
     
-  cout << "\nPrinting actual tree in order, using lambda closure\n" << endl;
+  cout << "\nPrinting actual tree in order\n" << endl;
    
-  // Here we print the print using a print_keys instead of a function object.
-  //tree.inOrderTraverse(print_keys);
   tree_printer.print_in_order(cout);
   
   cout << endl;
+  
+    // Test copy constructor:
+  Tree234<int> tree2nd  {tree};
+  
+  cout << "\nPrinting copy of tree\n" << endl;
+  
+  BasicTreePrinter<int> tree_printer2nd{tree2nd};
+  
+  tree_printer2nd.print_in_order(cout);
  
-  // Here we the depth of each node's key
-  /* 
-  cout << "=======Tree Debug =====================" << endl;
+  cout << endl << flush;
 
-  DebugPrinter debug_printer(cout);
-  
-  tree.debug_dump(debug_printer);
-  
-  cout << "\n============================" << endl;
-  */
-  
-  DebugPrinter debug_printer(cout);
+  // Here we print the print using a print_keys instead of a function object.
+  // Test of traversal methods
+
+  auto print_keys = [=](int x) { cout << x << ", "; }; // lambda closure
+
+  cout << "\nUsing traverse methods to print tree in-order:" << endl;
+ 
+  tree.inOrderTraverse(print_keys);
+
+  cout << "\nUsing traverse methods to print tree post order:" << endl;
+
+  tree.postOrderTraverse(print_keys);
+
+  cout << "\nUsing traverse methods to print tree pre-order:" << endl;
+
+  tree.preOrderTraverse(print_keys);
 
   for (auto& item : input) {
 
@@ -72,7 +85,7 @@ int main(int argc, char** argv)
 
     tree.debug_dump(debug_printer);
 */
-   cout << "\n\n=================== Normal Tree Print using lambda closure =======================\n" << endl;
+   cout << "\n\n=================== Normal Tree Print =======================\n" << endl;
 
    tree_printer.print_in_order(cout);
 
