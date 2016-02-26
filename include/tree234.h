@@ -1216,10 +1216,18 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
         current = current->children[0].get(); // set current to left most child of the node, 
      }
 
-  }  else { 
+  }  else { // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey()
 
-      // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey()
       pfound_node->removeKey(key_index);
+
+      /* 
+      //  TODO: check if pfound_node is empty and if it is free it.
+      if (current->getTotalItems() == 0) {
+    
+         current->parent->children[child_index].reset(); 
+      }
+      */
+
       --tree_size;
       return true;
  }
@@ -1235,6 +1243,14 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
   // current->keys[0] = tmp; See Note above.
 
   current->removeKey(0); 
+  /*
+   //  TODO: check if current is empty and if it is free it.
+
+  if (current->getTotalItems() == 0) {
+
+     current->parent->children[child_index].reset(); 
+  }
+  */
   return true;
 }
 /*
