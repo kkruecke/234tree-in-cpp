@@ -4,25 +4,7 @@ Bug
 Prospective memory leak
 -----------------------
 
-The remove() code only calls unique_ptr<Node>::reset() in the case of the root. It should be calling reset() when the leaf node of the in order successor no longer has
-any elements, too. The remove pseudo code (skipping the conversion of two nodes):
-
-  1. "swap" in order successor with element to be deleted. To do this, we simply overright the element to be deleted with the in order successor and then...
-  2. remove the in order successor value from the leaf node.
-  3. We need to check if after the removal, the leaf node's totalItems() == 0.   
-
-If we save the parent, the prior node, and its child index, such that
-
- parent->children[child_index] == current
-
-where current is the node to be deleted, this should allow us free the node by doing
-
-
-  parent->children[child_index].reset();
-
-
-I have modified the existing NodeDescentSearch() to do this bz adding another int& parameter.
-  
+Test code changes.  
 
 Tips on using unique_ptr in function calls:
 ===========================================

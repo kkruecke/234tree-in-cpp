@@ -695,50 +695,11 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
        children[childIndex]->parent = this; 
   }
 }
-/*
- returns:
- pair<int, unique_ptr<Node234>&>
 
-
-*/
-/*
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::NodeDescentSearchNew(Node234 *current, K value, int& index) noexcept
-{
-
- while(current != nullptr) {
-
-     if (current != root.get() && current->isTwoNode()) { 
-    
-          // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... We special case the root inside of convertTwoNode().
-          current = convertTwoNode(current); // ..and resume the key search with the now converted node.
-            
-          continue;
-      } 
-
-      for(auto i = 0; i < current->totalItems; ++i) {
-    
-         if (value < current->keys[i]) {
-                
-             current = current->children[i]; //<--- This shows I can't use a unique_ptr<Mode234>&
-             continue;
-    
-         } else if (current->keys[i] == value) {
-
-             index = i;
-             return current; 
-         }
-      }
-
-      // It must be greater than the last key (because it is not less than or equal to it).
-      current = current->children[current->totalItems]; //<--- This shows I can't use a unique_ptr<Mode234>&
-  }  
-
-  return nullptr;
-}
-*/
 /*
  * Returns true if key is found in node, and it set index so that this->keys[index] == key.
- * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node).
+ * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node), and
+ * it sets child_index such that next->parent->children[child_index] == next.
  */
 template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value, int& index, int& child_index, Node234 *&next) noexcept
 {
@@ -1101,11 +1062,11 @@ template<typename K> bool Tree234<K>::remove(K key)
                // * its location.
                 root->removeKey(index);
                               
-                if (root->totalItems == 0) {
+                if (root->isEmpty()) {
 
                      root.reset(); // delete root 
-                     root  = nullptr;
                 }  
+
                 --tree_size;
                 return true;
              } 
@@ -1190,8 +1151,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
       // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
       // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
-
-      current = pfound_node->children[key_index + 1].get(); 
+      child_index = key_index + 1;
+      current = pfound_node->children[child_index].get(); 
 
       while (true) {
 
@@ -1229,6 +1190,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
       /* 
       //  TODO: check if pfound_node is empty and if it is free it.
+      //  TODO: Test
       if (current->isEmpty()) {
     
          current->parent->children[child_index].reset(); 
@@ -1252,7 +1214,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
   current->removeKey(0); 
   /*
    //  TODO: check if current is empty and if it is free it.
-
+   //  TODO: Test
   if (current->isEmptry()) {
 
      current->parent->children[child_index].reset(); 
