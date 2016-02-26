@@ -11,7 +11,8 @@ any elements, too. The remove pseudo code (skipping the conversion of two nodes)
   2. remove the in order successor value from the leaf node.
   3. We need to check if after the removal, the leaf node's totalItems() == 0.   
 
-However, this will mean rewriting all of the remove() helper methods (and calls to them) to use unique_ptr<Node234>& instead of "Node234 *".
+However, this will mean rewriting all of the remove() helper methods (and calls to them) to use unique_ptr<Node234>& instead of "Node234 *". It also means, if the code
+depends on the parent link, which is a raw pinter, to navigate the tree upward, this probably won't work either now!
 
 Another issue
 -------------
