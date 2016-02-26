@@ -105,6 +105,8 @@ template<typename K> class Tree234 {
     // converts from class enum to int.  
     int to_int(const typename Tree234<K>::Node234::NodeMaxItems x) const { return static_cast<int>(x); }
 
+    Node234 *NodeDescentSearchNew(Node234 *current, K value, int& index) noexcept;
+
     std::unique_ptr<Node234>  root; 
 
     int  tree_size;
@@ -138,8 +140,6 @@ template<typename K> class Tree234 {
     Node234 *leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
 
     Node234 *rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
-
-    std::pair<int, std::unique_ptr<Node234>&> NodeDescentSearchNew(K key, std::unique_ptr<Node234>& current) noexcept;
 
   public:
 
@@ -696,17 +696,15 @@ template<typename K> void Tree234<K>::test(K key)
 
 
 */
-template<typename K> std::pair<int, std::unique_ptr<typename Tree234<K>::Node234>&> Tree234<K>::NodeDescentSearchNew(K value, std::unique_ptr<Node234>& current) noexcept
+template<typename K> typename Tree234<K>::Node234> *Tree234<K>::NodeDescentSearchNew(Node234 *current, K value, int& index) noexcept
 {
-
- std::pair<int, std::unique_ptr<Node234>&> ret{0, current};
 
  while(current != nullptr) {
 
-     if (current != root && current->isTwoNode()) { 
+     if (current != root.get() && current->isTwoNode()) { 
     
           // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... We special case the root inside of convertTwoNode().
-          //--current = convertTwoNode(current); // ..and resume the key search with the now converted node.
+          current = convertTwoNode(current); // ..and resume the key search with the now converted node.
             
           continue;
       } 
@@ -719,11 +717,9 @@ template<typename K> std::pair<int, std::unique_ptr<typename Tree234<K>::Node234
              continue;
     
          } else if (current->keys[i] == value) {
-    
-             ret.first = i;
-             ret.second = current;
 
-             return ret; 
+             index = i;
+             return current; 
          }
       }
 
@@ -731,66 +727,32 @@ template<typename K> std::pair<int, std::unique_ptr<typename Tree234<K>::Node234
       current = current->children[current->totalItems]; //<--- This shows I can't use a unique_ptr<Mode234>&
   }  
 
-  return std::pair<int, std::unique_ptr<Node234>&> {0, current};
+  return nullptr;
 }
-/*
-template<typename K> std::unique_ptr<Node234>& Tree234<K>::Node234::NodeDescentSearchNew(K value, std::unique_ptr<Node234>& current, int& found_index) noexcept
-{
 
- std::pair<int, std::unique_ptr<Node234>&> ret{0, current};
-
- while(current != nullptr) {
-
-     if (current != root && current->isTwoNode()) { 
-    
-          // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... We special case the root inside of convertTwoNode().
-          current = convertTwoNode(current); // ..and resume the key search with the now converted node.
-            
-          continue;
-      } 
-
-      for(auto i = 0; i < totalItems; ++i) {
-    
-         if (value < keys[i]) {
-                
-             current = children[i]; 
-             continue;
-    
-         } else if (keys[i] == value) {
-    
-             found_index = i;
-             return current; 
-         }
-      }
-
-      // It must be greater than the last key (because it is not less than or equal to it).
-      current = children[totalItems]; 
-  }  
-
-  return current;
-}
-*/
 /*
  * Returns true if key is found in node, and it set index so that this->keys[index] == key.
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node).
  */
-template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value, int& found_index, Node234 *&next) noexcept
+template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value, int& index, Node234 *&next) noexcept
 {
   for(auto i = 0; i < totalItems; ++i) {
 
      if (value < keys[i]) {
             
          next = children[i].get(); 
+         index = i;  // new code. index is such that: this->children[index] == next
          return false;
 
      } else if (keys[i] == value) {
 
-         found_index = i;
+         index = i;
          return true;
      }
   }
 
   // It must be greater than the last key (because it is not less than or equal to it).
+  index = totalItems; // new: see 'new code' comment just above.
   next = children[totalItems].get(); 
 
   return false;
@@ -1180,6 +1142,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 {
    Node234 *next = nullptr;
    Node234 *pfound_node = nullptr;
+   Node234 *parent = nullptr; // new
    int key_index;
 
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found
@@ -1204,6 +1167,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
        } else {
           // ... If not found, continue to descend. 
+           // TODO: need to also save index in parent, ie, parent->children[child_index] == next
            current = next; 
            continue;
        }
