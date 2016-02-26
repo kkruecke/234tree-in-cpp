@@ -137,9 +137,9 @@ template<typename K> class Tree234 {
     // These methods are called by convertTwoNode()
     Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id) noexcept;
 
-    Node234 *leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
+    std::unique_ptr<Node234>& leftRotation(std::unique_ptr<Node234>& p2node, std::unique_ptr<Node234>& psibling, Node234 *parent, int parent_key_index) noexcept;
 
-    Node234 *rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
+    std::unique_ptr<Node234>& rightRotation(std::unique_ptr<Node234>& p2node, std::unique_ptr<Node234>& psibling, Node234 *parent, int parent_key_index) noexcept;
 
   public:
 
@@ -1274,19 +1274,19 @@ template<typename K> typename std::unique_ptr<typename Tree234<K>::Node234>& Tre
 
         if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
 
-           convertedNode = parent->fuseWithChildren();
+           //-----convertedNode = parent->fuseWithChildren();-----//
 
         } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
 
-             convertedNode = fuseSiblings(parent, node2_index, sibling_index);
+           //-----convertedNode = fuseSiblings(parent, node2_index, sibling_index);-----//
         }
 
    } else { // it has a 3- or 4-node sibling.
-
+      /*--
       Node234 *psibling = parent->children[sibling_index].get();
     
       Node234 *p2node = parent->children[node2_index].get();
-    
+      */
       /* 
        * First we get the index of the parent's key value such that either 
        *
@@ -1308,14 +1308,14 @@ template<typename K> typename std::unique_ptr<typename Tree234<K>::Node234>& Tre
                                     * and we do a right rotation
                                     */ 
     
-          convertedNode = rightRotation(p2node, psibling, parent, parent_key_index);
+          convertedNode = rightRotation(parent->children[node2_index], parent->children[sibling_index], parent, parent_key_index);
     
       } else { /* else sibling is to the right and 
                 *    parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
                 * therefore do a left rotation
            */ 
     
-          convertedNode = leftRotation(p2node, psibling, parent, parent_key_index);
+          convertedNode = leftRotation(parent->children[node2_index], parent->children[sibling_index], parent, parent_key_index);
       }
    }
    
@@ -1363,7 +1363,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
 /* 
  * Requires: sibling is to the left, therefore: parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
  */
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
+template<typename K> std::unique_ptr<typename Tree234<K>::Node234>& Tree234<K>::rightRotation(std::unique_ptr<Tree234<K>::Node234>& p2node, \
+    std::unique_ptr<Node234>& psibling, Node234 *parent, int parent_key_index) noexcept
 {    
   // Add the parent's key to 2-node, making it a 3-node
 
@@ -1390,7 +1391,8 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Nod
 /* Requires: sibling is to the right therefore: parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
  * Do a left rotation
  */ 
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
+template<typename K> std::unique_ptr<typename Tree234<K>::Node234>& Tree234<K>::leftRotation( std::unique_ptr<Tree234<K>::Node234>& p2node, \
+ std::unique_ptr<Tree234<K>::Node234>& psibling, Node234 *parent, int parent_key_index) noexcept
 {
   // pnode2->keys[0] doesn't change.
   p2node->keys[1] = parent->keys[parent_key_index];  // 1. insert parent key making 2-node a 3-node
