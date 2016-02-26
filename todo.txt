@@ -17,6 +17,8 @@ However, this will mean rewriting some of the remove() helper methods (and calls
 1. rotateRight() and rotateLeft() don't return parent link ever.
 2. While fuseSiblings() current returns a raw pointer. It doesn't look hard to change.
 3. Only fuseWithChildren() returns the parent pointer, but it is also called with the parent pointer: parent->fuseWithChildren(....)
+Maybe this can be fixed by simplying saving a prior_node that is a unique_ptr<Node234>&? Maybe the parent pointer can be
+eleiminated? fuseWithSiblings() seems to be the only method that most depends upon the parent.
 
 Do I use unique_ptr<Node234> *parent? Like this:
 

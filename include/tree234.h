@@ -978,7 +978,7 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
      * but first set node's two rightmost children to nullptr */
 
     // if this is the root, then root was the pnode in all the code above. It will now become the first child a new root 2-node.
-    if(pnode == root.get()) { 
+    if(pnode == root) { 
 
        /* We will now create a new root unique_ptr<Node234> that is a two node using the about-to-be-former roots's middle value itemB from above. */  
         
