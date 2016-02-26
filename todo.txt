@@ -38,6 +38,13 @@ X::X(int x) : i{x}, left{nullptr}, right{nullptr}, parent{nullptr}
 {
 }
 
+Answer: Read up on the issue of passing unique_ptr<XYZ> reference:
+
+1. http://stackoverflow.com/questions/11277249/how-to-pass-stdunique-ptr-around
+2. http://timoch.com/blog/2013/04/std-unique_ptr-semantic
+3. https://msdn.microsoft.com/library/hh279676%28v=vs.110%29.aspx
+4. http://herbsutter.com/2013/06/05/gotw-91-solution-smart-pointer-parameters/
+
 
 unique_ptr<X> f(int i)
 {

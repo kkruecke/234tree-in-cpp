@@ -127,19 +127,17 @@ template<typename K> class Tree234 {
     void split(Node234 *node) noexcept;  // called during insert(K key) to split 4-nodes encountered.
 
     // Called during remove(K key)
-    //--bool remove(K key, Node234 *location); 
-    bool remove(K key, std::unique_ptr<Node234>& location); 
+    bool remove(K key, Node234 *location); 
 
     // Called during remove(K key, Node234 *) to convert two-node to three- or four-node during descent of tree.
-    //--Node234 *convertTwoNode(Node234 *node) noexcept;
-    std::unique_ptr<Node234>& convertTwoNode(std::unique_ptr<Node234>& node) noexcept;
+    Node234 *convertTwoNode(Node234 *node) noexcept;
 
     // These methods are called by convertTwoNode()
     Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id) noexcept;
 
-    std::unique_ptr<Node234>& leftRotation(std::unique_ptr<Node234>& p2node, std::unique_ptr<Node234>& psibling, Node234 *parent, int parent_key_index) noexcept;
+    Node234 *leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
 
-    std::unique_ptr<Node234>& rightRotation(std::unique_ptr<Node234>& p2node, std::unique_ptr<Node234>& psibling, Node234 *parent, int parent_key_index) noexcept;
+    Node234 *rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
 
   public:
 
@@ -978,7 +976,7 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
      * but first set node's two rightmost children to nullptr */
 
     // if this is the root, then root was the pnode in all the code above. It will now become the first child a new root 2-node.
-    if(pnode == root) { 
+    if(pnode == root.get()) { 
 
        /* We will now create a new root unique_ptr<Node234> that is a two node using the about-to-be-former roots's middle value itemB from above. */  
         
@@ -1061,8 +1059,7 @@ template<typename K> bool Tree234<K>::remove(K key)
 
    } else {
  
-       //--return remove(key, root.get()); 
-       return remove(key, root); 
+       return remove(key, root.get()); 
   }
 }
 /*
@@ -1093,13 +1090,10 @@ template<typename K> bool Tree234<K>::remove(K key)
 
  New untested prospective code for remove(K key, Node234 *). This is the remove code for the case when the root is not a leaf node.
  */
-//--template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
-template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& current) 
+template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
-   //--Node234 *next = nullptr;
-   //--Node234 *pfound_node = nullptr;
-   std::unique<Node234>& next = nullptr; // hum?
-   std::unique<Node234>& pfound_node = nullptr; // hum?
+   Node234 *next = nullptr;
+   Node234 *pfound_node = nullptr;
    int key_index;
 
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found
@@ -1110,7 +1104,7 @@ template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& cu
               
             return false;
 
-       } else if (current != root && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
+       } else if (current != root.get() && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
 
             // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... We special case the root inside of convertTwoNode().
             current = convertTwoNode(current); // ..and resume the key search with the now converted node.
@@ -1174,15 +1168,6 @@ template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& cu
 
       // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey()
       pfound_node->removeKey(key_index);
-
-      // New code.
-      // Check if the leaf is empty and should therefore be freed. What is the correct? pfound_node is not the leaf!!!!
-      // New code.
-      if (pfound_node->getTotalItems() == 0) {
-    
-          pfound_node.reset();
-      }
-    
       --tree_size;
       return true;
  }
@@ -1198,8 +1183,6 @@ template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& cu
   // current->keys[0] = tmp; See Note above.
 
   current->removeKey(0); 
-
-
   return true;
 }
 /*
@@ -1217,8 +1200,7 @@ template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& cu
  * we fuse the three together into a 4-node. In either case, we shift the children as required.
  * 
  */
-//--template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  noexcept
-template<typename K> typename std::unique_ptr<typename Tree234<K>::Node234>& Tree234<K>::convertTwoNode(std::unique_ptr<Node234>& node)  noexcept
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  noexcept
 {                                                                         
    Node234 *convertedNode;
    Node234 *parent = node->getParent();
@@ -1250,12 +1232,12 @@ template<typename K> typename std::unique_ptr<typename Tree234<K>::Node234>& Tre
     
    if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
 
-        has3or4NodeSibling = true;
+ has3or4NodeSibling = true;
         sibling_index = right_adjacent;  
 
    } else if (left_adjacent >= 0 && !parent->children[left_adjacent]->isTwoNode()) {
 
-        has3or4NodeSibling = true;
+ has3or4NodeSibling = true;
         sibling_index = left_adjacent;  
 
    } else if (right_adjacent < parentChildrenTotal) { // There are no 3- or 4-nodes siblings. Therefore the all siblings 
@@ -1274,19 +1256,19 @@ template<typename K> typename std::unique_ptr<typename Tree234<K>::Node234>& Tre
 
         if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
 
-           //-----convertedNode = parent->fuseWithChildren();-----//
+      convertedNode = parent->fuseWithChildren();
 
         } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
 
-           //-----convertedNode = fuseSiblings(parent, node2_index, sibling_index);-----//
+             convertedNode = fuseSiblings(parent, node2_index, sibling_index);
         }
 
    } else { // it has a 3- or 4-node sibling.
-      /*--
+
       Node234 *psibling = parent->children[sibling_index].get();
     
       Node234 *p2node = parent->children[node2_index].get();
-      */
+    
       /* 
        * First we get the index of the parent's key value such that either 
        *
@@ -1308,14 +1290,14 @@ template<typename K> typename std::unique_ptr<typename Tree234<K>::Node234>& Tre
                                     * and we do a right rotation
                                     */ 
     
-          convertedNode = rightRotation(parent->children[node2_index], parent->children[sibling_index], parent, parent_key_index);
+          convertedNode = rightRotation(p2node, psibling, parent, parent_key_index);
     
       } else { /* else sibling is to the right and 
                 *    parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
                 * therefore do a left rotation
            */ 
     
-          convertedNode = leftRotation(parent->children[node2_index], parent->children[sibling_index], parent, parent_key_index);
+          convertedNode = leftRotation(p2node, psibling, parent, parent_key_index);
       }
    }
    
@@ -1363,8 +1345,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
 /* 
  * Requires: sibling is to the left, therefore: parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
  */
-template<typename K> std::unique_ptr<typename Tree234<K>::Node234>& Tree234<K>::rightRotation(std::unique_ptr<Tree234<K>::Node234>& p2node, \
-    std::unique_ptr<Node234>& psibling, Node234 *parent, int parent_key_index) noexcept
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
 {    
   // Add the parent's key to 2-node, making it a 3-node
 
@@ -1391,8 +1372,7 @@ template<typename K> std::unique_ptr<typename Tree234<K>::Node234>& Tree234<K>::
 /* Requires: sibling is to the right therefore: parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
  * Do a left rotation
  */ 
-template<typename K> std::unique_ptr<typename Tree234<K>::Node234>& Tree234<K>::leftRotation( std::unique_ptr<Tree234<K>::Node234>& p2node, \
- std::unique_ptr<Tree234<K>::Node234>& psibling, Node234 *parent, int parent_key_index) noexcept
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
 {
   // pnode2->keys[0] doesn't change.
   p2node->keys[1] = parent->keys[parent_key_index];  // 1. insert parent key making 2-node a 3-node
