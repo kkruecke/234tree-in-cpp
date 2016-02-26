@@ -127,12 +127,10 @@ template<typename K> class Tree234 {
     void split(Node234 *node) noexcept;  // called during insert(K key) to split 4-nodes encountered.
 
     // Called during remove(K key)
-    //--bool remove(K key, Node234 *location); 
-    bool remove(K key, std::unique_ptr<Node234>& location); 
+    bool remove(K key, Node234 *location); 
 
     // Called during remove(K key, Node234 *) to convert two-node to three- or four-node during descent of tree.
-    //--Node234 *convertTwoNode(Node234 *node) noexcept;
-    std::unique_ptr<Node234>& convertTwoNode(std::unique_ptr<Node234>& node) noexcept;
+    Node234 *convertTwoNode(Node234 *node) noexcept;
 
     // These methods are called by convertTwoNode()
     Node234 *fuseSiblings(Node234 *parent, int node2_id, int sibling_id) noexcept;
@@ -1061,8 +1059,7 @@ template<typename K> bool Tree234<K>::remove(K key)
 
    } else {
  
-       //--return remove(key, root.get()); 
-       return remove(key, root); 
+       return remove(key, root.get()); 
   }
 }
 /*
@@ -1093,8 +1090,7 @@ template<typename K> bool Tree234<K>::remove(K key)
 
  New untested prospective code for remove(K key, Node234 *). This is the remove code for the case when the root is not a leaf node.
  */
-//--template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
-template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& current) 
+template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 {
    Node234 *next = nullptr;
    Node234 *pfound_node = nullptr;
@@ -1108,7 +1104,7 @@ template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& cu
               
             return false;
 
-       } else if (current != root && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
+       } else if (current != root.get() && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
 
             // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... We special case the root inside of convertTwoNode().
             current = convertTwoNode(current); // ..and resume the key search with the now converted node.
@@ -1172,14 +1168,6 @@ template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& cu
 
       // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey()
       pfound_node->removeKey(key_index);
-
-      // Check if pfound_node is empty and should therefore be freed.
-      // New code.
-      if (pfound_node->getTotalItems() == 0) {
-
-          pfound_node.reset();
-      }
-
       --tree_size;
       return true;
  }
@@ -1212,8 +1200,7 @@ template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& cu
  * we fuse the three together into a 4-node. In either case, we shift the children as required.
  * 
  */
-//--template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  noexcept
-template<typename K> typename std::unique_ptr<typename Tree234<K>::Node234>& Tree234<K>::convertTwoNode(std::unique_ptr<Node234>& node)  noexcept
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  noexcept
 {                                                                         
    Node234 *convertedNode;
    Node234 *parent = node->getParent();
@@ -1245,12 +1232,12 @@ template<typename K> typename std::unique_ptr<typename Tree234<K>::Node234>& Tre
     
    if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
 
-        has3or4NodeSibling = true;
+ has3or4NodeSibling = true;
         sibling_index = right_adjacent;  
 
    } else if (left_adjacent >= 0 && !parent->children[left_adjacent]->isTwoNode()) {
 
-        has3or4NodeSibling = true;
+ has3or4NodeSibling = true;
         sibling_index = left_adjacent;  
 
    } else if (right_adjacent < parentChildrenTotal) { // There are no 3- or 4-nodes siblings. Therefore the all siblings 
@@ -1269,7 +1256,7 @@ template<typename K> typename std::unique_ptr<typename Tree234<K>::Node234>& Tre
 
         if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
 
-           convertedNode = parent->fuseWithChildren();
+      convertedNode = parent->fuseWithChildren();
 
         } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
 
