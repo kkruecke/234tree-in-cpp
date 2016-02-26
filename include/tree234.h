@@ -97,6 +97,7 @@ template<typename K> class Tree234 {
            constexpr bool isTwoNode() const noexcept;
            constexpr bool isThreeNode() const noexcept;
            constexpr bool isFourNode() const noexcept;
+           constexpr bool isEmpty() const noexcept;
   }; // end class Tree<K>::Node234  
 
  private:
@@ -315,6 +316,12 @@ template<typename K> inline constexpr bool Tree234<K>::Node234::isFourNode() con
 {
    return (totalItems == to_int(NodeMaxItems::four_node)) ? true : false;
 }
+
+template<typename K> inline constexpr bool Tree234<K>::Node234::isEmpty() const noexcept
+{
+   return (totalItems == 0) ? true : false;
+}
+
 template<typename K> inline constexpr int Tree234<K>::size() const
 {
   return tree_size;
@@ -1143,7 +1150,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 {
    Node234 *next = nullptr;
    Node234 *pfound_node = nullptr;
-   Node234 *parent = nullptr; // new
    int key_index;
    int child_index;
 
@@ -1213,7 +1219,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
             break;  
         } 
 
-        current = current->children[0].get(); // set current to left most child of the node, 
+        child_index = 0; // This must be set inside this loop, as it is used below.
+        current = current->children[child_index].get(); // set current to left most child of the node, 
      }
 
   }  else { // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey()
@@ -1222,7 +1229,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
       /* 
       //  TODO: check if pfound_node is empty and if it is free it.
-      if (current->getTotalItems() == 0) {
+      if (current->isEmpty()) {
     
          current->parent->children[child_index].reset(); 
       }
@@ -1246,7 +1253,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
   /*
    //  TODO: check if current is empty and if it is free it.
 
-  if (current->getTotalItems() == 0) {
+  if (current->isEmptry()) {
 
      current->parent->children[child_index].reset(); 
   }
