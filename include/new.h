@@ -683,9 +683,16 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
        children[childIndex]->parent = this; 
   }
 }
+/*
+ returns:
+ pair<int, unique_ptr<Node234>&>
 
+
+*/
 template<typename K> std::unique_ptr<Node234>& Tree234<K>::Node234::NodeDescentSearchNew(K value, std::unique_ptr<Node234>& current, int& found_index) noexcept
 {
+
+ std::pair<int, std::unique_ptr<Node234>&> ret{0, current};
 
  while(current != nullptr) {
 

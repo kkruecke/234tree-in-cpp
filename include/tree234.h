@@ -139,6 +139,8 @@ template<typename K> class Tree234 {
 
     Node234 *rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
 
+    std::pair<int, std::unique_ptr<Node234>&> NodeDescentSearchNew(K key, std::unique_ptr<Node234>& current) noexcept;
+
   public:
 
      explicit Tree234() noexcept : root{} { } 
@@ -173,6 +175,7 @@ template<typename K> class Tree234 {
     void insert(K key) noexcept; 
 
     bool remove(K key);
+    void test(K key);
 };
 
 template<typename K> const int  Tree234<K>::Node234::MAX_KEYS = 3; 
@@ -683,7 +686,90 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
        children[childIndex]->parent = this; 
   }
 }
+template<typename K> void Tree234<K>::test(K key)
+{
+    NodeDescentSearchNew(key, root);
+}
+/*
+ returns:
+ pair<int, unique_ptr<Node234>&>
 
+
+*/
+template<typename K> std::pair<int, std::unique_ptr<typename Tree234<K>::Node234>&> Tree234<K>::NodeDescentSearchNew(K value, std::unique_ptr<Node234>& current) noexcept
+{
+
+ std::pair<int, std::unique_ptr<Node234>&> ret{0, current};
+
+ while(current != nullptr) {
+
+     if (current != root && current->isTwoNode()) { 
+    
+          // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... We special case the root inside of convertTwoNode().
+          //--current = convertTwoNode(current); // ..and resume the key search with the now converted node.
+            
+          continue;
+      } 
+
+      for(auto i = 0; i < current->totalItems; ++i) {
+    
+         if (value < current->keys[i]) {
+                
+             current = current->children[i]; //<--- This shows I can't use a unique_ptr<Mode234>&
+             continue;
+    
+         } else if (current->keys[i] == value) {
+    
+             ret.first = i;
+             ret.second = current;
+
+             return ret; 
+         }
+      }
+
+      // It must be greater than the last key (because it is not less than or equal to it).
+      current = current->children[current->totalItems]; //<--- This shows I can't use a unique_ptr<Mode234>&
+  }  
+
+  return std::pair<int, std::unique_ptr<Node234>&> {0, current};
+}
+/*
+template<typename K> std::unique_ptr<Node234>& Tree234<K>::Node234::NodeDescentSearchNew(K value, std::unique_ptr<Node234>& current, int& found_index) noexcept
+{
+
+ std::pair<int, std::unique_ptr<Node234>&> ret{0, current};
+
+ while(current != nullptr) {
+
+     if (current != root && current->isTwoNode()) { 
+    
+          // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... We special case the root inside of convertTwoNode().
+          current = convertTwoNode(current); // ..and resume the key search with the now converted node.
+            
+          continue;
+      } 
+
+      for(auto i = 0; i < totalItems; ++i) {
+    
+         if (value < keys[i]) {
+                
+             current = children[i]; 
+             continue;
+    
+         } else if (keys[i] == value) {
+    
+             found_index = i;
+             return current; 
+         }
+      }
+
+      // It must be greater than the last key (because it is not less than or equal to it).
+      current = children[totalItems]; 
+  }  
+
+  return current;
+}
+*/
 /*
  * Returns true if key is found in node, and it set index so that this->keys[index] == key.
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node).

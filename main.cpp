@@ -18,6 +18,8 @@ int main(int argc, char** argv)
 
   Tree234<int> tree {input};
   
+  tree.test(10);
+  
   BasicTreePrinter<int> tree_printer{tree};
 
   cout << "Printing tree in level order" << endl;
