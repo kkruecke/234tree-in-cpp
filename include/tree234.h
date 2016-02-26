@@ -1175,13 +1175,14 @@ template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& cu
       // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey()
       pfound_node->removeKey(key_index);
 
-      // Check if pfound_node is empty and should therefore be freed.
+      // New code.
+      // Check if the leaf is empty and should therefore be freed. What is the correct? pfound_node is not the leaf!!!!
       // New code.
       if (pfound_node->getTotalItems() == 0) {
-
+    
           pfound_node.reset();
       }
-
+    
       --tree_size;
       return true;
  }
@@ -1197,6 +1198,8 @@ template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& cu
   // current->keys[0] = tmp; See Note above.
 
   current->removeKey(0); 
+
+
   return true;
 }
 /*
