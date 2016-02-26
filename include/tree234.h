@@ -1188,14 +1188,13 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
       pfound_node->removeKey(key_index);
 
-      /* 
+       
       //  TODO: check if pfound_node is empty and if it is free it.
       //  TODO: Test
       if (current->isEmpty()) {
     
          current->parent->children[child_index].reset(); 
       }
-      */
 
       --tree_size;
       return true;
@@ -1212,14 +1211,14 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
   // current->keys[0] = tmp; See Note above.
 
   current->removeKey(0); 
-  /*
+  
    //  TODO: check if current is empty and if it is free it.
    //  TODO: Test
-  if (current->isEmptry()) {
+  if (current->isEmpty()) {
 
      current->parent->children[child_index].reset(); 
   }
-  */
+  
   return true;
 }
 /*

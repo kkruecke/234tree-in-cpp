@@ -64,8 +64,10 @@ int main(int argc, char** argv)
 
   tree.preOrderTraverse(print_keys);
 
-  for (auto& item : input) {
-
+  for (auto iter = input.rbegin(); iter != input.rend(); ++iter) {
+    
+    auto item = *iter;
+    
     cout << "\nTree size is " << tree.size() << " before removing item " << item << endl;
 
     bool rc = tree.remove(item);
