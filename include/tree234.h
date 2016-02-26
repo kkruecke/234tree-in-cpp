@@ -54,7 +54,7 @@ template<typename K> class Tree234 {
         * Returns true if key is found in node and sets index so pNode->keys[index] == key
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
-       bool NodeDescentSearch(K key, int& index, Node234 *&next) noexcept;
+       bool NodeDescentSearch(K key, int& index, int& child_index, Node234 *&next) noexcept;
     
        int insertKey(K key) noexcept;
        
@@ -105,7 +105,9 @@ template<typename K> class Tree234 {
     // converts from class enum to int.  
     int to_int(const typename Tree234<K>::Node234::NodeMaxItems x) const { return static_cast<int>(x); }
 
-    Node234 *NodeDescentSearchNew(Node234 *current, K value, int& index) noexcept;
+    /*
+      Node234 *NodeDescentSearchNew(Node234 *current, K value, int& index) noexcept;
+     */ 
 
     std::unique_ptr<Node234>  root; 
 
@@ -686,17 +688,14 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
        children[childIndex]->parent = this; 
   }
 }
-template<typename K> void Tree234<K>::test(K key)
-{
-    NodeDescentSearchNew(key, root);
-}
 /*
  returns:
  pair<int, unique_ptr<Node234>&>
 
 
 */
-template<typename K> typename Tree234<K>::Node234> *Tree234<K>::NodeDescentSearchNew(Node234 *current, K value, int& index) noexcept
+/*
+template<typename K> typename Tree234<K>::Node234 *Tree234<K>::NodeDescentSearchNew(Node234 *current, K value, int& index) noexcept
 {
 
  while(current != nullptr) {
@@ -729,19 +728,19 @@ template<typename K> typename Tree234<K>::Node234> *Tree234<K>::NodeDescentSearc
 
   return nullptr;
 }
-
+*/
 /*
  * Returns true if key is found in node, and it set index so that this->keys[index] == key.
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node).
  */
-template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value, int& index, Node234 *&next) noexcept
+template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value, int& index, int& child_index, Node234 *&next) noexcept
 {
   for(auto i = 0; i < totalItems; ++i) {
 
      if (value < keys[i]) {
             
          next = children[i].get(); 
-         index = i;  // new code. index is such that: this->children[index] == next
+         child_index = i;  // new code. index is such that: this->children[index] == next
          return false;
 
      } else if (keys[i] == value) {
@@ -752,7 +751,7 @@ template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value,
   }
 
   // It must be greater than the last key (because it is not less than or equal to it).
-  index = totalItems; // new: see 'new code' comment just above.
+  child_index = totalItems; // new: see 'new code' comment just above.
   next = children[totalItems].get(); 
 
   return false;
@@ -903,6 +902,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 {
   Node234 *current = root.get();
   Node234 *next;
+  int child_index;
 
   if (!root) { // <--> if (root.get() == nullptr)
 
@@ -911,7 +911,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
 
   while(true) {
  
-      if (current->NodeDescentSearch(key, index, next)) {  
+      if (current->NodeDescentSearch(key, index, child_index, next)) {  
 
           location = current;
           return true; 
@@ -945,6 +945,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
    Node234 *current = root.get();
 
    // Descend until a leaf node is found, splitting four nodes as they are encountered 
+   int child_index;
 
    while(true) {
        
@@ -965,7 +966,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
             Node234 *next;
             int index;
             
-            if (current->NodeDescentSearch(key, index, next) ) {// return if key is already in tree
+            if (current->NodeDescentSearch(key, index, child_index, next) ) {// return if key is already in tree
                 
                 return;
             } 
@@ -1144,6 +1145,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
    Node234 *pfound_node = nullptr;
    Node234 *parent = nullptr; // new
    int key_index;
+   int child_index;
 
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found
    //   the  cursor is advanced. 
@@ -1160,7 +1162,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
             
            continue;
       
-       } else if (current->NodeDescentSearch(key, key_index, next)) { // ...search for item in current node. 
+       } else if (current->NodeDescentSearch(key, key_index, child_index, next)) { // ...search for item in current node. 
 
             pfound_node = current; 
             break; // We found it.  

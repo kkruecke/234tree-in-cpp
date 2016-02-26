@@ -21,7 +21,7 @@ where current is the node to be deleted, this should allow us free the node by d
   parent->children[child_index].reset();
 
 
-I have modified the existing NodeDescentSearch() to do this.
+I have modified the existing NodeDescentSearch() to do this bz adding another int& parameter.
   
 
 Tips on using unique_ptr in function calls:
