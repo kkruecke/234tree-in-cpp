@@ -11,8 +11,57 @@ any elements, too. The remove pseudo code (skipping the conversion of two nodes)
   2. remove the in order successor value from the leaf node.
   3. We need to check if after the removal, the leaf node's totalItems() == 0.   
 
-However, this will mean rewriting all of the remove() helper methods (and calls to them) to use unique_ptr<Node234>& instead of "Node234 *". It also means, if the code
-depends on the parent link, which is a raw pinter, to navigate the tree upward, this probably won't work either now!
+However, this will mean rewriting some of the remove() helper methods (and calls to them) so that a unique_ptr<Node234>& ultimately gets returned instead of
+"Node234 *". I want to keep the raw Node234 *parent pointer if I can. unique_ptr<Node24>* seems gross.
+
+1. rotateRight() and rotateLeft() don't return parent link ever.
+2. While fuseSiblings() current returns a raw pointer. It doesn't look hard to change.
+3. Only fuseWithChildren() returns the parent pointer, but it is also called with the parent pointer: parent->fuseWithChildren(....)
+
+Do I use unique_ptr<Node234> *parent? Like this:
+
+class X {
+ private:
+  std::unique_ptr<X> left;
+  std::unique_ptr<X> right;
+
+  int i;
+ public:
+
+    std::unique_ptr<X>* parent;
+    X(int i);
+};
+
+X::X(int x) : i{x}, left{nullptr}, right{nullptr}, parent{nullptr}
+{
+}
+
+
+unique_ptr<X> f(int i)
+{
+    if (i == 0) {
+        
+        return nullptr;
+    } else {
+        
+        return make_unique<X>(10);
+    }
+    
+}
+
+int main(int argc, char** argv)
+{
+    unique_ptr<X> p = make_unique<X>(3);
+    
+    p = f(10); // Since f(10) is an rvalue. Nothing is gained by doing: p = move(f(10));
+    
+    p = f(0);
+
+    unique_ptr<X> p2 = make_unique<X>(2);
+
+    p2->parent = &p;
+
+
 
 Another issue
 -------------
