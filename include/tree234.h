@@ -1096,8 +1096,10 @@ template<typename K> bool Tree234<K>::remove(K key)
 //--template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
 template<typename K> bool Tree234<K>::remove(K key, std::unique_ptr<Node234>& current) 
 {
-   Node234 *next = nullptr;
-   Node234 *pfound_node = nullptr;
+   //--Node234 *next = nullptr;
+   //--Node234 *pfound_node = nullptr;
+   std::unique<Node234>& next = nullptr; // hum?
+   std::unique<Node234>& pfound_node = nullptr; // hum?
    int key_index;
 
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found
