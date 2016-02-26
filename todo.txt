@@ -14,35 +14,20 @@ any elements, too. The remove pseudo code (skipping the conversion of two nodes)
 However, this will mean rewriting some of the remove() helper methods (and calls to them) so that a unique_ptr<Node234>& ultimately gets returned instead of
 "Node234 *". I want to keep the raw Node234 *parent pointer if I can. unique_ptr<Node24>* seems gross.
 
-1. rotateRight() and rotateLeft() don't return parent link ever.
-2. While fuseSiblings() current returns a raw pointer. It doesn't look hard to change.
+1. rotateRight() and rotateLeft() don't return parent links ever.
+2. While fuseSiblings() currently returns a raw pointer. It doesn't look hard to change.
 3. Only fuseWithChildren() returns the parent pointer, but it is also called with the parent pointer: parent->fuseWithChildren(....)
-Maybe this can be fixed by simplying saving a prior_node that is a unique_ptr<Node234>&? Maybe the parent pointer can be
-eleiminated? fuseWithSiblings() seems to be the only method that most depends upon the parent.
+Maybe this can be fixed by simplying saving a the prior node, the parent, as a unique_ptr<Node234>&? Maybe the parent pointer can be
+eliminated this way? fuseWithSiblings() seems to be the only method that most depends upon the parent.
 
-Do I use unique_ptr<Node234> *parent? Like this:
 
-class X {
- private:
-  std::unique_ptr<X> left;
-  std::unique_ptr<X> right;
+Answer: 
 
-  int i;
- public:
+Currently, new.h has the beginning of a new NodeDescentSearch that does the conversion of 2-nodes and descends until if either finds the node or
 
-    std::unique_ptr<X>* parent;
-    X(int i);
-};
+Read up on the issue of passing unique_ptr<XYZ> reference:
 
-X::X(int x) : i{x}, left{nullptr}, right{nullptr}, parent{nullptr}
-{
-}
-
-Answer: Read up on the issue of passing unique_ptr<XYZ> reference:
-
-1. http://stackoverflow.com/questions/11277249/how-to-pass-stdunique-ptr-around
-3. https://msdn.microsoft.com/library/hh279676%28v=vs.110%29.aspx
-4. http://herbsutter.com/2013/06/05/gotw-91-solution-smart-pointer-parameters/
+1. http://herbsutter.com/2013/06/05/gotw-91-solution-smart-pointer-parameters/
 
 Tips on using unique_ptr in function calls:
 -------------------------------------------
