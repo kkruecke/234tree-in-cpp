@@ -1112,7 +1112,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
    Node234 *next = nullptr;
    Node234 *pfound_node = nullptr;
    int key_index;
-   int child_index;
 
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found
    //   the  cursor is advanced. 

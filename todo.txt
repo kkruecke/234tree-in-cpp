@@ -1,17 +1,3 @@
-Bug
-===
-
-Prospective memory leak
------------------------
-
-Test code changes.  
-
-Tips on using unique_ptr in function calls:
-===========================================
-
-
-Currently, new.h has the beginning of a new NodeDescentSearch that does the conversion of 2-nodes and descends until if either finds the node or
-
 Read up on the issue of passing unique_ptr<XYZ> reference:
 
 1. http://herbsutter.com/2013/06/05/gotw91solutionsmartpointerparameters/
