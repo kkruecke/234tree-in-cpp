@@ -1183,7 +1183,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
         current = current->children[child_index].get(); // set current to left most child of the node, 
      }
 
-  }  else { // pfound_node is a leaf that has already been converted, if it was a 2-node. So simply call removeKey()
+  }  else { // pfound_node is a leaf that has already been converted, if it was a 2-node. The node therefore does not need to be freed.
+            // So simply call removeKey()
 
       pfound_node->removeKey(key_index);
 
@@ -1201,7 +1202,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
   // current->keys[0] = tmp; See Note above.
 
-  current->removeKey(0); 
+  current->removeKey(0); // Since current is not a 2-node, it does not need to be freed.
      
   return true;
 }
