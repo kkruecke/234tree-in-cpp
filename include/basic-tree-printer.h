@@ -55,7 +55,7 @@ template<class K> inline void BasicTreePrinter<K>::print_level_order(std::ostrea
 
 template<class K> inline void BasicTreePrinter<K>::print_in_order(std::ostream& ostr) 
 {
-  auto lambda = [&](K k) -> std::ostream& { ostr << k << ' '; return ostr; };
+  auto lambda = [&](K k) -> std::ostream& { ostr << k << ' '; ostr << std::flush; return ostr; };
   
   tree.inOrderTraverse(lambda);    
   ostr << std::flush;

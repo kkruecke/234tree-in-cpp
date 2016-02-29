@@ -85,7 +85,7 @@ int main(int argc, char** argv)
     cout << flush;
 
    cout << "\n\n=================== Normal Tree Print =======================\n" << endl;
-
+  
    tree_printer.print_in_order(cout);
 
     if (str_remove_status == string{" not successfully removed "}) {

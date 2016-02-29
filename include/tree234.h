@@ -839,13 +839,13 @@ template<typename K> inline Tree234<K>::~Tree234()
  */
 template<typename K> void Tree234<K>::DestroyTree(std::unique_ptr<Node234> &current) noexcept 
 {
-  // For Debug purposes
-  Node234 *p = current.get();  
+  Node234 *p = current.get();   // For Debug purposes only
+
   if (current == nullptr) {
 
       return;
   }
-
+  
   for(auto i = 0; i < current->totalItems; ++i) {
 
         DestroyTree(current->children[i]);
@@ -1056,7 +1056,7 @@ template<typename K> bool Tree234<K>::remove(K key)
    } else if (root->isLeaf()) { // TODO: Does the code ever pass this if-test? 
        
          int index = 0;
-
+         
          for (; index < root->getTotalItems(); ++index) {
 
              if (root->keys[index] == key ) {
@@ -1068,7 +1068,7 @@ template<typename K> bool Tree234<K>::remove(K key)
                 if (root->isEmpty()) {
 
                      root.reset(); // delete root 
-                }  
+               }  
 
                 --tree_size;
                 return true;
@@ -1189,8 +1189,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
             // So simply call removeKey()
 
       pfound_node->removeKey(key_index); 
-
       --tree_size;
+      
       return true;
  }
 

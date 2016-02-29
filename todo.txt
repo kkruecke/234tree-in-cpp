@@ -1,9 +1,8 @@
 Bug
 ===
 
-When DestroyTree() is called (by destructor), the root child pointers are not nullptr. When items are removed from the root when the root (or the root and its
-immediate children) are the only remaining nodes in the tree, check if the code is failing to free the child nodes.
-
+The rmove() code is working correctly. It ultimately does root.reset(), which sets the underlying pointer to nullptr. However, when the destructor calls
+DestroyTree(root), the root is inexplicably no longer nullptr and totalItems is 1.
 
 Read up on the issue of passing unique_ptr<XYZ> reference:
 
