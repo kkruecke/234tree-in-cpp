@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 
   //tree.levelOrderTraverse(BasicTreePrinter<int>(tree));
   tree_printer.print_level_order(cout);
-  
+   
   // Lambda for printing ints in Tree234
   // auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
    

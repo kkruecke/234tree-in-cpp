@@ -839,6 +839,8 @@ template<typename K> inline Tree234<K>::~Tree234()
  */
 template<typename K> void Tree234<K>::DestroyTree(std::unique_ptr<Node234> &current) noexcept 
 {
+  // For Debug purposes
+  Node234 *p = current.get();  
   if (current == nullptr) {
 
       return;
@@ -1051,13 +1053,14 @@ template<typename K> bool Tree234<K>::remove(K key)
 
        return false; 
 
-   } else if (root->isLeaf()) { 
+   } else if (root->isLeaf()) { // TODO: Does the code ever pass this if-test? 
        
          int index = 0;
 
          for (; index < root->getTotalItems(); ++index) {
 
              if (root->keys[index] == key ) {
+
                // * Remove key from root, if root is a leaf. This also shifts the in-order successor into
                // * its location.
                 root->removeKey(index);

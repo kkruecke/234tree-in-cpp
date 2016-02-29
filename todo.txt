@@ -1,3 +1,10 @@
+Bug
+===
+
+When DestroyTree() is called (by destructor), the root child pointers are not nullptr. When items are removed from the root when the root (or the root and its
+immediate children) are the only remaining nodes in the tree, check if the code is failing to free the child nodes.
+
+
 Read up on the issue of passing unique_ptr<XYZ> reference:
 
 1. http://herbsutter.com/2013/06/05/gotw91solutionsmartpointerparameters/
