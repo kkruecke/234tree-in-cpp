@@ -1112,6 +1112,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
    Node234 *next = nullptr;
    Node234 *pfound_node = nullptr;
    int key_index;
+   int child_index;
 
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found
    //   the  cursor is advanced. 
@@ -1149,8 +1150,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
       // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
       // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
-      child_index = key_index + 1;
-      current = pfound_node->children[child_index].get(); 
+      current = pfound_node->children[key_index + 1].get(); 
 
       while (true) {
 
