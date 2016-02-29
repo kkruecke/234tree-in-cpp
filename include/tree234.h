@@ -809,7 +809,7 @@ template<typename K> inline K Tree234<K>::Node234::removeKey(int index) noexcept
       keys[i] = keys[i + 1]; 
   } 
 
-  totalItems--;
+  --totalItems;
 
   return key;
 }
@@ -1135,7 +1135,6 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
        } else {
           // ... If not found, continue to descend. 
-           // TODO: need to also save index in parent, ie, parent->children[child_index] == next
            current = next; 
            continue;
        }
@@ -1186,7 +1185,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
   }  else { // pfound_node is a leaf that has already been converted, if it was a 2-node. The node therefore does not need to be freed.
             // So simply call removeKey()
 
-      pfound_node->removeKey(key_index);
+      pfound_node->removeKey(key_index); // We don't need to free pfound_node because it is not a 2-node.
 
       --tree_size;
       return true;
