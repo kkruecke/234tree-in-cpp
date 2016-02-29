@@ -83,6 +83,7 @@ int main(int argc, char** argv)
     tree_printer.print_level_order(cout);
     
     cout << flush;
+        
 /*
     cout << "\n\n=======Tree Debug Print ==============================\n";
 

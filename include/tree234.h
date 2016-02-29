@@ -1205,7 +1205,8 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
   // current->keys[0] = tmp; See Note above.
 
   current->removeKey(0); // Since current is not a 2-node, it does not need to be freed.
-     
+  --tree_size;
+
   return true;
 }
 /*
