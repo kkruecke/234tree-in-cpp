@@ -1188,7 +1188,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
   }  else { // pfound_node is a leaf that has already been converted, if it was a 2-node. The node therefore does not need to be freed.
             // So simply call removeKey()
 
-      pfound_node->removeKey(key_index); // We don't need to free pfound_node because it is not a 2-node.
+      pfound_node->removeKey(key_index); 
 
       --tree_size;
       return true;
@@ -1196,15 +1196,12 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
 
   // We have the item found in pfound_node->keys[key_index], which is an internal node. We have current->keys[0] as in order successor leaf node, and we know
   // current it is not a leaf node.  So we "swap" the in order successor and the key at pfound_node->keys[key_index]. 
-  // Note: We don't actually save temporarily save the key to be deleted tmp and then overwrite the former in-order successor with it. Instead we simply delete
+  // Note: We don't actually temporarily save the key to be deleted and then overwrite the former in-order successor with it. Instead we simply delete
   // the former in-order successor key. 
-  // K tmp = pfound_node->keys[key_index]; See Note above
 
   pfound_node->keys[key_index] = current->keys[0];
 
-  // current->keys[0] = tmp; See Note above.
-
-  current->removeKey(0); // Since current is not a 2-node, it does not need to be freed.
+  current->removeKey(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr.
   --tree_size;
 
   return true;
