@@ -4,7 +4,7 @@
 #include <iosfwd>
 
 // abstract base class 
-class TreePrinterInterface {
+class PrinterOfTreeInterface {
 
 public:
     virtual void print_level_order(std::ostream& ) = 0;

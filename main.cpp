@@ -14,7 +14,7 @@ int main(int argc, char** argv)
  
   vector<int> input{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 92, 79,23, 17, 97, 55, 51, 69, 1, 201, 2, 33, 26, 150, 5};
 
-  Tree234<int> tree {input};
+  tree234<int> tree {input};
   
   //--BasicTreePrinter<int> tree_printer{tree};
 
@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 
   tree.printlevelOrder(cout);
    
-  // Lambda for printing ints in Tree234
+  // Lambda for printing ints in tree234
   // auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
    
   cout << "\n======================" << endl;
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
   cout << endl;
   
     // Test copy constructor:
-  Tree234<int> tree2nd  {tree};
+  tree234<int> tree2nd  {tree};
   
   cout << "\nPrinting copy of tree\n" << endl;
   

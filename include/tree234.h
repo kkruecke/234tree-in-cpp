@@ -11,24 +11,24 @@
 #include <exception>
 #include <iosfwd>
 #include <utility>
-#include "tree-printer-interface.h"
+#include "printer-of-tree-interface.h"
 #include <string>
 #include <ostream>
 
 // fwd declarations
-template<typename T> class Tree234;    
+template<typename T> class tree234;    
 template<typename K> class Node234; 
 template<typename T> class BasicTreePrinter; 
 
 class DebugPrinter; 
     
-template<typename K> class Tree234 {
+template<typename K> class tree234 {
     
   public:
       
    class Node234 { // public nested node class Tree<K>::Node234
      private:  
-       friend class Tree234<K>;             
+       friend class tree234<K>;             
        friend class DebugPrinter;
        static const int MAX_KEYS;   
 
@@ -106,15 +106,15 @@ template<typename K> class Tree234 {
 
  private:
 
-   class BasicTreePrinter : TreePrinterInterface {
+   class BasicTreePrinter : PrinterOfTreeInterface {
    
-      const Tree234<K>& tree;    
+      const tree234<K>& tree;    
       int prior_level; 
       int depth;
-      void operator()(std::ostream& ostr, const typename Tree234<K>::Node234 *current, int level);
+      void operator()(std::ostream& ostr, const typename tree234<K>::Node234 *current, int level);
    
    public:
-       BasicTreePrinter(const Tree234<K>& t);
+       BasicTreePrinter(const tree234<K>& t);
        
        BasicTreePrinter(const BasicTreePrinter& np) : prior_level{np.prior_level}, depth{np.depth}, tree{np.tree} {}
        
@@ -127,7 +127,7 @@ template<typename K> class Tree234 {
    friend class DebugPrinter;
 
     // converts from class enum to int.  
-    int to_int(const typename Tree234<K>::Node234::NodeMaxItems x) const { return static_cast<int>(x); }
+    int to_int(const typename tree234<K>::Node234::NodeMaxItems x) const { return static_cast<int>(x); }
 
     /*
       Node234 *NodeDescentSearchNew(Node234 *current, K value, int& index) noexcept;
@@ -167,21 +167,21 @@ template<typename K> class Tree234 {
 
   public:
 
-     explicit Tree234() noexcept : root{} { } 
+     explicit tree234() noexcept : root{} { } 
 
-     Tree234(const Tree234& lhs) noexcept; 
-     Tree234(Tree234&& lhs) noexcept;     // move constructor
+     tree234(const tree234& lhs) noexcept; 
+     tree234(tree234&& lhs) noexcept;     // move constructor
 
-     Tree234& operator=(const Tree234& lhs) noexcept; 
-     Tree234& operator=(Tree234&& lhs) noexcept;    // move assignment
+     tree234& operator=(const tree234& lhs) noexcept; 
+     tree234& operator=(tree234&& lhs) noexcept;    // move assignment
 
-     Tree234(std::initializer_list<K> list) noexcept; 
-     Tree234(const std::vector<K>& vec) noexcept; 
+     tree234(std::initializer_list<K> list) noexcept; 
+     tree234(const std::vector<K>& vec) noexcept; 
 
      constexpr int size() const;
      int getDepth() const noexcept; // get depth of tree from root to leaf.
 
-    ~Tree234(); 
+    ~tree234(); 
 
     // Breadth-first traversal
     template<typename Functor> void levelOrderTraverse(Functor f) const noexcept;
@@ -208,53 +208,53 @@ template<typename K> class Tree234 {
     void test(K key);
 };
 
-template<typename K> const int  Tree234<K>::Node234::MAX_KEYS = 3; 
+template<typename K> const int  tree234<K>::Node234::MAX_KEYS = 3; 
 /*
  * Node234 constructors. Note: While all children are initialized to nullptr, this is not really necessary. 
  * Instead your can simply set children[0] = nullptr, since a Node234 is a leaf if and only if children[0] == 0'
  */
-template<typename K> inline  Tree234<K>::Node234::Node234()  noexcept : totalItems(0), parent(nullptr), children()
+template<typename K> inline  tree234<K>::Node234::Node234()  noexcept : totalItems(0), parent(nullptr), children()
 { 
 }
 
-template<typename K> inline  Tree234<K>::Node234::Node234(K small)  noexcept : totalItems(1), parent(nullptr), children()
+template<typename K> inline  tree234<K>::Node234::Node234(K small)  noexcept : totalItems(1), parent(nullptr), children()
 { 
    keys[0] = small; 
 }
 
-template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle)  noexcept : totalItems(2), parent(nullptr), children()
+template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle)  noexcept : totalItems(2), parent(nullptr), children()
 { 
    keys[0] = small; 
    keys[1] = middle; 
 }
 
-template<typename K> inline  Tree234<K>::Node234::Node234(K small, K middle, K large)  noexcept : totalItems(3), parent(nullptr), children()
+template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle, K large)  noexcept : totalItems(3), parent(nullptr), children()
 { 
    keys[0] = small; 
    keys[1] = middle; 
    keys[2] = large; 
 }
 
-template<typename K> inline Tree234<K>::Tree234(const Tree234<K>& lhs) noexcept : tree_size{lhs.tree_size} 
+template<typename K> inline tree234<K>::tree234(const tree234<K>& lhs) noexcept : tree_size{lhs.tree_size} 
 {
    CloneTree(lhs.root, root);
 }
  
 // move constructor
-template<typename K> inline Tree234<K>::Tree234(Tree234&& lhs) noexcept : root{std::move(lhs.root)}, tree_size{lhs.tree_size}  
+template<typename K> inline tree234<K>::tree234(tree234&& lhs) noexcept : root{std::move(lhs.root)}, tree_size{lhs.tree_size}  
 {
     root->parent = nullptr;
     lhs.tree_size = 0;
 }
 
-template<typename K> inline Tree234<K>::Tree234(std::initializer_list<K> il) noexcept : root(nullptr), tree_size{0} 
+template<typename K> inline tree234<K>::tree234(std::initializer_list<K> il) noexcept : root(nullptr), tree_size{0} 
 {
     for (K& x: il) { // simply call insert(x)
           insert(x);
     }
 }
 
-template<typename K> inline Tree234<K>::Tree234(const std::vector<K>& vec) noexcept : root(nullptr), tree_size{0} 
+template<typename K> inline tree234<K>::tree234(const std::vector<K>& vec) noexcept : root(nullptr), tree_size{0} 
 {
     for (const K& x: vec) { // simply call insert(x)
           insert(x);
@@ -262,7 +262,7 @@ template<typename K> inline Tree234<K>::Tree234(const std::vector<K>& vec) noexc
 }
 
 // copy assignment
-template<typename K> inline Tree234<K>& Tree234<K>::operator=(const Tree234& lhs) noexcept 
+template<typename K> inline tree234<K>& tree234<K>::operator=(const tree234& lhs) noexcept 
 {
   if (root == lhs.root) { // are they the same?
 
@@ -279,7 +279,7 @@ template<typename K> inline Tree234<K>& Tree234<K>::operator=(const Tree234& lhs
 }
 
 
-template<typename K> inline void Tree234<K>::Node234::printKeys(std::ostream& ostr)
+template<typename K> inline void tree234<K>::Node234::printKeys(std::ostream& ostr)
 {
   ostr << "["; 
 
@@ -296,12 +296,12 @@ template<typename K> inline void Tree234<K>::Node234::printKeys(std::ostream& os
   ostr << "]";
 }
 
-template<typename K> inline constexpr int Tree234<K>::Node234::getTotalItems() const noexcept
+template<typename K> inline constexpr int tree234<K>::Node234::getTotalItems() const noexcept
 {
    return totalItems; 
 }
 
-template<typename K> inline constexpr K Tree234<K>::Node234::getKey(int i) const 
+template<typename K> inline constexpr K tree234<K>::Node234::getKey(int i) const 
 {
     if (0 <= i && i < getTotalItems()) {
         
@@ -311,7 +311,7 @@ template<typename K> inline constexpr K Tree234<K>::Node234::getKey(int i) const
     throw std::range_error{"key of Node234 not in range"};     
 }
 
-template<typename K> inline bool Tree234<K>::Node234::findKey(K key, int& index) const noexcept
+template<typename K> inline bool tree234<K>::Node234::findKey(K key, int& index) const noexcept
 {
    for(index = 0; index < totalItems; ++index) {
        
@@ -324,37 +324,37 @@ template<typename K> inline bool Tree234<K>::Node234::findKey(K key, int& index)
    return false;
 }
 
-template<typename K> inline constexpr int Tree234<K>::Node234::getChildCount() const noexcept
+template<typename K> inline constexpr int tree234<K>::Node234::getChildCount() const noexcept
 {
    return totalItems + 1; 
 }
 
-template<typename K> inline constexpr bool Tree234<K>::Node234::isTwoNode() const noexcept
+template<typename K> inline constexpr bool tree234<K>::Node234::isTwoNode() const noexcept
 {
    return (totalItems == to_int(NodeMaxItems::two_node)) ? true : false;
 }
 
-template<typename K> inline constexpr bool Tree234<K>::Node234::isThreeNode() const noexcept
+template<typename K> inline constexpr bool tree234<K>::Node234::isThreeNode() const noexcept
 {
    return (totalItems == to_int(NodeMaxItems::three_node)) ? true : false;
 }
 
-template<typename K> inline constexpr bool Tree234<K>::Node234::isFourNode() const noexcept
+template<typename K> inline constexpr bool tree234<K>::Node234::isFourNode() const noexcept
 {
    return (totalItems == to_int(NodeMaxItems::four_node)) ? true : false;
 }
 
-template<typename K> inline constexpr bool Tree234<K>::Node234::isEmpty() const noexcept
+template<typename K> inline constexpr bool tree234<K>::Node234::isEmpty() const noexcept
 {
    return (totalItems == 0) ? true : false;
 }
 
-template<typename K> inline constexpr int Tree234<K>::size() const
+template<typename K> inline constexpr int tree234<K>::size() const
 {
   return tree_size;
 }
              
-template<typename K> inline int Tree234<K>::getDepth() const noexcept
+template<typename K> inline int tree234<K>::getDepth() const noexcept
 {
   int depth = 0;
 
@@ -366,7 +366,7 @@ template<typename K> inline int Tree234<K>::getDepth() const noexcept
   return depth;
 }
 // move assignment
-template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noexcept 
+template<typename K> inline tree234<K>& tree234<K>::operator=(tree234&& lhs) noexcept 
 {
     tree_size = lhs.tree_size;
 
@@ -379,7 +379,7 @@ template<typename K> inline Tree234<K>& Tree234<K>::operator=(Tree234&& lhs) noe
 /*
  * F is a functor whose function call operator takes two parameters: a Node234 * and an int indicating the depth of the node from the root, which has depth 1.
  */
-template<typename K> template<typename Functor> inline void Tree234<K>::levelOrderTraverse(Functor f) const noexcept
+template<typename K> template<typename Functor> inline void tree234<K>::levelOrderTraverse(Functor f) const noexcept
 {
    if (root.get() == nullptr) return;
    
@@ -411,29 +411,29 @@ template<typename K> template<typename Functor> inline void Tree234<K>::levelOrd
    }
 }
 
-template<typename K> template<typename Functor> inline void Tree234<K>::inOrderTraverse(Functor f) const noexcept
+template<typename K> template<typename Functor> inline void tree234<K>::inOrderTraverse(Functor f) const noexcept
 {
    DoInorderTraverse(f, root);
 }
 
-template<typename K> template<typename Functor> inline void Tree234<K>::postOrderTraverse(Functor f) const noexcept
+template<typename K> template<typename Functor> inline void tree234<K>::postOrderTraverse(Functor f) const noexcept
 {
    DoPostOrderTraverse(f, root);
 }
 
-template<typename K> template<typename Functor> inline void Tree234<K>::preOrderTraverse(Functor f) const noexcept
+template<typename K> template<typename Functor> inline void tree234<K>::preOrderTraverse(Functor f) const noexcept
 {
    DoPreOrderTraverse(f, root);
 }
 
-template<typename K> template<typename Functor> inline void Tree234<K>::debug_dump(Functor f) noexcept
+template<typename K> template<typename Functor> inline void tree234<K>::debug_dump(Functor f) noexcept
 {
    DoPostOrder4Debug(f, root);
 }
 /*
  * post order traversal 
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTraverse(Functor f, const std::unique_ptr<Node234>& current) const noexcept
+template<typename K> template<typename Functor> void tree234<K>::DoPostOrderTraverse(Functor f, const std::unique_ptr<Node234>& current) const noexcept
 {  
    if (current == nullptr) {
 
@@ -483,7 +483,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrderTrav
 /*
  * pre order traversal 
  */
-template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTraverse(Functor f, const std::unique_ptr<Node234>& current) const noexcept
+template<typename K> template<typename Functor> void tree234<K>::DoPreOrderTraverse(Functor f, const std::unique_ptr<Node234>& current) const noexcept
 {  
 
   if (current == nullptr) {
@@ -538,7 +538,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTrave
  * post order traversal for debugging purposes
  */
 /*
-template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Debug(Functor f, const std::unique_ptr<Node234>& current) noexcept
+template<typename K> template<typename Functor> void tree234<K>::DoPostOrder4Debug(Functor f, const std::unique_ptr<Node234>& current) noexcept
 {     
    
    if (current == nullptr) {
@@ -590,7 +590,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
 /*
  * pre-order traversal
  */
-template<typename K>  void Tree234<K>::CloneTree(const std::unique_ptr<Node234>& pNode2Copy, std::unique_ptr<Node234> &pNodeCopy) noexcept
+template<typename K>  void tree234<K>::CloneTree(const std::unique_ptr<Node234>& pNode2Copy, std::unique_ptr<Node234> &pNodeCopy) noexcept
 {
  if (pNode2Copy != nullptr) { 
                               
@@ -656,8 +656,8 @@ template<typename K>  void Tree234<K>::CloneTree(const std::unique_ptr<Node234>&
 /*
  * In order traversal
  */
-//template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraverse(Functor f, const Node234 *current) const noexcept
-template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraverse(Functor f, const std::unique_ptr<Node234>& current) const noexcept
+//template<typename K> template<typename Functor> void tree234<K>::DoInorderTraverse(Functor f, const Node234 *current) const noexcept
+template<typename K> template<typename Functor> void tree234<K>::DoInorderTraverse(Functor f, const std::unique_ptr<Node234>& current) const noexcept
 {     
    if (current == nullptr) {
 
@@ -715,7 +715,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoInorderTraver
  * newRight->children[1]->parent = newRight; 
  *
  */
-template<typename K> inline void  Tree234<K>::Node234::connectChild(int childIndex, std::unique_ptr<Node234>& child)  noexcept
+template<typename K> inline void  tree234<K>::Node234::connectChild(int childIndex, std::unique_ptr<Node234>& child)  noexcept
 {
   children[childIndex] = std::move( child ); // Note: If children[childIndex] currently holds a managed pointer , it will be freed.
   
@@ -730,7 +730,7 @@ template<typename K> inline void  Tree234<K>::Node234::connectChild(int childInd
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node), and
  * it sets child_index such that next->parent->children[child_index] == next.
  */
-template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value, int& index, int& child_index, Node234 *&next) noexcept
+template<typename K> inline bool tree234<K>::Node234::NodeDescentSearch(K value, int& index, int& child_index, Node234 *&next) noexcept
 {
   for(auto i = 0; i < totalItems; ++i) {
 
@@ -754,7 +754,7 @@ template<typename K> inline bool Tree234<K>::Node234::NodeDescentSearch(K value,
   return false;
 }
 
-template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept
+template<typename K> inline void tree234<K>::Node234::insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept
 {
   // shift children right in order to insert pChild
   
@@ -787,7 +787,7 @@ template<typename K> inline void Tree234<K>::Node234::insertChild(int childNum, 
  * will have been altered.
  */
 
-template<typename K> inline std::unique_ptr<typename Tree234<K>::Node234> Tree234<K>::Node234::disconnectChild(int childIndex) noexcept
+template<typename K> inline std::unique_ptr<typename tree234<K>::Node234> tree234<K>::Node234::disconnectChild(int childIndex) noexcept
 {
   std::unique_ptr<Node234> node = std::move(children[childIndex] ); // invokes unique_ptr<Node234> move assignment.
 
@@ -805,7 +805,7 @@ template<typename K> inline std::unique_ptr<typename Tree234<K>::Node234> Tree23
  * of inserted key.
  */
 
-template<typename K> inline int  Tree234<K>::Node234::insertKey(K key)  noexcept
+template<typename K> inline int  tree234<K>::Node234::insertKey(K key)  noexcept
 { 
   // start on right, examine items
   for(auto i = totalItems - 1; i >= 0 ; --i) {
@@ -828,7 +828,7 @@ template<typename K> inline int  Tree234<K>::Node234::insertKey(K key)  noexcept
     return 0;
 }
 
-template<typename K> inline K Tree234<K>::Node234::removeKey(int index) noexcept
+template<typename K> inline K tree234<K>::Node234::removeKey(int index) noexcept
 {
   K key = keys[index]; 
 
@@ -843,22 +843,22 @@ template<typename K> inline K Tree234<K>::Node234::removeKey(int index) noexcept
   return key;
 }
 
-template<typename K> inline constexpr typename Tree234<K>::Node234 * Tree234<K>::Node234::getParent()   noexcept
+template<typename K> inline constexpr typename tree234<K>::Node234 * tree234<K>::Node234::getParent()   noexcept
 { 
    return parent;
 }
 
-template<typename K> inline constexpr const typename Tree234<K>::Node234 *Tree234<K>::Node234::getParent() const  noexcept
+template<typename K> inline constexpr const typename tree234<K>::Node234 *tree234<K>::Node234::getParent() const  noexcept
 { 
    return parent;
 }
 
-template<typename K> inline constexpr  bool Tree234<K>::Node234::isLeaf() const  noexcept
+template<typename K> inline constexpr  bool tree234<K>::Node234::isLeaf() const  noexcept
 { 
    return !children[0] ? true : false;
 }
 
-template<typename K> inline Tree234<K>::~Tree234()
+template<typename K> inline tree234<K>::~tree234()
 {
   DestroyTree(root); 
 }
@@ -866,7 +866,7 @@ template<typename K> inline Tree234<K>::~Tree234()
 /*
  * Post order traversal, deleting nodes
  */
-template<typename K> void Tree234<K>::DestroyTree(std::unique_ptr<Node234> &current) noexcept 
+template<typename K> void tree234<K>::DestroyTree(std::unique_ptr<Node234> &current) noexcept 
 {
   Node234 *p = current.get();   // For Debug purposes only
 
@@ -883,7 +883,7 @@ template<typename K> void Tree234<K>::DestroyTree(std::unique_ptr<Node234> &curr
    current.reset(); // deletes the pointer owned by unique_ptr<Node234>.
 }
 
-template<typename K> inline bool Tree234<K>::search(K key) noexcept
+template<typename K> inline bool tree234<K>::search(K key) noexcept
 {
     // make sure tree has at least one element    
     if (root == nullptr) {
@@ -897,7 +897,7 @@ template<typename K> inline bool Tree234<K>::search(K key) noexcept
     }
 }   
 
-template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& index) noexcept
+template<typename K>  bool tree234<K>::DoSearch(K key, Node234 *&location, int& index) noexcept
 {
   Node234 *current = root.get();
   Node234 *next;
@@ -932,7 +932,7 @@ template<typename K>  bool Tree234<K>::DoSearch(K key, Node234 *&location, int& 
  * Insertion based on pseudo code at:
  * http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  */
-template<typename K> void Tree234<K>::insert(K key) noexcept
+template<typename K> void tree234<K>::insert(K key) noexcept
 {
    if (root == nullptr) {
            
@@ -998,7 +998,7 @@ template<typename K> void Tree234<K>::insert(K key) noexcept
  *  6. Insert new data item into the original leaf node.
  *  
  */ 
-template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
+template<typename K> void tree234<K>::split(Node234 *pnode) noexcept
 {
     // remove two largest (of three total) keys...
         
@@ -1076,7 +1076,7 @@ template<typename K> void Tree234<K>::split(Node234 *pnode) noexcept
  * with its in-order successor.
  */
 
-template<typename K> bool Tree234<K>::remove(K key) 
+template<typename K> bool tree234<K>::remove(K key) 
 {
    if (root == nullptr) {
 
@@ -1139,7 +1139,7 @@ template<typename K> bool Tree234<K>::remove(K key)
 
  New untested prospective code for remove(K key, Node234 *). This is the remove code for the case when the root is not a leaf node.
  */
-template<typename K> bool Tree234<K>::remove(K key, Node234 *current) 
+template<typename K> bool tree234<K>::remove(K key, Node234 *current) 
 {
    Node234 *next = nullptr;
    Node234 *pfound_node = nullptr;
@@ -1250,7 +1250,7 @@ template<typename K> bool Tree234<K>::remove(K key, Node234 *current)
  * we fuse the three together into a 4-node. In either case, we shift the children as required.
  * 
  */
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(Node234 *node)  noexcept
+template<typename K> typename tree234<K>::Node234 *tree234<K>::convertTwoNode(Node234 *node)  noexcept
 {                                                                         
    Node234 *convertedNode;
    Node234 *parent = node->getParent();
@@ -1368,7 +1368,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::convertTwoNode(No
  * 1. Absorbs its children's keys as its own. 
  * 2. Makes its grandchildren its children and deletes its former, now orphaned child nodes.
  */
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWithChildren() noexcept
+template<typename K> typename tree234<K>::Node234 *tree234<K>::Node234::fuseWithChildren() noexcept
 {
   // move key of 2-node 
   keys[1] = keys[0];
@@ -1395,7 +1395,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::Node234::fuseWith
 /* 
  * Requires: sibling is to the left, therefore: parent->children[sibling_id]->keys[0] < parent->keys[index] < parent->children[node2_index]->keys[0]
  */
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
+template<typename K> typename tree234<K>::Node234 *tree234<K>::rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
 {    
   // Add the parent's key to 2-node, making it a 3-node
 
@@ -1404,7 +1404,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Nod
 
   p2node->keys[0] = parent->keys[parent_key_index];  // 2. Now bring down parent key
 
-  p2node->totalItems = to_int(Tree234<K>::Node234::NodeMaxItems::three_node); // 3. increase total items
+  p2node->totalItems = to_int(tree234<K>::Node234::NodeMaxItems::three_node); // 3. increase total items
 
   int total_sibling_keys = psibling->totalItems; 
 
@@ -1422,12 +1422,12 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::rightRotation(Nod
 /* Requires: sibling is to the right therefore: parent->children[node2_index]->keys[0]  <  parent->keys[index] <  parent->children[sibling_id]->keys[0] 
  * Do a left rotation
  */ 
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
+template<typename K> typename tree234<K>::Node234 *tree234<K>::leftRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept
 {
   // pnode2->keys[0] doesn't change.
   p2node->keys[1] = parent->keys[parent_key_index];  // 1. insert parent key making 2-node a 3-node
 
-  p2node->totalItems = to_int(Tree234<K>::Node234::NodeMaxItems::three_node);// 3. increase total items
+  p2node->totalItems = to_int(tree234<K>::Node234::NodeMaxItems::three_node);// 3. increase total items
 
   std::unique_ptr<Node234> pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
 
@@ -1459,7 +1459,7 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::leftRotation(Node
  * 4. The parent becomes either a 2-node, if it was a 3-node, or a 2-node if it was a 4-node?
  *
  */
-template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node234 *parent, int node2_index, int sibling_index) noexcept
+template<typename K> typename tree234<K>::Node234 *tree234<K>::fuseSiblings(Node234 *parent, int node2_index, int sibling_index) noexcept
 {
   Node234 *psibling;
 
@@ -1531,37 +1531,37 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
   return p2node;
 } 
 
-template<typename K> inline void Tree234<K>::printlevelOrder(std::ostream& ostr) noexcept
+template<typename K> inline void tree234<K>::printlevelOrder(std::ostream& ostr) noexcept
 {
   BasicTreePrinter tree_printer(*this);
   tree_printer.print_level_order(ostr); 
 }
 
-template<typename K> inline void Tree234<K>::printInOrder(std::ostream& ostr) noexcept
+template<typename K> inline void tree234<K>::printInOrder(std::ostream& ostr) noexcept
 {
   BasicTreePrinter tree_printer(*this);
   tree_printer.print_in_order(ostr); 
 }
 
-template<typename K> inline void Tree234<K>::printPreOrder(std::ostream& ostr) noexcept
+template<typename K> inline void tree234<K>::printPreOrder(std::ostream& ostr) noexcept
 {
   BasicTreePrinter tree_printer(*this);
   tree_printer.print_pre_order(ostr); 
 }
 
-template<typename K> inline void Tree234<K>::printPostOrder(std::ostream& ostr) noexcept
+template<typename K> inline void tree234<K>::printPostOrder(std::ostream& ostr) noexcept
 {
   BasicTreePrinter tree_printer(*this);
   tree_printer.print_post_order(ostr); 
 }
 
-template<typename K> inline Tree234<K>::BasicTreePrinter::BasicTreePrinter(const Tree234<K>& t) : prior_level{0}, tree{t}
+template<typename K> inline tree234<K>::BasicTreePrinter::BasicTreePrinter(const tree234<K>& t) : prior_level{0}, tree{t}
 {
   // Determine how many levels the tree has.
   depth = tree.getDepth();
 }
 
-template<typename K> inline void Tree234<K>::BasicTreePrinter::print_level_order(std::ostream& ostr) 
+template<typename K> inline void tree234<K>::BasicTreePrinter::print_level_order(std::ostream& ostr) 
 {
 
  class PrintLevelOrderFunctor {
@@ -1571,7 +1571,7 @@ template<typename K> inline void Tree234<K>::BasicTreePrinter::print_level_order
      PrintLevelOrderFunctor(std::ostream& o, BasicTreePrinter& t) : ostr{o}, tree_printer{t} {}
      PrintLevelOrderFunctor(const PrintLevelOrderFunctor& func) : ostr{func.ostr}, tree_printer{func.tree_printer} {}
    
-     std::ostream& operator()(const typename Tree234<K>::Node234 *current, int level)
+     std::ostream& operator()(const typename tree234<K>::Node234 *current, int level)
      {
         tree_printer.operator()(ostr, current, level);
      } 
@@ -1583,7 +1583,7 @@ template<typename K> inline void Tree234<K>::BasicTreePrinter::print_level_order
   ostr << std::flush;
 }
 
-template<typename K>  inline void Tree234<K>::BasicTreePrinter::print_in_order(std::ostream& ostr) 
+template<typename K>  inline void tree234<K>::BasicTreePrinter::print_in_order(std::ostream& ostr) 
 {
   auto lambda = [&](K k) -> std::ostream& { ostr << k << ' '; ostr << std::flush; return ostr; };
   
@@ -1591,7 +1591,7 @@ template<typename K>  inline void Tree234<K>::BasicTreePrinter::print_in_order(s
   ostr << std::flush;
 }
 
-template<typename K> inline void Tree234<K>::BasicTreePrinter::print_pre_order(std::ostream& ostr) 
+template<typename K> inline void tree234<K>::BasicTreePrinter::print_pre_order(std::ostream& ostr) 
 {
   auto lambda = [&](K k) -> std::ostream& { ostr << k << ' '; return ostr; };
   
@@ -1599,7 +1599,7 @@ template<typename K> inline void Tree234<K>::BasicTreePrinter::print_pre_order(s
   ostr << std::flush;
 }
 
-template<typename K> inline void Tree234<K>::BasicTreePrinter::print_post_order(std::ostream& ostr) 
+template<typename K> inline void tree234<K>::BasicTreePrinter::print_post_order(std::ostream& ostr) 
 {
   auto lambda = [&](K k) -> std::ostream& { ostr << k << ' '; return ostr; };
   
@@ -1608,7 +1608,7 @@ template<typename K> inline void Tree234<K>::BasicTreePrinter::print_post_order(
 }
 
 // for level order print of tree
-template<typename K> void Tree234<K>::BasicTreePrinter::operator()(std::ostream& ostr, const typename Tree234<K>::Node234 *current, int level)
+template<typename K> void tree234<K>::BasicTreePrinter::operator()(std::ostream& ostr, const typename tree234<K>::Node234 *current, int level)
 {
     // Did level change?
     if (level != prior_level) {
