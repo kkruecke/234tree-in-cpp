@@ -5,9 +5,7 @@
 #include <iterator>
 #include <vector>
 #include "include/tree234.h"
-//--#include "include/new.h"
-#include "include/debug-printer.h"
-#include "include/basic-tree-printer.h"
+
 using namespace std;
 
 
@@ -18,12 +16,11 @@ int main(int argc, char** argv)
 
   Tree234<int> tree {input};
   
-  BasicTreePrinter<int> tree_printer{tree};
+  //--BasicTreePrinter<int> tree_printer{tree};
 
   cout << "Printing tree in level order" << endl;
 
-  //tree.levelOrderTraverse(BasicTreePrinter<int>(tree));
-  tree_printer.print_level_order(cout);
+  tree.printlevelOrder(cout);
    
   // Lambda for printing ints in Tree234
   // auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
@@ -32,7 +29,7 @@ int main(int argc, char** argv)
     
   cout << "\nPrinting actual tree in order\n" << endl;
    
-  tree_printer.print_in_order(cout);
+  tree.printInOrder(cout);
   
   cout << endl;
   
@@ -41,10 +38,8 @@ int main(int argc, char** argv)
   
   cout << "\nPrinting copy of tree\n" << endl;
   
-  BasicTreePrinter<int> tree_printer2nd{tree2nd};
+  tree2nd.printInOrder(cout);
   
-  tree_printer2nd.print_in_order(cout);
- 
   cout << endl << flush;
 
   // Here we print the print using a print_keys instead of a function object.
@@ -80,13 +75,13 @@ int main(int argc, char** argv)
 
     cout << "\n\n=======Tree level order print =====================" << endl;
         
-    tree_printer.print_level_order(cout);
+    tree.printlevelOrder(cout);
     
     cout << flush;
 
    cout << "\n\n=================== Normal Tree Print =======================\n" << endl;
   
-   tree_printer.print_in_order(cout);
+   tree.printInOrder(cout);
 
     if (str_remove_status == string{" not successfully removed "}) {
          
@@ -101,7 +96,7 @@ int main(int argc, char** argv)
   cout << "\n==== Final Tree ========\n" << endl;
 
   //tree.levelOrderTraverse(BasicTreePrinter{});
-  tree_printer.print_level_order(cout);
+  tree.printlevelOrder(cout);
   
   cout << endl;
   cout << flush;

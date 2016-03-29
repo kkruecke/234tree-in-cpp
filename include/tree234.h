@@ -11,11 +11,15 @@
 #include <exception>
 #include <iosfwd>
 #include <utility>
-//#include "basic-tree-printer.h" // Deubg only
+#include "tree-printer-interface.h"
+#include <string>
+#include <ostream>
 
 // fwd declarations
 template<typename T> class Tree234;    
 template<typename K> class Node234; 
+template<typename T> class BasicTreePrinter; 
+
 class DebugPrinter; 
     
 template<typename K> class Tree234 {
@@ -101,7 +105,26 @@ template<typename K> class Tree234 {
   }; // end class Tree<K>::Node234  
 
  private:
-    friend class DebugPrinter;
+
+   class BasicTreePrinter : TreePrinterInterface {
+   
+      const Tree234<K>& tree;    
+      int prior_level; 
+      int depth;
+      void operator()(std::ostream& ostr, const typename Tree234<K>::Node234 *current, int level);
+   
+   public:
+       BasicTreePrinter(const Tree234<K>& t);
+       
+       BasicTreePrinter(const BasicTreePrinter& np) : prior_level{np.prior_level}, depth{np.depth}, tree{np.tree} {}
+       
+       void print_level_order(std::ostream& ) override;
+       void print_in_order(std::ostream&) override;
+       void print_pre_order(std::ostream&) override;
+       void print_post_order(std::ostream&) override;
+   };
+
+   friend class DebugPrinter;
 
     // converts from class enum to int.  
     int to_int(const typename Tree234<K>::Node234::NodeMaxItems x) const { return static_cast<int>(x); }
@@ -122,8 +145,6 @@ template<typename K> class Tree234 {
     template<typename Functor> void DoPostOrderTraverse(Functor f,  const std::unique_ptr<Node234>& root) const noexcept;
 
     template<typename Functor> void DoPreOrderTraverse(Functor f, const std::unique_ptr<Node234>& root) const noexcept;
-
-    template<typename Functor> void DoPostOrder4Debug(Functor f, const std::unique_ptr<Node234>& root) noexcept;
 
     void DestroyTree(std::unique_ptr<Node234> &root) noexcept; 
 
@@ -178,6 +199,12 @@ template<typename K> class Tree234 {
     void insert(K key) noexcept; 
 
     bool remove(K key);
+
+    void printlevelOrder(std::ostream&) noexcept;
+    void printInOrder(std::ostream&) noexcept;
+    void printPreOrder(std::ostream&) noexcept;
+    void printPostOrder(std::ostream&) noexcept;
+
     void test(K key);
 };
 
@@ -510,6 +537,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPreOrderTrave
 /*
  * post order traversal for debugging purposes
  */
+/*
 template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Debug(Functor f, const std::unique_ptr<Node234>& current) noexcept
 {     
    
@@ -558,6 +586,7 @@ template<typename K> template<typename Functor> void Tree234<K>::DoPostOrder4Deb
             break;
    }
 }
+ * */
 /*
  * pre-order traversal
  */
@@ -1501,4 +1530,112 @@ template<typename K> typename Tree234<K>::Node234 *Tree234<K>::fuseSiblings(Node
 
   return p2node;
 } 
+
+template<typename K> inline void Tree234<K>::printlevelOrder(std::ostream& ostr) noexcept
+{
+  BasicTreePrinter tree_printer(*this);
+  tree_printer.print_level_order(ostr); 
+}
+
+template<typename K> inline void Tree234<K>::printInOrder(std::ostream& ostr) noexcept
+{
+  BasicTreePrinter tree_printer(*this);
+  tree_printer.print_in_order(ostr); 
+}
+
+template<typename K> inline void Tree234<K>::printPreOrder(std::ostream& ostr) noexcept
+{
+  BasicTreePrinter tree_printer(*this);
+  tree_printer.print_pre_order(ostr); 
+}
+
+template<typename K> inline void Tree234<K>::printPostOrder(std::ostream& ostr) noexcept
+{
+  BasicTreePrinter tree_printer(*this);
+  tree_printer.print_post_order(ostr); 
+}
+
+template<typename K> inline Tree234<K>::BasicTreePrinter::BasicTreePrinter(const Tree234<K>& t) : prior_level{0}, tree{t}
+{
+  // Determine how many levels the tree has.
+  depth = tree.getDepth();
+}
+
+template<typename K> inline void Tree234<K>::BasicTreePrinter::print_level_order(std::ostream& ostr) 
+{
+
+ class PrintLevelOrderFunctor {
+     std::ostream& ostr;
+     BasicTreePrinter& tree_printer;
+   public:
+     PrintLevelOrderFunctor(std::ostream& o, BasicTreePrinter& t) : ostr{o}, tree_printer{t} {}
+     PrintLevelOrderFunctor(const PrintLevelOrderFunctor& func) : ostr{func.ostr}, tree_printer{func.tree_printer} {}
+   
+     std::ostream& operator()(const typename Tree234<K>::Node234 *current, int level)
+     {
+        tree_printer.operator()(ostr, current, level);
+     } 
+ };
+
+  PrintLevelOrderFunctor functor{ostr, *this};
+    
+  tree.levelOrderTraverse(functor);
+  ostr << std::flush;
+}
+
+template<typename K>  inline void Tree234<K>::BasicTreePrinter::print_in_order(std::ostream& ostr) 
+{
+  auto lambda = [&](K k) -> std::ostream& { ostr << k << ' '; ostr << std::flush; return ostr; };
+  
+  tree.inOrderTraverse(lambda);    
+  ostr << std::flush;
+}
+
+template<typename K> inline void Tree234<K>::BasicTreePrinter::print_pre_order(std::ostream& ostr) 
+{
+  auto lambda = [&](K k) -> std::ostream& { ostr << k << ' '; return ostr; };
+  
+  tree.preOrderTraverse(lambda);    
+  ostr << std::flush;
+}
+
+template<typename K> inline void Tree234<K>::BasicTreePrinter::print_post_order(std::ostream& ostr) 
+{
+  auto lambda = [&](K k) -> std::ostream& { ostr << k << ' '; return ostr; };
+  
+  tree.postOrderTraverse(lambda);    
+  ostr << std::flush;
+}
+
+// for level order print of tree
+template<typename K> void Tree234<K>::BasicTreePrinter::operator()(std::ostream& ostr, const typename Tree234<K>::Node234 *current, int level)
+{
+    // Did level change?
+    if (level != prior_level) {
+
+        ostr << "\n\n" << "level = " <<  level; 
+        prior_level = level;
+        
+        // Provide some basic spacing to tree appearance.
+        std::size_t num = depth - level + 1;
+        
+        std::string str( num, ' ');
+        
+        ostr << str;
+    }
+    
+    ostr <<  " [ ";
+    
+    for(auto i = 0; i < current->getTotalItems(); ++i) {
+        
+        ostr << current->getKey(i);
+        
+        if (i != current->getTotalItems() - 1) {
+            
+            ostr << ", ";
+        }
+    }
+    
+    ostr << " ] ";
+}
 #endif
