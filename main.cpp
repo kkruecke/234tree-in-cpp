@@ -41,6 +41,24 @@ int main(int argc, char** argv)
   tree2nd.printInOrder(cout);
   
   cout << endl << flush;
+  
+  // Testing find
+  
+  for (auto& v : input) {
+      
+      bool rc = tree.find(v);
+      
+      string str = (rc ? " success." : " failure.");
+      
+      cout << "tree.find(" << v << ") returns: " << str << endl;
+      
+      rc = tree.find(-v);
+      
+      str = (rc ? " success." : " failure.");
+      
+      cout << "tree.find(" << -v << ") returns: " << str << endl;
+              
+  }
 
   // Here we print the print using a print_keys instead of a function object.
   // Test of traversal methods

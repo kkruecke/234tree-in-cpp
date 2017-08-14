@@ -194,7 +194,7 @@ template<typename K> class tree234 {
     // Used during development and testing 
     template<typename Functor> void debug_dump(Functor f) noexcept;
 
-    bool search(K key) noexcept;
+    bool find(K key) noexcept;
 
     void insert(K key) noexcept; 
 
@@ -730,17 +730,17 @@ template<typename K> inline void  tree234<K>::Node234::connectChild(int childInd
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node), and
  * it sets child_index such that next->parent->children[child_index] == next.
  */
-template<typename K> inline bool tree234<K>::Node234::NodeDescentSearch(K value, int& index, int& child_index, Node234 *&next) noexcept
+template<typename K> inline bool tree234<K>::Node234::NodeDescentSearch(K key, int& index, int& child_index, Node234 *&next) noexcept
 {
   for(auto i = 0; i < totalItems; ++i) {
 
-     if (value < keys[i]) {
+     if (key < keys[i]) {
             
          next = children[i].get(); 
          child_index = i;  // new code. index is such that: this->children[index] == next
          return false;
 
-     } else if (keys[i] == value) {
+     } else if (keys[i] == key) {
 
          index = i;
          return true;
@@ -883,7 +883,7 @@ template<typename K> void tree234<K>::DestroyTree(std::unique_ptr<Node234> &curr
    current.reset(); // deletes the pointer owned by unique_ptr<Node234>.
 }
 
-template<typename K> inline bool tree234<K>::search(K key) noexcept
+template<typename K> inline bool tree234<K>::find(K key) noexcept
 {
     // make sure tree has at least one element    
     if (root == nullptr) {
@@ -899,31 +899,25 @@ template<typename K> inline bool tree234<K>::search(K key) noexcept
 
 template<typename K>  bool tree234<K>::DoSearch(K key, Node234 *&location, int& index) noexcept
 {
-  Node234 *current = root.get();
-  Node234 *next;
-  int child_index;
-
   if (!root) { // <--> if (root.get() == nullptr)
 
      return false;
   }
 
-  while(true) {
- 
-      if (current->NodeDescentSearch(key, index, child_index, next)) {  
+  Node234 *next;
+  int child_index;
+  Node234 *current = root.get();
+  
+  for(; !current->NodeDescentSearch(key, index, child_index, next); current = next) {  
 
-          location = current;
-          return true; 
-
-      } else if (current->isLeaf()) { 
+      if (current->isLeaf()) { 
 
           return false; // wasn't found
-
-      } else {
-
-          current = next;
-      }  
+      } 
   }
+
+  location = current;
+  return true;
 }
 
 /*
