@@ -6,86 +6,13 @@ DestroyTree(root), the root is inexplicably no longer nullptr and totalItems is 
 
 Read up on the issue of passing unique_ptr<XYZ> reference:
 
-1. http://herbsutter.com/2013/06/05/gotw91solutionsmartpointerparameters/
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-1. Pass a reference to functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you want the function to use the pointee, pass a reference to it. There's no reason to tie the function to work only with some kind of smart pointer:
-
-bool func(BaseClass& base, int other_arg);
-
-And at the call site use operator*:
-
-func(*some_unique_ptr, 42);
-
-Alternatively, if the base argument is allowed to be null, keep the signature as is, and use the get() member function:
-
-bool func(BaseClass* base, int other_arg);
-func(some_unique_ptr.get(), 42);
-
-2. Passing a non-const reference to a unique_ptr
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This is, in my opinion, the most complex situation. The called function may or may not take ownership of the passed pointer. “may or may not” is really part of the
-functions contract. If the called function uses std::move() on the passed unique_ptr, it effectively takes onwnership and once it gives control back to the caller,
-the caller does not own the pointer anymore, it doesn’t even know the value of the pointer anymore. On the other hand, if the callee merely uses the provided pointer
-without moving it, the caller still owns the pointed object.
-    
-void useUniquePtr(std::unique_ptr<int> & ptr) { /* ... */ }
-
-void caller() {
-    std::unique_ptr<int> ptr = new int(5);
-    useUniquePtr(ptr);
-    // if useUniquePtr() used std::move() on ptr, it took ownership 
-    // of the pointed int, so ptr is now holding a nullptr
-    // otherwise it still owns the int and will delete it when the 
-    // current scope ends
-    if (ptr.get() == nullptr)
-        std::cout << "ptr has been moved away" << std::endl;
-    else
-        std::cout << "ptr is still ours" << std::endl;
-}
-
 
 Another issue
 -------------
 
 1. Tree234<K>::size() does not seem to be working correctly.
-2. Make a manipulator to do
 
-ostream << level_order(tree) << in_order(tree) << post_order(tree) ... etc.
+Debug Printing
+--------------
 
-Sources
-=======
-
-  Implementation links:
-
-1.  http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
-
-This link has an excellent working example. The explanation is thorough and clear. It gives several example of deleting elements. It uses the in-order predecessor
-rather than the successor when deleting.
-
-2.  www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt  
-
-This link has a excellent working example and discusses how delete works, using descent restructuring. It uses the swap-with-successor for deletion of internal keys.
-It contains a working tree example. It shows that when converting 2-nodes, we first check if we can rotation else we do a merge (since both siblings are 2-nodes).
-
-3.  http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt 
-
-This link has excellent pseudo code for both insertion and deletion with working example. But it does not restructure the key on the way down instead from the
-leaf upward.
-
-4. http://web.njit.edu/~wl256/download/cs610/n1561011.pdf
-
-This link has a more high level pseudo code. 
-
-5. http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf 
-
-This link discusses both 2 3 trees and 2 3 4 trees. It has examples and pseudo code, but the deletion logic points out that the root only can be a two node--I think?
-
-6.  http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
-
-This link has actual **Java implementation code** for insertion and for 2 3 4 tree interface and node interface, including members.
-
+Port the debug_printer used for tree23 so that it works for tree234.

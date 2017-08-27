@@ -1,16 +1,10 @@
-/* 
- * File:   DebugPrinter.h
- * Author: kurt
- *
- * Created on May 11, 2013, 8:21 PM
- */
-
 #ifndef DEBUGPRINTER_H
 #define	DEBUGPRINTER_H
 #include <iosfwd>
 #include <string>
 #include <sstream>
-#include "debug-printer.h"
+
+// TODO: Scrap this in preference to something like the debugPrinter for tree23.
 
 template<typename K> class Tree234;// fwd reference
 

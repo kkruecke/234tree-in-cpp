@@ -84,9 +84,9 @@ template<typename K> class tree234 {
         public:
              
            Node234() noexcept;
-           explicit Node234(K small) noexcept;
-           explicit Node234(K small, K large) noexcept;
-           explicit Node234(K small, K middle, K large) noexcept;  
+           explicit Node234(K small, Node234 *parent=nullptr) noexcept;
+           explicit Node234(K small, K large, Node234 *parent=nullptr) noexcept;
+           explicit Node234(K small, K middle, K large, Node234 *parent=nullptr) noexcept;  
            constexpr const Node234 *getParent() const noexcept;
     
            constexpr int getTotalItems() const noexcept;
@@ -148,7 +148,7 @@ template<typename K> class tree234 {
 
     void DestroyTree(std::unique_ptr<Node234> &root) noexcept; 
 
-    void CloneTree(const std::unique_ptr<Node234>& pNode2Copy, std::unique_ptr<Node234> &pNodeCopy) noexcept; // called by copy ctor
+    void CloneTree(const std::unique_ptr<Node234>& src_node, std::unique_ptr<Node234> &dest_node, const Node234 *parent) noexcept; // called by copy ctor
 
     void split(Node234 *node) noexcept;  // called during insert(K key) to split 4-nodes encountered.
 
@@ -217,18 +217,18 @@ template<typename K> inline  tree234<K>::Node234::Node234()  noexcept : totalIte
 { 
 }
 
-template<typename K> inline  tree234<K>::Node234::Node234(K small)  noexcept : totalItems(1), parent(nullptr), children()
+template<typename K> inline  tree234<K>::Node234::Node234(K small, Node234 *parent_in)  noexcept : totalItems(1), parent(parent_in), children()
 { 
    keys[0] = small; 
 }
 
-template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle)  noexcept : totalItems(2), parent(nullptr), children()
+template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle, Node234 *parent_in)  noexcept : totalItems(2), parent{parent_in}, children()
 { 
    keys[0] = small; 
    keys[1] = middle; 
 }
 
-template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle, K large)  noexcept : totalItems(3), parent(nullptr), children()
+template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle, K large, Node234 *parent_in)  noexcept : totalItems(3), parent{parent_in}, children()
 { 
    keys[0] = small; 
    keys[1] = middle; 
@@ -237,7 +237,7 @@ template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle, K l
 
 template<typename K> inline tree234<K>::tree234(const tree234<K>& lhs) noexcept : tree_size{lhs.tree_size} 
 {
-   CloneTree(lhs.root, root);
+   CloneTree(lhs.root, root, nullptr);
 }
  
 // move constructor
@@ -273,7 +273,7 @@ template<typename K> inline tree234<K>& tree234<K>::operator=(const tree234& lhs
 
   tree_size = lhs.tree_size;         
 
-  CloneTree(lhs.root, root);
+  CloneTree(lhs.root, root, nullptr);
 
   return *this;
 }
@@ -590,66 +590,54 @@ template<typename K> template<typename Functor> void tree234<K>::DoPostOrder4Deb
 /*
  * pre-order traversal
  */
-template<typename K>  void tree234<K>::CloneTree(const std::unique_ptr<Node234>& pNode2Copy, std::unique_ptr<Node234> &pNodeCopy) noexcept
+template<typename K>  void tree234<K>::CloneTree(const std::unique_ptr<Node234>& src_node, std::unique_ptr<Node234> &dest_node, const Node234 *parent) noexcept
 {
- if (pNode2Copy != nullptr) { 
+ if (src_node != nullptr) { 
                               
    // copy node
-   switch (pNode2Copy->totalItems) {
+   switch (src_node->totalItems) {
 
       case 1: // two node
       {    
-            std::unique_ptr<Node234> tmp = std::make_unique<Node234>(pNode2Copy->keys[0]);
+            dest_node = std::make_unique<Node234>(src_node->keys[0],  const_cast<Node234*>(parent));
+           
+            CloneTree(src_node->children[0], dest_node->children[0], dest_node.get()); 
             
-            pNodeCopy = std::move(tmp); 
-             
-            pNodeCopy->parent = pNode2Copy->parent;
-            
-            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]); 
-            
-            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]); 
+            CloneTree(src_node->children[1], dest_node->children[1], dest_node.get()); 
 
             break;
 
-      }   // end case
+      } 
       case 2: // three node
       {
-            std::unique_ptr<Node234> tmp = std::make_unique<Node234>( pNode2Copy->keys[0], pNode2Copy->keys[1]); 
+            dest_node = std::make_unique<Node234>( src_node->keys[0], src_node->keys[1], const_cast<Node234*>(parent)); 
             
-            pNodeCopy = std::move(tmp); 
-
-            pNodeCopy->parent = pNode2Copy->parent;
+            CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
             
-            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]);
+            CloneTree(src_node->children[1], dest_node->children[1], dest_node.get());
             
-            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]);
-            
-            CloneTree(pNode2Copy->children[2], pNodeCopy->children[2]);
+            CloneTree(src_node->children[2], dest_node->children[2], dest_node.get());
 
             break;
-      } // end case
+      } 
       case 3: // four node
       {
-            std::unique_ptr<Node234> tmp = std::make_unique<Node234>( pNode2Copy->keys[0], pNode2Copy->keys[1], pNode2Copy->keys[2]); 
-
-            pNodeCopy = std::move(tmp);
-
-            pNodeCopy->parent = pNode2Copy->parent;
+            dest_node = std::make_unique<Node234>( src_node->keys[0], src_node->keys[1], src_node->keys[2],  const_cast<Node234*>(parent)); 
             
-            CloneTree(pNode2Copy->children[0], pNodeCopy->children[0]);
+            CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
             
-            CloneTree(pNode2Copy->children[1], pNodeCopy->children[1]);
+            CloneTree(src_node->children[1], dest_node->children[1], dest_node.get());
             
-            CloneTree(pNode2Copy->children[2], pNodeCopy->children[2]);
+            CloneTree(src_node->children[2], dest_node->children[2], dest_node.get());
             
-            CloneTree(pNode2Copy->children[3], pNodeCopy->children[3]);
+            CloneTree(src_node->children[3], dest_node->children[3], dest_node.get());
  
             break;
-      } // end case
+      } 
    }
  } else {
 
-    pNodeCopy = nullptr;
+    dest_node = nullptr;
  } 
 }
 
