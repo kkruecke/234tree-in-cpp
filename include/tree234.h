@@ -42,7 +42,15 @@ template<typename K> class tree234 {
     
        int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
     
-       std::array<K, 3> keys; // This implementation does not have an associate value for the key. 
+       std::array<K, 3> keys; // This implementation does not have an associated value for the key. 
+       /*
+        struct KeyValue {
+          union {
+             std::pair<const K, V> const_pair;
+             std::pair<const K, V> nconst_pair;
+        };
+        */ 
+        // std::array<KeyValue, 3> keys_values;
     
        /*
         * For 2-nodes, children[0] is left pointer, children[1] is right pointer.
