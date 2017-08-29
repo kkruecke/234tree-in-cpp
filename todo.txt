@@ -1,10 +1,13 @@
-Bug
-===
+TODO
+----
 
-The rmove() code is working correctly. It ultimately does root.reset(), which sets the underlying pointer to nullptr. However, when the destructor calls
+Add the code change to new-tree234.h so that the methods work like those of **class tree23**.
+Bug
+--
+
+Is the remove() code is working correctly? It ultimately does root.reset(), which sets the underlying pointer to nullptr. However, when the destructor calls
 DestroyTree(root), the root is inexplicably no longer nullptr and totalItems is 1.
 
-Read up on the issue of passing unique_ptr<XYZ> reference:
 
 
 Another issue
