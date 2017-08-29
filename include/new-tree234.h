@@ -41,6 +41,13 @@ template<typename Key, Value> class tree234 {
    
        KeyValue& operator=(const KeyValue& lhs);  
        KeyValue& operator=(KeyValue&& lhs); 
+
+       constexpr Key&  key()  { return nc_pair.first; }
+       constexpr const Key& key() const { return const_pair.first; }
+
+       constexpr Value&  valuey()  { return nc_pair.second; }
+       constexpr const Value& key() const { return const_pair.second; }
+
        
       friend std::ostream& operator<<(std::ostream& ostr, const KeyValue& key_value)
       {
@@ -85,7 +92,7 @@ template<typename Key, Value> class tree234 {
         */
        bool SearchNode(Key key, int& index, int& child_index, Node234 *&next) noexcept;
     
-       int insertKey(Key key) noexcept;
+       int insertKey(Key key, const Value& value) noexcept;
        
        void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
        
@@ -123,9 +130,12 @@ template<typename Key, Value> class tree234 {
            // method to help in debugging
            void printKeys(std::ostream&);
 
-           Key key(int i ) { return keys_values[i].nc_pair.first; } 
+           constexpr Key& key(int i ) { return keys_values[i].key(); } 
 
-           Value& value(int i ) { return keys_values[i].nc_pair.second; } 
+           constexpr const Key& key(int i ) const { return keys_values[i].key(); } 
+
+           constexpr Value& value(int i ) { return keys_values[i].value(); } 
+           const Value& value(int i ) const { return keys_values[i].value(); } 
     
            bool findKey(Key key, int& index) const noexcept;
            constexpr Key getKey(int i) const;
@@ -750,7 +760,7 @@ template<typename Key, Value> inline void  tree234<Key, Value>::Node234::connect
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node), and
  * it sets child_index such that next->parent->children[child_index] == next.
  */
-template<typename Key, Value> inline bool tree234<Key, Value>::Node234::SearchNode(Key key, int& index, int& child_index, Node234 *&next) noexcept
+template<typename Key, Value> inline bool tree234<Key, Value>::Node234::SearchNode(Key key, int& index, int& child_index, Node234 *&next) noexcept // ok
 {
   for(auto i = 0; i < totalItems; ++i) {
 
@@ -774,7 +784,7 @@ template<typename Key, Value> inline bool tree234<Key, Value>::Node234::SearchNo
   return false;
 }
 
-template<typename Key, Value> inline void tree234<Key, Value>::Node234::insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept
+template<typename Key, Value> inline void tree234<Key, Value>::Node234::insertChild(int childNum, std::unique_ptr<Node234> &pChild) noexcept // ok
 {
   // shift children right in order to insert pChild
   
@@ -807,7 +817,7 @@ template<typename Key, Value> inline void tree234<Key, Value>::Node234::insertCh
  * will have been altered.
  */
 
-template<typename Key, Value> inline std::unique_ptr<typename tree234<Key, Value>::Node234> tree234<Key, Value>::Node234::disconnectChild(int childIndex) noexcept
+template<typename Key, Value> inline std::unique_ptr<typename tree234<Key, Value>::Node234> tree234<Key, Value>::Node234::disconnectChild(int childIndex) noexcept // ok
 {
   std::unique_ptr<Node234> node = std::move(children[childIndex] ); // invokes unique_ptr<Node234> move assignment.
 
@@ -825,18 +835,19 @@ template<typename Key, Value> inline std::unique_ptr<typename tree234<Key, Value
  * of inserted key.
  */
 
-template<typename Key, Value> inline int  tree234<Key, Value>::Node234::insertKey(Key key)  noexcept
+template<typename Key, Value> inline int  tree234<Key, Value>::Node234::insertKey(Key key, const Value& value)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
 { 
   // start on right, examine items
   for(auto i = totalItems - 1; i >= 0 ; --i) {
 
       if (key < keys_values[i]) { // if key[i] is bigger
 
-          keys_values[i + 1] = keys_values[i]; // shift it right
+          keys_values[i + 1] = std::move(keys_values[i]); // shift it right
 
       } else {
 
-          keys_values[i + 1] = key; // insert new item
+          keys_values[i + 1].key() = key; // insert new item
+          keys_values[i + 1].value() = value; 
         ++totalItems;        // increase the total item count
           return i + 1;      // return index of inserted key.
       } 
@@ -844,18 +855,19 @@ template<typename Key, Value> inline int  tree234<Key, Value>::Node234::insertKe
 
     // key is smaller than all keys_values, so insert it at position 0
     keys_values[0] = key;  
+    keys_values[0].value() = value; 
   ++totalItems; // increase the total item count
     return 0;
 }
 
-template<typename Key, Value> inline Key tree234<Key, Value>::Node234::removeKey(int index) noexcept
+template<typename Key, Value> inline Key tree234<Key, Value>::Node234::removeKey(int index) noexcept // ok
 {
   Key key = keys_values[index]; 
 
   // shift to the left all keys_values to the right of index to the left
   for(auto i = index; i < totalItems - 1; ++i) {
 
-      keys_values[i] = keys_values[i + 1]; 
+      keys_values[i] = std::move(keys_values[i + 1]); 
   } 
 
   --totalItems;
@@ -863,17 +875,17 @@ template<typename Key, Value> inline Key tree234<Key, Value>::Node234::removeKey
   return key;
 }
 
-template<typename Key, Value> inline constexpr typename tree234<Key, Value>::Node234 * tree234<Key, Value>::Node234::getParent()   noexcept
+template<typename Key, Value> inline constexpr typename tree234<Key, Value>::Node234 * tree234<Key, Value>::Node234::getParent()   noexcept // ok
 { 
    return parent;
 }
 
-template<typename Key, Value> inline constexpr const typename tree234<Key, Value>::Node234 *tree234<Key, Value>::Node234::getParent() const  noexcept
+template<typename Key, Value> inline constexpr const typename tree234<Key, Value>::Node234 *tree234<Key, Value>::Node234::getParent() const  noexcept // ok
 { 
    return parent;
 }
 
-template<typename Key, Value> inline constexpr  bool tree234<Key, Value>::Node234::isLeaf() const  noexcept
+template<typename Key, Value> inline constexpr  bool tree234<Key, Value>::Node234::isLeaf() const  noexcept // ok
 { 
    return !children[0] ? true : false;
 }
@@ -897,7 +909,7 @@ template<typename Key, Value> void tree234<Key, Value>::DestroyTree(std::unique_
   
   for(auto i = 0; i < current->totalItems; ++i) {
 
-        DestroyTree(current->children[i]);
+      DestroyTree(current->children[i]);
    }
 
    current.reset(); // deletes the pointer owned by unique_ptr<Node234>.
@@ -917,7 +929,7 @@ template<typename Key, Value> inline bool tree234<Key, Value>::find(Key key) noe
     }
 }   
 
-template<typename Key, Value>  bool tree234<Key, Value>::DoSearch(Key key, Node234 *&location, int& index) noexcept
+template<typename Key, Value>  bool tree234<Key, Value>::DoSearch(Key key, Node234 *&location, int& index) noexcept // ok
 {
   if (!root) { // <--> if (root.get() == nullptr)
 
@@ -946,7 +958,7 @@ template<typename Key, Value>  bool tree234<Key, Value>::DoSearch(Key key, Node2
  * Insertion based on pseudo code at:
  * http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  */
-template<typename Key, Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept
+template<typename Key, Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept // ok
 {
    if (root == nullptr) {
            
@@ -996,7 +1008,7 @@ template<typename Key, Value> void tree234<Key, Value>::insert(Key key, const Va
     } 
  
     // current node is now a leaf and it is not full (because we split all four nodes while descending).
-    current->insertKey(key); 
+    current->insertKey(key, value); 
     ++tree_size;
 }
 /* 
@@ -1012,7 +1024,7 @@ template<typename Key, Value> void tree234<Key, Value>::insert(Key key, const Va
  *  6. Insert new data item into the original leaf node.
  *  
  */ 
-template<typename Key, Value> void tree234<Key, Value>::split(Node234 *pnode) noexcept
+template<typename Key, Value> void tree234<Key, Value>::split(Node234 *pnode) noexcept // not ok
 {
     // remove two largest (of three total) keys_values...
         
@@ -1090,7 +1102,7 @@ template<typename Key, Value> void tree234<Key, Value>::split(Node234 *pnode) no
  * with its in-order successor.
  */
 
-template<typename Key, Value> bool tree234<Key, Value>::remove(Key key) 
+template<typename Key, Value> bool tree234<Key, Value>::remove(Key key)  // ok
 {
    if (root == nullptr) {
 
