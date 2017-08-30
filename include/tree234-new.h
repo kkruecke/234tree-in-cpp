@@ -37,7 +37,7 @@ template<typename Key, typename Value> class tree234 {
        
        KeyValue(Key k, Value&& v) : _pair{k, std::move(v)} {} 
    
-       KeyValue(KeyValue&& lhs) :  _pair{move(lhs.pair)} {}//pair{lhs.pair.first, std::move(lhs.pair.second)} {}
+       KeyValue(KeyValue&& lhs) :  _pair{move(lhs._pair)} {}//pair{lhs.pair.first, std::move(lhs.pair.second)} {}
    
        KeyValue& operator=(const KeyValue& lhs);  
        KeyValue& operator=(KeyValue&& lhs); 
@@ -94,7 +94,8 @@ template<typename Key, typename Value> class tree234 {
         */
        bool SearchNode(Key key, int& index, int& child_index, Node234 *&next) noexcept;
     
-       int insertKey(Key key, const Value& value) noexcept;
+       int insertKeyValue(Key key, const Value& value) noexcept;
+       int insertKeyValue(KeyValue&& value) noexcept;
        
        void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
        
@@ -343,7 +344,7 @@ template<typename Key, typename Value> inline constexpr Key tree234<Key, Value>:
 {
     if (0 <= i && i < getTotalItems()) {
         
-        return keys_values[i];
+        return keys_values[i].key();
     }
     
     throw std::range_error{"key of Node234 not in range"};     
@@ -830,30 +831,55 @@ template<typename Key, typename Value> inline std::unique_ptr<typename tree234<K
  * of inserted key.
  */
 
-template<typename Key, typename Value> inline int  tree234<Key, Value>::Node234::insertKey(Key key, const Value& value)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
+template<typename Key, typename Value> inline int  tree234<Key, Value>::Node234::insertKeyValue(Key key, const Value& value)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
 { 
   // start on right, examine items
   for(auto i = totalItems - 1; i >= 0 ; --i) {
 
-      if (key < keys_values[i]) { // if key[i] is bigger
+      if (key < keys_values[i].key()) { // if key[i] is bigger
 
           keys_values[i + 1] = std::move(keys_values[i]); // shift it right
 
       } else {
 
           keys_values[i + 1].key() = key; // insert new item
-          keys_values[i + 1].value() = value; 
+          keys_values[i + 1].value() = value;  // TODO: This reqires
         ++totalItems;        // increase the total item count
           return i + 1;      // return index of inserted key.
       } 
     } 
 
     // key is smaller than all keys_values, so insert it at position 0
-    keys_values[0] = key;  
+    keys_values[0].key() = key;  
     keys_values[0].value() = value; 
   ++totalItems; // increase the total item count
     return 0;
 }
+
+template<typename Key, typename Value> inline int  tree234<Key, Value>::Node234::insertKeyValue(KeyValue&& lhs)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
+{ 
+  // start on right, examine items
+  for(auto i = totalItems - 1; i >= 0 ; --i) {
+
+      if (lhs.key() < keys_values[i].key()) { // if key[i] is bigger
+
+          keys_values[i + 1] = std::move(keys_values[i]); // shift it right
+
+      } else {
+
+          keys_values[i + 1] = std::move(lhs);
+
+        ++totalItems;        // increase the total item count
+          return i + 1;      // return index of inserted key.
+      } 
+    } 
+
+    // key is smaller than all keys_values, so insert it at position 0
+    keys_values[0] = std::move(lhs); 
+  ++totalItems; // increase the total item count
+    return 0;
+}
+
 
 template<typename Key, typename Value> inline Key tree234<Key, Value>::Node234::removeKey(int index) noexcept // ok
 {
@@ -1003,7 +1029,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
     } 
  
     // current node is now a leaf and it is not full (because we split all four nodes while descending).
-    current->insertKey(key, value); 
+    current->insertKeyValue(key, value); 
     ++tree_size;
 }
 /* 
@@ -1023,12 +1049,12 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node234 *
 {
     // remove two largest (of three total) keys_values...
     // TODO: This code involving itemC and itemB needs to be converted from the old code that just dealt with Key instead of the "union KeyValue".   
-    Key itemC = pnode->keys_values[2];  
-    Key itemB = pnode->keys_values[1]; 
+    KeyValue& itemC = pnode->keys_values[2];  
+    KeyValue& itemB = pnode->keys_values[1]; 
     
     pnode->totalItems = 1; // This effectively removes all but the smallest key from node.
     
-    std::unique_ptr<Node234> newRight{std::make_unique<Node234>(itemC) }; // Move largest key to what will be the new right child of split node.
+    std::unique_ptr<Node234> newRight{std::make_unique<Node234>(std::move(itemC)) }; // Move largest key to what will be the new right child of split node.
 
     /* Note: The "bool operator()" of unique_ptr tests whether a pointer is being managed, whether get() == nullptr. */
     if (pnode->children[2] && pnode->children[3]) { // If neither are nullptr
@@ -1055,7 +1081,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node234 *
         * Since the move version of operator=(unique_ptr<t>&&) deletes the managed pointer, we first had to call release() above; 
         * otherwise, pnode, the soon-to-be prior root, would have been deleted. 
         */
-        root = std::move(std::make_unique<Node234>(itemB)); 
+        root = std::move(std::make_unique<Node234>(std::move(itemB))); 
          
         /* make former root, whose raw pointer is pnode, the left-most child */  
         root->children[0] = std::move(std::unique_ptr<Node234>{pnode}); 
@@ -1069,7 +1095,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node234 *
 
         Node234 *parent = pnode->getParent(); 
     
-        int insert_index = parent->insertKey(itemB); // insert itemB into parent, and using its inserted index...
+        int insert_index = parent->insertKeyValue(std::move(itemB)); // insert itemB into parent, and using its inserted index...
     
         int last_index = parent->totalItems - 1;
     
@@ -1088,6 +1114,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node234 *
 
     return;
 }
+
 /*
  * Deletion based on pseudo code from pages 50-53 of: 
  *
@@ -1605,7 +1632,7 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::BasicTre
 
 template<typename Key, typename Value>  inline void tree234<Key, Value>::BasicTreePrinter::print_in_order(std::ostream& ostr) 
 {
-  auto lambda = [&](Key k) -> std::ostream& { ostr << k << ' '; ostr << std::flush; return ostr; };
+  auto lambda = [&](const std::pair<int, int>& pr) -> std::ostream& { ostr << pr.first << ' '; return ostr; };
   
   tree.inOrderTraverse(lambda);    
   ostr << std::flush;
@@ -1613,7 +1640,7 @@ template<typename Key, typename Value>  inline void tree234<Key, Value>::BasicTr
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::BasicTreePrinter::print_pre_order(std::ostream& ostr) 
 {
-  auto lambda = [&](Key k) -> std::ostream& { ostr << k << ' '; return ostr; };
+  auto lambda = [&](const std::pair<int, int>& pr) -> std::ostream& { ostr << pr.first << ' '; return ostr; };
   
   tree.preOrderTraverse(lambda);    
   ostr << std::flush;
@@ -1621,7 +1648,7 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::BasicTre
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::BasicTreePrinter::print_post_order(std::ostream& ostr) 
 {
-  auto lambda = [&](Key k) -> std::ostream& { ostr << k << ' '; return ostr; };
+  auto lambda = [&](const std::pair<int, int>& pr) -> std::ostream& { ostr << pr.first << ' '; return ostr; };
   
   tree.postOrderTraverse(lambda);    
   ostr << std::flush;
