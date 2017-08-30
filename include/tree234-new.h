@@ -45,7 +45,7 @@ template<typename Key, typename Value> class tree234 {
        constexpr Key&  key()  { return _pair.first; }
        constexpr const Key& key() const { return constkey_pair.first; }
 
-       constexpr Value&  valuey()  { return _pair.second; }
+       constexpr Value&  value()  { return _pair.second; }
        constexpr const Value& value() const { return constkey_pair.second; }
 
      public:    
@@ -126,6 +126,8 @@ template<typename Key, typename Value> class tree234 {
            explicit Node234(Key small, Key large, Node234 *parent=nullptr) noexcept;
            
            explicit Node234(Key small, Key middle, Key large, Node234 *parent=nullptr) noexcept;  
+           
+           explicit Node234(KeyValue&& key_value) noexcept; 
            
            constexpr const Node234 *getParent() const noexcept;
     
@@ -268,7 +270,7 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Nod
    keys_values[0].key() = small; 
    keys_values[0].value() = value;
 }
-
+// TODO: This ctor needs a corresponding value.
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Node234(Key small, Key middle, Node234 *parent_in)  noexcept : totalItems(2), parent{parent_in}, children()
 { 
    keys_values[0] = small; 
@@ -280,6 +282,11 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Nod
    keys_values[0] = small; 
    keys_values[1] = middle; 
    keys_values[2] = large; 
+}
+
+template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Node234(KeyValue&& key_value) noexcept
+{
+   keys_values[0] = std::move(key_value); 
 }
 
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept : tree_size{lhs.tree_size} 
@@ -1315,7 +1322,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node234 *tr
         * node == parent->children[parent->totalItems], the last child. 
         */
 
-       if (node->keys_values[0] < parent->keys_values[node2_index] ) { 
+       if (node->keys_values[0].key() < parent->keys_values[node2_index].key() ) { 
             break;                               
        } 
    }
@@ -1481,7 +1488,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node234 *tr
   // Remove smallest key in sibling
   Key smallest_sibling_key = psibling->removeKey(0);
 
-  parent->keys_values[parent_key_index] = smallest_sibling_key;  // overwrite parent item with it.
+  parent->keys_values[parent_key_index].key() = smallest_sibling_key;  // overwrite parent item with it.
 
   // add former first child of silbing as right-most child of our 3-node.
   p2node->insertChild(p2node->totalItems, pchild_of_sibling); 
