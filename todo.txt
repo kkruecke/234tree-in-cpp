@@ -1,7 +1,8 @@
 TODO
 ----
 
-Add the code change to new-tree234.h so that the methods work like those of **class tree23**.
+Fix the code in new-tree234.h so that the methods work like those of **class tree23**.
+
 Bug
 --
 

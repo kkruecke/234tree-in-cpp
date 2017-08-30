@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 
   auto keys_inserter = back_inserter(keys);
 
-  auto lambda = [&] (const tree234<int, int>::KeyValue& key_value) { keys_inserter = key_value.key(); };
+  auto lambda = [&] (const pair<int, int>& pr) { keys_inserter = pr.first; };
   
   tree.inOrderTraverse(lambda);
   
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
   // Here we print the print using a print_keys instead of a function object.
   // Test of traversal methods
 
-  auto print_keys = [=](int x) { cout << x << ", "; }; // lambda closure
+  auto print_keys = [&](const pair<int, int> pr) { cout << pr.first << ", "; }; // lambda closure
 
   cout << "\nUsing traverse methods to print tree in-order:" << endl;
  
