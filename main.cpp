@@ -12,9 +12,9 @@ using namespace std;
 int main(int argc, char** argv)
 {
  
-  vector<int> input{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 92, 79,23, 17, 97, 55, 51, 69, 1, 201, 2, 33, 26, 150, 5};
+  tree234<int, int> tree =  {{ 60, 60}, { 30, 30}, { 10, 10}, { 20, 20}, { 50, 50}, { 40, 40}, { 70, 70}, { 80, 80}, { 15, 15}, { 90, 90}, { 100, 100}, { 27, 27}, { 62, 62}, { 87, 87}, { 37, 37}, \
+                             { 92, 92}, { 79, 79},{ 23, 23}, { 17, 17}, { 97, 97}, { 55, 55}, { 51, 51}, { 69, 69}, { 1, 1}, { 201, 201}, { 2, 2}, { 33, 33}, { 26, 26}, { 150, 150}, {5, 5} };
 
-  tree234<int> tree {input};
 
   cout << "Printing tree in level order" << endl;
 
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
   cout << endl;
   
     // Test copy constructor:
-  tree234<int> tree2nd  {tree};
+  tree234<int, int> tree2nd{tree};
   
   cout << "\nPrinting copy of tree\n" << endl;
   
@@ -42,7 +42,15 @@ int main(int argc, char** argv)
   
   // Testing find
   
-  for (auto& v : input) {
+  vector<int> keys;
+
+  auto keys_inserter = back_inserter(keys);
+
+  auto lambda = [&] (const tree234<int, int>::KeyValue& key_value) { keys_inserter = key_value.key(); };
+  
+  tree.inOrderTraverse(lambda);
+  
+  for (auto& v : keys) {
       
       bool rc = tree.find(v);
       
@@ -74,8 +82,8 @@ int main(int argc, char** argv)
   cout << "\nUsing traverse methods to print tree pre-order:" << endl;
 
   tree.preOrderTraverse(print_keys);
-
-  for (auto iter = input.rbegin(); iter != input.rend(); ++iter) {
+  
+  for (auto iter = keys.rbegin(); iter != keys.rend(); ++iter) {
     
     auto item = *iter;
     
