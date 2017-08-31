@@ -1,1 +1,3 @@
 The new code is ported that uses keys and values, and it compiles and links, but the logic--either the port or the inherent logic changes needed when using KeyValue instead of Key--causing erroneous tree displays.
+
+Compare debug sessions of old code that works with new code that fails. 

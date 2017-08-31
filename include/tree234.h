@@ -224,7 +224,7 @@ template<typename K> inline  tree234<K>::Node234::Node234(K small, Node234 *pare
 { 
    keys[0] = small; 
 }
-/*
+
 template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle, Node234 *parent_in)  noexcept : totalItems(2), parent{parent_in}, children()
 { 
    keys[0] = small; 
@@ -237,7 +237,7 @@ template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle, K l
    keys[1] = middle; 
    keys[2] = large; 
 }
-*/
+ 
 template<typename K> inline tree234<K>::tree234(const tree234<K>& lhs) noexcept : tree_size{lhs.tree_size} 
 {
    CloneTree(lhs.root, root, nullptr);
