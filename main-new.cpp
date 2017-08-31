@@ -12,11 +12,9 @@ using namespace std;
 int main(int argc, char** argv)
 {
  
-  vector<int> input{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 92, 79,23, 17, 97, 55, 51, 69, 1, 201, 2, 33, 26, 150, 5};
+  tree234<int, int> tree =  {{ 60, 60}, { 30, 30}, { 10, 10}, { 20, 20}, { 50, 50}, { 40, 40}, { 70, 70}, { 80, 80}, { 15, 15}, { 90, 90}, { 100, 100}, { 27, 27}, { 62, 62}, { 87, 87}, { 37, 37}, \
+                             { 92, 92}, { 79, 79},{ 23, 23}, { 17, 17}, { 97, 97}, { 55, 55}, { 51, 51}, { 69, 69}, { 1, 1}, { 201, 201}, { 2, 2}, { 33, 33}, { 26, 26}, { 150, 150}, {5, 5} };
 
-  tree234<int> tree {input};
-  
-  //--BasicTreePrinter<int> tree_printer{tree};
 
   cout << "Printing tree in level order" << endl;
 
@@ -34,18 +32,44 @@ int main(int argc, char** argv)
   cout << endl;
   
     // Test copy constructor:
-  tree234<int> tree2nd  {tree};
+  tree234<int, int> tree2nd{tree};
   
   cout << "\nPrinting copy of tree\n" << endl;
   
   tree2nd.printInOrder(cout);
   
   cout << endl << flush;
+  
+  // Testing find
+  
+  vector<int> keys;
+
+  auto keys_inserter = back_inserter(keys);
+
+  auto lambda = [&] (const pair<int, int>& pr) { keys_inserter = pr.first; };
+  
+  tree.inOrderTraverse(lambda);
+  
+  for (auto& v : keys) {
+      
+      bool rc = tree.find(v);
+      
+      string str = (rc ? " success." : " failure.");
+      
+      cout << "tree.find(" << v << ") returns: " << str << endl;
+      
+      rc = tree.find(-v);
+      
+      str = (rc ? " success." : " failure.");
+      
+      cout << "tree.find(" << -v << ") returns: " << str << endl;
+              
+  }
 
   // Here we print the print using a print_keys instead of a function object.
   // Test of traversal methods
 
-  auto print_keys = [=](int x) { cout << x << ", "; }; // lambda closure
+  auto print_keys = [&](const pair<int, int> pr) { cout << pr.first << ", "; }; // lambda closure
 
   cout << "\nUsing traverse methods to print tree in-order:" << endl;
  
@@ -58,8 +82,8 @@ int main(int argc, char** argv)
   cout << "\nUsing traverse methods to print tree pre-order:" << endl;
 
   tree.preOrderTraverse(print_keys);
-
-  for (auto iter = input.rbegin(); iter != input.rend(); ++iter) {
+  
+  for (auto iter = keys.rbegin(); iter != keys.rend(); ++iter) {
     
     auto item = *iter;
     

@@ -96,7 +96,7 @@ template<typename Key, typename Value> class tree234 {
        bool SearchNode(Key key, int& index, int& child_index, Node234 *&next) noexcept;
     
        int insertKeyValue(Key key, const Value& value) noexcept;
-       int insertKeyValue(KeyValue&& value) noexcept;
+       int movePair(std::pair<Key, Value>&& pr) noexcept;
        
        void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
        
@@ -132,6 +132,10 @@ template<typename Key, typename Value> class tree234 {
            
            //--explicit Node234(Key small, Key middle, Key large, Node234 *parent=nullptr) noexcept;  
            
+           explicit Node234(const std::pair<Key, Value>& pr1, const std::pair<Key, Value>& pr2,  const std::pair<Key, Value>& pr3, Node234 *parent=nullptr) noexcept;
+
+           explicit Node234(std::pair<Key, Value>&& pr) noexcept; 
+
            explicit Node234(KeyValue&& key_value) noexcept; 
            
            constexpr const Node234 *getParent() const noexcept;
@@ -276,6 +280,7 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Nod
    keys_values[0].value() = value;
 }
 // TODO: This ctor needs a corresponding value.
+/*
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Node234(Key small, Key middle, Node234 *parent_in)  noexcept : totalItems(2), parent{parent_in}, children()
 { 
    keys_values[0] = small; 
@@ -288,6 +293,7 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Nod
    keys_values[1] = middle; 
    keys_values[2] = large; 
 }
+*/
 
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Node234(KeyValue&& key_value) noexcept
 {
@@ -683,7 +689,7 @@ template<typename Key, typename Value>  void tree234<Key, Value>::CloneTree(cons
 
       case 1: // two node
       {    
-            dest_node = std::make_unique<Node234>(src_node->keys_values[0],  const_cast<Node234*>(parent));
+            dest_node = std::make_unique<Node234>(src_node->keys_values[0].pair(),  const_cast<Node234*>(parent));
            
             CloneTree(src_node->children[0], dest_node->children[0], dest_node.get()); 
             
@@ -694,9 +700,9 @@ template<typename Key, typename Value>  void tree234<Key, Value>::CloneTree(cons
       } 
       case 2: // three node
       {
-            dest_node = std::make_unique<Node234>( src_node->keys_values[0], src_node->keys_values[1], const_cast<Node234*>(parent)); 
+            dest_node = std::make_unique<Node234>( src_node->keys_values[0].pair(), src_node->keys_values[1].pair(), const_cast<Node234*>(parent)); 
             
-            CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
+            CloneTree(src_node->children[0], dest_node->children[0].pair(), dest_node.get());
             
             CloneTree(src_node->children[1], dest_node->children[1], dest_node.get());
             
@@ -706,7 +712,7 @@ template<typename Key, typename Value>  void tree234<Key, Value>::CloneTree(cons
       } 
       case 3: // four node
       {
-            dest_node = std::make_unique<Node234>( src_node->keys_values[0], src_node->keys_values[1], src_node->keys_values[2],  const_cast<Node234*>(parent)); 
+            dest_node = std::make_unique<Node234>( src_node->keys_values[0].pair(), src_node->keys_values[1].pair(), src_node->keys_values[2].pair(), const_cast<Node234*>(parent)); 
             
             CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
             
@@ -851,18 +857,18 @@ template<typename Key, typename Value> inline int  tree234<Key, Value>::Node234:
     return 0;
 }
 
-template<typename Key, typename Value> inline int  tree234<Key, Value>::Node234::insertKeyValue(KeyValue&& lhs)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
+template<typename Key, typename Value> inline int  tree234<Key, Value>::Node234::movePair(std::pair<Key, Value>&& lhs_pair)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
 { 
   // start on right, examine items
   for(auto i = totalItems - 1; i >= 0 ; --i) {
 
-      if (lhs.key() < keys_values[i].key()) { // if key[i] is bigger
+      if (lhs_pair.first < keys_values[i].key()) { // if key[i] is bigger
 
           keys_values[i + 1] = std::move(keys_values[i]); // shift it right
 
       } else {
 
-          keys_values[i + 1] = std::move(lhs);
+          keys_values[i + 1].pair() = std::move(lhs_pair);
 
         ++totalItems;        // increase the total item count
           return i + 1;      // return index of inserted key.
@@ -870,7 +876,7 @@ template<typename Key, typename Value> inline int  tree234<Key, Value>::Node234:
     } 
 
     // key is smaller than all keys_values, so insert it at position 0
-    keys_values[0] = std::move(lhs); 
+    keys_values[0].pair() = std::move(lhs_pair); 
   ++totalItems; // increase the total item count
     return 0;
 }
@@ -1091,7 +1097,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node234 *
 
         Node234 *parent = pnode->getParent(); 
     
-        int insert_index = parent->insertKeyValue(std::move(itemB)); // insert itemB into parent, and using its inserted index...
+        int insert_index = parent->movePair(std::move(itemB)); // insert itemB into parent, and using its inserted index...
     
         int last_index = parent->totalItems - 1;
     
@@ -1455,7 +1461,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node234 *tr
 
   Key largest_sibling_key = psibling->removeKey(total_sibling_keys_values - 1); // remove the largest, the right-most, sibling's key.
 
-  parent->keys_values[parent_key_index] = largest_sibling_key;  // 5. overwrite parent item with largest sibling key
+  parent->keys_values[parent_key_index] = largest_sibling_key;  // 5. overwrite parent item with largest sibling key <---TODO: BUG we need to insert both parent's key and value, ie, pair<Key, Value>. Do we insert it or move, though?  
 
   p2node->insertChild(0, pchild_of_sibling); // add former right-most child of sibling as its first child
 
@@ -1527,7 +1533,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node234 *tr
       // 1. But first shift the 2-node's sole key right two positions
       p2node->keys_values[2] = p2node->keys_values[0];      
 
-      p2node->keys_values[1] = parent_key;  // 2. bring down parent key
+      p2node->keys_values[1] = parent_key;  // 2. bring down parent key  <---TODO: BUG we need to insert both parent's key and value, ie, pair<Key, Value>. Do we insert it or move, though? "Bring down parent..." implies move. So a move assignment operator must be invoked. 
 
       p2node->keys_values[0] = psibling->keys_values[0]; // 3. insert adjacent sibling's sole key. 
  
@@ -1557,7 +1563,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node234 *tr
       Key parent_key = parent->removeKey(parent_key_index); // this will #1
 
       // p2node->key[0] is already in the correct position
-      p2node->keys_values[1] = parent_key;  // 1. bring down parent key
+      p2node->keys_values[1] = parent_key;  // 1. bring down parent key  <---TODO: BUG we need to insert both parent's key and value, ie, pair<Key, Value>. Do we insert it or move, though? "Bring down parent..." implies move. So a move assignment operator must be invoked. 
 
       p2node->keys_values[2] = psibling->keys_values[0];// 2. insert sibling's sole key.
  

@@ -9,6 +9,7 @@
 #include <array>
 #include <queue>
 #include <exception>
+#include <initializer_list>
 #include <iosfwd>
 #include <utility>
 #include "printer-of-tree-interface.h"
@@ -85,8 +86,10 @@ template<typename K> class tree234 {
              
            Node234() noexcept;
            explicit Node234(K small, Node234 *parent=nullptr) noexcept;
+           
            explicit Node234(K small, K large, Node234 *parent=nullptr) noexcept;
            explicit Node234(K small, K middle, K large, Node234 *parent=nullptr) noexcept;  
+           
            constexpr const Node234 *getParent() const noexcept;
     
            constexpr int getTotalItems() const noexcept;
@@ -221,7 +224,7 @@ template<typename K> inline  tree234<K>::Node234::Node234(K small, Node234 *pare
 { 
    keys[0] = small; 
 }
-
+/*
 template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle, Node234 *parent_in)  noexcept : totalItems(2), parent{parent_in}, children()
 { 
    keys[0] = small; 
@@ -234,7 +237,7 @@ template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle, K l
    keys[1] = middle; 
    keys[2] = large; 
 }
-
+*/
 template<typename K> inline tree234<K>::tree234(const tree234<K>& lhs) noexcept : tree_size{lhs.tree_size} 
 {
    CloneTree(lhs.root, root, nullptr);
@@ -982,9 +985,8 @@ template<typename K> void tree234<K>::insert(K key) noexcept
  */ 
 template<typename K> void tree234<K>::split(Node234 *pnode) noexcept
 {
-    // remove two largest (of three total) keys...
-        
-    K itemC = pnode->keys[2];
+    // Remove two largest (of three total) keys
+    K itemC = pnode->keys[2]; 
     K itemB = pnode->keys[1]; 
     
     pnode->totalItems = 1; // This effectively removes all but the smallest key from node.

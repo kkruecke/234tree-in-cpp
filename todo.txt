@@ -1,0 +1,3 @@
+There are only three bus in tree234-new.h, having to do with assignment operations, which I have commented with "TODO:...". 
+- Both the key and value need to be moved to copied (on these three assignement statements)
+- Most likely we need to move 'std::pair<Key, Value>&' or copy 'const std::pair<Key, Value>& '
