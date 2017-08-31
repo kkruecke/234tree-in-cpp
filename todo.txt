@@ -1,2 +1,1 @@
-Some of the copy assignments surrounding the call of removeKeyValue() might need to be changed to move assignments.
-There are some linker error due to missing assignment operators.
+The new code is ported that uses keys and values, and it compiles and links, but the logic--either the port or the inherent logic changes needed when using KeyValue instead of Key--causing erroneous tree displays.
