@@ -170,6 +170,8 @@ template<typename K> class tree234 {
 
   public:
 
+     using node_type = Node234; 
+
      explicit tree234() noexcept : root{} { } 
 
      tree234(const tree234& lhs) noexcept; 
