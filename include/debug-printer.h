@@ -3,10 +3,11 @@
 #include <iosfwd>
 #include <string>
 #include <sstream>
+#include <utility>
 
 // TODO: Scrap this in preference to something like the debugPrinter for tree23.
 
-template<typename K> class Tree234;// fwd reference
+template<typename Key, typename Value> class tree234;// fwd reference
 
 class DebugPrinter {
     // TODO: Add tree depth capability somehow. 
@@ -18,14 +19,18 @@ public:
 
     DebugPrinter(const DebugPrinter& tp) : ostr_(tp.ostr_) {}
 
-    template<class K> std::ostream& operator()(const K& k, int index, const typename Tree234<K>::Node234 *current,
-                                                               const typename Tree234<K>::Node234 *const root);
+    template<class Key, class Value> std::ostream& operator()(const std::pair<Key, Value>& k, int index, const typename tree234<Key, Value>::Node234 *current,
+                                                               const typename tree234<Key, Value>::Node234 *const root);
 };
 
-template<class K> inline std::ostream& DebugPrinter::operator()(const K& key, int index, const typename Tree234<K>::Node234 *current,
-                                                                                  const typename Tree234<K>::Node234 *const root)
+template<class Key, class Value> inline std::ostream& DebugPrinter::operator()(const std::pair<Key, Value>& pair, int index, const typename tree234<Key, Value>::Node234 *current,
+                                                                                  const typename tree234<Key, Value>::Node234 *const root)
 {
-    const typename Tree234<K>::Node234 *parent = current->getParent();
+    const Key& key = pair.first;
+    
+    const Value& value = pair.second;
+    
+    const typename tree234<Key, Value>::Node234 *parent = current->getParent();
 
     // Get current's child index in its parent.
     int child_index; 
@@ -48,7 +53,7 @@ template<class K> inline std::ostream& DebugPrinter::operator()(const K& key, in
     
     if (parent != nullptr) {
 
-        oss << " address(" << current << "): key[" << index << "] = " << key << ": parent[";
+        oss << " address(" << current << "): key_value[" << index << "] = { " << key << ", } " << value << ": parent[";
 
         if (parent == root) {
 

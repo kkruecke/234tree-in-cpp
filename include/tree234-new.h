@@ -15,6 +15,7 @@
 #include <string>
 #include <ostream>
 
+
 // fwd declarations
 template<typename Key, typename Value> class tree234;    
 template<typename Key, typename Value> class Node234; 
@@ -54,7 +55,7 @@ template<typename Key, typename Value> class tree234 {
         
        friend std::ostream& operator<<(std::ostream& ostr, const KeyValue& key_value)
        {
-          ostr << "{" << key_value.pair.first << ',' <<  key_value.pair.second <<  "}, ";
+          ostr << "{" << key_value._pair.first << ',' <<  key_value._pair.second <<  "}, ";
           return ostr;
        }
    };
@@ -158,7 +159,7 @@ template<typename Key, typename Value> class tree234 {
  private:
 
    class BasicTreePrinter : PrinterOfTreeInterface {
-   
+   private:    
       const tree234<Key, Value>& tree;    
       int prior_level; 
       int depth;
@@ -167,7 +168,7 @@ template<typename Key, typename Value> class tree234 {
    public:
        BasicTreePrinter(const tree234<Key, Value>& t);
        
-       BasicTreePrinter(const BasicTreePrinter& np) : prior_level{np.prior_level}, depth{np.depth}, tree{np.tree} {}
+       BasicTreePrinter(const BasicTreePrinter& np) : tree{np.tree}, prior_level{np.prior_level}, depth{np.depth}  {}
        
        void print_level_order(std::ostream& ) override;
        void print_in_order(std::ostream&) override;
@@ -251,8 +252,11 @@ template<typename Key, typename Value> class tree234 {
     bool remove(Key key);
 
     void printlevelOrder(std::ostream&) noexcept;
+    
     void printInOrder(std::ostream&) noexcept;
+    
     void printPreOrder(std::ostream&) noexcept;
+    
     void printPostOrder(std::ostream&) noexcept;
 
     void test(Key key);
@@ -312,7 +316,7 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Nod
    keys_values[2] = kv3;
 }
 
-template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Node234(KeyValue&& key_value) noexcept
+template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Node234(KeyValue&& key_value) noexcept : parent{nullptr}
 {
    keys_values[0] = std::move(key_value); 
 }
@@ -332,7 +336,15 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(tree2
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::initializer_list<std::pair<Key, Value>> il) noexcept : root(nullptr), tree_size{0} 
 {
     for (auto& x: il) { // simply call insert(x)
+
+         std::cout << "\nTree after insert of { " << x.first << ", " << x.second << "}:"  << std::endl;
+         if (x.first == 27) {
+             int debug = 27;
+             ++debug;
+         }       
          insert(x.first, x.second);
+         
+         printlevelOrder(std::cout);
     }
 }
 // copy assignment
@@ -939,8 +951,6 @@ template<typename Key, typename Value> inline tree234<Key, Value>::~tree234()
  */
 template<typename Key, typename Value> void tree234<Key, Value>::DestroyTree(std::unique_ptr<Node234> &current) noexcept 
 {
-  Node234 *p = current.get();   // For Debug purposes only
-
   if (current == nullptr) {
 
       return;
@@ -1529,7 +1539,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node234 *tr
  */
 template<typename Key, typename Value> typename tree234<Key, Value>::Node234 *tree234<Key, Value>::fuseSiblings(Node234 *parent, int node2_index, int sibling_index) noexcept
 {
-  Node234 *psibling;
+  //--Node234 *psibling;
 
   Node234 *p2node = parent->children[node2_index].get();
 
@@ -1645,6 +1655,7 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::BasicTre
      std::ostream& operator()(const typename tree234<Key, Value>::Node234 *current, int level)
      {
         tree_printer.operator()(ostr, current, level);
+        return ostr;
      } 
  };
 
