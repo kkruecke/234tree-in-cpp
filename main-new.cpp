@@ -40,7 +40,6 @@ int main(int argc, char** argv)
   // Test of traversal methods
 
   // Testing find
- /* 
   vector<int> keys;
 
   auto keys_inserter = back_inserter(keys);
@@ -48,7 +47,7 @@ int main(int argc, char** argv)
   auto lambda = [&] (const pair<int, int>& pr) { keys_inserter = pr.first; };
   
   tree.inOrderTraverse(lambda);
-  
+  /* 
   for (auto& v : keys) {
       
       bool rc = tree.find(v);
