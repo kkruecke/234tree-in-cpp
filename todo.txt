@@ -1,7 +1,8 @@
 The latest tree234-new.h port is not inserting properly. Why?
 
 To properly debug, add to special treexxx::test_invariant() method does does what levelOrderTraverse() does, but also builds (or uses) a stack of descent indecies (or parent pointer values), so that the parent pointer of each Nodexxx can be properly tested, ie,
-the parent would be at the top of the stack? Perhaps this method should not use recursion but instead use iteration and imploy a local stack.
+the parent would be at the top of the stack? Perhaps this method should not use recursion but instead use iteration and imploy a local stack.....OR, instead of a stack maybe a getSuccessor() method could be implemented for the the 2-3-4 tree. This
+would eliminate the need for a stack.
 
 The levelOrderInvariantReport class would, then, no longer be needed.
 

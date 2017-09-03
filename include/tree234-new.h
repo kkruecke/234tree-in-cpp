@@ -240,7 +240,7 @@ template<typename Key, typename Value> class tree234 {
 
      tree234(std::initializer_list<std::pair<Key, Value>> list) noexcept; 
      
-     void test_invariant() const noexcept; // TODO: port
+     void test_invariant() const noexcept; 
  
      std::string test_invariant(const Node234& p) const noexcept; 
 
@@ -655,11 +655,43 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
     }
 }
 
-template<class Key, class Value> inline void tree234<Key, Value>::test_invariant() const noexcept
+template<class Key, class Value> inline void tree234<Key, Value>::test_invariant(Functor f) const noexcept
 {
-  levelOrderInvariantReport<tree234<Key, Value>> reporter(const_cast<const tree234<Key,Value>&>(*this), std::cout);
+// Do in order traverse using iteration and a stack, but add the parent pointer's address to the stack--or whatever is need to properly test the parent pointer
+// See Walls and Mirrors for the code. See pp 464-468
 
-  levelOrderTraverse(reporter); 
+// TODO: Try in order traversal without stack using next() method that finds the successor. I would need to port the bstree::getSuccessor() code and make it work for 2 3 4 trees.
+  std::stack<???> stack;
+
+  const tree234 *root_node = root.get();
+  const tree234 *current = root_node;
+
+  bool done = false;
+
+  while(!done) {
+
+          if (current != nullptr) {  // place pointer to node on stack before travesing node's left subtree
+
+               switch (current->getTotalItems()) {
+            
+                  case 1: // two node
+                        
+                        break;
+            
+                  case 2: // three node
+                        break;
+            
+                  case 3: // four node
+        
+                          break;
+               }
+        
+    
+              // travese the left-most subtree
+               
+          }        
+    
+  }
 }
 
 // copy assignment
@@ -940,10 +972,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
  */
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoInOrderTraverse(Functor f, const std::unique_ptr<Node234>& current) const noexcept
 {     
-   if (current == nullptr) {
-
- return;
-   }
+   if (current == nullptr) return;
 
    switch (current->getTotalItems()) {
 
