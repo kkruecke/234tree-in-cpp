@@ -14,7 +14,7 @@
 #include "printer-of-tree-interface.h"
 #include <string>
 #include <ostream>
-
+#include "level-order-invariant-report.h"
 
 // fwd declarations
 template<typename Key, typename Value> class tree234;    
@@ -133,6 +133,14 @@ template<typename Key, typename Value> class tree234 {
            explicit Node234(KeyValue&& key_value) noexcept; 
            
            constexpr const Node234 *getParent() const noexcept;
+
+           std::ostream& test_2node_invariant(std::ostream& ostr, const Node234 *root) const noexcept; // TODO: port
+
+           std::ostream& test_3node_invariant(std::ostream& ostr, const Node234 *root) const noexcept;
+
+           std::ostream& test_4node_invariant(std::ostream& ostr, const Node234 *root) const noexcept;
+    
+           std::ostream& test_height(std::ostream& ostr) const noexcept;
     
            constexpr int getTotalItems() const noexcept;
            constexpr int getChildCount() const noexcept;
@@ -229,6 +237,8 @@ template<typename Key, typename Value> class tree234 {
 
      tree234(std::initializer_list<std::pair<Key, Value>> list) noexcept; 
      
+     void test_invariant() const noexcept; // TODO: port
+ 
      constexpr int size() const;
      int getDepth() const noexcept; // get depth of tree from root to leaf.
 
@@ -261,6 +271,165 @@ template<typename Key, typename Value> class tree234 {
 
     void test(Key key);
 };
+// TODO: port
+template<class Key, class Value> inline void tree234<Key, Value>::test_invariant() const noexcept
+{
+  levelOrderInvariantReport<tree23<Key, Value>> reporter(const_cast<const tree234<Key,Value>&>(*this), std::cout);
+
+  levelOrderTraverse(reporter); 
+}
+
+// TODO: port
+template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test_2node_invariant(std::ostream& ostr, const Node234 *root) const noexcept
+{
+ //  test parent pointer	
+  test_parent_ptr(ostr, root);
+	 
+  if (isLeaf()) return ostr;
+
+  // check ordering of children's keys with respect to parent. 
+  for (int child_index = 0; child_index < Node23::TwoNodeChildren; ++child_index) {
+
+       if (children[child_index] == nullptr) {
+     
+            ostr << "error: children[" << child_index << "] is nullptr\n";
+            continue;
+       } 
+
+       for (auto i = 0; i < children[child_index]->totalItems; ++i) {
+          
+           switch (child_index) {
+
+             case 0:
+
+              if (children[0]->keys_values[i].nc_pair.first >= keys_values[0].nc_pair.first) { // If any are greater than or equal to keys_values.keys[0], then it is an error.
+              
+                 ostr << "error: children[0]->keys_values[" << i << "].nc_pair.first = " << children[0]->keys_values[i].nc_pair.first << " is not less than " << keys_values[0].nc_pair.first << ".\n";
+              }  
+
+              break;
+
+              case 1:
+
+                if (children[1]->keys_values[i].nc_pair.first <= keys_values[0].nc_pair.first) { // are any less than or equal to keys_values.keys[0], then it is an error.
+          
+                   ostr << "error: children[1]->keys_values[" << i << "].nc_pair.first= " << children[1]->keys_values[i].nc_pair.first << " is not greater than " << keys_values[0].nc_pair.first << ".\n";
+                }
+
+                break;
+  
+              default:
+                ostr << "error: totalItems = " << totalItems << ".\n";
+                break;
+
+          } // end switch 
+       }  // end inner for    
+  } // end outer for
+          
+  const Node23 *child; 
+
+  // test children's parent point. 
+  for (auto i = 0; i < TwoNodeChildren; ++i) {
+
+       if (children[i] == nullptr) continue; // skip if nullptr 
+      
+       child = children[i].get();   
+       
+       if (child->parent != this)	 {
+
+            ostr << "children[" << i << "]->parent does not point to 'this', which is " << this << ").";
+       } 
+  }
+}
+// TODO: port
+template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test_3node_invariant(std::ostream& ostr, const Node234 *root) const noexcept
+{
+  // If node is a 3-node, so we test keys[] ordering.
+  test_keys_ordering(ostr);
+  
+  //  test parent pointer	
+  test_parent_ptr(ostr, root);
+
+  // Test keys ordering
+  if (keys_values[0].nc_pair.first >= keys_values[1].nc_pair.first ) {
+
+      ostr <<  keys_values[0].nc_pair.first << " is greater than " <<keys_values[1].nc_pair.first;
+  }
+
+  if (isLeaf()) return ostr; 
+
+  for (int child_index = 0; child_index < Node23::ThreeNodeChildren; ++child_index) {
+
+     if (children[child_index] == nullptr) {
+   
+          ostr << "error: children[" << child_index << "] is nullptr\n";
+          continue;
+     }
+
+    for (auto i = 0; i < children[child_index]->totalItems; ++i) {
+
+      switch (child_index) {
+
+       case 0:  
+       // Test that all left child's keys are less than node's keys_values.nc_pair.first[0]
+     
+           if (children[0]->keys_values[i].nc_pair.first >= keys_values[0].nc_pair.first ) { // If any are greater than or equal to keys_values.nc_pair.first[0], it is an error
+     
+              // problem
+              ostr << "error: children[0]->keys_values[" << i << "].nc_pair.first = " << children[0]->keys_values[i].nc_pair.first << " is not less than " << keys_values[0].nc_pair.first << ".\n";
+           }  
+       break; 
+
+       case 1:
+ 
+       // Test middle child's keys, key, are such that: keys_values.nc_pair.first [0] < key < keys_values.nc_pair.first[1]
+           if (!(children[1]->keys_values[i].nc_pair.first > keys_values[0].nc_pair.first && children[1]->keys_values[i].nc_pair.first < keys_values[1].nc_pair.first)) {
+     
+              // problem
+              ostr << "error: children[1]->keys_values[" << i << "].nc_pair.first = " << children[1]->keys_values[i].nc_pair.first << " is not between " << keys_values[0].nc_pair.first << " and " << keys_values[1].nc_pair.first << ".\n";
+           }
+
+       break;
+
+      case 2:     
+       // Test right child's keys are all greater than nodes sole key
+     
+           if (children[2]->keys_values[i].nc_pair.first <= keys_values[1].nc_pair.first) { // If any are less than or equal to keys_values.nc_pair.first[1], it is an error.
+     
+              // problem
+              ostr << "error: children[2]->keys_values[" << i << "].nc_pair.first = " << children[2]->keys_values[i].nc_pair.first << " is not greater than " << keys_values[1].nc_pair.first << ".\n";
+           }
+
+       break;
+
+      default:
+         ostr << "error: totalItems = " << totalItems << ".\n";
+         break;
+     } // end switch
+   } // end inner for
+ } // end outer for
+     
+ // test children's parent point. 
+ for (auto i = 0; i < ThreeNodeChildren; ++i) {
+
+    if (children[i] == nullptr) continue; // skip if nullptr 
+
+    if (children[i]->parent != this)	 {
+
+        ostr << "children[" << i << "]->parent does not point to 'this', which is " << this << ").";
+    } 
+ }
+
+  return ostr; 
+}
+
+// TODO: port
+template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test_4node_invariant(std::ostream& ostr, const Node234 *root) const noexcept
+{
+
+   return ostr;
+}
+
 
 template<typename Key, typename Value> typename tree234<Key, Value>::KeyValue& tree234<Key, Value>::KeyValue::operator=(const KeyValue& lhs) noexcept
 {
@@ -347,6 +516,14 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
          printlevelOrder(std::cout);
     }
 }
+
+template<class Key, class Value> inline void tree234<Key, Value>::test_invariant() const noexcept
+{
+  levelOrderInvariantReport<tree23<Key, Value>> reporter(const_cast<const tree23<Key,Value>&>(*this), std::cout);
+
+  levelOrderTraverse(reporter); 
+}
+
 // copy assignment
 template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, Value>::operator=(const tree234& lhs) noexcept 
 {
