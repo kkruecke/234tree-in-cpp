@@ -812,14 +812,10 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getLeafNodeSuccessor(const typename tree234<Key, Value>::Node234 *pnode, int index_of_key) const noexcept
 {
-  // TODO: port to tree234
+  // ported  
+  if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != index_of_key) { // pnode is a 3 or 4-node and the index is not the right most.
 
-
-
-  // If the leaf node is a 3-node and key_index points to the first key, this is trivial: we simply set key_index to 1. 
-  if (pnode->isThreeNode() && index_of_key == 0) {
-
-      return std::make_pair(current, 1); 
+      return std::make_pair(current, index_of_key + 1); 
   }
 
   // Determine child_index such that pnode == pnode->parent->children[child_index]
@@ -827,6 +823,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
   int suc_key_index;
 
+  // TODO: Following not ported
   /*
    Handle easy cases first:
    1. If child_index is 0, then the successor -- when pnode is either a 2-node of 3-node -- is pnode->parent and the suc_key_index is 0.
@@ -835,7 +832,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   switch (child_index) {
 
       case 0: /*
-             pnode is either the left most child of either a 2-node or 3-node parent. If pnode is a 3-node, its key_index equals 1 (because if it is was 0,
+             pnode is either the left most child of either a 2, 3, or 4-node parent. If pnode is a 3-node, its key_index equals 1 (because if it is was 0,
              this was already handled at the beginning of this method. 
              The possibilities are:
             (a)   [20]       (b) [20]    (c)   [20, 40]       (d) [20,  40]    
@@ -909,11 +906,12 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
       again, 60 is the successor by applying the same reasoning.
       */
         {
+           // <-- ported start
            const Node234 *prior_child = pnode;
            const Node234 *__parent = pnode->parent;
            
            // Ascend the parent pointers as long as pnode is the right most child of its parent.
-           while(pnode == __parent->getRightMostChild())  {
+           while(pnode == __parent->getRightMostChild())  { 
            
                // pnode is still the right most child but now its parent is the root, therefore there is no successor. 
                if (__parent == root.get()) {
@@ -927,8 +925,9 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
            }
            
            prior_child = pnode; 
-           pnode = __parent;
-           
+           pnode = __parent;   
+           // <--- ported end
+
            // If pnode is a 3-node, determine if we ascended from the first child, children[0], or the middle child, children[1], and set suc_key_index accordingly. 
            if (pnode->isThreeNode()) {
 
