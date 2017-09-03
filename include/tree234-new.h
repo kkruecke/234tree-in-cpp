@@ -158,6 +158,8 @@ template<typename Key, typename Value> class tree234 {
 
            constexpr const Key& key(int i ) const { return keys_values[i].key(); } 
 
+           int getIndexInParent() const;
+
            constexpr Value& value(int i ) { return keys_values[i].value(); } 
            const Value& value(int i ) const { return keys_values[i].value(); } 
     
@@ -637,6 +639,19 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Nod
    keys_values[0] = std::move(key_value); 
 }
 
+template<class Key, class Value> int tree23<Key, Value>::Node234::getIndexInParent() const 
+{
+  for (int child_index = 0; child_index <= p->parent->totalItems; ++child_index) { // Check the address of each of the children of the parent with the address of "this".
+
+       if (current == p->parent->children[child_index].get()) {
+           return  child_index;
+       }
+  }
+
+  throw std::range_error("Cannot find the index of this node in its parent");
+}
+
+
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept : tree_size{lhs.tree_size} 
 {
    CloneTree(lhs.root, root, nullptr);
@@ -727,29 +742,27 @@ May set:
 2. key_index
 3. position
  */
-template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getSuccessor(const Node234 *current, int index_of_key) const noexcept
+template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getSuccessor(const Node234 *current, int key_index) const noexcept
 {
   if (current->isLeaf()) { // If leaf node
      
-     if (current == root.get()) { // root is leaf      
+     if (current == root.get()) { // special case: root is leaf      
  
-         // TODO: port the case when root is a 4-node 
-         if (root->isThreeNode() && parent_key_index == 0) { 
+         if (!root->isTwoNode() && key_index != (root->getTotalItems() - 1)) { 
 
-             return std::make_pair(current, 1);
-
+             return std::make_pair(current, key_index + 1);
          } 
                   
-         return std::make_pair(nullptr, 0); // There is not successor
+         return std::make_pair(nullptr, 0); // There is no successor
  
      } else {
 
-        return getLeafNodeSuccessor(current, index_of_key);
+        return getLeafNodeSuccessor(current, key_index);
      }
 
   } else { // else internal node
 
-      return getInternalNodeSuccessor(current, index_of_key);
+      return getInternalNodeSuccessor(current, key_index);
   }
 }
 
@@ -819,11 +832,11 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   }
 
   // Determine child_index such that pnode == pnode->parent->children[child_index]
-  int child_index = getChildIndex(pnode); // BUG: This blows up if pnode == root.get())
+  int child_index = pnode->getIndexInParent(); 
 
   int suc_key_index;
 
-  // TODO: Following not ported
+  // TODO: Following code mostly not ported. Make similiar use cases as the current comments, which are for a 2 3 tree.
   /*
    Handle easy cases first:
    1. If child_index is 0, then the successor -- when pnode is either a 2-node of 3-node -- is pnode->parent and the suc_key_index is 0.
