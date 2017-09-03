@@ -648,7 +648,7 @@ template<class Key, class Value> int tree23<Key, Value>::Node234::getIndexInPare
        }
   }
 
-  throw std::range_error("Cannot find the index of this node in its parent");
+  throw std::logic_error("Cannot find the parent child index of the node. The node may be the tree's root or the invariant may have been violated.");
 }
 
 
