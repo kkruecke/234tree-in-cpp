@@ -139,6 +139,8 @@ template<typename Key, typename Value> class tree234 {
            std::ostream& test_3node_invariant(std::ostream& ostr, const Node234 *root) const noexcept;
 
            std::ostream& test_4node_invariant(std::ostream& ostr, const Node234 *root) const noexcept;
+
+    	   std::ostream& test_parent_ptr(std::ostream& ostr, const Node234 *root) const noexcept;
     
            std::ostream& test_height(std::ostream& ostr) const noexcept;
     
@@ -271,24 +273,17 @@ template<typename Key, typename Value> class tree234 {
 
     void test(Key key);
 };
-// TODO: port
-template<class Key, class Value> inline void tree234<Key, Value>::test_invariant() const noexcept
-{
-  levelOrderInvariantReport<tree23<Key, Value>> reporter(const_cast<const tree234<Key,Value>&>(*this), std::cout);
 
-  levelOrderTraverse(reporter); 
-}
-
-// TODO: port
-template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test_2node_invariant(std::ostream& ostr, const Node234 *root) const noexcept
+template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::test_2node_invariant(std::ostream& ostr, const Node234 *root) const noexcept
 {
- //  test parent pointer	
   test_parent_ptr(ostr, root);
 	 
   if (isLeaf()) return ostr;
 
+  auto children_num = to_int(NodeType::two_node) + 1;
+
   // check ordering of children's keys with respect to parent. 
-  for (int child_index = 0; child_index < Node23::TwoNodeChildren; ++child_index) {
+  for (int child_index = 0; child_index < children_num; ++child_index) { // BUG
 
        if (children[child_index] == nullptr) {
      
@@ -326,10 +321,10 @@ template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test
        }  // end inner for    
   } // end outer for
           
-  const Node23 *child; 
+  const Node234 *child; 
 
   // test children's parent point. 
-  for (auto i = 0; i < TwoNodeChildren; ++i) {
+  for (auto i = 0; i < to_int(NodeType::two_node); ++i) {
 
        if (children[i] == nullptr) continue; // skip if nullptr 
       
@@ -341,16 +336,13 @@ template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test
        } 
   }
 }
-// TODO: port
-template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test_3node_invariant(std::ostream& ostr, const Node234 *root) const noexcept
+
+template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::test_3node_invariant(std::ostream& ostr, const Node234 *root) const noexcept
 {
-  // If node is a 3-node, so we test keys[] ordering.
-  test_keys_ordering(ostr);
-  
   //  test parent pointer	
   test_parent_ptr(ostr, root);
 
-  // Test keys ordering
+  //Test keys ordering for 3-node
   if (keys_values[0].nc_pair.first >= keys_values[1].nc_pair.first ) {
 
       ostr <<  keys_values[0].nc_pair.first << " is greater than " <<keys_values[1].nc_pair.first;
@@ -358,7 +350,9 @@ template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test
 
   if (isLeaf()) return ostr; 
 
-  for (int child_index = 0; child_index < Node23::ThreeNodeChildren; ++child_index) {
+  auto children_num = to_int(NodeType::three_node) + 1;
+
+  for (int child_index = 0; child_index < children_num; ++child_index) {
 
      if (children[child_index] == nullptr) {
    
@@ -369,7 +363,6 @@ template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test
     for (auto i = 0; i < children[child_index]->totalItems; ++i) {
 
       switch (child_index) {
-
        case 0:  
        // Test that all left child's keys are less than node's keys_values.nc_pair.first[0]
      
@@ -410,7 +403,7 @@ template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test
  } // end outer for
      
  // test children's parent point. 
- for (auto i = 0; i < ThreeNodeChildren; ++i) {
+ for (auto i = 0; i <  to_int(NodeType::three_node); ++i) {
 
     if (children[i] == nullptr) continue; // skip if nullptr 
 
@@ -423,12 +416,116 @@ template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test
   return ostr; 
 }
 
-// TODO: port
-template<class Key, class Value> std::ostream& tree23<Key, Value>::Node234::test_4node_invariant(std::ostream& ostr, const Node234 *root) const noexcept
+template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::test_4node_invariant(std::ostream& ostr, const Node234 *root) const noexcept
 {
+  //  test parent pointer	
+  test_parent_ptr(ostr, root);
 
-   return ostr;
+  // Test keys ordering for 4-node
+  for (auto i = 0; i < 2; ++i) {
+
+    if (keys_values[i].nc_pair.first >= keys_values[i + 1].nc_pair.first) {
+
+      ostr <<  keys_values[i].nc_pair.first << " is greater than or equal to " << keys_values[i + 1].nc_pair.first;
+    }
+  }
+  
+  if (isLeaf()) return ostr; 
+
+  auto children_num = to_int(NodeType::four_node) + 1;
+
+  for (int child_index = 0; child_index < children_num; ++child_index) {
+
+     if (children[child_index] == nullptr) {
+   
+          ostr << "error: children[" << child_index << "] is nullptr\n";
+          continue;
+     }
+
+    for (auto i = 0; i < children[child_index]->totalItems; ++i) {
+
+      switch (child_index) {
+       case 0:  
+       // Test that all left child's keys are less than node's keys_values.nc_pair.first[0]
+     
+           if (children[0]->keys_values[i].nc_pair.first >= keys_values[0].nc_pair.first ) { // If any are greater than or equal to keys_values.nc_pair.first[0], it is an error
+     
+              // problem
+              ostr << "error: children[0]->keys_values[" << i << "].nc_pair.first = " << children[0]->keys_values[i].nc_pair.first << " is not less than " << keys_values[0].nc_pair.first << ".\n";
+           }  
+       break; 
+
+       case 1:
+ 
+       // Test middle child's keys, key, are such that: keys_values.nc_pair.first [0] < key < keys_values.nc_pair.first[1]
+           if (!(children[1]->keys_values[i].nc_pair.first > keys_values[0].nc_pair.first && children[1]->keys_values[i].nc_pair.first < keys_values[1].nc_pair.first)) {
+     
+              // problem
+              ostr << "error: children[1]->keys_values[" << i << "].nc_pair.first = " << children[1]->keys_values[i].nc_pair.first << " is not between " << keys_values[0].nc_pair.first << " and " << keys_values[1].nc_pair.first << ".\n";
+           }
+
+       break;
+
+       case 2:
+ 
+       // Test middle child's keys, key, are such that: keys_values.nc_pair.first [0] < key < keys_values.nc_pair.first[1]
+           if (!(children[2]->keys_values[i].nc_pair.first > keys_values[1].nc_pair.first && children[1]->keys_values[i].nc_pair.first < keys_values[2].nc_pair.first)) {
+     
+              // problem
+              ostr << "error: children[2]->keys_values[" << i << "].nc_pair.first = " << children[2]->keys_values[i].nc_pair.first << " is not between " << keys_values[1].nc_pair.first << " and " << keys_values[2].nc_pair.first << ".\n";
+           }
+
+       break;
+
+      case 3:     
+       // Test right child's keys are all greater than nodes sole key
+     
+           if (children[3]->keys_values[i].nc_pair.first <= keys_values[2].nc_pair.first) { // If any are less than or equal to keys_values.nc_pair.first[1], it is an error.
+     
+              // problem
+              ostr << "error: children[2]->keys_values[" << i << "].nc_pair.first = " << children[2]->keys_values[i].nc_pair.first << " is not greater than " << keys_values[1].nc_pair.first << ".\n";
+           }
+
+       break;
+
+      default:
+         ostr << "error: totalItems = " << totalItems << ".\n";
+         break;
+     } // end switch
+   } // end inner for
+ } // end outer for
+     
+ // test children's parent point. 
+ for (auto i = 0; i < to_int(NodeType::four_node); ++i) {
+
+    if (children[i] == nullptr) continue; // skip if nullptr 
+
+    if (children[i]->parent != this)	 {
+
+        ostr << "children[" << i << "]->parent does not point to 'this', which is " << this << ").";
+    } 
+ }
+
+  return ostr; 
 }
+//TODO: port
+// TODO: This test seems inadequate
+template<class Key, class Value> inline std::ostream& tree234<Key, Value>::Node234::test_parent_ptr(std::ostream& ostr, const Node234 *root) const noexcept
+{
+   if (this == root) { // If this is the root...
+       
+        if (parent != nullptr) {
+
+ 	  ostr << " node is root and parent is not nullptr ";
+        }
+
+   } else if (this == parent || parent == nullptr) { // ...otherwise, just check that it is not nullptr or this. TODO: This is not a vary through test. It does not test that the parent is actually in the descent path.
+
+	ostr << " parent pointer wrong ";
+   }	   
+   return ostr;
+}	
+
 
 
 template<typename Key, typename Value> typename tree234<Key, Value>::KeyValue& tree234<Key, Value>::KeyValue::operator=(const KeyValue& lhs) noexcept
@@ -519,7 +616,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
 
 template<class Key, class Value> inline void tree234<Key, Value>::test_invariant() const noexcept
 {
-  levelOrderInvariantReport<tree23<Key, Value>> reporter(const_cast<const tree23<Key,Value>&>(*this), std::cout);
+  levelOrderInvariantReport<tree234<Key, Value>> reporter(const_cast<const tree234<Key,Value>&>(*this), std::cout);
 
   levelOrderTraverse(reporter); 
 }
