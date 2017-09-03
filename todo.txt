@@ -1,3 +1,8 @@
-The new code is ported that uses keys and values, and it compiles and links, but the logic--either the port or the inherent logic changes needed when using KeyValue instead of Key--causing erroneous tree displays.
+The latest tree234-new.h port is not inserting properly. Why?
+
+To properly debug, add to special treexxx::test_invariant() method does does what levelOrderTraverse() does, but also builds (or uses) a stack of descent indecies (or parent pointer values), so that the parent pointer of each Nodexxx can be properly tested, ie,
+the parent would be at the top of the stack? Perhaps this method should not use recursion but instead use iteration and imploy a local stack.
+
+The levelOrderInvariantReport class would, then, no longer be needed.
 
 Compare debug sessions of old code that works with new code that fails. 
