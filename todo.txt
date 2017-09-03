@@ -4,6 +4,7 @@ To properly debug, add to special treexxx::test_invariant() method does does wha
 the parent would be at the top of the stack? Perhaps this method should not use recursion but instead use iteration and imploy a local stack.....OR, instead of a stack maybe a getSuccessor() method could be implemented for the the 2-3-4 tree. This
 would eliminate the need for a stack.
 
+
 The levelOrderInvariantReport class would, then, no longer be needed.
 
 Compare debug sessions of old code that works with new code that fails. 

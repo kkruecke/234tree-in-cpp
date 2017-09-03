@@ -732,13 +732,13 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   if (current->isLeaf()) { // If leaf node
      
      if (current == root.get()) { // root is leaf      
-  
-         // TODO: Determine 
+ 
+         // TODO: port the case when root is a 4-node 
          if (root->isThreeNode() && parent_key_index == 0) { 
 
              return std::make_pair(current, 1);
 
-         } else if (root->isFourNode())
+         } 
                   
          return std::make_pair(nullptr, 0); // There is not successor
  
@@ -815,7 +815,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   // ported  
   if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != index_of_key) { // pnode is a 3 or 4-node and the index is not the right most.
 
-      return std::make_pair(current, index_of_key + 1); 
+      return std::make_pair(pnode, index_of_key + 1); 
   }
 
   // Determine child_index such that pnode == pnode->parent->children[child_index]
