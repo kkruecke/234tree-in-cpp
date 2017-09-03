@@ -149,6 +149,8 @@ template<typename Key, typename Value> class tree234 {
            constexpr int getTotalItems() const noexcept;
            constexpr int getChildCount() const noexcept;
 
+           constexpr const Node23 *getRightMostChild() const noexcept { return children[getTotalItems()].get(); }
+
            // method to help in debugging
            void printKeys(std::ostream&);
 
@@ -911,13 +913,12 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
            const Node234 *__parent = pnode->parent;
            
            // Ascend the parent pointers as long as pnode is the right most child of its parent.
-           while(pnode == __parent->children[__parent->totalItems].get() )  {
+           while(pnode == __parent->getRightMostChild())  {
            
                // pnode is still the right most child but now its parent is the root, therefore there is no successor. 
                if (__parent == root.get()) {
                   
-                   return std::make_pair(nullptr, 0);  // Because pnode is still the right most child of its parent it has no successor.
-                                                       // To indicate this we set current to nullptr and key_index to 0.
+                   return std::make_pair(nullptr, 0);  // To indicate there is no successor, we set current to nullptr and key_index to 0.
                }
            
                prior_node = pnode;
