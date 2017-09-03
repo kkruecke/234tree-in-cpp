@@ -909,7 +909,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
       again, 60 is the successor by applying the same reasoning.
       */
         {
-           const Node234 *prior_node = pnode;
+           const Node234 *prior_child = pnode;
            const Node234 *__parent = pnode->parent;
            
            // Ascend the parent pointers as long as pnode is the right most child of its parent.
@@ -921,18 +921,18 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
                    return std::make_pair(nullptr, 0);  // To indicate there is no successor, we set current to nullptr and key_index to 0.
                }
            
-               prior_node = pnode;
+               prior_child = pnode;
                pnode = __parent;
                __parent = __parent->parent;
            }
            
-           prior_node = pnode; 
+           prior_child = pnode; 
            pnode = __parent;
            
            // If pnode is a 3-node, determine if we ascended from the first child, children[0], or the middle child, children[1], and set suc_key_index accordingly. 
            if (pnode->isThreeNode()) {
 
-              suc_key_index = (prior_node == pnode->children[0].get()) ? 0 : 1; 
+              suc_key_index = (prior_child == pnode->children[0].get()) ? 0 : 1; 
 
            } else { // pnode is a 2-node
 
