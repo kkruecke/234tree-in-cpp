@@ -8,6 +8,7 @@
 #include <memory>
 #include <array>
 #include <queue>
+#include <sstream>
 #include <exception>
 #include <iosfwd>
 #include <utility>
@@ -70,7 +71,7 @@ template<typename Key, typename Value> class tree234 {
 
        enum class NodeType : int { two_node=1, three_node=2, four_node=3 };
     
-       int to_int(const NodeType x) const { return static_cast<int>(x); }
+       constexpr int to_int(const NodeType x) const { return static_cast<int>(x); }
        
 
        Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
@@ -134,7 +135,7 @@ template<typename Key, typename Value> class tree234 {
            
            constexpr const Node234 *getParent() const noexcept;
 
-           std::ostream& test_2node_invariant(std::ostream& ostr, const Node234 *root) const noexcept; // TODO: port
+           std::ostream& test_2node_invariant(std::ostream& ostr, const Node234 *root) const noexcept; 
 
            std::ostream& test_3node_invariant(std::ostream& ostr, const Node234 *root) const noexcept;
 
@@ -241,6 +242,8 @@ template<typename Key, typename Value> class tree234 {
      
      void test_invariant() const noexcept; // TODO: port
  
+     std::string test_invariant(const Node234& p) const noexcept; 
+
      constexpr int size() const;
      int getDepth() const noexcept; // get depth of tree from root to leaf.
 
@@ -273,6 +276,44 @@ template<typename Key, typename Value> class tree234 {
 
     void test(Key key);
 };
+
+template<class Key, class Value> std::string tree234<Key, Value>::test_invariant(const Node234& const_node) const noexcept
+{
+  std::ostringstream oss;
+
+  switch(const_node.getTotalItems()) {
+
+      case to_int(Node234::NodeType::two_node):
+
+         const_node.test_2node_invariant(oss, root.get());
+         break;   
+      
+      case to_int(Node234::NodeType::three_node):
+
+         const_node.test_3node_invariant(oss, root.get());
+         break;   
+     
+      case to_int(Node234::NodeType::four_node):
+
+         const_node.test_4node_invariant(oss, root.get());
+         break;   
+
+      default:
+         // If we come here, then node.totalItems is wrong.
+         oss << " error: node.totalItems is " << const_node.getTotalItems() << ".\n"; 
+         break;
+  }
+
+  std::string msg;
+
+  if (oss.str().length() > 0) { 
+
+     msg = " --> " + oss.str();
+  } 
+
+  return msg; 
+}
+
 
 template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::test_2node_invariant(std::ostream& ostr, const Node234 *root) const noexcept
 {
