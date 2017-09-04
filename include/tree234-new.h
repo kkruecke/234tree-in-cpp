@@ -853,7 +853,9 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
        }
 
   } else { /* 
-            ...otherwise, if it is not the right most child, the successor is more straightforward to find if we consider that a 3-node can be viewed as two catenated 2-nodes in which the the middle child is shared between these two "2-nodes", like this
+            ...otherwise, we know that pnode that for 2, 3 and 4-nodes pnode is NOT the right most child of its parent (and it is a leaf).  
+
+            Comment: We can view a 3-node as two catenated 2-nodes in which the the middle child is shared between these two "2-nodes", like this
           
                [3,       5]  
                /  \     / \
@@ -866,10 +868,30 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
               /  \  / \  / \
             [1]  [3]   [5]  [7] 
 
-            If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is not the right-most, so the we simply go up on level.    
+            If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is the last, ie, pnode->getTotalItems() - 1. So the we simply go up on level to find the in order successor.    
+            We simply need to determine the index in the parent to choose.
            */
-           
- 
+          switch (pnode->getTotalItems() {
+
+             
+                 // 
+		case NodeType::two_node: 
+                   
+                  break;
+
+		case NodeType::three_node:
+
+                  break;
+
+		case NodeType::four_node:
+
+                  break;
+
+                default:
+
+                  break;
+
+          }
   }  
   return  ??;
 }
