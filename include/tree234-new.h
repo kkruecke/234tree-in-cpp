@@ -825,15 +825,18 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getLeafNodeSuccessor(const typename tree234<Key, Value>::Node234 *pnode, int key_index, int child_index) const noexcept
 {
-  if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { // If pnode is a 3 or 4-node and the index is not the right most, then.
+  // Handle the easy case: a 3- or 4-node in which key_index is not the right most value in the node.
+  if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { 
 
       return std::make_pair(pnode, key_index + 1); 
 
   }  else if (pnode->parent->children[child_index] == pnode->parent->getRightMostChild()) { // Is pnode the right-most child of its parent? 
 
   /*
-   Is pnode the right-most child of its parent? If so, we must find the first ancestor--parent, grandparent, great grandparent, etc--that is in a "greater than" node.key(i), i.e., an ancestor->key(j) that is to the right of node.key(i). 
-   We do this by ascending the tree until we encounter the first ancestor that is not a right-most child.  Compare 2-3 tree use cases with those of a 2-3-4 tree.
+   pnode is the right-most child of its parent, so we must find the first ancestor--parent, grandparent, great grandparent, etc--that is in a "greater than" node.key(i), i.e., an ancestor->key(j) that is to the right of node.key(i). 
+   Note: We know that if it is a 3- or 4-node, then key_index is the right most value in the node. Since a 2-node only has one value, it is by default the "right most".
+
+   To find this ancester, we ascend the tree until we encounter the first ancestor that is not a right-most child.  We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
    */
   
        Node234 *ancestor = pnode->parent;
@@ -848,12 +851,13 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
        } else { 
 
-           // How do we determine ancestor's key index? 
-           // ....return std::make_pair(ancestor, ancestor_key_index).
+             return std::make_pair(ancester, 0);  // We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
        }
 
   } else { /* 
-            ...otherwise, we know that pnode that for 2, 3 and 4-nodes pnode is NOT the right most child of its parent (and it is a leaf).  
+            ...otherwise, we know that pnode that for 2, 3 and 4-nodes pnode is NOT the right most child of its parent (and it is a leaf). We know that if it is a 2, 3, or 4-node, it is not the right most. 
+            We also know that key_index is the right most value of pnode--right? So need to ascertain the index next_index such that pnode->parent->key(next_index) > pnode->key(key_index). How can next_index be calculated
+            from the input parameters and this use-case?
 
             Comment: We can view a 3-node as two catenated 2-nodes in which the the middle child is shared between these two "2-nodes", like this
           
@@ -871,27 +875,8 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
             If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is the last, ie, pnode->getTotalItems() - 1. So the we simply go up on level to find the in order successor.    
             We simply need to determine the index in the parent to choose.
            */
-          switch (pnode->getTotalItems() {
+       return make_pair(???);
 
-             
-                 // 
-		case NodeType::two_node: 
-                   
-                  break;
-
-		case NodeType::three_node:
-
-                  break;
-
-		case NodeType::four_node:
-
-                  break;
-
-                default:
-
-                  break;
-
-          }
   }  
   return  ??;
 }
