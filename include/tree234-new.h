@@ -823,16 +823,16 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  1. pnode is a leaf node, either a 2 or 3-node
  2. If pnode is 3-node, then key_index, the key index into pnode->keys_values[].nc_pair.first must be 1, the second key. It can never be 0, the first key.
  */
-template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getLeafNodeSuccessor(const typename tree234<Key, Value>::Node234 *pnode, int index_of_key) const noexcept
+template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getLeafNodeSuccessor(const typename tree234<Key, Value>::Node234 *pnode, int key_index, int child_index) const noexcept
 {
   // New Version start
-  if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != index_of_key) { // pnode is a 3 or 4-node and the index is not the right most.
+  if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { // IF pnode is a 3 or 4-node and the index is not the right most, then .
 
-      return std::make_pair(pnode, index_of_key + 1); 
+      return std::make_pair(pnode, key_index + 1); 
   }
 
   /*
-   If pnode is a 3- or 4-node, key_index is the right-most; or if pnode is a 2-node, it is by default he "right most"
+   If pnode is a 3- or 4-node and key_index? is the right-most. Note: if pnode is a 2-node, it is by default the "right most".
    If child_index is the right most index (of the parent node), then we must ascent the tree until we encounter the first ancestor that is not a
    right-most child; otherwise, ....
    */
