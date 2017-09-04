@@ -825,7 +825,6 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getLeafNodeSuccessor(const typename tree234<Key, Value>::Node234 *pnode, int key_index, int child_index) const noexcept
 {
-  // New Version start
   if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { // IF pnode is a 3 or 4-node and the index is not the right most, then .
 
       return std::make_pair(pnode, key_index + 1); 
@@ -833,18 +832,29 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
   /*
    If pnode is a 3- or 4-node and key_index? is the right-most. Note: if pnode is a 2-node, it is by default the "right most".
-   If child_index is the right most index (of the parent node), then we must ascent the tree until we encounter the first ancestor that is not a
-   right-most child; otherwise, ....
+
+   Find the first ancestor--parent, grandparent, great grandparent, etc--that is in a "greater than" node.key(i), i.e., an ancestor->key(j) that is to the right of node.key(i). 
+   We do this by ascending the tree until we encounter the first ancestor that is not a right-most child.  Compare 2-3 tree use cases with those of a 2-3-4 tree.
+   
    */
-  if (child_index == pnode->parent->getRightMostChildIndex()) {
+  if (pnode->parent->children[child_index] == pnode->parent->getRightMostChild()) {
 
+       Node234 *ancestor = pnode->parent;
 
-       while (??? != right-most) {
-
+       while (ancestor != root && ancestor == ancestor->parent->getRightMostChild()) { // Q: Is this test correct for 3 and 4-nodes, too.
+            
+             ancestor = ancestor->parent;
        }
+       if (ancestor == root) { // No successor is possible because pnode->key(i) is the max.
 
+             return std::make_pair(nullptr, -1); 
+       } 
 
-  } else { // what do we do?
+       // How do we determine ancestor's key index? 
+       // ....return std::make_pair(ancestor, ancestor_key_index).
+
+  } else { // ...otherwise, it is not the right most child and the successor is easier to find....
+           
  
   }  
   return  ??;
