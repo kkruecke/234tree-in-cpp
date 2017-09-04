@@ -825,7 +825,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getLeafNodeSuccessor(const typename tree234<Key, Value>::Node234 *pnode, int key_index, int child_index) const noexcept
 {
-  if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { // IF pnode is a 3 or 4-node and the index is not the right most, then .
+  if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { // If pnode is a 3 or 4-node and the index is not the right most, then.
 
       return std::make_pair(pnode, key_index + 1); 
   }
@@ -853,7 +853,22 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
        // How do we determine ancestor's key index? 
        // ....return std::make_pair(ancestor, ancestor_key_index).
 
-  } else { // ...otherwise, it is not the right most child and the successor is easier to find....
+  } else { /* 
+            ...otherwise, if it is not the right most child, the successor is more straightforward to find if we consider that a 3-node can be viewed as two catenated 2-nodes in which the the middle child is shared between these two "2-nodes", like this
+          
+               [3,       5]  
+               /  \     / \
+              /    \   /   \
+            [1, 2]  [3, 4]  [6]
+
+            While a 4-node can be viewed as three catenated 2-nodes in which the two middle child are shared
+              
+               [2,   4,   6]  
+              /  \  / \  / \
+            [1]  [3]   [5]  [7] 
+
+            If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is not the right-most, so the we simply go up on level.    
+           */
            
  
   }  
