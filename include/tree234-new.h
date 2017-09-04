@@ -828,17 +828,14 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { // If pnode is a 3 or 4-node and the index is not the right most, then.
 
       return std::make_pair(pnode, key_index + 1); 
-  }
+
+  }  else if (pnode->parent->children[child_index] == pnode->parent->getRightMostChild()) { // Is pnode the right-most child of its parent? 
 
   /*
-   If pnode is a 3- or 4-node and key_index? is the right-most. Note: if pnode is a 2-node, it is by default the "right most".
-
-   Find the first ancestor--parent, grandparent, great grandparent, etc--that is in a "greater than" node.key(i), i.e., an ancestor->key(j) that is to the right of node.key(i). 
+   Is pnode the right-most child of its parent? If so, we must find the first ancestor--parent, grandparent, great grandparent, etc--that is in a "greater than" node.key(i), i.e., an ancestor->key(j) that is to the right of node.key(i). 
    We do this by ascending the tree until we encounter the first ancestor that is not a right-most child.  Compare 2-3 tree use cases with those of a 2-3-4 tree.
-   
    */
-  if (pnode->parent->children[child_index] == pnode->parent->getRightMostChild()) {
-
+  
        Node234 *ancestor = pnode->parent;
 
        while (ancestor != root && ancestor == ancestor->parent->getRightMostChild()) { // Q: Is this test correct for 3 and 4-nodes, too.
@@ -848,10 +845,12 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
        if (ancestor == root) { // No successor is possible because pnode->key(i) is the max.
 
              return std::make_pair(nullptr, -1); 
-       } 
 
-       // How do we determine ancestor's key index? 
-       // ....return std::make_pair(ancestor, ancestor_key_index).
+       } else { 
+
+           // How do we determine ancestor's key index? 
+           // ....return std::make_pair(ancestor, ancestor_key_index).
+       }
 
   } else { /* 
             ...otherwise, if it is not the right most child, the successor is more straightforward to find if we consider that a 3-node can be viewed as two catenated 2-nodes in which the the middle child is shared between these two "2-nodes", like this
