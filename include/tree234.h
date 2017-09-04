@@ -1054,11 +1054,12 @@ template<typename K> void tree234<K>::split(Node234 *pnode) noexcept
     return;
 }
 /*
- * Deletion based on pseudo code from pages 50-53 of: 
+ * Deletion based on pseudo code from:
  *
- * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ *  1. slides #50-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt, slides 50-53 
+ *  2. https://azrael.digipen.edu/~mmead/www/Courses/CS280/Trees-2-3-4-delete.html
  *
- * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the deleted key
+ * We reduce deletion of an internal node's key to the case of deletion of a leaf node's key by swapping the deleted key
  * with its in-order successor.
  */
 
