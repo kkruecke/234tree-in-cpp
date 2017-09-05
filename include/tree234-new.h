@@ -688,6 +688,13 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
 
 template<class Key, class Value> template<typename Functor> inline void tree234<Key, Value>::test_invariant(Functor f) const noexcept
 {
+  levelOrderInvariantReport<tree234<Key, Value>> reporter(const_cast<const tree234<Key,Value>&>(*this), std::cout);
+
+  levelOrderTraverse(reporter); 
+}
+/*
+template<class Key, class Value> template<typename Functor> inline void tree234<Key, Value>::test_invariant(Functor f) const noexcept
+{
 // Do in order traverse using iteration and a stack, but add the parent pointer's address to the stack--or whatever is need to properly test the parent pointer
 // See Walls and Mirrors for the code. See pp 464-468
 
@@ -723,6 +730,7 @@ template<class Key, class Value> template<typename Functor> inline void tree234<
     
   }
 }
+*/
 
 /*
 Finding the successor of a given node 
