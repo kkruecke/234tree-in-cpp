@@ -726,13 +726,17 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
          if (x.first == 27) {
              int debug = 27;
              ++debug;
-         }       
+         }    
+         
+         std::cout << "Printing tree before insert" << std::endl;
+         printlevelOrder(std::cout);
+
          insert(x.first, x.second);
          
          std::cout << "Printing tree after insert" << std::endl;
          printlevelOrder(std::cout);
 
-         std::cout << "Doing invariant_test()" << std::endl;
+         std::cout << "\nDoing invariant_test()" << std::endl;
          test_invariant();
     }
 }
