@@ -875,6 +875,26 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
             If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is the last, ie, pnode->getTotalItems() - 1. So the we simply go up on level to find the in order successor.    
             We simply need to determine the index in the parent to choose.
            */
+
+       switch (child_index) {
+
+          case 0:
+            break;
+
+          case 1:
+            break;
+
+          case 2:
+            break;
+
+          /* handled above
+          case 3:
+            break;
+           */
+  
+          default:
+            break;
+       }
        return make_pair(???);
 
   }  
