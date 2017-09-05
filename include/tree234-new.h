@@ -826,18 +826,20 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getLeafNodeSuccessor(const Node234 *pnode, int key_index) const noexcept
 {
- Node234 *successor = nullptr;
- int successor_key = -1; 
-
- int child_index = pnode->getChildIndex();
 
   // Handle the easy case: a 3- or 4-node in which key_index is not the right most value in the node.
   if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { 
 
-      successor =  pnode;
-      successor_key =  key_index + 1; 
+      return std::make_pair(pnode, key_index + 1); 
 
-  }  else if (pnode->parent->children[child_index] == pnode->parent->getRightMostChild()) { // Is pnode the right-most child of its parent? 
+  }
+
+  Node234 *successor = nullptr;
+  int successor_key = -1; 
+
+  int child_index = pnode->getChildIndex();
+
+  if (pnode->parent->children[child_index] == pnode->parent->getRightMostChild()) { // Is pnode the right-most child of its parent? 
 
   /*
    pnode is the right-most child of its parent, so we must find the first ancestor--parent, grandparent, great grandparent, etc--that is in a "greater than" node.key(i), i.e., an ancestor->key(j) that is to the right of node.key(i). 
@@ -899,12 +901,12 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
          successor_key = 0;
          break;
 
-      case 1: // We know that pnode->parent must be a 3- or 4-node (if it were a 2-node, this was already handled by the else-if case above).
+      case 1: // We know that pnode->parent must be a 3- or 4-node (if it were a 2-node, this was already handled by the if case above).
 
          successor_key = 1;
          break;
 
-      case 2: // We know that pnode->parent must be a 4-node. If it were a 3-node, this was handled by the else-if block above (and clearly a 2-node parent will not have a 3rd child).
+      case 2: // We know that pnode->parent must be a 4-node. If it were a 3-node, this was handled by the if block above (and clearly a 2-node parent will not have a 3rd child).
 
           /* handled above
           case 3:
