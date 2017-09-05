@@ -20,7 +20,7 @@ class levelOrderInvariantReport : public levelOrderDisplay<Tree> {
     ~levelOrderInvariantReport() {};
     
    virtual void display_level(std::ostream& ostr, int level) noexcept override;
-   virtual void display_node(std::ostream& ostr, const  typename Tree::Node23& node) noexcept override; 
+   virtual void display_node(std::ostream& ostr, const  typename Tree::node_type& node) noexcept override; 
 };
 
 template<class Tree>
@@ -35,7 +35,7 @@ inline void levelOrderInvariantReport<Tree>::display_level(std::ostream& ostr, i
 }
 
 template<class Tree>
-inline void levelOrderInvariantReport<Tree>::display_node(std::ostream& ostr, const typename Tree::Node23& node) noexcept
+inline void levelOrderInvariantReport<Tree>::display_node(std::ostream& ostr, const typename Tree::node_type& node) noexcept
 {
    std::string errors;
 

@@ -73,7 +73,6 @@ template<typename Key, typename Value> class tree234 {
     
        constexpr int to_int(const NodeType x) const { return static_cast<int>(x); }
        
-
        Node234 *parent; /* parent is only used for navigation of the tree. It does not own the memory
                            it points to. */
     
@@ -105,8 +104,7 @@ template<typename Key, typename Value> class tree234 {
        KeyValue removeKeyValue(int index) noexcept; 
     
        void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
-       
-       /*
+             /*
         * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
         */  
        std::unique_ptr<Node234> disconnectChild(int child_index) noexcept; 
@@ -169,7 +167,14 @@ template<typename Key, typename Value> class tree234 {
            constexpr bool isTwoNode() const noexcept;
            constexpr bool isThreeNode() const noexcept;
            constexpr bool isFourNode() const noexcept;
-           constexpr bool isEmpty() const noexcept;
+           constexpr bool isEmpty() const noexcept; 
+
+           std::ostream& print(std::ostream& ostr) const noexcept;
+   
+           friend std::ostream& operator<<(std::ostream& ostr, const Node234& node234)
+           { 
+             return node234.print(ostr);
+           }
   }; // end class Tree<Key, Value>::Node234  
 
  private:
@@ -195,15 +200,15 @@ template<typename Key, typename Value> class tree234 {
    friend class DebugPrinter;
 
     // converts from class enum to int.  
-    int to_int(const typename tree234<Key, Value>::Node234::NodeType x) const { return static_cast<int>(x); }
-
+    constexpr int to_int(const typename tree234<Key, Value>::Node234::NodeType x) const { return static_cast<int>(x); }
+    
     /*
       Node234 *SearchNodeNew(Node234 *current, Key value, int& index) noexcept;
      */ 
 
     std::unique_ptr<Node234>  root; 
 
-    int  tree_size;
+    int  tree_size; // adjusted by insert(), remove(), operator=(const tree234...), move ctor
 
     bool DoSearch(Key key, Node234 *&location, int& index) noexcept;
 
@@ -245,7 +250,13 @@ template<typename Key, typename Value> class tree234 {
 
   public:
 
-     explicit tree234() noexcept : root{} { } 
+    using value_type      = std::pair<const Key, Value>; 
+    using difference_type = long int;
+    using pointer         = value_type*; 
+    using reference       = value_type&; 
+    using node_type       = Node234; 
+
+     explicit tree234() noexcept : root{}, tree_size{0} { } 
 
      tree234(const tree234& lhs) noexcept; 
      tree234(tree234&& lhs) noexcept;     // move constructor
@@ -255,12 +266,12 @@ template<typename Key, typename Value> class tree234 {
 
      tree234(std::initializer_list<std::pair<Key, Value>> list) noexcept; 
      
-     template<class Functor> void test_invariant(Functor f) const noexcept; 
+     void test_invariant() const noexcept; 
  
      std::string test_invariant(const Node234& p) const noexcept; 
 
      constexpr int size() const;
-     int getDepth() const noexcept; // get depth of tree from root to leaf.
+     int getHeight() const noexcept; // get depth of tree from root to leaf.
 
     ~tree234(); 
 
@@ -301,17 +312,17 @@ template<class Key, class Value> std::string tree234<Key, Value>::test_invariant
 
   switch(const_node.getTotalItems()) {
 
-      case to_int(Node234::NodeType::two_node):
+      case static_cast<int>(Node234::NodeType::two_node):
 
          const_node.test_2node_invariant(oss, root.get());
          break;   
       
-      case to_int(Node234::NodeType::three_node):
+      case static_cast<int>(Node234::NodeType::three_node):
 
          const_node.test_3node_invariant(oss, root.get());
          break;   
      
-      case to_int(Node234::NodeType::four_node):
+      case static_cast<int>(Node234::NodeType::four_node):
 
          const_node.test_4node_invariant(oss, root.get());
          break;   
@@ -356,18 +367,18 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::tes
 
              case 0:
 
-              if (children[0]->keys_values[i].nc_pair.first >= keys_values[0].nc_pair.first) { // If any are greater than or equal to keys_values.keys[0], then it is an error.
+              if (children[0]->keys_values[i].key() >= keys_values[0].key()) { // If any are greater than or equal to keys_values.keys[0], then it is an error.
               
-                 ostr << "error: children[0]->keys_values[" << i << "].nc_pair.first = " << children[0]->keys_values[i].nc_pair.first << " is not less than " << keys_values[0].nc_pair.first << ".\n";
+                 ostr << "error: children[0]->keys_values[" << i << "].key() = " << children[0]->keys_values[i].key() << " is not less than " << keys_values[0].key() << ".\n";
               }  
 
               break;
 
               case 1:
 
-                if (children[1]->keys_values[i].nc_pair.first <= keys_values[0].nc_pair.first) { // are any less than or equal to keys_values.keys[0], then it is an error.
+                if (children[1]->keys_values[i].key() <= keys_values[0].key()) { // are any less than or equal to keys_values.keys[0], then it is an error.
           
-                   ostr << "error: children[1]->keys_values[" << i << "].nc_pair.first= " << children[1]->keys_values[i].nc_pair.first << " is not greater than " << keys_values[0].nc_pair.first << ".\n";
+                   ostr << "error: children[1]->keys_values[" << i << "].key()= " << children[1]->keys_values[i].key() << " is not greater than " << keys_values[0].key() << ".\n";
                 }
 
                 break;
@@ -402,9 +413,9 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::tes
   test_parent_ptr(ostr, root);
 
   //Test keys ordering for 3-node
-  if (keys_values[0].nc_pair.first >= keys_values[1].nc_pair.first ) {
+  if (keys_values[0].key() >= keys_values[1].key() ) {
 
-      ostr <<  keys_values[0].nc_pair.first << " is greater than " <<keys_values[1].nc_pair.first;
+      ostr <<  keys_values[0].key() << " is greater than " <<keys_values[1].key();
   }
 
   if (isLeaf()) return ostr; 
@@ -423,22 +434,22 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::tes
 
       switch (child_index) {
        case 0:  
-       // Test that all left child's keys are less than node's keys_values.nc_pair.first[0]
+       // Test that all left child's keys are less than node's keys_values.key()[0]
      
-           if (children[0]->keys_values[i].nc_pair.first >= keys_values[0].nc_pair.first ) { // If any are greater than or equal to keys_values.nc_pair.first[0], it is an error
+           if (children[0]->keys_values[i].key() >= keys_values[0].key() ) { // If any are greater than or equal to keys_values.key()[0], it is an error
      
               // problem
-              ostr << "error: children[0]->keys_values[" << i << "].nc_pair.first = " << children[0]->keys_values[i].nc_pair.first << " is not less than " << keys_values[0].nc_pair.first << ".\n";
+              ostr << "error: children[0]->keys_values[" << i << "].key() = " << children[0]->keys_values[i].key() << " is not less than " << keys_values[0].key() << ".\n";
            }  
        break; 
 
        case 1:
  
-       // Test middle child's keys, key, are such that: keys_values.nc_pair.first [0] < key < keys_values.nc_pair.first[1]
-           if (!(children[1]->keys_values[i].nc_pair.first > keys_values[0].nc_pair.first && children[1]->keys_values[i].nc_pair.first < keys_values[1].nc_pair.first)) {
+       // Test middle child's keys, key, are such that: keys_values.key() [0] < key < keys_values.key()[1]
+           if (!(children[1]->keys_values[i].key() > keys_values[0].key() && children[1]->keys_values[i].key() < keys_values[1].key())) {
      
               // problem
-              ostr << "error: children[1]->keys_values[" << i << "].nc_pair.first = " << children[1]->keys_values[i].nc_pair.first << " is not between " << keys_values[0].nc_pair.first << " and " << keys_values[1].nc_pair.first << ".\n";
+              ostr << "error: children[1]->keys_values[" << i << "].key() = " << children[1]->keys_values[i].key() << " is not between " << keys_values[0].key() << " and " << keys_values[1].key() << ".\n";
            }
 
        break;
@@ -446,10 +457,10 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::tes
       case 2:     
        // Test right child's keys are all greater than nodes sole key
      
-           if (children[2]->keys_values[i].nc_pair.first <= keys_values[1].nc_pair.first) { // If any are less than or equal to keys_values.nc_pair.first[1], it is an error.
+           if (children[2]->keys_values[i].key() <= keys_values[1].key()) { // If any are less than or equal to keys_values.key()[1], it is an error.
      
               // problem
-              ostr << "error: children[2]->keys_values[" << i << "].nc_pair.first = " << children[2]->keys_values[i].nc_pair.first << " is not greater than " << keys_values[1].nc_pair.first << ".\n";
+              ostr << "error: children[2]->keys_values[" << i << "].key() = " << children[2]->keys_values[i].key() << " is not greater than " << keys_values[1].key() << ".\n";
            }
 
        break;
@@ -483,9 +494,9 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::tes
   // Test keys ordering for 4-node
   for (auto i = 0; i < 2; ++i) {
 
-    if (keys_values[i].nc_pair.first >= keys_values[i + 1].nc_pair.first) {
+    if (keys_values[i].key() >= keys_values[i + 1].key()) {
 
-      ostr <<  keys_values[i].nc_pair.first << " is greater than or equal to " << keys_values[i + 1].nc_pair.first;
+      ostr <<  keys_values[i].key() << " is greater than or equal to " << keys_values[i + 1].key();
     }
   }
   
@@ -505,33 +516,33 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::tes
 
       switch (child_index) {
        case 0:  
-       // Test that all left child's keys are less than node's keys_values.nc_pair.first[0]
+       // Test that all left child's keys are less than node's keys_values.key()[0]
      
-           if (children[0]->keys_values[i].nc_pair.first >= keys_values[0].nc_pair.first ) { // If any are greater than or equal to keys_values.nc_pair.first[0], it is an error
+           if (children[0]->keys_values[i].key() >= keys_values[0].key() ) { // If any are greater than or equal to keys_values.key()[0], it is an error
      
               // problem
-              ostr << "error: children[0]->keys_values[" << i << "].nc_pair.first = " << children[0]->keys_values[i].nc_pair.first << " is not less than " << keys_values[0].nc_pair.first << ".\n";
+              ostr << "error: children[0]->keys_values[" << i << "].key() = " << children[0]->keys_values[i].key() << " is not less than " << keys_values[0].key() << ".\n";
            }  
        break; 
 
        case 1:
  
-       // Test middle child's keys, key, are such that: keys_values.nc_pair.first [0] < key < keys_values.nc_pair.first[1]
-           if (!(children[1]->keys_values[i].nc_pair.first > keys_values[0].nc_pair.first && children[1]->keys_values[i].nc_pair.first < keys_values[1].nc_pair.first)) {
+       // Test middle child's keys, key, are such that: keys_values.key() [0] < key < keys_values.key()[1]
+           if (!(children[1]->keys_values[i].key() > keys_values[0].key() && children[1]->keys_values[i].key() < keys_values[1].key())) {
      
               // problem
-              ostr << "error: children[1]->keys_values[" << i << "].nc_pair.first = " << children[1]->keys_values[i].nc_pair.first << " is not between " << keys_values[0].nc_pair.first << " and " << keys_values[1].nc_pair.first << ".\n";
+              ostr << "error: children[1]->keys_values[" << i << "].key() = " << children[1]->keys_values[i].key() << " is not between " << keys_values[0].key() << " and " << keys_values[1].key() << ".\n";
            }
 
        break;
 
        case 2:
  
-       // Test middle child's keys, key, are such that: keys_values.nc_pair.first [0] < key < keys_values.nc_pair.first[1]
-           if (!(children[2]->keys_values[i].nc_pair.first > keys_values[1].nc_pair.first && children[1]->keys_values[i].nc_pair.first < keys_values[2].nc_pair.first)) {
+       // Test middle child's keys, key, are such that: keys_values.key() [0] < key < keys_values.key()[1]
+           if (!(children[2]->keys_values[i].key() > keys_values[1].key() && children[1]->keys_values[i].key() < keys_values[2].key())) {
      
               // problem
-              ostr << "error: children[2]->keys_values[" << i << "].nc_pair.first = " << children[2]->keys_values[i].nc_pair.first << " is not between " << keys_values[1].nc_pair.first << " and " << keys_values[2].nc_pair.first << ".\n";
+              ostr << "error: children[2]->keys_values[" << i << "].key() = " << children[2]->keys_values[i].key() << " is not between " << keys_values[1].key() << " and " << keys_values[2].key() << ".\n";
            }
 
        break;
@@ -539,10 +550,10 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::tes
       case 3:     
        // Test right child's keys are all greater than nodes sole key
      
-           if (children[3]->keys_values[i].nc_pair.first <= keys_values[2].nc_pair.first) { // If any are less than or equal to keys_values.nc_pair.first[1], it is an error.
+           if (children[3]->keys_values[i].key() <= keys_values[2].key()) { // If any are less than or equal to keys_values.key()[1], it is an error.
      
               // problem
-              ostr << "error: children[2]->keys_values[" << i << "].nc_pair.first = " << children[2]->keys_values[i].nc_pair.first << " is not greater than " << keys_values[1].nc_pair.first << ".\n";
+              ostr << "error: children[2]->keys_values[" << i << "].key() = " << children[2]->keys_values[i].key() << " is not greater than " << keys_values[1].key() << ".\n";
            }
 
        break;
@@ -641,6 +652,33 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Nod
    keys_values[2] = kv3;
 }
 
+template<class Key, class Value> std::ostream& tree234<Key, Value>::Node234::print(std::ostream& ostr) const noexcept
+{
+   ostr << "[";
+
+   if (totalItems == 0) { // remove() situation when merge2Nodes() is called
+
+       ostr << "empty"; 
+
+   } else {
+
+        for (auto i = 0; i < totalItems; ++i) {
+
+            ostr << keys_values[i].key(); // or to print both keys and values do: ostr << keys_values[i];
+
+            if (i + 1 == totalItems)  {
+                continue;
+
+            } else { 
+                ostr << ", ";
+            }
+        }
+   }
+
+   ostr << "]";
+   return ostr;
+}
+
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Node234(KeyValue&& key_value) noexcept : parent{nullptr}
 {
    keys_values[0] = std::move(key_value); 
@@ -659,9 +697,18 @@ template<class Key, class Value> int tree234<Key, Value>::Node234::getIndexInPar
 }
 
 
-template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept : tree_size{lhs.tree_size} 
+template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept 
 {
-   CloneTree(lhs.root, root, nullptr);
+ if (root == lhs.root) { // are they the same?
+
+      return;
+  }
+
+  DestroyTree(root); // free all the nodes of the current tree 
+
+  tree_size = lhs.tree_size;
+  
+  CloneTree(lhs.root, root, nullptr);
 }
  
 // move constructor
@@ -682,11 +729,15 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
          }       
          insert(x.first, x.second);
          
+         std::cout << "Printing tree after insert" << std::endl;
          printlevelOrder(std::cout);
+
+         std::cout << "Doing invariant_test()" << std::endl;
+         test_invariant();
     }
 }
 
-template<class Key, class Value> template<typename Functor> inline void tree234<Key, Value>::test_invariant(Functor f) const noexcept
+template<class Key, class Value> inline void tree234<Key, Value>::test_invariant() const noexcept
 {
   levelOrderInvariantReport<tree234<Key, Value>> reporter(const_cast<const tree234<Key,Value>&>(*this), std::cout);
 
@@ -835,7 +886,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 /*
  Requires:
  1. pnode is a leaf node, either a 2 or 3-node
- 2. If pnode is 3-node, then key_index, the key index into pnode->keys_values[].nc_pair.first must be 1, the second key. It can never be 0, the first key.
+ 2. If pnode is 3-node, then key_index, the key index into pnode->keys_values[].key() must be 1, the second key. It can never be 0, the first key.
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getLeafNodeSuccessor(const Node234 *pnode, int key_index) const noexcept
 {
@@ -1031,7 +1082,7 @@ template<typename Key, typename Value> inline constexpr int tree234<Key, Value>:
   return tree_size;
 }
              
-template<typename Key, typename Value> inline int tree234<Key, Value>::getDepth() const noexcept
+template<typename Key, typename Value> inline int tree234<Key, Value>::getHeight() const noexcept
 {
   int depth = 0;
 
@@ -1921,8 +1972,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
   }  else { // pfound_node is a leaf that has already been converted, if it was a 2-node. The node therefore does not need to be freed.
             // So simply call removeKey()
 
-      //--pfound_node->removeKey(key_index); 
-      pfound_node->removeKeyValue(key_index); //++ 
+      pfound_node->removeKeyValue(key_index); 
       --tree_size;
       
       return true;
@@ -1935,7 +1985,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
   pfound_node->keys_values[key_index] = current->keys_values[0];
 
-  //--current->removeKey(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr.
   current->removeKeyValue(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr. ++
   --tree_size;
 
@@ -2268,7 +2317,7 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::printPos
 template<typename Key, typename Value> inline tree234<Key, Value>::BasicTreePrinter::BasicTreePrinter(const tree234<Key, Value>& t) : prior_level{0}, tree{t}
 {
   // Determine how many levels the tree has.
-  depth = tree.getDepth();
+  depth = tree.getHeight();
 }
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::BasicTreePrinter::print_level_order(std::ostream& ostr) 
