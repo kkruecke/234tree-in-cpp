@@ -890,14 +890,18 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
       */
 
      successor = pnode->parent;
+     successor_key = child_index;
 
+     if (child_index > 2) {
+         throw std::logic_error("child_index was not between 0 and 2 in getLeafNodeSuccessor()");
+     } 
+     /*
      switch (child_index) {
 
       case 0: 
-            /*
-              pnode is either the left-most child of either a 2, 3, or 4-node parent. If pnode is a 3 or 4-node, its key_index is not equal to the right-most key (if it were, this was already handled at the beginning of this method). 
-              In all three scenarios, we advance to the first key of the parent. 
-             */
+            //  pnode is either the left-most child of either a 2, 3, or 4-node parent. If pnode is a 3 or 4-node, its key_index is not equal to the right-most key (if it were, this was already handled at the beginning of this method). 
+            //  In all three scenarios, we advance to the first key of the parent. 
+            
          successor_key = 0;
          break;
 
@@ -908,18 +912,14 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
       case 2: // We know that pnode->parent must be a 4-node. If it were a 3-node, this was handled by the if block above (and clearly a 2-node parent will not have a 3rd child).
 
-          /* handled above
-          case 3:
-            break;
-           */
-  
-         successor_key = 2;
+               successor_key = 2;
          break;
 
      default: // Should never happen
          throw std::logic_error("child_index was not between 0 and 2 in getLeafNodeSuccessor()");
          break;
        }
+     */ 
   }  
   return  std::make_pair(successor, successor_key);
 }
