@@ -233,12 +233,15 @@ template<typename Key, typename Value> class tree234 {
 
     Node234 *rightRotation(Node234 *p2node, Node234 *psibling, Node234 *parent, int parent_key_index) noexcept;
 
-    std::pair<const Node234 *, int> getSuccessor(const Node234 *current, int index_of_key) const noexcept;
+    // Non recursive in order traversal of tree methods
+    std::pair<const Node234 *, int> getSuccessor(const Node234 *current, int key_index) const noexcept;
 
     std::pair<const Node234 *, int> getInternalNodeSuccessor(const Node234 *pnode,  int index_of_key) const noexcept;
 
     std::pair<const Node234 *, int> getLeafNodeSuccessor(const Node234 *pnode, int key_index) const noexcept;
-    
+   
+    // Returns node with smallest value of tree whose root is 'root'
+    const Node234 *min(const Node234* root) const noexcept; 
 
   public:
 
@@ -266,6 +269,9 @@ template<typename Key, typename Value> class tree234 {
 
     // Depth-first traversals
     template<typename Functor> void inOrderTraverse(Functor f) const noexcept;
+
+    template<typename Functor> void iterativeInOrderTraverse(Functor f) const noexcept;
+
     template<typename Functor> void postOrderTraverse(Functor f) const noexcept;
     template<typename Functor> void preOrderTraverse(Functor f) const noexcept;
    
@@ -685,7 +691,6 @@ template<class Key, class Value> template<typename Functor> inline void tree234<
 // Do in order traverse using iteration and a stack, but add the parent pointer's address to the stack--or whatever is need to properly test the parent pointer
 // See Walls and Mirrors for the code. See pp 464-468
 
-// TODO: Try in order traversal without stack using next() method that finds the successor. I would need to port the bstree::getSuccessor() code and make it work for 2 3 4 trees.
   std::stack<const Node234 *> stack;
 
   const tree234 *root_node = root.get();
@@ -1078,6 +1083,31 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
 template<typename Key, typename Value> template<typename Functor> inline void tree234<Key, Value>::inOrderTraverse(Functor f) const noexcept
 {
    DoInOrderTraverse(f, root);
+}
+
+template<typename Key, typename Value> template<typename Functor> inline void tree234<Key, Value>::iterativeInOrderTraverse(Functor f) const noexcept
+{
+   const Node234 *current = min(root.get());
+   int key_index = 0;
+
+   while (current != nullptr)  {
+ 
+      f(current->keys_values[key_index].pair());
+
+      std::pair<const Node234 *, int> pair = getSuccessor(current, key_index);   
+
+      current = pair.first;
+      key_index = pair.second;
+  }
+}
+
+template<typename Key, typename Value> inline const typename tree234<Key, Value>::Node234 *tree234<Key, Value>::min(const Node234 *current) const noexcept
+{
+   while (current->children[0].get() != nullptr) {
+
+        current = current->children[0].get();
+   }
+   return current;
 }
 
 template<typename Key, typename Value> template<typename Functor> inline void tree234<Key, Value>::postOrderTraverse(Functor f) const noexcept
