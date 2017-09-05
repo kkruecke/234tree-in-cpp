@@ -1,6 +1,5 @@
 #ifndef TREE234_H
 #define	TREE234_H
-::
 #include <utility>
 #include <algorithm>
 #include <stdexcept>
@@ -91,6 +90,7 @@ template<typename Key, typename Value> class tree234 {
        std::array<std::unique_ptr<Node234>, 4> children;
        
        constexpr Node234 *getParent() noexcept; 
+       int getChildIndex() const noexcept;
     
        /* 
         * Returns true if key is found in node and sets index so pNode->keys_values[index] == key
@@ -101,11 +101,11 @@ template<typename Key, typename Value> class tree234 {
        int insertKeyValue(Key key, const Value& value) noexcept;
        int moveKeyValue(KeyValue&& pr) noexcept;
        
-       void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
-       
        // Remove key, if found, from node, shifting remaining keys_values to fill its gap.
        KeyValue removeKeyValue(int index) noexcept; 
     
+       void connectChild(int childNum, std::unique_ptr<Node234>& child) noexcept;
+       
        /*
         * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
         */  
@@ -149,7 +149,7 @@ template<typename Key, typename Value> class tree234 {
            constexpr int getTotalItems() const noexcept;
            constexpr int getChildCount() const noexcept;
 
-           constexpr const Node23 *getRightMostChild() const noexcept { return children[getTotalItems()].get(); }
+           constexpr const Node234 *getRightMostChild() const noexcept { return children[getTotalItems()].get(); }
 
            // method to help in debugging
            void printKeys(std::ostream&);
@@ -237,7 +237,8 @@ template<typename Key, typename Value> class tree234 {
 
     std::pair<const Node234 *, int> getInternalNodeSuccessor(const Node234 *pnode,  int index_of_key) const noexcept;
 
-    std::pair<const Node234 *, int> getLeafNodeSuccessor(const Node234 *pnode, int index_of_key) const noexcept;
+    std::pair<const Node234 *, int> getLeafNodeSuccessor(const Node234 *pnode, int key_index) const noexcept;
+    
 
   public:
 
@@ -639,11 +640,11 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node234::Nod
    keys_values[0] = std::move(key_value); 
 }
 
-template<class Key, class Value> int tree23<Key, Value>::Node234::getIndexInParent() const 
+template<class Key, class Value> int tree234<Key, Value>::Node234::getIndexInParent() const 
 {
-  for (int child_index = 0; child_index <= p->parent->totalItems; ++child_index) { // Check the address of each of the children of the parent with the address of "this".
+  for (int child_index = 0; child_index <= parent->totalItems; ++child_index) { // Check the address of each of the children of the parent with the address of "this".
 
-       if (current == p->parent->children[child_index].get()) {
+       if (this == parent->children[child_index].get()) {
            return  child_index;
        }
   }
@@ -823,12 +824,18 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  1. pnode is a leaf node, either a 2 or 3-node
  2. If pnode is 3-node, then key_index, the key index into pnode->keys_values[].nc_pair.first must be 1, the second key. It can never be 0, the first key.
  */
-template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getLeafNodeSuccessor(const typename tree234<Key, Value>::Node234 *pnode, int key_index, int child_index) const noexcept
+template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node234 *, int> tree234<Key, Value>::getLeafNodeSuccessor(const Node234 *pnode, int key_index) const noexcept
 {
+ Node234 *successor = nullptr;
+ int successor_key = -1; 
+
+ int child_index = pnode->getChildIndex();
+
   // Handle the easy case: a 3- or 4-node in which key_index is not the right most value in the node.
   if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { 
 
-      return std::make_pair(pnode, key_index + 1); 
+      successor =  pnode;
+      successor_key =  key_index + 1; 
 
   }  else if (pnode->parent->children[child_index] == pnode->parent->getRightMostChild()) { // Is pnode the right-most child of its parent? 
 
@@ -847,58 +854,72 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
        }
        if (ancestor == root) { // No successor is possible because pnode->key(i) is the max.
 
-             return std::make_pair(nullptr, -1); 
+             successor = nullptr;
+             successor_key = -1; 
 
        } else { 
 
-             return std::make_pair(ancester, 0);  // We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
+             // We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
+             successor = ancestor;
+             successor_key = 0;  
        }
 
-  } else { /* 
-            ...otherwise, we know that pnode that for 2, 3 and 4-nodes pnode is NOT the right most child of its parent (and it is a leaf). We know that if it is a 2, 3, or 4-node, it is not the right most. 
-            We also know that key_index is the right most value of pnode--right? So need to ascertain the index next_index such that pnode->parent->key(next_index) > pnode->key(key_index). How can next_index be calculated
-            from the input parameters and this use-case?
+  } else { 
+      /* 
+        ...otherwise, we know that pnode that for 2, 3 and 4-nodes pnode is NOT the right most child of its parent (and it is a leaf). We know that if it is a 2, 3, or 4-node, it is not the right most. 
+        We also know that key_index is the right most value of pnode--right? So need to ascertain the index next_index such that pnode->parent->key(next_index) > pnode->key(key_index). How can next_index be calculated
+        from the input parameters and this use-case?
 
-            Comment: We can view a 3-node as two catenated 2-nodes in which the the middle child is shared between these two "2-nodes", like this
+        Comment: We can view a 3-node as two catenated 2-nodes in which the the middle child is shared between these two "2-nodes", like this
+      
+           [3,       5]  
+           /  \     / \
+          /    \   /   \
+        [1, 2]  [3, 4]  [6]
+
+        While a 4-node can be viewed as three catenated 2-nodes in which the two middle child are shared
           
-               [3,       5]  
-               /  \     / \
-              /    \   /   \
-            [1, 2]  [3, 4]  [6]
+           [2,   4,   6]  
+          /  \  / \  / \
+        [1]  [3]   [5]  [7] 
 
-            While a 4-node can be viewed as three catenated 2-nodes in which the two middle child are shared
-              
-               [2,   4,   6]  
-              /  \  / \  / \
-            [1]  [3]   [5]  [7] 
+        If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is the last, ie, pnode->getTotalItems() - 1. So the we simply go up on level to find the in order successor.    
+        We simply need to determine the index in the parent to choose.
+      */
 
-            If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is the last, ie, pnode->getTotalItems() - 1. So the we simply go up on level to find the in order successor.    
-            We simply need to determine the index in the parent to choose.
-           */
+     successor = pnode->parent;
 
-       switch (child_index) {
+     switch (child_index) {
 
-          case 0:
-            break;
+      case 0: 
+            /*
+              pnode is either the left-most child of either a 2, 3, or 4-node parent. If pnode is a 3 or 4-node, its key_index is not equal to the right-most key (if it were, this was already handled at the beginning of this method). 
+              In all three scenarios, we advance to the first key of the parent. 
+             */
+         successor_key = 0;
+         break;
 
-          case 1:
-            break;
+      case 1: // We know that pnode->parent must be a 3- or 4-node (if it were a 2-node, this was already handled by the else-if case above).
 
-          case 2:
-            break;
+         successor_key = 1;
+         break;
+
+      case 2: // We know that pnode->parent must be a 4-node. If it were a 3-node, this was handled by the else-if block above (and clearly a 2-node parent will not have a 3rd child).
 
           /* handled above
           case 3:
             break;
            */
   
-          default:
-            break;
-       }
-       return make_pair(???);
+         successor_key = 2;
+         break;
 
+     default: // Should never happen
+         throw std::logic_error("child_index was not between 0 and 2 in getLeafNodeSuccessor()");
+         break;
+       }
   }  
-  return  ??;
+  return  std::make_pair(successor, successor_key);
 }
 
 
@@ -1487,7 +1508,23 @@ template<typename Key, typename Value> inline constexpr const typename tree234<K
 { 
    return parent;
 }
+/*
+  Input: 
+   Assumes that "this" is never the root. The parent of the root is nullptr.
+ */
+template<class Key, class Value> int tree234<Key, Value>::Node234::getChildIndex() const noexcept
+{
+  // Determine child_index such that this == this->parent->children[child_index]
+  int child_index = 0;
 
+  for (; child_index <= parent->getTotalItems(); ++child_index) {
+
+       if (this == parent->children[child_index].get())
+          break;
+  }
+
+  return child_index;
+}
 template<typename Key, typename Value> inline constexpr  bool tree234<Key, Value>::Node234::isLeaf() const  noexcept // ok
 { 
    return !children[0] ? true : false;
