@@ -1,5 +1,4 @@
-Tailor the insert test cases for we test split a 3-node whose parent is a 2-node, but ensure the test cases insert the middle  value into the parent both when it is larger than the parent key as well as when it is small.
-Then test split a 3-node whose parent is a 3-node, but ensure the test cases insert the middle  value into the parent both when it can vary in size, in all possible ways, with the keys of the parent node.
-o
-remove() needs to be tested more. Confirm that the output from the tree is a valid 2 3 4 tree.
- 
+Tailor the insert test cases in main.cpp so that when insert calls split (to split a 3-node), when test both when the parent is a 2-node and a 3-node, and we ensure that when split inserts the middle value (of the 3-node) into the parent,
+the value will be inserted in every possible position in the parent--before the first key, after the first, or (in the case of 3-nodes) before the second key or after it.
+
+remove()'s output needs to be examined to confirm that it is a valid 2-3-4 tree, after an element is removed. 
