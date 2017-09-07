@@ -1,5 +1,5 @@
-insert() seems to work. But to simplify some of its code, consider...merging the insertChild(int insert_index, uniqye_ptr<Node234>& newChild) into the Node234::insert(KeyValye&&, unique_ptr<Node234>largestNode) code,
-so it is more understandable as one unit, since insertChild() is only called by insert(KeyValue&&, unique_ptr<Node234>& larger).
-
+Tailor the insert test cases for we test split a 3-node whose parent is a 2-node, but ensure the test cases insert the middle  value into the parent both when it is larger than the parent key as well as when it is small.
+Then test split a 3-node whose parent is a 3-node, but ensure the test cases insert the middle  value into the parent both when it can vary in size, in all possible ways, with the keys of the parent node.
+o
 remove() needs to be tested more. Confirm that the output from the tree is a valid 2 3 4 tree.
  
