@@ -9,6 +9,8 @@
 
 using namespace std;
 
+
+
 int main(int argc, char** argv)
 {
   vector<int> keys = { 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 0, 27, 62, 87, 37, 92, 79, 23, 17, 97, 55, 51, 69, 1, 2, 33, 26, 5};
@@ -19,8 +21,8 @@ int main(int argc, char** argv)
                     {{ 20, 20 },  { 40, 40 },  { 60, 60 },  { 41, 41 },  { 42, 42 },  { 43, 43 },  {44, 44} },\
                     {{ 20, 20 },  { 40, 40 },  { 60, 60 }, {  0,  0 }, {  1,  1 }, {  2,  2 }, {  3,  3 }}  }; 
 
-  for (auto& x : trees) {
-    test_insert(x);
+  for (auto& tree : trees) {
+    test_insert(tree);
   }
  /*  
   cout << "Printing tree in level order" << endl;

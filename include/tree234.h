@@ -14,7 +14,7 @@
 #include <utility>
 #include "printer-of-tree-interface.h"
 #include <string>
-#include <ostream>
+#include <iostream>
 #include "level-order-invariant-report.h"
 
 // fwd declarations
@@ -287,13 +287,13 @@ template<typename Key, typename Value> class tree234 {
 
     bool remove(Key key);
 
-    void printlevelOrder(std::ostream&) noexcept;
+    void printlevelOrder(std::ostream&) const noexcept;
     
-    void printInOrder(std::ostream&) noexcept;
+    void printInOrder(std::ostream&) const noexcept;
     
-    void printPreOrder(std::ostream&) noexcept;
+    void printPreOrder(std::ostream&) const noexcept;
     
-    void printPostOrder(std::ostream&) noexcept;
+    void printPostOrder(std::ostream&) const noexcept;
 
     void test(Key key);
 };
@@ -2233,25 +2233,25 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node234 *tr
   return p2node;
 } 
 
-template<typename Key, typename Value> inline void tree234<Key, Value>::printlevelOrder(std::ostream& ostr) noexcept
+template<typename Key, typename Value> inline void tree234<Key, Value>::printlevelOrder(std::ostream& ostr) const noexcept
 {
   BasicTreePrinter tree_printer(*this);
   tree_printer.print_level_order(ostr); 
 }
 
-template<typename Key, typename Value> inline void tree234<Key, Value>::printInOrder(std::ostream& ostr) noexcept
+template<typename Key, typename Value> inline void tree234<Key, Value>::printInOrder(std::ostream& ostr) const noexcept
 {
   BasicTreePrinter tree_printer(*this);
   tree_printer.print_in_order(ostr); 
 }
 
-template<typename Key, typename Value> inline void tree234<Key, Value>::printPreOrder(std::ostream& ostr) noexcept
+template<typename Key, typename Value> inline void tree234<Key, Value>::printPreOrder(std::ostream& ostr) const noexcept
 {
   BasicTreePrinter tree_printer(*this);
   tree_printer.print_pre_order(ostr); 
 }
 
-template<typename Key, typename Value> inline void tree234<Key, Value>::printPostOrder(std::ostream& ostr) noexcept
+template<typename Key, typename Value> inline void tree234<Key, Value>::printPostOrder(std::ostream& ostr) const noexcept
 {
   BasicTreePrinter tree_printer(*this);
   tree_printer.print_post_order(ostr); 
