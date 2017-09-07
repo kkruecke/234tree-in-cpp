@@ -170,6 +170,8 @@ template<typename K> class tree234 {
 
   public:
 
+     using node_type = Node234; 
+
      explicit tree234() noexcept : root{} { } 
 
      tree234(const tree234& lhs) noexcept; 
@@ -224,7 +226,7 @@ template<typename K> inline  tree234<K>::Node234::Node234(K small, Node234 *pare
 { 
    keys[0] = small; 
 }
-/*
+
 template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle, Node234 *parent_in)  noexcept : totalItems(2), parent{parent_in}, children()
 { 
    keys[0] = small; 
@@ -237,7 +239,7 @@ template<typename K> inline  tree234<K>::Node234::Node234(K small, K middle, K l
    keys[1] = middle; 
    keys[2] = large; 
 }
-*/
+ 
 template<typename K> inline tree234<K>::tree234(const tree234<K>& lhs) noexcept : tree_size{lhs.tree_size} 
 {
    CloneTree(lhs.root, root, nullptr);
@@ -1052,11 +1054,12 @@ template<typename K> void tree234<K>::split(Node234 *pnode) noexcept
     return;
 }
 /*
- * Deletion based on pseudo code from pages 50-53 of: 
+ * Deletion based on pseudo code from:
  *
- * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ *  1. slides #50-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt, slides 50-53 
+ *  2. https://azrael.digipen.edu/~mmead/www/Courses/CS280/Trees-2-3-4-delete.html
  *
- * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the deleted key
+ * We reduce deletion of an internal node's key to the case of deletion of a leaf node's key by swapping the deleted key
  * with its in-order successor.
  */
 

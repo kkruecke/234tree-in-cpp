@@ -106,7 +106,7 @@ void levelOrderDisplay<Tree>::display_level(std::ostream& ostr, int level) noexc
   
   std::string str( num, ' ');
   
-  ostr << str;
+  ostr << str << std::endl;
 }
 
 // Default implementation streams the node 

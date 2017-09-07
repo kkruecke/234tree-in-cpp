@@ -11,13 +11,10 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
- 
-  vector<int> input{ 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 100, 27, 62, 87, 37, 92, 79,23, 17, 97, 55, 51, 69, 1, 201, 2, 33, 26, 150, 5};
+  vector<int> keys = { 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 0, 27, 62, 87, 37, 92, 79, 23, 17, 97, 55, 51, 69, 1, 2, 33, 26, 5};
 
-  tree234<int> tree {input};
+  tree234<int, int> tree = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}};
   
-  //--BasicTreePrinter<int> tree_printer{tree};
-
   cout << "Printing tree in level order" << endl;
 
   tree.printlevelOrder(cout);
@@ -34,7 +31,7 @@ int main(int argc, char** argv)
   cout << endl;
   
     // Test copy constructor:
-  tree234<int> tree2nd  {tree};
+  tree234<int, int> tree2nd  {tree};
   
   cout << "\nPrinting copy of tree\n" << endl;
   
@@ -45,7 +42,9 @@ int main(int argc, char** argv)
   // Here we print the print using a print_keys instead of a function object.
   // Test of traversal methods
 
-  auto print_keys = [=](int x) { cout << x << ", "; }; // lambda closure
+  auto print_keys = [&](const pair<int, int>& pr) { 
+                           cout << pr.first << ", "; 
+        }; // lambda closure
 
   cout << "\nUsing traverse methods to print tree in-order:" << endl;
  
@@ -58,8 +57,14 @@ int main(int argc, char** argv)
   cout << "\nUsing traverse methods to print tree pre-order:" << endl;
 
   tree.preOrderTraverse(print_keys);
+  
+  cout << "Printing the keys to be removed\n";
+  
+  copy(keys.rbegin(), keys.rend(), ostream_iterator<int>(cout, ", "));
+  
+  cout << flush;
 
-  for (auto iter = input.rbegin(); iter != input.rend(); ++iter) {
+  for (auto iter = keys.rbegin(); iter != keys.rend(); ++iter) {
     
     auto item = *iter;
     
@@ -79,11 +84,11 @@ int main(int argc, char** argv)
     
     cout << flush;
 
-   cout << "\n\n=================== Normal Tree Print =======================\n" << endl;
+    cout << "\n\n=================== Normal Tree Print =======================\n" << endl;
   
-   tree.printInOrder(cout);
+    tree.printInOrder(cout);
 
-    if (str_remove_status == string{" not successfully removed "}) {
+    if (rc == false) {
          
         cerr << "\nExiting upon remove error!!!" << endl;
 

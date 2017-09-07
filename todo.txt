@@ -1,10 +1,5 @@
-The latest tree234-new.h port is not inserting properly. Why?
+insert() seems to work. But to simplify some of its code, consider...merging the insertChild(int insert_index, uniqye_ptr<Node234>& newChild) into the Node234::insert(KeyValye&&, unique_ptr<Node234>largestNode) code,
+so it is more understandable as one unit, since insertChild() is only called by insert(KeyValue&&, unique_ptr<Node234>& larger).
 
-To properly debug, add to special treexxx::test_invariant() method does does what levelOrderTraverse() does, but also builds (or uses) a stack of descent indecies (or parent pointer values), so that the parent pointer of each Nodexxx can be properly tested, ie,
-the parent would be at the top of the stack? Perhaps this method should not use recursion but instead use iteration and imploy a local stack.....OR, instead of a stack maybe a getSuccessor() method could be implemented for the the 2-3-4 tree. This
-would eliminate the need for a stack.
-
-
-The levelOrderInvariantReport class would, then, no longer be needed.
-
-Compare debug sessions of old code that works with new code that fails. 
+remove() needs to be tested more. Confirm that the output from the tree is a valid 2 3 4 tree.
+ 
