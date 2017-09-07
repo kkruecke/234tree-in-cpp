@@ -1,4 +1,13 @@
+TODO
+====
+
+insert
+------
+
 Tailor the insert test cases in main.cpp so that when insert calls split (to split a 3-node), when test both when the parent is a 2-node and a 3-node, and we ensure that when split inserts the middle value (of the 3-node) into the parent,
 the value will be inserted in every possible position in the parent--before the first key, after the first, or (in the case of 3-nodes) before the second key or after it.
+
+remove
+------
 
 remove()'s output needs to be examined to confirm that it is a valid 2-3-4 tree, after an element is removed. 
