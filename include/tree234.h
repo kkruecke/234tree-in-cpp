@@ -284,6 +284,8 @@ template<typename Key, typename Value> class tree234 {
     bool find(Key key) noexcept;
 
     void insert(Key key, const Value &) noexcept; 
+    
+    void insert(const value_type& pair) noexcept { insert(pair.first, pair.second); } 
 
     bool remove(Key key);
 
@@ -714,13 +716,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
 {
     for (auto& x: il) { // simply call insert(x)
          
-         std::cout << "\n\nPrinting tree before insert of " << x.first; 
-         printlevelOrder(std::cout);
-
          insert(x.first, x.second);
-         
-         std::cout << "\n\nPrinting tree after insert of " << x.first;
-         printlevelOrder(std::cout);
     }
 }
 

@@ -2,28 +2,27 @@
 #define test_h_2394792374
 
 #include <iostream>
+#include <vector>
 #include <utility>
 
 template<class Key, class Value> class tree234; // Fwd ref.
 
-template<class  Key, class Value> void test_insert(const tree234<Key, Value>& tree)
+template<class  Key, class Value> void test_insert(std::vector<std::pair<Key, Value>>& vec_pairs)
 {
-  std::cout << "Printing tree in level order" << std::endl;
-
-  tree.printlevelOrder(std::cout);
-   
-  // Lambda for printing ints in tree234
-  // auto print_keys = [&](int i) -> ostream& { std::cout << i << ' '; return std::cout; };
-   
-  std::cout << "\n======================" << std::endl;
+  tree234<Key, Value> tree;
+  
+  for (auto& x : vec_pairs)   {
+      
+    tree.insert(x);    
     
-  std::cout << "\nPrinting actual tree in order\n" << std::endl;
-   
-  tree.printInOrder(std::cout);
-  
-  std::cout << std::endl;
-  
+    std::cout << "\n\nPrinting tree in after insert of " << x.first;
+
+    tree.printlevelOrder(std::cout);
+  }
+}  
     // Test copy constructor:
+template<class Key, class Value> void test_copy_ctor(const tree234<Key, Value>& tree)  
+{
   tree234<Key, Value> tree2nd  {tree};
   
   std::cout << "\nPrinting copy of tree\n" << std::endl;
