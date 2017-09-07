@@ -1510,12 +1510,7 @@ template<typename Key, typename Value> int  tree234<Key, Value>::Node234::insert
   ++totalItems; // increase the total item count
     return 0;
 }
-/*
- Called by split. 
- Input: the middle value of a child 3-node (that 'split' downsized to a 2-nodes), and largerNode is the largest key_value of the prior 3-node, which will be adopted.
-  Moves  into keys_values, shifting current elements as needed.
-  Returns insert position.
- */
+
 template<typename Key, typename Value> void tree234<Key, Value>::Node234::insert(KeyValue&& key_value, std::unique_ptr<Node234>& largerNode) noexcept 
 { 
   // start on right, examine items
