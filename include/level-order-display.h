@@ -49,6 +49,7 @@ class levelOrderDisplay  {
     virtual void display_level(std::ostream& ostr,  int level) noexcept;
     
 };
+
 template<class Tree>
 inline levelOrderDisplay<Tree>::levelOrderDisplay(const Tree& in_tree, std::ostream& ostr_lhs) : tree{in_tree}, ostr{ostr_lhs}
 {
@@ -68,15 +69,14 @@ inline levelOrderDisplay<Tree>::levelOrderDisplay(const levelOrderDisplay& lhs) 
   current_level = 0;
 }
 
-
 template<class Tree> void levelOrderDisplay<Tree>::operator()(const typename Tree::node_type& node, int level) noexcept
 {
    // Did current_level change?
    if (current_level != level) { 
 
-         current_level = level;
+       current_level = level;
 
-         display_level(ostr, level);       
+       display_level(ostr, level);       
    }
    
    display_node(ostr, node); 
@@ -106,7 +106,7 @@ void levelOrderDisplay<Tree>::display_level(std::ostream& ostr, int level) noexc
   
   std::string str( num, ' ');
   
-  ostr << str << std::endl;
+  ostr << str; 
 }
 
 // Default implementation streams the node 
