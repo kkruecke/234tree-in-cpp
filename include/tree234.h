@@ -11,7 +11,6 @@
 #include <sstream>
 #include <exception>
 #include <iosfwd>
-#include <utility>
 #include "printer-of-tree-interface.h"
 #include <string>
 #include <iostream>
@@ -2259,7 +2258,7 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::BasicTre
 
 template<typename Key, typename Value>  inline void tree234<Key, Value>::BasicTreePrinter::print_in_order(std::ostream& ostr) 
 {
-  auto lambda = [&](const std::pair<int, int>& pr) -> std::ostream& { ostr << pr.first << ' '; return ostr; };
+  auto lambda = [&](const std::pair<Key, Value>& pr) -> std::ostream& { ostr << pr.first << ' '; return ostr; };
   
   tree.inOrderTraverse(lambda);    
   ostr << std::flush;
@@ -2267,7 +2266,7 @@ template<typename Key, typename Value>  inline void tree234<Key, Value>::BasicTr
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::BasicTreePrinter::print_pre_order(std::ostream& ostr) 
 {
-  auto lambda = [&](const std::pair<int, int>& pr) -> std::ostream& { ostr << pr.first << ' '; return ostr; };
+  auto lambda = [&](const std::pair<Key, Value>& pr) -> std::ostream& { ostr << pr.first << ' '; return ostr; };
   
   tree.preOrderTraverse(lambda);    
   ostr << std::flush;
@@ -2275,7 +2274,7 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::BasicTre
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::BasicTreePrinter::print_post_order(std::ostream& ostr) 
 {
-  auto lambda = [&](const std::pair<int, int>& pr) -> std::ostream& { ostr << pr.first << ' '; return ostr; };
+  auto lambda = [&](const std::pair<Key, Value>& pr) -> std::ostream& { ostr << pr.first << ' '; return ostr; };
   
   tree.postOrderTraverse(lambda);    
   ostr << std::flush;
