@@ -271,7 +271,7 @@ template<typename Key, typename Value> class tree234 {
 
     void printlevelOrder(std::ostream&) const noexcept;
     
-    void printInOrder() const noexcept;
+    void printInOrder(std::ostream&) const noexcept;
     
     void printPreOrder(std::ostream&) const noexcept;
     
@@ -803,43 +803,13 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 Note: When a 2 3 tree node is a 3-node, it has two "right" chidren from the point of view of its first key and two "left" children from the point of view of its
 second key.
  */
-template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getInternalNodeSuccessor(const typename tree234<Key, Value>::Node *pnode, int index_of_key) const noexcept	    
+template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getInternalNodeSuccessor(const typename tree234<Key, Value>::Node *pnode, int key_index) const noexcept	    
 {
  // Get next right child node of pnode based on key_index.
- const Node *rightChild;
-
- switch (pnode->getTotalItems()) {
-
-      case static_cast<int>(Node::NodeType::two_node):
-
-          rightChild = pnode->children[1].get();
-          break;   
-      
-      case static_cast<int>(Node::NodeType::three_node):
-
-          rightChild = (index_of_key == 0) ? rightChild = pnode->children[1].get() : rightChild = pnode->children[2].get(); 
-          break;   
-     
-      case static_cast<int>(Node::NodeType::four_node):
-
-          if (index_of_key == 0) {
-    
-            rightChild = pnode->children[1].get();
-    
-          } else if (index_of_key == 1) { 
-    
-            rightChild = pnode->children[2].get(); 
-
-          } else {
-
-            rightChild = pnode->children[3].get(); 
-          }
-          break;   
- }
 
  // Question: Does it take into account that fact that a node may have already been visited in order?
  // Get the smallest node in the subtree rooted at the rightChild, i.e., its left most node...
- for (const Node *cursor = rightChild; cursor != nullptr; cursor = cursor->children[0].get()) { // TODO: This has not been checked/ported for tree234
+ for (const Node *cursor =  pnode->children[key_index + 1].get(); cursor != nullptr; cursor = cursor->children[0].get()) { // TODO: This has not been checked/ported for tree234
 
     pnode = cursor;
  }
@@ -2192,9 +2162,9 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::printlev
   levelOrderTraverse(tree_printer);
 }
 
-template<typename Key, typename Value> inline void tree234<Key, Value>::printInOrder() const noexcept
+template<typename Key, typename Value> inline void tree234<Key, Value>::printInOrder(std::ostream& ostr) const noexcept
 {
-  auto lambda = [&](const std::pair<Key, Value>& pr) { std::cout << pr.first << ' '; };
+  auto lambda = [&](const std::pair<Key, Value>& pr) { ostr << pr.first << ' '; };
   inOrderTraverse(lambda); 
 }
 /*

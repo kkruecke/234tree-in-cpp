@@ -89,7 +89,7 @@ int main(int argc, char** argv)
 
     cout << "\n\n=================== Normal Tree Print =======================\n" << endl;
   
-    tree.printInOrder();
+    tree.printInOrder(cout);
 
     if (rc == false) {
          
