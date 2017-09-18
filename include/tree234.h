@@ -101,7 +101,7 @@ template<typename Key, typename Value> class tree234 {
        KeyValue removeKeyValue(int index) noexcept; 
     
        void connectChild(int childNum, std::unique_ptr<Node>& child) noexcept;
-             /*
+       /*
         * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
         */  
        std::unique_ptr<Node> disconnectChild(int child_index) noexcept; 
@@ -280,299 +280,7 @@ template<typename Key, typename Value> class tree234 {
     void test(Key key);
 };
 
-template<class Key, class Value> std::string tree234<Key, Value>::test_invariant(const Node& const_node) const noexcept
-{
-  std::ostringstream oss;
-
-  switch(const_node.getTotalItems()) {
-
-      case static_cast<int>(Node::NodeType::two_node):
-
-         const_node.test_2node_invariant(oss, root.get());
-         break;   
-      
-      case static_cast<int>(Node::NodeType::three_node):
-
-         const_node.test_3node_invariant(oss, root.get());
-         break;   
-     
-      case static_cast<int>(Node::NodeType::four_node):
-
-         const_node.test_4node_invariant(oss, root.get());
-         break;   
-
-      default:
-         // If we come here, then node.totalItems is wrong.
-         oss << " error: node.totalItems is " << const_node.getTotalItems() << ".\n"; 
-         break;
-  }
-
-  std::string msg;
-
-  if (oss.str().length() > 0) { 
-
-     msg = " --> " + oss.str();
-  } 
-
-  return msg; 
-}
-
-
-template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::test_2node_invariant(std::ostream& ostr, const Node *root) const noexcept
-{
-  test_parent_ptr(ostr, root);
-	 
-  if (isLeaf()) return ostr;
-
-  auto children_num = static_cast<int>(NodeType::two_node) + 1;
-
-  // check ordering of children's keys with respect to parent. 
-  for (int child_index = 0; child_index < children_num; ++child_index) { // BUG
-
-       if (children[child_index] == nullptr) {
-     
-            ostr << "error: children[" << child_index << "] is nullptr\n";
-            continue;
-       } 
-
-       for (auto i = 0; i < children[child_index]->totalItems; ++i) {
-          
-           switch (child_index) {
-
-             case 0:
-
-              if (children[0]->keys_values[i].key() >= keys_values[0].key()) { // If any are greater than or equal to keys_values.keys[0], then it is an error.
-              
-                 ostr << "error: children[0]->keys_values[" << i << "].key() = " << children[0]->keys_values[i].key() << " is not less than " << keys_values[0].key() << ".\n";
-              }  
-
-              break;
-
-              case 1:
-
-                if (children[1]->keys_values[i].key() <= keys_values[0].key()) { // are any less than or equal to keys_values.keys[0], then it is an error.
-          
-                   ostr << "error: children[1]->keys_values[" << i << "].key()= " << children[1]->keys_values[i].key() << " is not greater than " << keys_values[0].key() << ".\n";
-                }
-
-                break;
-  
-              default:
-                ostr << "error: totalItems = " << totalItems << ".\n";
-                break;
-
-          } // end switch 
-       }  // end inner for    
-  } // end outer for
-          
-  const Node *child; 
-
-  // test children's parent point. 
-  for (auto i = 0; i < static_cast<int>(NodeType::two_node); ++i) {
-
-       if (children[i] == nullptr) continue; // skip if nullptr 
-      
-       child = children[i].get();   
-       
-       if (child->parent != this)	 {
-
-            ostr << "children[" << i << "]->parent does not point to 'this', which is " << this << ").";
-       } 
-  }
-}
-
-template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::test_3node_invariant(std::ostream& ostr, const Node *root) const noexcept
-{
-  //  test parent pointer	
-  test_parent_ptr(ostr, root);
-
-  //Test keys ordering for 3-node
-  if (keys_values[0].key() >= keys_values[1].key() ) {
-
-      ostr <<  keys_values[0].key() << " is greater than " <<keys_values[1].key();
-  }
-
-  if (isLeaf()) return ostr; 
-
-  auto children_num = static_cast<int>(NodeType::three_node) + 1;
-
-  for (int child_index = 0; child_index < children_num; ++child_index) {
-
-     if (children[child_index] == nullptr) {
-   
-          ostr << "error: children[" << child_index << "] is nullptr\n";
-          continue;
-     }
-
-    for (auto i = 0; i < children[child_index]->totalItems; ++i) {
-
-      switch (child_index) {
-       case 0:  
-       // Test that all left child's keys are less than node's keys_values.key()[0]
-     
-           if (children[0]->keys_values[i].key() >= keys_values[0].key() ) { // If any are greater than or equal to keys_values.key()[0], it is an error
-     
-              // problem
-              ostr << "error: children[0]->keys_values[" << i << "].key() = " << children[0]->keys_values[i].key() << " is not less than " << keys_values[0].key() << ".\n";
-           }  
-       break; 
-
-       case 1:
- 
-       // Test middle child's keys, key, are such that: keys_values.key() [0] < key < keys_values.key()[1]
-           if (!(children[1]->keys_values[i].key() > keys_values[0].key() && children[1]->keys_values[i].key() < keys_values[1].key())) {
-     
-              // problem
-              ostr << "error: children[1]->keys_values[" << i << "].key() = " << children[1]->keys_values[i].key() << " is not between " << keys_values[0].key() << " and " << keys_values[1].key() << ".\n";
-           }
-
-       break;
-
-      case 2:     
-       // Test right child's keys are all greater than nodes sole key
-     
-           if (children[2]->keys_values[i].key() <= keys_values[1].key()) { // If any are less than or equal to keys_values.key()[1], it is an error.
-     
-              // problem
-              ostr << "error: children[2]->keys_values[" << i << "].key() = " << children[2]->keys_values[i].key() << " is not greater than " << keys_values[1].key() << ".\n";
-           }
-
-       break;
-
-      default:
-         ostr << "error: totalItems = " << totalItems << ".\n";
-         break;
-     } // end switch
-   } // end inner for
- } // end outer for
-     
- // test children's parent point. 
- for (auto i = 0; i <  static_cast<int>(NodeType::three_node); ++i) {
-
-    if (children[i] == nullptr) continue; // skip if nullptr 
-
-    if (children[i]->parent != this)	 {
-
-        ostr << "children[" << i << "]->parent does not point to 'this', which is " << this << ").";
-    } 
- }
-
-  return ostr; 
-}
-
-template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::test_4node_invariant(std::ostream& ostr, const Node *root) const noexcept
-{
-  //  test parent pointer	
-  test_parent_ptr(ostr, root);
-
-  // Test keys ordering for 4-node
-  for (auto i = 0; i < 2; ++i) {
-
-    if (keys_values[i].key() >= keys_values[i + 1].key()) {
-
-      ostr <<  keys_values[i].key() << " is greater than or equal to " << keys_values[i + 1].key();
-    }
-  }
-  
-  if (isLeaf()) return ostr; 
-
-  auto children_num = static_cast<int>(NodeType::four_node) + 1;
-
-  for (int child_index = 0; child_index < children_num; ++child_index) {
-
-     if (children[child_index] == nullptr) {
-   
-          ostr << "error: children[" << child_index << "] is nullptr\n";
-          continue;
-     }
-
-    for (auto i = 0; i < children[child_index]->totalItems; ++i) {
-
-      switch (child_index) {
-       case 0:  
-       // Test that all left child's keys are less than node's keys_values.key()[0]
-     
-           if (children[0]->keys_values[i].key() >= keys_values[0].key() ) { // If any are greater than or equal to keys_values.key()[0], it is an error
-     
-              // problem
-              ostr << "error: children[0]->keys_values[" << i << "].key() = " << children[0]->keys_values[i].key() << " is not less than " << keys_values[0].key() << ".\n";
-           }  
-       break; 
-
-       case 1:
- 
-       // Test middle child's keys, key, are such that: keys_values.key() [0] < key < keys_values.key()[1]
-           if (!(children[1]->keys_values[i].key() > keys_values[0].key() && children[1]->keys_values[i].key() < keys_values[1].key())) {
-     
-              // problem
-              ostr << "error: children[1]->keys_values[" << i << "].key() = " << children[1]->keys_values[i].key() << " is not between " << keys_values[0].key() << " and " << keys_values[1].key() << ".\n";
-           }
-
-       break;
-
-       case 2:
- 
-       // Test middle child's keys, key, are such that: keys_values.key() [0] < key < keys_values.key()[1]
-           if (!(children[2]->keys_values[i].key() > keys_values[1].key() && children[1]->keys_values[i].key() < keys_values[2].key())) {
-     
-              // problem
-              ostr << "error: children[2]->keys_values[" << i << "].key() = " << children[2]->keys_values[i].key() << " is not between " << keys_values[1].key() << " and " << keys_values[2].key() << ".\n";
-           }
-
-       break;
-
-      case 3:     
-       // Test right child's keys are all greater than nodes sole key
-     
-           if (children[3]->keys_values[i].key() <= keys_values[2].key()) { // If any are less than or equal to keys_values.key()[1], it is an error.
-     
-              // problem
-              ostr << "error: children[2]->keys_values[" << i << "].key() = " << children[2]->keys_values[i].key() << " is not greater than " << keys_values[1].key() << ".\n";
-           }
-
-       break;
-
-      default:
-         ostr << "error: totalItems = " << totalItems << ".\n";
-         break;
-     } // end switch
-   } // end inner for
- } // end outer for
-     
- // test children's parent point. 
- for (auto i = 0; i < static_cast<int>(NodeType::four_node); ++i) {
-
-    if (children[i] == nullptr) continue; // skip if nullptr 
-
-    if (children[i]->parent != this)	 {
-
-        ostr << "children[" << i << "]->parent does not point to 'this', which is " << this << ").";
-    } 
- }
-
-  return ostr; 
-}
-//TODO: port
-// TODO: This test seems inadequate
-template<class Key, class Value> inline std::ostream& tree234<Key, Value>::Node::test_parent_ptr(std::ostream& ostr, const Node *root) const noexcept
-{
-   if (this == root) { // If this is the root...
-       
-        if (parent != nullptr) {
-
- 	  ostr << " node is root and parent is not nullptr ";
-        }
-
-   } else if (this == parent || parent == nullptr) { // ...otherwise, just check that it is not nullptr or this. TODO: This is not a vary through test. It does not test that the parent is actually in the descent path.
-
-	ostr << " parent pointer wrong ";
-   }	   
-   return ostr;
-}	
-
-
-
-template<typename Key, typename Value> typename tree234<Key, Value>::KeyValue& tree234<Key, Value>::KeyValue::operator=(const KeyValue& lhs) noexcept
+template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyValue& tree234<Key, Value>::KeyValue::operator=(const KeyValue& lhs) noexcept
 {
   if (this != &lhs) { 
 
@@ -582,7 +290,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::KeyValue& t
   return *this;
 }
 
-template<typename Key, typename Value> typename tree234<Key, Value>::KeyValue& tree234<Key, Value>::KeyValue::operator=(KeyValue&& lhs) noexcept
+template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyValue& tree234<Key, Value>::KeyValue::operator=(KeyValue&& lhs) noexcept
 {
   if (this != &lhs) { 
 
@@ -706,69 +414,33 @@ template<class Key, class Value> inline void tree234<Key, Value>::test_invariant
 
   levelOrderTraverse(reporter); 
 }
-/*
-template<class Key, class Value> template<typename Functor> inline void tree234<Key, Value>::test_invariant(Functor f) const noexcept
-{
-// Do in order traverse using iteration and a stack, but add the parent pointer's address to the stack--or whatever is need to properly test the parent pointer
-// See Walls and Mirrors for the code. See pp 464-468
-
-  std::stack<const Node *> stack;
-
-  const tree234 *root_node = root.get();
-  const tree234 *current = root_node;
-
-  bool done = false;
-
-  while(!done) {
-
-          if (current != nullptr) {  // place pointer to node on stack before travesing node's left subtree
-
-               switch (current->getTotalItems()) {
-            
-                  case 1: // two node
-                        
-                        break;
-            
-                  case 2: // three node
-                        break;
-            
-                  case 3: // four node
-        
-                          break;
-               }
-        
-    
-              // travese the left-most subtree
-               
-          }        
-    
-  }
-}
-*/
 
 /*
 Finding the successor of a given node 
 -------------------------------------
 Requires:
-1. If position is beg, current and key_index MUST point to first key in tree. 
-2. If position is end,  current and key_index MUST point to last key in tree.
-  
-3. If position is in_between, current and key_index do not point to either the first key in the tree or last key in tree. If the tree has only one node,
-the state can only be in_between if the first node is a 3-node.
-Returns:
-pair<const Node *, int>, where the Node pointer is the node with the next key and value in in-order sequence. key_index is the index into
-Node::keys_values[].  If the last key has already been visited, the pointer returned will be nullptr.
-Questions: Will position ever be end or beg, or do the callers increment() and decrement() ensure that it is never end or beg?
-pseudo code for getting successor from: http://ee.usc.edu/~redekopp/cs104/slides/L19_BalancedBST_23.pdf
-If left child exists, predecessor is the right most node of the left subtree. Internal node's of a 2 3 tree always have a right branch because 2 3 trees are
-balanced.
-Else walk up the ancestor chain until you traverse the first right child pointer (find 
-the first node who is a right child of his parent...that parent is the predecessor)
-If you get to the root w/o finding a node who is a right child, there is no predecessor
-May set:
-1. current
-2. key_index
-3. position
+    1. If position is beg, current and key_index MUST point to first key in tree. 
+    2. If position is end,  current and key_index MUST point to last key in tree.
+      
+    3. If position is in_between, current and key_index do not point to either the first key in the tree or last key in tree. If the tree has only one node,
+       the state can only be in_between if the first node is a 3-node.
+
+    Returns:
+    pair<const Node *, int>, where the Node pointer is the node with the next key and value in in-order sequence. key_index is the index into Node::keys_values[].
+    Note, if the last key has already been visited, the pointer returned will be nullptr.
+
+    Pseudo code for getting successor (from: http://ee.usc.edu/~redekopp/cs104/slides/L19_BalancedBST_23.pdf):
+
+    If left child exists, predecessor is the right most node of the left subtree. Internal node's of a 2 3 tree always have a right branch because 2 3 trees are  balanced.
+
+    Else walk up the ancestor chain until you traverse the first right child pointer (find  the first node who is a right child of his parent...that parent is the predecessor)
+
+    If you get to the root w/o finding a node who is a right child, there is no predecessor
+
+    Side effects. May set:
+    1. current
+    2. key_index
+    3. position
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getSuccessor(const Node *current, int key_index) const noexcept
 {
@@ -1656,8 +1328,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
    // 1. create a new node from largest key and adopt pnode's tworight most children
    std::unique_ptr<Node> largestNode = std::make_unique<Node>(std::move(pnode->keys_values[2]));
    
-   Node *plargestNode = largestNode.get(); // TODO: Debug only. Remove later
-   
    largestNode->connectChild(0, pnode->children[2]); 
    largestNode->connectChild(1, pnode->children[3]);
    
@@ -2001,15 +1671,15 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   std::unique_ptr<Node> leftOrphan = std::move(children[0]); 
   std::unique_ptr<Node> rightOrphan = std::move(children[1]); 
     
-  // make grandchildren the children.
-  connectChild(0, leftOrphan->children[0]); // connectChild() will also reset parent pointer of right parameter.
+  // make grandchildren the children of this.
+  connectChild(0, leftOrphan->children[0]); 
   connectChild(1, leftOrphan->children[1]);
   connectChild(2, rightOrphan->children[0]); 
   connectChild(3, rightOrphan->children[1]);
     
   return this;  
   
-}// <-- leftOrphan and rightOrphan are automatically deleted because they are unique_ptr<Node> pointers
+}// <-- Note: leftOrphan and rightOrphan are automatically deleted here when their unique_ptr<Node> go out of scope.
 
 /* 
  * Requires: sibling is to the left, therefore: parent->children[sibling_id]->keys_values[0] < parent->keys_values[index] < parent->children[node2_index]->keys_values[0]
@@ -2030,7 +1700,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   // 4. disconnect right-most child of sibling
   std::unique_ptr<Node> pchild_of_sibling = psibling->disconnectChild(total_sibling_keys_values); 
   
-  // TODO: Is move() needed?
   parent->keys_values[parent_key_index] = std::move(psibling->removeKeyValue(total_sibling_keys_values - 1)); // remove the largest, the right-most, sibling's key, and, then, overwrite parent item with largest sibling key ++
 
   p2node->insertChild(0, pchild_of_sibling); // add former right-most child of sibling as its first child
@@ -2167,6 +1836,298 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::printInO
   auto lambda = [&](const std::pair<Key, Value>& pr) { ostr << pr.first << ' '; };
   inOrderTraverse(lambda); 
 }
+
+template<class Key, class Value> std::string tree234<Key, Value>::test_invariant(const Node& const_node) const noexcept
+{
+  std::ostringstream oss;
+
+  switch(const_node.getTotalItems()) {
+
+      case static_cast<int>(Node::NodeType::two_node):
+
+         const_node.test_2node_invariant(oss, root.get());
+         break;   
+      
+      case static_cast<int>(Node::NodeType::three_node):
+
+         const_node.test_3node_invariant(oss, root.get());
+         break;   
+     
+      case static_cast<int>(Node::NodeType::four_node):
+
+         const_node.test_4node_invariant(oss, root.get());
+         break;   
+
+      default:
+         // If we come here, then node.totalItems is wrong.
+         oss << " error: node.totalItems is " << const_node.getTotalItems() << ".\n"; 
+         break;
+  }
+
+  std::string msg;
+
+  if (oss.str().length() > 0) { 
+
+     msg = " --> " + oss.str();
+  } 
+
+  return msg; 
+}
+
+
+template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::test_2node_invariant(std::ostream& ostr, const Node *root) const noexcept
+{
+  test_parent_ptr(ostr, root);
+	 
+  if (isLeaf()) return ostr;
+
+  auto children_num = static_cast<int>(NodeType::two_node) + 1;
+
+  // check ordering of children's keys with respect to parent. 
+  for (int child_index = 0; child_index < children_num; ++child_index) { // BUG
+
+       if (children[child_index] == nullptr) {
+     
+            ostr << "error: children[" << child_index << "] is nullptr\n";
+            continue;
+       } 
+
+       for (auto i = 0; i < children[child_index]->totalItems; ++i) {
+          
+           switch (child_index) {
+
+             case 0:
+
+              if (children[0]->keys_values[i].key() >= keys_values[0].key()) { // If any are greater than or equal to keys_values.keys[0], then it is an error.
+              
+                 ostr << "error: children[0]->keys_values[" << i << "].key() = " << children[0]->keys_values[i].key() << " is not less than " << keys_values[0].key() << ".\n";
+              }  
+
+              break;
+
+              case 1:
+
+                if (children[1]->keys_values[i].key() <= keys_values[0].key()) { // are any less than or equal to keys_values.keys[0], then it is an error.
+          
+                   ostr << "error: children[1]->keys_values[" << i << "].key()= " << children[1]->keys_values[i].key() << " is not greater than " << keys_values[0].key() << ".\n";
+                }
+
+                break;
+  
+              default:
+                ostr << "error: totalItems = " << totalItems << ".\n";
+                break;
+
+          } // end switch 
+       }  // end inner for    
+  } // end outer for
+          
+  const Node *child; 
+
+  // test children's parent point. 
+  for (auto i = 0; i < static_cast<int>(NodeType::two_node); ++i) {
+
+       if (children[i] == nullptr) continue; // skip if nullptr 
+      
+       child = children[i].get();   
+       
+       if (child->parent != this)	 {
+
+            ostr << "children[" << i << "]->parent does not point to 'this', which is " << this << ").";
+       } 
+  }
+}
+
+template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::test_3node_invariant(std::ostream& ostr, const Node *root) const noexcept
+{
+  //  test parent pointer	
+  test_parent_ptr(ostr, root);
+
+  //Test keys ordering for 3-node
+  if (keys_values[0].key() >= keys_values[1].key() ) {
+
+      ostr <<  keys_values[0].key() << " is greater than " <<keys_values[1].key();
+  }
+
+  if (isLeaf()) return ostr; 
+
+  auto children_num = static_cast<int>(NodeType::three_node) + 1;
+
+  for (int child_index = 0; child_index < children_num; ++child_index) {
+
+     if (children[child_index] == nullptr) {
+   
+          ostr << "error: children[" << child_index << "] is nullptr\n";
+          continue;
+     }
+
+    for (auto i = 0; i < children[child_index]->totalItems; ++i) {
+
+      switch (child_index) {
+       case 0:  
+       // Test that all left child's keys are less than node's keys_values.key()[0]
+     
+           if (children[0]->keys_values[i].key() >= keys_values[0].key() ) { // If any are greater than or equal to keys_values.key()[0], it is an error
+     
+              // problem
+              ostr << "error: children[0]->keys_values[" << i << "].key() = " << children[0]->keys_values[i].key() << " is not less than " << keys_values[0].key() << ".\n";
+           }  
+       break; 
+
+       case 1:
+ 
+       // Test middle child's keys, key, are such that: keys_values.key() [0] < key < keys_values.key()[1]
+           if (!(children[1]->keys_values[i].key() > keys_values[0].key() && children[1]->keys_values[i].key() < keys_values[1].key())) {
+     
+              // problem
+              ostr << "error: children[1]->keys_values[" << i << "].key() = " << children[1]->keys_values[i].key() << " is not between " << keys_values[0].key() << " and " << keys_values[1].key() << ".\n";
+           }
+
+       break;
+
+      case 2:     
+       // Test right child's keys are all greater than nodes sole key
+     
+           if (children[2]->keys_values[i].key() <= keys_values[1].key()) { // If any are less than or equal to keys_values.key()[1], it is an error.
+     
+              // problem
+              ostr << "error: children[2]->keys_values[" << i << "].key() = " << children[2]->keys_values[i].key() << " is not greater than " << keys_values[1].key() << ".\n";
+           }
+
+       break;
+
+      default:
+         ostr << "error: totalItems = " << totalItems << ".\n";
+         break;
+     } // end switch
+   } // end inner for
+ } // end outer for
+     
+ // test children's parent point. 
+ for (auto i = 0; i <  static_cast<int>(NodeType::three_node); ++i) {
+
+    if (children[i] == nullptr) continue; // skip if nullptr 
+
+    if (children[i]->parent != this)	 {
+
+        ostr << "children[" << i << "]->parent does not point to 'this', which is " << this << ").";
+    } 
+ }
+
+  return ostr; 
+}
+
+template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::test_4node_invariant(std::ostream& ostr, const Node *root) const noexcept
+{
+  //  test parent pointer	
+  test_parent_ptr(ostr, root);
+
+  // Test keys ordering for 4-node
+  for (auto i = 0; i < 2; ++i) {
+
+    if (keys_values[i].key() >= keys_values[i + 1].key()) {
+
+      ostr <<  keys_values[i].key() << " is greater than or equal to " << keys_values[i + 1].key();
+    }
+  }
+  
+  if (isLeaf()) return ostr; 
+
+  auto children_num = static_cast<int>(NodeType::four_node) + 1;
+
+  for (int child_index = 0; child_index < children_num; ++child_index) {
+
+     if (children[child_index] == nullptr) {
+   
+          ostr << "error: children[" << child_index << "] is nullptr\n";
+          continue;
+     }
+
+    for (auto i = 0; i < children[child_index]->totalItems; ++i) {
+
+      switch (child_index) {
+       case 0:  
+       // Test that all left child's keys are less than node's keys_values.key()[0]
+     
+           if (children[0]->keys_values[i].key() >= keys_values[0].key() ) { // If any are greater than or equal to keys_values.key()[0], it is an error
+     
+              // problem
+              ostr << "error: children[0]->keys_values[" << i << "].key() = " << children[0]->keys_values[i].key() << " is not less than " << keys_values[0].key() << ".\n";
+           }  
+       break; 
+
+       case 1:
+ 
+       // Test middle child's keys, key, are such that: keys_values.key() [0] < key < keys_values.key()[1]
+           if (!(children[1]->keys_values[i].key() > keys_values[0].key() && children[1]->keys_values[i].key() < keys_values[1].key())) {
+     
+              // problem
+              ostr << "error: children[1]->keys_values[" << i << "].key() = " << children[1]->keys_values[i].key() << " is not between " << keys_values[0].key() << " and " << keys_values[1].key() << ".\n";
+           }
+
+       break;
+
+       case 2:
+ 
+       // Test middle child's keys, key, are such that: keys_values.key() [0] < key < keys_values.key()[1]
+           if (!(children[2]->keys_values[i].key() > keys_values[1].key() && children[1]->keys_values[i].key() < keys_values[2].key())) {
+     
+              // problem
+              ostr << "error: children[2]->keys_values[" << i << "].key() = " << children[2]->keys_values[i].key() << " is not between " << keys_values[1].key() << " and " << keys_values[2].key() << ".\n";
+           }
+
+       break;
+
+      case 3:     
+       // Test right child's keys are all greater than nodes sole key
+     
+           if (children[3]->keys_values[i].key() <= keys_values[2].key()) { // If any are less than or equal to keys_values.key()[1], it is an error.
+     
+              // problem
+              ostr << "error: children[2]->keys_values[" << i << "].key() = " << children[2]->keys_values[i].key() << " is not greater than " << keys_values[1].key() << ".\n";
+           }
+
+       break;
+
+      default:
+         ostr << "error: totalItems = " << totalItems << ".\n";
+         break;
+     } // end switch
+   } // end inner for
+ } // end outer for
+     
+ // test children's parent point. 
+ for (auto i = 0; i < static_cast<int>(NodeType::four_node); ++i) {
+
+    if (children[i] == nullptr) continue; // skip if nullptr 
+
+    if (children[i]->parent != this)	 {
+
+        ostr << "children[" << i << "]->parent does not point to 'this', which is " << this << ").";
+    } 
+ }
+
+  return ostr; 
+}
+//TODO: port
+// TODO: This test seems inadequate
+template<class Key, class Value> inline std::ostream& tree234<Key, Value>::Node::test_parent_ptr(std::ostream& ostr, const Node *root) const noexcept
+{
+   if (this == root) { // If this is the root...
+       
+        if (parent != nullptr) {
+
+ 	  ostr << " node is root and parent is not nullptr ";
+        }
+
+   } else if (this == parent || parent == nullptr) { // ...otherwise, just check that it is not nullptr or this. TODO: This is not a vary through test. It does not test that the parent is actually in the descent path.
+
+	ostr << " parent pointer wrong ";
+   }	   
+   return ostr;
+}	
+
+
 /*
 // for level order print of tree
 template<typename Key, typename Value> void tree234<Key, Value>::BasicTreePrinter::operator()(std::ostream& ostr, const typename tree234<Key, Value>::Node *current, int level)
