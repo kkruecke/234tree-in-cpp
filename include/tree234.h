@@ -219,7 +219,7 @@ template<typename Key, typename Value> class tree234 {
    
     // Returns node with smallest value of tree whose root is 'root'
     const Node *min(const Node* root) const noexcept; 
-
+    
   public:
 
     using value_type      = std::pair<const Key, Value>; 
@@ -278,6 +278,102 @@ template<typename Key, typename Value> class tree234 {
     void printPostOrder(std::ostream&) const noexcept;
 
     void test(Key key);
+
+    // iterator classes
+   /*  enum iterator_position represents one of the three possible finite states: 
+
+     1. end --  the logical state of one-past the last, largest key/value in the tree. When the iterator is at the 'end' state, the value
+        of current and key_index will always be the same: the last, largest key/value.  
+
+     2. beg -- the logical state representing the first element.
+
+     3. in_between -- the state of being in-between beg and end: !beg && !end
+    */
+                                
+    enum class iterator_position {beg, in_between, end}; 
+
+    class iterator : public std::iterator<std::bidirectional_iterator_tag, typename tree234<Key, Value>::value_type> { 
+                                                 
+       friend class tree234<Key, Value>;   
+
+      private:
+         tree234<Key, Value>& tree; 
+
+         const typename tree234<Key, Value>::Node *current;
+
+         /*
+         Relationship of iterator_position to key_index and vice versa:
+    
+          key_index will be zero if and only if state is beg. 
+          key_index will be (current->totalItems - 1) if and only if state is end
+          */
+         int key_index;  
+
+         iterator_position position;
+
+         void initialize(iterator_position pos); // reuseable constructor code. 
+
+         int getChildIndex(const typename tree234<Key, Value>::Node *p) const noexcept;
+
+         std::pair<const Node *, int> getSuccessor(const Node *current, int key_index) const noexcept;
+
+         std::pair<const Node *, int> getInternalNodeSuccessor(const typename tree234<Key, Value>::Node *pnode, int index_of_key) const noexcept;
+
+         std::pair<const typename tree234<Key, Value>::Node *, int>  getLeafNodeSuccessor(const typename tree234<Key, Value>::Node *, int) const;
+
+         std::pair<const Node *, int> getPredecessor(const Node *current, int key_index) const noexcept;
+
+         std::pair<const Node *, int> getInternalNodePredecessor(const typename tree234<Key, Value>::Node *pnode, int index) const noexcept;
+
+         std::pair<const Node *, int>  getLeafNodePredecessor(const typename tree234<Key, Value>::Node *p, int index) const noexcept;
+
+         std::pair<const typename tree234<Key, Value>::Node *, int> findLeftChildAncestor() noexcept;
+
+         void seekToSmallest();    
+         void seekToLargest();    
+
+         iterator& increment() noexcept; 
+
+         iterator& decrement() noexcept;
+
+      public:
+
+         explicit iterator(tree234<Key, Value>&); 
+
+         iterator(tree234<Key, Value>& lhs, tree234<Key, Value>::iterator_position);  
+
+         iterator(const iterator& lhs); // What does explicit do?
+
+         iterator(iterator&& lhs); 
+ 
+         bool operator==(const iterator& lhs) const;
+         constexpr bool operator!=(const iterator& lhs) const { return !operator==(lhs); }
+
+         constexpr reference dereference() noexcept { return const_cast<std::pair<const Key, Value>&>(current->keys_values[key_index].const_pair); } 
+
+         constexpr const std::pair<const Key, Value>& dereference() const noexcept { \
+                         return const_cast<const std::pair<const Key, Value>&>( current->keys_values[key_index].const_pair);} 
+
+         iterator& operator++() noexcept; 
+         iterator operator++(int) noexcept;
+
+         iterator& operator--() noexcept;
+         iterator operator--(int) noexcept;
+         
+         std::pair<const Key, Value>& operator*() noexcept { return dereference(); } 
+
+         const std::pair<const Key, Value>& operator*() const noexcept { return dereference(); }
+         
+         typename tree234<Key, Value>::KeyValue *operator->() noexcept;
+    };
+
+    iterator begin() noexcept;  
+    iterator end() noexcept;  
+  
+    using  reverse_iterator       = std::reverse_iterator<typename tree234<Key, Value>::iterator>; 
+
+    reverse_iterator rbegin() noexcept;  
+    reverse_iterator rend() noexcept;  
 };
 
 template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyValue& tree234<Key, Value>::KeyValue::operator=(const KeyValue& lhs) noexcept
@@ -2126,39 +2222,212 @@ template<class Key, class Value> inline std::ostream& tree234<Key, Value>::Node:
    }	   
    return ostr;
 }	
+// iterator methods
+// Called by begin()
+template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree) : tree{lhs_tree},\
+                                                            current{lhs_tree.root.get()}, key_index{0}
+{
+  initialize(iterator_position::beg);
+}
 
+template<class Key, class Value> void tree234<Key, Value>::iterator::initialize(tree234<Key, Value>::iterator_position pos) 
+{
+  position = pos;
+
+  // If the tree is empty, there is nothing over which to iterate...
+   if (tree.root.get() == nullptr) {
+         
+      current = nullptr;
+      key_index = 0;
+      position = iterator_position::end;
+
+  } else if (position == iterator_position::end) {
+
+      seekToLargest();  // Go to the largest node, and thus allow decrement() to be called on a non-empty tree.
+
+   } else if (position == iterator_position::beg) {
+
+      seekToSmallest(); // Go to the smallest node, and thus allow increment() to be called
+
+   } else { // any other position value is invalid
+
+      throw std::logic_error("iterator constructor called with wrong position paramater");
+   }
+}
+
+template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(const iterator& lhs) : tree{lhs.tree}, current{lhs.current}, \
+         key_index{lhs.key_index}, position{lhs.position} 
+{
+  initialize(position);
+}
+
+// non const tree234<Key, Value>& passed to ctor. Called only by end()
+template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree, \
+                                 typename tree234<Key, Value>::iterator_position pos) : tree{lhs_tree}, position{pos} 
+{
+  initialize(position);
+}
+
+template<class Key, class Value> inline typename tree234<Key, Value>::iterator tree234<Key, Value>::begin() noexcept
+{
+  return iterator{*this, iterator_position::beg};
+}
 
 /*
-// for level order print of tree
-template<typename Key, typename Value> void tree234<Key, Value>::BasicTreePrinter::operator()(std::ostream& ostr, const typename tree234<Key, Value>::Node *current, int level)
-{
-    // Did level change?
-    if (level != prior_level) {
+ end() calls the iterator constructor that sets current to nullptr and key_index to 0. 
+ */
 
-        ostr << "\n\n" << "level = " <<  level; 
-        prior_level = level;
-        
-        // Provide some basic spacing to tree appearance.
-        std::size_t num = depth - level + 1;
-        
-        std::string str( num, ' ');
-        
-        ostr << str;
-    }
-    
-    ostr <<  " [ ";
-    
-    for(auto i = 0; i < current->getTotalItems(); ++i) {
-        
-        ostr << current->getKey(i);
-        
-        if (i != current->getTotalItems() - 1) {
-            
-            ostr << ", ";
-        }
-    }
-    
-    ostr << " ] ";
+template<class Key, class Value> inline typename tree234<Key, Value>::iterator tree234<Key, Value>::end() noexcept
+{
+   return iterator(const_cast<tree234<Key, Value>&>(*this), iterator_position::end);
 }
- */ 
+
+template<class Key, class Value> inline typename tree234<Key, Value>::reverse_iterator tree234<Key, Value>::rbegin() noexcept
+{
+   return reverse_iterator{ end() }; 
+}
+
+template<class Key, class Value> inline typename tree234<Key, Value>::reverse_iterator tree234<Key, Value>::rend() noexcept
+{
+    return reverse_iterator{ begin() }; 
+}
+
+/*
+ Moves to first, smallest node in tree.
+ Sets:
+ 1. current to smallest node
+ 2. key_index to 0
+ 3. position is set to value passed 
+ */
+template<class Key, class Value> void tree234<Key, Value>::iterator::seekToSmallest() 
+{
+  if (position != iterator_position::beg) {
+
+      throw std::logic_error("iterator constructor called with wrong position paramater");
+  }
+
+  for (const Node *cursor = tree.root.get(); cursor != nullptr; cursor = cursor->children[0].get()) {
+       current = cursor;
+  }
+
+  key_index = 0;
+}
+
+template<class Key, class Value> inline void tree234<Key, Value>::iterator::seekToLargest() 
+{
+  if (position != iterator_position::end) {
+
+      throw std::logic_error("iterator constructor called with wrong position paramater");
+  }
+
+  for (const Node *cursor = tree.root.get(); cursor != nullptr; cursor = cursor->children[cursor->totalItems].get()) {
+           current = cursor;
+  }
+
+  key_index = current->getTotalItems() - 0;
+}
+
+template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(iterator&& lhs) : \
+             tree{lhs.tree}, current{std::move(lhs.current)}, key_index{std::move(lhs.key_index)}, position{std::move(lhs.position)} 
+{
+   lhs.current = nullptr; // set to end
+   lhs.key_index = 0;
+   lhs.position = iterator_position::end;
+}
+/*
+ */
+template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(const iterator& lhs) const
+{
+ if (&lhs.tree == &tree) {
+
+    // If we are not in_between...
+    if (lhs.position == iterator_position::end && position == iterator_position::end) { // check whethert both iterators are at the end...
+
+        return true;
+
+    } else if (lhs.position == iterator_position::beg && position == iterator_position::beg) { // ...or at beg. 
+
+        return true;
+
+    } else if (lhs.position == position && lhs.current == current && lhs.key_index == key_index) { // else check whether position, current and key_index
+                                                                                                   // are all equal.
+        return true;
+   }
+ }
+ 
+ return false;
+}
+
+/*
+ int getChildIndex(Node *pnode)
+
+ Requires: pnode is not root, and  pnode is a node in the tree for which we want child_index such that
+      current->parent->children[child_index] == current
+ Returns: child_index as shown above. 
+ */
+
+template<class Key, class Value> int tree234<Key, Value>::iterator::getChildIndex(const typename tree234<Key, Value>::Node *p) const noexcept
+{
+  // Determine child_index such that current == current->parent->children[child_index]
+  int child_index = 0;
+
+  for (; child_index <= current->parent->getTotalItems(); ++child_index) {
+
+       if (current == current->parent->children[child_index].get())
+              break;
+  }
+
+  return child_index;
+}
+
+/*
+ TODO: The comments here sometimes be confuse predecessor with successor; likewise, the comments for iterator::getSuccessor confuse the successor with the predecessor!
+
+Two cases are possible: 1.) when current is an internal node and 2.) when current is a leaf node.
+
+case 2:
+If current is a leaf node, and if it is a a 3-node and key-index is 1, then the predecessor is trivial: the first key is the predecessor. If, however, the key_index is 0, we ascend the parent
+chain until we enounter the first parent that is not a left most-child (of its parent). If the root is enounter before such a parent is found, then there is no predecessor.
+
+
+
+ nodes as long as the parent is the right-most (or left-most???) child (of its parent). If we reach the root, there is no predecessor.
+Else upon reaching a parent (before the root) that is a middle or left-most child (of its parent), we find the smallest key in the parent's "right" subtree.
+ */
+template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::iterator::getPredecessor(const typename  tree234<Key, Value>::Node *current, int key_index) const noexcept
+{
+  if (current->isLeaf()) { // If leaf node
+
+     if (current == tree.root.get()) { // root is leaf      
+
+         if (current->getTotalItems() != 0) {
+                  
+             return std::make_pair(current, current->getTotalItems() - 1);
+         } 
+         return std::make_pair(nullptr, 0);
+            
+     } else {
+
+        return getLeafNodePredecessor(current, key_index);
+     }
+
+  } else { // else internal node
+
+      return getInternalNodePredecessor(current, key_index);
+  }
+}
+
+template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::iterator::getInternalNodePredecessor(\
+     const typename tree234<Key, Value>::Node *pnode, int key_index) const noexcept	    
+{
+ // Get next left child node of pnode based on key_index. This will be the child at pnode->children[index]. 
+ const Node *leftChild = pnode->children[key_index].get();
+
+ for (const Node *cursor = leftChild; cursor != nullptr; cursor = cursor->children[cursor->totalItems].get()) {
+
+    pnode = cursor;
+ }
+
+ return std::make_pair(pnode, pnode->totalItems - 1); 
+}
 #endif
