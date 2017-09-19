@@ -215,7 +215,7 @@ template<typename Key, typename Value> class tree234 {
 
     std::pair<const Node *, int> getInternalNodeSuccessor(const Node *pnode,  int index_of_key) const noexcept;
 
-    std::pair<const Node *, int> getLeafNodeSuccessor(const Node *pnode, int key_index) const noexcept;
+    std::pair<const Node *, int> getLeafNodeSuccessor(const Node *pnode, int key_index) const;
    
     // Returns node with smallest value of tree whose root is 'root'
     const Node *min(const Node* root) const noexcept; 
@@ -281,9 +281,12 @@ template<typename Key, typename Value> class tree234 {
 
     // iterator classes
    /*  enum iterator_position represents one of the three possible finite states: 
+
      1. end --  the logical state of one-past the last, largest key/value in the tree. When the iterator is at the 'end' state, the value
         of current and key_index will always be the same: the last, largest key/value.  
+
      2. beg -- the logical state representing the first element.
+
      3. in_between -- the state of being in-between beg and end: !beg && !end
     */
                                 
@@ -314,15 +317,7 @@ template<typename Key, typename Value> class tree234 {
 
          std::pair<const Node *, int> getSuccessor(const Node *current, int key_index) const noexcept;
 
-         std::pair<const Node *, int> getInternalNodeSuccessor(const typename tree234<Key, Value>::Node *pnode, int index_of_key) const noexcept;
-
-         std::pair<const typename tree234<Key, Value>::Node *, int>  getLeafNodeSuccessor(const typename tree234<Key, Value>::Node *, int) const;
-
-         std::pair<const Node *, int> getPredecessor(const Node *current, int key_index) const noexcept;
-
-         std::pair<const Node *, int> getInternalNodePredecessor(const typename tree234<Key, Value>::Node *pnode, int index) const noexcept;
-
-         std::pair<const Node *, int>  getLeafNodePredecessor(const typename tree234<Key, Value>::Node *p, int index) const;
+         std::pair<const Node *, int> getPredecessor(const Node *current, int key_index) const;
 
          std::pair<const typename tree234<Key, Value>::Node *, int> findLeftChildAncestor() noexcept;
 
@@ -367,7 +362,7 @@ template<typename Key, typename Value> class tree234 {
     iterator begin() noexcept;  
     iterator end() noexcept;  
   
-    using  reverse_iterator       = std::reverse_iterator<typename tree234<Key, Value>::iterator>; 
+    using reverse_iterator = std::reverse_iterator<typename tree234<Key, Value>::iterator>; 
 
     reverse_iterator rbegin() noexcept;  
     reverse_iterator rend() noexcept;  
@@ -517,13 +512,19 @@ Requires:
       
     3. If position is in_between, current and key_index do not point to either the first key in the tree or last key in tree. If the tree has only one node,
        the state can only be in_between if the first node is a 3-node.
+
     Returns:
     pair<const Node *, int>, where the Node pointer is the node with the next key and value in in-order sequence. key_index is the index into Node::keys_values[].
     Note, if the last key has already been visited, the pointer returned will be nullptr.
+
     Pseudo code for getting successor (from: http://ee.usc.edu/~redekopp/cs104/slides/L19_BalancedBST_23.pdf):
+
     If left child exists, predecessor is the right most node of the left subtree. Internal node's of a 2 3 tree always have a right branch because 2 3 trees are  balanced.
+
     Else walk up the ancestor chain until you traverse the first right child pointer (find  the first node who is a right child of his parent...that parent is the predecessor)
+
     If you get to the root w/o finding a node who is a right child, there is no predecessor
+
     Side effects. May set:
     1. current
     2. key_index
@@ -580,7 +581,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  1. pnode is a leaf node, either a 2 or 3-node
  2. If pnode is 3-node, then key_index, the key index into pnode->keys_values[].key() must be 1, the second key. It can never be 0, the first key.
  */
-template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getLeafNodeSuccessor(const Node *pnode, int key_index) const noexcept
+template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getLeafNodeSuccessor(const Node *pnode, int key_index) const 
 {
 
   // Handle the easy case: a 3- or 4-node in which key_index is not the right most value in the node.
@@ -591,7 +592,6 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   }
 
   Node *successor = nullptr;
-  int successor_key = -1; 
 
   int child_index = pnode->getChildIndex();
 
@@ -600,6 +600,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   /*
    pnode is the right-most child of its parent, so we must find the first ancestor--parent, grandparent, great grandparent, etc--that is in a "greater than" node.key(i), i.e., an ancestor->key(j) that is to the right of node.key(i). 
    Note: We know that if it is a 3- or 4-node, then key_index is the right most value in the node. Since a 2-node only has one value, it is by default the "right most".
+
    To find this ancester, we ascend the tree until we encounter the first ancestor that is not a right-most child.  We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
    */
   
@@ -609,16 +610,20 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
             
              ancestor = ancestor->parent;
        }
+
        if (ancestor == root) { // No successor is possible because pnode->key(i) is the max.
 
-             successor = nullptr;
-             successor_key = -1; 
+             return std::make_pair(nullptr, -1); 
 
        } else { 
 
              // We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
-             successor = ancestor;
-             successor_key = 0;  
+             int successor = 0;
+             int current_key = pnode->keys_values[key_index].key();
+
+             for (; successor < ancestor->getTotalItems() && current_key < ancestor.keys_values[successor].key(); ++successor);
+
+             return std::make_pair(ancestor, successor);
        }
 
   } else { 
@@ -626,29 +631,31 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
         ...otherwise, we know that pnode that for 2, 3 and 4-nodes pnode is NOT the right most child of its parent (and it is a leaf). We know that if it is a 2, 3, or 4-node, it is not the right most. 
         We also know that key_index is the right most value of pnode--right? So need to ascertain the index next_index such that pnode->parent->key(next_index) > pnode->key(key_index). How can next_index be calculated
         from the input parameters and this use-case?
+
         Comment: We can view a 3-node as two catenated 2-nodes in which the the middle child is shared between these two "2-nodes", like this
       
            [3,       5]  
            /  \     / \
           /    \   /   \
         [1, 2]  [3, 4]  [6]
+
         While a 4-node can be viewed as three catenated 2-nodes in which the two middle child are shared
           
            [2,   4,   6]  
           /  \  / \  / \
         [1]  [3]   [5]  [7] 
+
         If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is the last, ie, pnode->getTotalItems() - 1. So the we simply go up on level to find the in order successor.    
         We simply need to determine the index in the parent to choose.
       */
 
-     successor = pnode->parent;
-     successor_key = child_index;
+     if (child_index > static_cast<int>(Node::NodeType::four_node)) {
 
-     if (child_index > 2) {
-         throw std::logic_error("child_index was not between 0 and 2 in getLeafNodeSuccessor()");
-     } 
+         throw std::logic_error("child_index was not between 0 and 3 in getLeafNodeSuccessor()");
+     }
+
+     return std::make_pair(pnode->parent, child_index);
   }  
-  return  std::make_pair(successor, successor_key);
 }
 
 
@@ -2210,7 +2217,6 @@ template<class Key, class Value> inline std::ostream& tree234<Key, Value>::Node:
    return ostr;
 }	
 // iterator methods
-// Called by begin()
 template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree) : tree{lhs_tree},\
                                                             current{lhs_tree.root.get()}, key_index{0}
 {
@@ -2347,6 +2353,7 @@ template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(
 
 /*
  int getChildIndex(Node *pnode)
+
  Requires: pnode is not root, and  pnode is a node in the tree for which we want child_index such that
       current->parent->children[child_index] == current
  Returns: child_index as shown above. 
@@ -2368,22 +2375,27 @@ template<class Key, class Value> int tree234<Key, Value>::iterator::getChildInde
 
 /*
  TODO: The comments here sometimes be confuse predecessor with successor; likewise, the comments for iterator::getSuccessor confuse the successor with the predecessor!
+
 Two cases are possible: 1.) when current is an internal node and 2.) when current is a leaf node.
+
 case 2:
 If current is a leaf node, and if it is a a 3-node and key-index is 1, then the predecessor is trivial: the first key is the predecessor. If, however, the key_index is 0, we ascend the parent
 chain until we enounter the first parent that is not a left most-child (of its parent). If the root is enounter before such a parent is found, then there is no predecessor.
+
+
+
  nodes as long as the parent is the right-most (or left-most???) child (of its parent). If we reach the root, there is no predecessor.
 Else upon reaching a parent (before the root) that is a middle or left-most child (of its parent), we find the smallest key in the parent's "right" subtree.
  */
-template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::iterator::getPredecessor(const typename  tree234<Key, Value>::Node *current, int key_index) const noexcept
+template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getPredecessor(const typename  tree234<Key, Value>::Node *current, int key_index) const 
 {
   if (current->isLeaf()) { // If leaf node
 
      if (current == tree.root.get()) { // root is leaf      
 
-         if (current->getTotalItems() != 0) {
+         if (key_index != 0) {
                   
-             return std::make_pair(current, current->getTotalItems() - 1);
+             return std::make_pair(current, key_index - 1);
          } 
          return std::make_pair(nullptr, 0);
             
@@ -2398,7 +2410,35 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   }
 }
 
-template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::iterator::getInternalNodePredecessor(\
+template<class Key, class Value> inline std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::iterator::getPredecessor(const typename  tree234<Key, Value>::Node *current, int key_index) const 
+{
+  return tree.getPredecessor(current, key_index);
+} 
+
+/*
+Finding the successor of a given node 
+-------------------------------------
+Requires:
+
+    1. If position is beg, current and key_index MUST point to first key in tree. 
+    2. If position is end,  current and key_index MUST point to last key in tree.
+      
+    3. If position is in_between, current and key_index do not point to either the first key in the tree or last key in tree. If the tree has only one node,
+       the state can only be in_between if the first node is a 3-node.
+
+    Returns:
+    pair<const Node *, int>, first is the node with the next in-order key, and second is the index into keys_values[]. If the last key has already been visited,
+    the pointer returned will be nullptr.
+
+ */
+template<class Key, class Value> inline std::pair<const typename tree243<Key, Value>::Node *, int> tree234<Key, Value>::iterator::getSuccessor(const Node *current,\
+                                                                                                           int index_of_key) const noexcept
+{
+  return tree.getSuccessor(current, index_of_key);
+}
+
+
+template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getInternalNodePredecessor(\
      const typename tree234<Key, Value>::Node *pnode, int key_index) const noexcept	    
 {
  // Get next left child node of pnode based on key_index. This will be the child at pnode->children[index]. 
@@ -2420,7 +2460,7 @@ Finding the predecessor of a given node
   If you get to the root w/o finding a node that is a right child, there is no predecessor
 */
 
-template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::iterator::getLeafNodePredecessor(const Node *pnode, int index) const 
+template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getLeafNodePredecessor(const Node *pnode, int index) const 
 {
   // Handle trivial case: if the leaf node is not a 2-node (it is a 3-node or 4-node, and key_index is not the first key), simply set index of predecessor to index - 1. 
   if (!pnode->isTwoNode() && index != 0) {
@@ -2442,10 +2482,13 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
    /* 
     To find the next smallest node the logic is identical: We walk up the parent chain until we traverse the first parent that is not a left-most child 
     of its parent. That parent is the predecessor. If we get to the root without finding a node that is a right child, there is no predecessor.
+
     Note: In a 2 3 tree, a "right" child pointer will be either the second child of a 2-node or the second, the middle, or the third child of a 3-node. "right" child
     pointer means a pointer to a subtree with larger keys. In a 2 3 tree, the middle child pointer of a 3-node parent is a "right child pointer" of the 1st key
     because all the keys of the subtree whose root is the second (or middle) child pointer are greater than 1st key of the subtree's parent. 
+
     So when we walk up the ancestor chain as long as the parent is the first child. For example, in the tree portion shown below
+
               [5,   10]  
               /   |   \                              
           ...    ...  [27,       70]  
@@ -2459,6 +2502,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
      
     if [15] is the pnode leaf node, the predecessor of [15] is the second key of the 3-node [5, 10] because when we walk up the parent chain from [15], the first
     right child pointer we encounter is the parent of [27, 70], which is [5, 10]. So [10] is the next smallest key. In this example
+
               [5,   10]  
               /   |   \                              
           ...    ...  [27,       70]  
@@ -2474,7 +2518,9 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
       non-first child pointer we encounter is the parent of [45], which is [27, 70]. So the key at index 0, which is [27], is the next smallest key. Therefore, if our
       loop above terminates without encountering the root, we must determine the child index of prior_node in pnode. If pnode is a 2-node, it is trivial: the child
       index is one. If pnode is a three node, the child index is either one or two:
+
       int child_index = 1; // assume pnode is a 2-node.
+
       if (pnode->isThreeNode()) { // if it is a 3-nodee, compare prior_node to children[1]
           child_index = prior_node == pnode->children[1].get() ? 1 : 2;
       }

@@ -1,7 +1,10 @@
 TODO
 ====
 
-Started the port of iterator class and method from tree23. Still need to implement getLeafNodeSuccessor() and getInternalNodeSuccessor(), and these methods need to be be test. const_iterator has not been ported, even in part.
+The latest ported code -- which has compile errors -- is in include/new-tree234.h
+
+I started the port of iterator class and method from tree23. Much of it is done; however, the iterator::increment() and iterator::decrement() from tree23 have not been ported to class 2 3 4. Also, there are bugs with the iterator class due 
+to exeception specifications being incorrect--because some of the the tree234::iterator methods throw exceptions.
 
 insert
 ------
