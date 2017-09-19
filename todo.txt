@@ -1,9 +1,7 @@
 TODO
 ====
 
-Not all the iterator methods have been ported from class tree23. Those like getLeafNodePredecessor and getLeafNodeSuccessor will require an extra case statement within the switch statement, and the logic will need to be double check to ensure
-it is appropriate for 2 3 4 trees predecessor and successor. And, of course, it will then need to be tested, as do the tree23 iterator methods.
-
+Started the port of iterator class and method from tree23. Still need to implement getLeafNodeSuccessor() and getInternalNodeSuccessor(), and these methods need to be be test. const_iterator has not been ported, even in part.
 insert
 ------
 

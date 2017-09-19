@@ -325,7 +325,7 @@ template<typename Key, typename Value> class tree234 {
 
          std::pair<const Node *, int> getInternalNodePredecessor(const typename tree234<Key, Value>::Node *pnode, int index) const noexcept;
 
-         std::pair<const Node *, int>  getLeafNodePredecessor(const typename tree234<Key, Value>::Node *p, int index) const noexcept;
+         std::pair<const Node *, int>  getLeafNodePredecessor(const typename tree234<Key, Value>::Node *p, int index) const;
 
          std::pair<const typename tree234<Key, Value>::Node *, int> findLeftChildAncestor() noexcept;
 
@@ -2429,5 +2429,112 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  }
 
  return std::make_pair(pnode, pnode->totalItems - 1); 
+}
+/* 
+Finding the predecessor of a given node 
+---------------------------------------
+  If left child exists, predecessor is the right most node of the left subtree
+  Else we walk up the ancestor chain until you traverse the first right child pointer (find the first node that is a right child of its 
+  parent...that parent is the predecessor)
+  If you get to the root w/o finding a node that is a right child, there is no predecessor
+*/
+
+template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::iterator::getLeafNodePredecessor(const Node *pnode, int index) const 
+{
+  // Handle trivial case: if the leaf node is not a 2-node (it is a 3-node or 4-node, and key_index is not the first key), simply set index of predecessor to index - 1. 
+  if (!pnode->isTwoNode() && index != 0) {
+
+      return std::make_pair(pnode, index - 1); 
+  }
+
+  // Determine child_index such that pnode == pnode->parent->children[child_index]
+  int child_index = getChildIndex(pnode);
+
+  int pred_key_index;
+
+  if (child_index != 0) { // IF pnode is not the left-most child, the predecessor is in the parent
+
+      return  std::make_pair(pnode->parent, child_index - 1); 
+
+  } else {
+
+   /* 
+    To find the next smallest node the logic is identical: We walk up the parent chain until we traverse the first parent that is not a left-most child 
+    of its parent. That parent is the predecessor. If we get to the root without finding a node that is a right child, there is no predecessor.
+
+    Note: In a 2 3 tree, a "right" child pointer will be either the second child of a 2-node or the second, the middle, or the third child of a 3-node. "right" child
+    pointer means a pointer to a subtree with larger keys. In a 2 3 tree, the middle child pointer of a 3-node parent is a "right child pointer" of the 1st key
+    because all the keys of the subtree whose root is the second (or middle) child pointer are greater than 1st key of the subtree's parent. 
+
+    So when we walk up the ancestor chain as long as the parent is the first child. For example, in the tree portion shown below
+
+              [5,   10]  
+              /   |   \                              
+          ...    ...  [27,       70]  
+                       /       |     \
+                      /        |      \   
+                   [20]       [45]    [80, 170]
+                   /   \      /  \     /  |  \
+                [15]  [25]  [30] [60]  <-- pnode points to leaf node [20]. 
+                / \   / \   / \  / \   
+               0   0 0   0 0   0 0  0  ... 
+     
+    if [15] is the pnode leaf node, the predecessor of [15] is the second key of the 3-node [5, 10] because when we walk up the parent chain from [15], the first
+    right child pointer we encounter is the parent of [27, 70], which is [5, 10]. So [10] is the next smallest key. In this example
+
+              [5,   10]  
+              /   |   \                              
+          ...    ...  [27,       70]  
+                       /       |     \
+                      /        |      \   
+                   [20]       [45]     [80, 170]
+                  /   \       /  \      /  |  \
+                [15]  [25]  [30] [60]  <-- pnode points to leaf node [20]. 
+                / \   / \   / \  / \   
+               0   0 0   0 0   0 0  0  ... 
+     
+      if [30] is the pnode leaf node, the predecessor of [30] is the first key of the 3-node [27, 70] because when we walk up the parent chain from [30], the first
+      non-first child pointer we encounter is the parent of [45], which is [27, 70]. So the key at index 0, which is [27], is the next smallest key. Therefore, if our
+      loop above terminates without encountering the root, we must determine the child index of prior_node in pnode. If pnode is a 2-node, it is trivial: the child
+      index is one. If pnode is a three node, the child index is either one or two:
+
+      int child_index = 1; // assume pnode is a 2-node.
+
+      if (pnode->isThreeNode()) { // if it is a 3-nodee, compare prior_node to children[1]
+          child_index = prior_node == pnode->children[1].get() ? 1 : 2;
+      }
+  
+      Now that we know the child_index such that
+            pnode->children[child_index] == prior_node;
+      
+      Determine which key is the predecessor. If child_index is one, the middle child, then the predecessor is pnode->keys_values[0]. If child_index is two, then
+      the predecessor is pnode->keys_values[1].key(). Thus, the predecessor is the key at child_index - 1.
+      */
+      const Node *parent = pnode->parent;
+      
+      Key current_key = pnode->keys_values[index];
+
+      // Ascend the parent pointer chain as long as pnode is the left most child of its parent.
+      for(; pnode == parent->children[0].get();  parent = parent->parent)  {
+      
+          // pnode is still the left most child, but if its is the root, we cannot ascend further and there is no predecessor.  
+          if (parent == tree.root.get()) {
+                
+              return std::make_pair(nullptr, 0);  // To indicate this we set current, the member of the pair, to nullptr and key_index, the second member, to 0.
+          }
+          pnode = parent;
+      }
+
+      // The predecessor will be the first key, starting with the right most key, that is less than current_key. 
+      for (int pred_index = parent->getTotalItems() - 1; pred_index >= 0; --pred_index) {
+
+           if (current_key > parent->keys_values[pred_index].key()) {
+
+               return std::make_pair(parent, pred_index);
+           } 
+      } 
+
+     return throw std::logic_error("Error in getLeafNodePredecessor");
+  } // end else
 }
 #endif
