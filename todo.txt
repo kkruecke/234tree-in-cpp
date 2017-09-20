@@ -18,7 +18,7 @@ The reverse_iterator prints the last element twice when used in a loop like this
        ostr << endl;
     }
     
-This is probably a bug in iterator::operator==() and !=.
+This is probably a bug in iterator::operator==() and !=, or in rend()?
 
 insert
 ------
