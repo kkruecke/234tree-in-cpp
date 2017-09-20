@@ -9,7 +9,7 @@
 
 using namespace std;
 
-template<class Key, class Value> void iterator_print(const tree234<Key, Value>& tree, ostream& ostr)
+template<class Key, class Value> void print(const tree234<Key, Value>& tree, ostream& ostr)
 {
    for(auto& pr : tree) {
        
@@ -18,6 +18,22 @@ template<class Key, class Value> void iterator_print(const tree234<Key, Value>& 
    
    ostr << endl;
 }
+
+template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, ostream& ostr)
+{
+   // This has a  bug. 
+   auto end = tree.rend();
+
+   for(auto iter = tree.rbegin(); iter != end; ++iter) {
+ 
+      auto& pr = *iter;
+
+      ostr << pr.first << ", " << flush;
+   }
+   
+   ostr << endl;
+}
+
 
 int main(int argc, char** argv)
 {
@@ -95,7 +111,6 @@ int main(int argc, char** argv)
         
     tree.printlevelOrder(cout);
 
-   
     cout << flush;
 
     cout << "\n\n=================== Normal Tree Print =======================\n" << endl;
@@ -104,8 +119,12 @@ int main(int argc, char** argv)
 
     cout << "\n\n========== Test of iterator class ===================" << endl;
 
-    iterator_print(tree, cout);
-    
+    print(tree, cout);
+ 
+    cout << "\n\n========== Test of reverse_iterator class ===================" << endl;
+
+    rprint(tree, cout); //Causes BUG?
+   
     if (rc == false) {
          
         cerr << "\nExiting upon remove error!!!" << endl;
