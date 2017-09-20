@@ -2578,10 +2578,6 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
                                        // 'in_between' corresponds to the inclusive half interval [second key, last key), while 'beg' refers only to
                                        //  first key/value.  
     {    
-       if (current->keys_values[key_index].key() == 0)   { // DEBUG Code
-           int debug = 10;
-           ++debug;
-       }
        std::pair<const Node *,int> pair = tree.getPredecessor(current, key_index); // returns current and key_index of predecessor
 
        if (pair.first == nullptr) { // If nullptr, there is no successor: current and key_index already point to the first key/value in the tree. 
