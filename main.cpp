@@ -11,19 +11,8 @@ using namespace std;
 
 template<class Key, class Value> void iterator_print(const tree234<Key, Value>& tree, ostream& ostr)
 {
-   typename tree234<Key, Value>::const_iterator  iter = tree.begin();
-   
-   typename tree234<Key, Value>::const_iterator  end = tree.end();
-   
-   for(;iter != end; ++iter) {
+   for(auto& pr : tree) {
        
-      auto& pr = *iter;
-      
-      if (pr.first == 20) {
-          int debug = 10;
-          ++debug;
-      }
-   
       ostr << pr.first << ", " << flush;
    }
    
@@ -82,7 +71,7 @@ int main(int argc, char** argv)
   tree.inOrderTraverse(print_keys);
 */
   
-  cout << "Printing the keys to be removed\n";
+  cout << "\nPrinting the keys to be removed\n\n";
   
   copy(keys.rbegin(), keys.rend(), ostream_iterator<int>(cout, ", "));
   

@@ -1,7 +1,7 @@
 TODO
 ====
 
-Ported iterator class from tree23 but have not ported its const_iterator class. Class iterator has not been tested yet.
+The reverse_iterator classes have a bug.
 
 insert
 ------

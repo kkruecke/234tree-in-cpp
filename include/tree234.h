@@ -2339,7 +2339,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   }
 
   // Determine child_index such that pnode == pnode->parent->children[child_index]
-  int child_index = getChildIndex(pnode);
+  int child_index = pnode->getChildIndex();
 
   int pred_key_index;
 
@@ -2403,7 +2403,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
       */
       const Node *parent = pnode->parent;
       
-      Key current_key = pnode->keys_values[index];
+      Key current_key = pnode->keys_values[index].key();
 
       // Ascend the parent pointer chain as long as pnode is the left most child of its parent.
       for(; pnode == parent->children[0].get();  parent = parent->parent)  {
@@ -2425,7 +2425,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
            } 
       } 
 
-     return throw std::logic_error("Error in getLeafNodePredecessor");
+     throw std::logic_error("Error in getLeafNodePredecessor");
   } // end else
 }
  // iterator methods
@@ -2440,7 +2440,7 @@ template<class Key, class Value> void tree234<Key, Value>::iterator::initialize(
   position = pos;
 
   // If the tree is empty, there is nothing over which to iterate...
-   if (tree.root.get() == nullptr) {
+   if (tree.isEmpty()) {
          
       current = nullptr;
       key_index = 0;
@@ -2574,6 +2574,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
      // no op. Since current and key_index still point to smallest key and its value., we don't change them. 
      break;
 
+   case iterator_position::end:
    case iterator_position::in_between: // 'in_between' means current and key_index range from the second key/value in tree and its last key/value.
                                        // 'in_between' corresponds to the inclusive half interval [second key, last key), while 'beg' refers only to
                                        //  first key/value.  
@@ -2593,15 +2594,10 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
            current = pair.first;
            key_index = pair.second;
+           position = iterator_position::in_between;
        }
     }
     break;
-
-   case iterator_position::end:
-
-        // current and key_index already point to last key/value, so we merely change the position state to indicate they are 'in_between'.
-        position = iterator_position::in_between;
-        break;
 
    default:
         break;
@@ -2641,7 +2637,7 @@ template<class Key, class Value> inline void tree234<Key, Value>::iterator::seek
            current = cursor;
   }
 
-  key_index = current->getTotalItems() - 0;
+  key_index = current->getTotalItems() - 1;
 }
 
 template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(iterator&& lhs) : \
