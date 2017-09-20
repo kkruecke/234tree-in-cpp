@@ -23,12 +23,21 @@ template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, os
 {
    // This has a  bug. 
    auto end = tree.rend();
-
-   for(auto iter = tree.rbegin(); iter != end; ++iter) {
+   auto iter = tree.rbegin();
+   
+   while( iter != end) {
  
       auto& pr = *iter;
 
       ostr << pr.first << ", " << flush;
+      
+      if (pr.first == 1 ) {
+          
+          int debug = 10;
+          ++debug;
+       }
+      
+       ++iter;
    }
    
    ostr << endl;

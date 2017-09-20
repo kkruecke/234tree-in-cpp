@@ -2497,7 +2497,6 @@ template<class Key, class Value> inline typename tree234<Key, Value>::const_iter
    return const_iterator(const_cast<tree234<Key, Value>&>(*this), tree234<Key, Value>::iterator_position::end);
 }
 
-
 template<class Key, class Value> inline typename tree234<Key, Value>::reverse_iterator tree234<Key, Value>::rbegin() noexcept
 {
    return reverse_iterator{ end() }; 
@@ -2578,7 +2577,8 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
    case iterator_position::in_between: // 'in_between' means current and key_index range from the second key/value in tree and its last key/value.
                                        // 'in_between' corresponds to the inclusive half interval [second key, last key), while 'beg' refers only to
                                        //  first key/value.  
-    {      
+    {    
+          
        std::pair<const Node *,int> pair = tree.getPredecessor(current, key_index); // returns current and key_index of predecessor
 
        if (pair.first == nullptr) { // If nullptr, there is no successor: current and key_index already point to the first key/value in the tree. 
@@ -2586,11 +2586,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
             // Therefore current doesn't change, nor key_index, but the state becomes 'beg'. 
             position = iterator_position::beg;
 
-       } else if (current == pair.first) { 
-
-            key_index = pair.second;  // current hasn't change, key_index may have, so we set it.
-
-       } else { // Current changed, so we update both current and key_index
+       } else  { 
 
            current = pair.first;
            key_index = pair.second;
@@ -2641,7 +2637,7 @@ template<class Key, class Value> inline void tree234<Key, Value>::iterator::seek
 }
 
 template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(iterator&& lhs) : \
-             tree{lhs.tree}, current{std::move(lhs.current)}, key_index{std::move(lhs.key_index)}, position{std::move(lhs.position)} 
+             tree{lhs.tree}, current{lhs.current}, key_index{lhs.key_index}, position{std::move(lhs.position)} 
 {
    lhs.current = nullptr; // set to end
    lhs.key_index = 0;
