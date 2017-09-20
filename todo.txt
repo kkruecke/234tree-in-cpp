@@ -17,8 +17,29 @@ The reverse_iterator prints the last element twice when used in a loop like this
        
        ostr << endl;
     }
+
+However this loop works fine
+
+    template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, ostream& ostr)
+    {
+       // This works
+       typename tree234<Key, Value>::const_iterator start{tree,  tree234<Key, Value>::iterator_position::end};
     
-This is probably a bug in either iterator::operator==() and iterator::operator!= or in decrement()?
+       typename tree234<Key, Value>::const_iterator finish(tree, tree234<Key, Value>::iterator_position::beg);
+     
+       while( start != finish) {
+     
+          auto& pr = *start;
+    
+          ostr << pr.first << ", " << flush;
+               
+          --start;
+       }
+       
+       ostr << endl;
+    }
+    
+getPredecessor() seems to work ok, so I'm not sure where the bug is.
 
 insert
 ------
