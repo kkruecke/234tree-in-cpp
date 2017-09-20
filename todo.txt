@@ -1,7 +1,7 @@
 TODO
 ====
 
-The reverse_iterator classes have a bug.
+The reverse_iterator classes have a bug. They simply use the STL revese_iterator adaptor.
 
 insert
 ------
