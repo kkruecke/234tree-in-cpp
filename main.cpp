@@ -9,6 +9,27 @@
 
 using namespace std;
 
+template<class Key, class Value> void iterator_print(const tree234<Key, Value>& tree, ostream& ostr)
+{
+   typename tree234<Key, Value>::const_iterator  iter = tree.begin();
+   
+   typename tree234<Key, Value>::const_iterator  end = tree.end();
+   
+   for(;iter != end; ++iter) {
+       
+      auto& pr = *iter;
+      
+      if (pr.first == 20) {
+          int debug = 10;
+          ++debug;
+      }
+   
+      ostr << pr.first << ", " << flush;
+   }
+   
+   ostr << endl;
+}
+
 int main(int argc, char** argv)
 {
   vector<int> keys = { 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 0, 27, 62, 87, 37, 92, 79, 23, 17, 97, 55, 51, 69, 1, 2, 33, 26, 5};
@@ -84,13 +105,18 @@ int main(int argc, char** argv)
     cout << "\n\n=======Tree level order print =====================" << endl;
         
     tree.printlevelOrder(cout);
-    
+
+   
     cout << flush;
 
     cout << "\n\n=================== Normal Tree Print =======================\n" << endl;
   
     tree.printInOrder(cout);
 
+    cout << "\n\n========== Test of iterator class ===================" << endl;
+
+    iterator_print(tree, cout);
+    
     if (rc == false) {
          
         cerr << "\nExiting upon remove error!!!" << endl;

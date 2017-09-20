@@ -28,7 +28,7 @@ template<typename Key, typename Value> class tree234 {
        friend class tree234<Key, Value>;
    
        std::pair<Key, Value>        _pair;  // ...this eliminates constantly casting of const_cast<Key>(p.first) = some_noconst_key;
-       std::pair<const Key, Value>  constkey_pair;  // but always return this member of the union.
+       std::pair<const Key, Value>  _constkey_pair;  // but always return this member of the union.
 
        KeyValue() {} 
        KeyValue(Key key, const Value& value) : _pair{key, value} {}
@@ -43,15 +43,18 @@ template<typename Key, typename Value> class tree234 {
        KeyValue& operator=(KeyValue&& lhs) noexcept; 
 
        constexpr Key&  key()  { return _pair.first; }
-       constexpr const Key& key() const { return constkey_pair.first; }
+       constexpr const Key& key() const { return _constkey_pair.first; }
 
        constexpr Value&  value()  { return _pair.second; }
-       constexpr const Value& value() const { return constkey_pair.second; }
+       constexpr const Value& value() const { return _constkey_pair.second; }
 
      public:    
        constexpr const std::pair<Key, Value>& pair() const { return _pair; }
        constexpr std::pair<Key, Value>& pair() { return _pair; }
         
+       constexpr const std::pair<const Key, Value>& constkey_pair() const { return _constkey_pair; }
+       constexpr       std::pair<const Key, Value>& constkey_pair() { return _constkey_pair; }
+
        friend std::ostream& operator<<(std::ostream& ostr, const KeyValue& key_value)
        {
           ostr << "{" << key_value._pair.first << ',' <<  key_value._pair.second <<  "}, ";
@@ -282,6 +285,8 @@ template<typename Key, typename Value> class tree234 {
 
     void test(Key key);
 
+    bool isEmpty() const noexcept;
+
     // iterator classes
    /*  enum iterator_position represents one of the three possible finite states: 
 
@@ -338,13 +343,24 @@ template<typename Key, typename Value> class tree234 {
          iterator(iterator&& lhs); 
  
          bool operator==(const iterator& lhs) const;
+         
          constexpr bool operator!=(const iterator& lhs) const { return !operator==(lhs); }
+        /*++
+         constexpr reference dereference() noexcept { return current->keys_values[key_index].constkey_pair(); } 
 
-         constexpr reference dereference() noexcept { return const_cast<std::pair<const Key, Value>&>(current->keys_values[key_index].const_pair); } 
+         constexpr const std::pair<const Key, Value>& dereference() const noexcept { return current->keys_values[key_index].constkey_pair();} 
+        */ 
+         
+         reference dereference() noexcept 
+         { 
+             return current->keys_values[key_index].constkey_pair(); 
+         }  //--
 
-         constexpr const std::pair<const Key, Value>& dereference() const noexcept { \
-                         return const_cast<const std::pair<const Key, Value>&>( current->keys_values[key_index].const_pair);} 
-
+         const std::pair<const Key, Value>& dereference() const noexcept 
+         { 
+             return current->keys_values[key_index].constkey_pair();
+         } //--
+         
          iterator& operator++() noexcept; 
          iterator operator++(int) noexcept;
 
@@ -358,14 +374,56 @@ template<typename Key, typename Value> class tree234 {
          typename tree234<Key, Value>::KeyValue *operator->() noexcept;
     };
 
+    class const_iterator : public std::iterator<std::bidirectional_iterator_tag, const value_type> {
+
+      private:
+        iterator iter; 
+      public:
+         
+         explicit const_iterator(const tree234<Key, Value>& lhs);
+
+         const_iterator(const tree234<Key, Value>& lhs, iterator_position pos); 
+
+         const_iterator(const const_iterator& lhs);
+         const_iterator(const_iterator&& lhs); 
+         const_iterator(const iterator& lhs);
+
+         bool operator==(const const_iterator& lhs) const;
+         bool operator!=(const const_iterator& lhs) const;
+         
+         const_iterator& operator++() noexcept;
+         const_iterator operator++(int) noexcept;
+         const_iterator& operator--() noexcept;
+         const_iterator operator--(int) noexcept;
+
+         const std::pair<const Key,Value>&  operator*() const noexcept 
+         {
+           return iter.dereference(); 
+         } 
+
+         const std::pair<const Key, Value> *operator->() const noexcept { return &this->operator*(); } 
+    };
+
     iterator begin() noexcept;  
     iterator end() noexcept;  
   
-    using reverse_iterator = std::reverse_iterator<typename tree234<Key, Value>::iterator>; 
+    const_iterator begin() const noexcept;  
+    const_iterator end() const noexcept;  
+  
+    using  reverse_iterator       = std::reverse_iterator<typename tree234<Key, Value>::iterator>; 
+    using  const_reverse_iterator = std::reverse_iterator<typename tree234<Key, Value>::const_iterator>;
 
     reverse_iterator rbegin() noexcept;  
     reverse_iterator rend() noexcept;  
+ 
+    const_reverse_iterator rbegin() const noexcept;  
+    const_reverse_iterator rend() const noexcept;  
 };
+
+template<class Key, class Value> inline bool tree234<Key, Value>::isEmpty() const noexcept
+{
+  return root == nullptr ? true : false;
+}
 
 template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyValue& tree234<Key, Value>::KeyValue::operator=(const KeyValue& lhs) noexcept
 {
@@ -582,19 +640,19 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getLeafNodeSuccessor(const Node *pnode, int key_index) const 
 {
-
   // Handle the easy case: a 3- or 4-node in which key_index is not the right most value in the node.
   if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { 
 
       return std::make_pair(pnode, key_index + 1); 
-
   }
 
   Node *successor = nullptr;
 
   int child_index = pnode->getChildIndex();
+  
+  int current_key = pnode->keys_values[key_index].key();
 
-  if (pnode->parent->children[child_index] == pnode->parent->getRightMostChild()) { // Is pnode the right-most child of its parent? 
+  if (pnode->parent->children[child_index].get() == pnode->parent->getRightMostChild()) { // Is pnode the right-most child of its parent? 
 
   /*
    pnode is the right-most child of its parent, so we must find the first ancestor--parent, grandparent, great grandparent, etc--that is in a "greater than" node.key(i), i.e., an ancestor->key(j) that is to the right of node.key(i). 
@@ -602,28 +660,26 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
    To find this ancester, we ascend the tree until we encounter the first ancestor that is not a right-most child.  We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
    */
-  
-       Node *ancestor = pnode->parent;
-
-       while (ancestor != root && ancestor == ancestor->parent->getRightMostChild()) { // Q: Is this test correct for 3 and 4-nodes, too.
-            
-             ancestor = ancestor->parent;
+       const Node *parent = pnode->parent;
+       
+       // Ascend the parent pointer as long as the node continues to be the right most child (of its parent). 
+       for(;pnode == parent->getRightMostChild(); parent = parent->parent)  { 
+       
+           // pnode is still the right most child, but if it is also the root, then, there is no successor (because pnode was the largest node in the tree). 
+           if (parent == root.get()) {
+              
+               return std::make_pair(nullptr, 0);  // To indicate "no-successor" we return the pair: {nullptr, 0}.
+           }
+       
+           pnode = parent;
        }
+       // We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
+       int successor = 0;
 
-       if (ancestor == root) { // No successor is possible because pnode->key(i) is the max.
-
-             return std::make_pair(nullptr, -1); 
-
-       } else { 
-
-             // We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
-             int successor = 0;
-             int current_key = pnode->keys_values[key_index].key();
-
-             for (; successor < ancestor->getTotalItems() && current_key < ancestor.keys_values[successor].key(); ++successor);
-
-             return std::make_pair(ancestor, successor);
-       }
+       for (; successor < parent->getTotalItems() && current_key > parent->keys_values[successor].key(); ++successor);
+         
+       return std::make_pair(parent, successor);
+       
 
   } else { 
       /* 
@@ -2422,6 +2478,11 @@ template<class Key, class Value> inline typename tree234<Key, Value>::iterator t
   return iterator{*this, iterator_position::beg};
 }
 
+template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator tree234<Key, Value>::begin() const noexcept
+{
+  return const_iterator{*this, iterator_position::beg};
+}
+
 /*
  end() calls the iterator constructor that sets current to nullptr and key_index to 0. 
  */
@@ -2431,9 +2492,20 @@ template<class Key, class Value> inline typename tree234<Key, Value>::iterator t
    return iterator(const_cast<tree234<Key, Value>&>(*this), iterator_position::end);
 }
 
+template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator tree234<Key, Value>::end() const noexcept
+{
+   return const_iterator(const_cast<tree234<Key, Value>&>(*this), tree234<Key, Value>::iterator_position::end);
+}
+
+
 template<class Key, class Value> inline typename tree234<Key, Value>::reverse_iterator tree234<Key, Value>::rbegin() noexcept
 {
    return reverse_iterator{ end() }; 
+}
+
+template<class Key, class Value> inline typename tree234<Key, Value>::const_reverse_iterator tree234<Key, Value>::rbegin() const noexcept
+{
+    return const_reverse_iterator{ end() }; 
 }
 
 template<class Key, class Value> inline typename tree234<Key, Value>::reverse_iterator tree234<Key, Value>::rend() noexcept
@@ -2441,6 +2513,10 @@ template<class Key, class Value> inline typename tree234<Key, Value>::reverse_it
     return reverse_iterator{ begin() }; 
 }
 
+template<class Key, class Value> inline typename tree234<Key, Value>::const_reverse_iterator tree234<Key, Value>::rend() const noexcept
+{
+    return const_reverse_iterator{ begin() }; 
+}
 
 template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234<Key, Value>::iterator::increment() noexcept	    
 {
@@ -2470,7 +2546,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
                 key_index = pair.second; // current has no change, but key_index has.
   
-           } else {  // curent has changed, so we adjust current and key_index. To ensure position is no longer 'beg', we unconditionally set position to 'in_between'.
+           } else {  // curent has changed. To ensure position is no longer 'beg', we set position to 'in_between'.
 
                current = pair.first;
                key_index = pair.second;
@@ -2620,4 +2696,75 @@ template<class Key, class Value> int tree234<Key, Value>::iterator::getChildInde
 
   return child_index;
 }
+
+/*
+ tree234<Key, Value>::const_iterator constructors
+ */
+template<class Key, class Value> inline tree234<Key, Value>::const_iterator::const_iterator(const tree234<Key, Value>& lhs) : \
+                                                                                  iter{const_cast<tree234<Key, Value>&>(lhs)} 
+{
+}
+
+template<class Key, class Value> inline tree234<Key, Value>::const_iterator::const_iterator(const tree234<Key, Value>& lhs, iterator_position pos) : \
+ iter{const_cast<tree234<Key, Value>&>(lhs), pos} 
+{
+}
+
+template<class Key, class Value> inline tree234<Key, Value>::const_iterator::const_iterator::const_iterator(const typename tree234<Key, Value>::const_iterator& lhs) : \
+ iter{lhs.iter}
+{
+}
+
+template<class Key, class Value> inline tree234<Key, Value>::const_iterator::const_iterator::const_iterator(typename tree234<Key, Value>::const_iterator&& lhs) : \
+  iter{std::move(lhs.iter)}
+{
+}
+/*
+ * This constructor also provides implicit type conversion from a iterator to a const_iterator
+ */
+template<class Key, class Value> inline tree234<Key, Value>::const_iterator::const_iterator::const_iterator(const typename tree234<Key, Value>::iterator& lhs) : \
+  iter{lhs}
+{
+}
+
+template<class Key, class Value> inline bool tree234<Key, Value>::const_iterator::operator==(const const_iterator& lhs) const 
+{ 
+  return iter.operator==(static_cast< const iterator& >(lhs.iter)); 
+}
+
+template<class Key, class Value> inline  bool tree234<Key, Value>::const_iterator::operator!=(const const_iterator& lhs) const
+{ 
+  return iter.operator!=(static_cast< const iterator& >(lhs.iter)); 
+}
+     
+template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator& tree234<Key, Value>::const_iterator::operator++() noexcept	    
+{
+  iter.increment();
+  return *this;
+}
+
+template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator tree234<Key, Value>::const_iterator::operator++(int) noexcept	    
+{
+ const_iterator tmp{*this};
+
+ iter.increment(); 
+
+ return *this;
+}
+
+template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator& tree234<Key, Value>::const_iterator::operator--() noexcept	    
+{
+   iter.decrement();
+   return *this;
+}
+
+template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator tree234<Key, Value>::const_iterator::operator--(int) noexcept	    
+{
+ const_iterator tmp{*this};
+
+ iter.decrement(); 
+
+ return *this;
+}
+
 #endif
