@@ -39,7 +39,7 @@ However this loop works fine
        ostr << endl;
     }
     
-getPredecessor() seems to work ok, so I'm not sure where the bug is.
+getPredecessor() seems to work ok, so there seems to be an issue of I'm not sure where the bug is.
 
 insert
 ------

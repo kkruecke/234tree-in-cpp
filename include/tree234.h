@@ -2582,7 +2582,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
        if (pair.first == nullptr) { // If nullptr, there is no successor: current and key_index already point to the first key/value in the tree. 
 
-            // Therefore current doesn't change, nor key_index, but the state becomes 'beg'. 
+            // Therefore current doesn't change, nor key_index, but the state becomes 'beg'.
             position = iterator_position::beg;
 
        } else  { 
@@ -2720,12 +2720,12 @@ template<class Key, class Value> inline tree234<Key, Value>::const_iterator::con
 
 template<class Key, class Value> inline bool tree234<Key, Value>::const_iterator::operator==(const const_iterator& lhs) const 
 { 
-  return iter.operator==(static_cast< const iterator& >(lhs.iter)); 
+  return iter.operator==(lhs.iter); 
 }
 
 template<class Key, class Value> inline  bool tree234<Key, Value>::const_iterator::operator!=(const const_iterator& lhs) const
 { 
-  return iter.operator!=(static_cast< const iterator& >(lhs.iter)); 
+  return iter.operator!=(lhs.iter); 
 }
      
 template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator& tree234<Key, Value>::const_iterator::operator++() noexcept	    
