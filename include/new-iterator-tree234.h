@@ -2483,8 +2483,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
   if (pair.first == nullptr) { // nullptr implies there is no successor. Therefore cached_cursore already points to last key/value in tree.
 
-       // Therefore current doesn't change, nor key_index, but the state becomes 'end', one-past last key. 
-       current = nullptr; 
+       current = nullptr; // We are now at the end. 
 
   } else {
 
@@ -2505,21 +2504,16 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
   std::pair<const Node *, int> pair = tree.getPredecessor(cache_cursor.first, cache_cursor.second);
 
-  if (pair.first == nullptr) { // nullptr implies there is no successor. Therefore cached_cursore already points to last key/value in tree.
-
-       // Therefore current doesn't change, nor key_index, but the state becomes 'end', one-past last key. 
-       current = nullptr; 
-
-  } else {
-
+  if (!pair.first == nullptr) { // nullptr implies there is no predecessor. Therefore cached_cursore already points to first key/value in tree.
+      
       current = pair.first;
       key_index = pair.second; // current has no change, but key_index has.
       cached_cursor = pair;
   }
 
   return *this;
-
 }
+
 /*
  Moves to first, smallest node in tree.
  Sets:
@@ -2556,7 +2550,10 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
 template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(const iterator& lhs) const
 {
  if (&lhs.tree == &tree) {
-      // ???
+
+   if (current == nullptr && lhs.current = nullptr) return true; // We ignore key_index whenever current is nullptr because that means at-the-end.
+
+   else if (current == lhs.current && key_index == lhs.key_index) return true;
  } 
  return false;
 }

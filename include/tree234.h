@@ -345,21 +345,16 @@ template<typename Key, typename Value> class tree234 {
          bool operator==(const iterator& lhs) const;
          
          constexpr bool operator!=(const iterator& lhs) const { return !operator==(lhs); }
-        /*++
-         constexpr reference dereference() noexcept { return current->keys_values[key_index].constkey_pair(); } 
-
-         constexpr const std::pair<const Key, Value>& dereference() const noexcept { return current->keys_values[key_index].constkey_pair();} 
-        */ 
          
-         reference dereference() noexcept 
+         constexpr reference dereference() noexcept 
          { 
              return current->keys_values[key_index].constkey_pair(); 
-         }  //--
+         }
 
-         const std::pair<const Key, Value>& dereference() const noexcept 
+         constexpr const std::pair<const Key, Value>& dereference() const noexcept 
          { 
              return current->keys_values[key_index].constkey_pair();
-         } //--
+         } 
          
          iterator& operator++() noexcept; 
          iterator operator++(int) noexcept;
