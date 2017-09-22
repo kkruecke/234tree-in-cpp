@@ -41,7 +41,6 @@ However this loop works fine
     
 New prospective iterator class is in include/new-tree234.h. It is a redesign.
 
-
 insert
 ------
 
