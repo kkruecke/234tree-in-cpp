@@ -324,13 +324,11 @@ template<typename Key, typename Value> class tree234 {
          constexpr reference dereference() noexcept 
          { 
              return current->keys_values[key_index].constkey_pair(); 
-             //return cached_cursor.first->keys_values[cached_cursor.second].constkey_pair();
          } 
 
          constexpr const std::pair<const Key, Value>& dereference() const noexcept 
          { 
              return current->keys_values[key_index].constkey_pair();
-             //return cached_cursor.first->keys_values[cached_cursor.second].constkey_pair();
          }
          
          iterator& operator++() noexcept; 
