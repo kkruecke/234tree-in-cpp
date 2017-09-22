@@ -296,7 +296,6 @@ template<typename Key, typename Value> class tree234 {
          tree234<Key, Value>& tree; 
 
          const typename tree234<Key, Value>::Node *current;
-         int key_index;  
          std::pair<const Node *, int> cached_cursor;
          
          int getChildIndex(const typename tree234<Key, Value>::Node *p) const noexcept;
@@ -323,12 +322,14 @@ template<typename Key, typename Value> class tree234 {
          
          constexpr reference dereference() noexcept 
          { 
-             return current->keys_values[key_index].constkey_pair(); 
+             // return current->keys_values[key_index].constkey_pair(); 
+             return cached_cursor.first->keys_values[cached_cursor.second].constkey_pair(); 
          } 
 
          constexpr const std::pair<const Key, Value>& dereference() const noexcept 
          { 
-             return current->keys_values[key_index].constkey_pair();
+             // return current->keys_values[key_index].constkey_pair(); 
+             return cached_cursor.first->keys_values[cached_cursor.second].constkey_pair(); 
          }
          
          iterator& operator++() noexcept; 
@@ -2417,19 +2418,16 @@ template<class Key, class Value> tree234<Key, Value>::iterator::iterator(tree234
    if (!tree.isEmpty()) {
 
       current = tree.min(tree.root.get());
-      key_index = 0;
 
   } else {
 
       current = nullptr;
-      key_index = 0;  
   }
 
-  cached_cursor = std::make_pair(current, key_index);  
+  cached_cursor = std::make_pair(current, 0);  
 }
 
-template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(const iterator& lhs) : tree{lhs.tree}, current{lhs.current}, \
-         key_index{lhs.key_index}, cached_cursor{lhs.cached_cursor} 
+template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(const iterator& lhs) : tree{lhs.tree}, current{lhs.current}, cached_cursor{lhs.cached_cursor} 
 {
 }
 
@@ -2448,11 +2446,9 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
   } else {
 
       current = nullptr;
-      key_index = 0;  
-      cached_cursor = std::make_pair(current, key_index);  
+      cached_cursor = std::make_pair(current, 0);  
   }
 }
-
 
 template<class Key, class Value> inline typename tree234<Key, Value>::iterator tree234<Key, Value>::begin() noexcept
 {
@@ -2511,7 +2507,6 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
   } else {
 
       current = pair.first;
-      key_index = pair.second; // current has no change, but key_index has.
       cached_cursor = pair;
   }
 
@@ -2527,7 +2522,6 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
   if (current == nullptr) { // If already at the end, then simply return the cached value and don't call getPredecessor()
       current = cached_cursor.first; 
-      key_index = cached_cursor.second;
       return *this;
   }
 
@@ -2536,7 +2530,6 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
   if (pair.first != nullptr) { // nullptr implies there is no predecessor cached_cursor.first->keys_values[cached_cursor.second].key().
       
       current = pair.first;
-      key_index = pair.second; // current has no change, but key_index has.
       cached_cursor = pair;
   }
 
@@ -2544,19 +2537,30 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 }
 
 template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(iterator&& lhs) : \
-             tree{lhs.tree}, current{lhs.current}, key_index{lhs.key_index}, cached_cursor{std::move(lhs.cached_cursor)} 
+             tree{lhs.tree}, current{lhs.current}, cached_cursor{std::move(lhs.cached_cursor)} 
 {
    lhs.current = nullptr; 
-   lhs.key_index = 0;
 }
 /*
  */
 template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(const iterator& lhs) const
 {
  if (&lhs.tree == &tree) {
+   /*
+     The first if-test, checks for "at end".
 
-   if (current == nullptr && lhs.current == nullptr) return true;
-   else if (current == lhs.current && key_index == lhs.key_index) return true;
+     If current is nullptr, that signals the iterator is "one past the end.". If current is not nullptr, then current will equal cached_cursor.fist. current is either nullptr or cached_cursor.first. cached_cursor never 
+     becomes nullptr.
+     In the else-if block block, we must check 'current == lhs.current' and not 'cached_cursor.first == lhs.cached_cursor.first' because 'cached_cursor.first' never signals the end of the range, it never becomes nullptr,
+     but the iterator returned by tree234::end()'s iterator always sets current to nullptr (to signal "one past the end").
+     current to nullptr.
+   */
+
+   if (current == nullptr && lhs.current == nullptr) return true; 
+   else if (current == lhs.current && cached_cursor.second == lhs.cached_cursor.second) { 
+       
+       return true;
+   }    
  } 
  return false;
 }

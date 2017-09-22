@@ -1,7 +1,7 @@
 TODO
 ====
 
-Rewrote class iterator. Tested it pretty good. Not totally.
+Rewrote class iterator. Tested it pretty thoroughly. Not totally.
 
 insert
 ------
