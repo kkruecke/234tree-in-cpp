@@ -39,7 +39,13 @@ However this loop works fine
        ostr << endl;
     }
     
-New prospective iterator class is in include/new-tree234.h. It is a redesign.
+New prospective iterator class is in include/new-tree234.h. It is a redesign. It does not use iterator::position. It still doesn't work quite right with the reverse_iterator. I think this has to do with not knowing what "end" means for a
+reverse iterator -- or for that matter the iterator returned by end(). 
+
+revese_iterator's ctor calls end() on the underlying iterator; likewise, reverse_iterator::iterator++() calls iterator::operator--(). But since revese_iterator relies on the sole class iterator, how does iterator::operator--() whether it is
+already at the being or already at the end if both are indicated by setting current to nullptr? 
+
+Test that we can go forward and backward with iterator and reverse iterator.
 
 insert
 ------

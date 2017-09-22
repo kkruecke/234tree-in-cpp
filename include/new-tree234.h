@@ -225,6 +225,7 @@ template<typename Key, typename Value> class tree234 {
    
     // Returns node with smallest value of tree whose root is 'root'
     const Node *min(const Node* root) const noexcept; 
+    const Node *max(const Node* root) const noexcept; 
     
   public:
 
@@ -301,9 +302,6 @@ template<typename Key, typename Value> class tree234 {
          int getChildIndex(const typename tree234<Key, Value>::Node *p) const noexcept;
 
          std::pair<const typename tree234<Key, Value>::Node *, int> findLeftChildAncestor() noexcept;
-
-         void seekToSmallest();    
-         void seekToLargest();    
 
          iterator& increment() noexcept; 
 
@@ -867,6 +865,16 @@ template<typename Key, typename Value> inline const typename tree234<Key, Value>
    }
    return current;
 }
+
+template<typename Key, typename Value> inline const typename tree234<Key, Value>::Node *tree234<Key, Value>::max(const Node *current) const noexcept
+{
+   while (current->getRightMostChild() != nullptr) {
+
+        current = current->getRightMostChild();
+   }
+   return current;
+}
+
 
 template<typename Key, typename Value> template<typename Functor> inline void tree234<Key, Value>::postOrderTraverse(Functor f) const noexcept
 {
@@ -2403,14 +2411,18 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   } // end else
 }
 
-// iterator methods
-template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree) : tree{lhs_tree},\
-                                                            current{lhs_tree.root.get()}, key_index{0}
+template<class Key, class Value> tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree) : tree{lhs_tree} 
 {
   // If the tree is empty, there is nothing over which to iterate...
    if (!tree.isEmpty()) {
 
-      seekToSmallest(); // Go to the smallest node, and thus allow increment() to be called
+      current = tree.min(tree.root.get());
+      key_index = 0;
+
+  } else {
+
+      current = nullptr;
+      key_index = 0;  
   }
 
   cached_cursor = std::make_pair(current, key_index);  
@@ -2422,10 +2434,23 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
 }
 
 // non const tree234<Key, Value>& passed to ctor. Called only by end()
-template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree, int i) : tree{lhs_tree}, current{nullptr}, key_index{0}
+template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree, int i) :  tree{lhs_tree} 
 {
-  cached_cursor = std::make_pair(current, key_index);
+  // If the tree is empty, there is nothing over which to iterate...
+   if (!tree.isEmpty()) {
+
+      current = tree.max(tree.root.get()); // Go to largest node.
+      key_index = current->getTotalItems() - 1;
+
+  } else {
+
+      current = nullptr;
+      key_index = 0;  
+  }
+
+  cached_cursor = std::make_pair(current, key_index);  
 }
+
 
 template<class Key, class Value> inline typename tree234<Key, Value>::iterator tree234<Key, Value>::begin() noexcept
 {
@@ -2507,31 +2532,6 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
   }
 
   return *this;
-}
-
-/*
- Moves to first, smallest node in tree.
- Sets:
- 1. current to smallest node
- 2. key_index to 0
- 3. position is set to value passed 
- */
-template<class Key, class Value> void tree234<Key, Value>::iterator::seekToSmallest() 
-{
-  for (const Node *cursor = tree.root.get(); cursor != nullptr; cursor = cursor->children[0].get()) {
-       current = cursor;
-  }
-
-  key_index = 0;
-}
-
-template<class Key, class Value> inline void tree234<Key, Value>::iterator::seekToLargest() 
-{
-  for (const Node *cursor = tree.root.get(); cursor != nullptr; cursor = cursor->children[cursor->totalItems].get()) {
-           current = cursor;
-  }
-
-  key_index = current->getTotalItems() - 1;
 }
 
 template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(iterator&& lhs) : \
