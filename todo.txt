@@ -39,7 +39,18 @@ However this loop works fine
        ostr << endl;
     }
     
-getPredecessor() seems to work ok, so there seems to be an issue between the tests in operator==(const iterator&) and when iterator::position is set to 'beg'.
+Get rid of iterator::position, and instead use:
+
+ Node *current;
+ int key_index;
+ cursor<std::pair<const Node *, key_index>. 
+
+where cursor.first == current only when current != nullptr. 
+
+increment() will call getSuccessor. When getSuccessor returns pair<nulllptr, 0>, we set current = nullptr, but we don't change cursor. That way oeprator*() will still return the last (or first) value; likewise, when
+getPredecessor() returns <nullptr, 0>, we set current = nullptr, but we don't change cursor. 
+
+
 
 insert
 ------
