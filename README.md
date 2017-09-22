@@ -6,6 +6,6 @@ There is a great step-by-step animation of 2 3 4 tree is at: http://cs.sou.edu/~
 
 Code was compiled with  g++ version 5.3 using **-std=c++14** option. 
 
-Everything seems to work, including the iterator classes, with the exeception that rbegin() seems to return an iterator that returns, when used in a loop, the last element twice. 
+Everything seems to work, including the iterator classes.
 
 Further documentations is at [Implementing a 2 3 4 Tree in C++14](http://cplusplus.kurttest.com/notes/tree234.html).

@@ -1,51 +1,7 @@
 TODO
 ====
 
-The reverse_iterator prints the last element twice when used in a loop like this:
-
-    template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, ostream& ostr)
-    {
-       // This has a  bug. 
-       auto end = tree.rend();
-    
-       for(auto iter = tree.rbegin(); iter != end; ++iter) {
-     
-          auto& pr = *iter;
-    
-          ostr << pr.first << ", " << flush;
-       }
-       
-       ostr << endl;
-    }
-
-However this loop works fine
-
-    template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, ostream& ostr)
-    {
-       // This works
-       typename tree234<Key, Value>::const_iterator start{tree,  tree234<Key, Value>::iterator_position::end};
-    
-       typename tree234<Key, Value>::const_iterator finish(tree, tree234<Key, Value>::iterator_position::beg);
-     
-       while( start != finish) {
-     
-          auto& pr = *start;
-    
-          ostr << pr.first << ", " << flush;
-               
-          --start;
-       }
-       
-       ostr << endl;
-    }
-    
-New prospective iterator class is in include/new-tree234.h. It is a redesign. It does not use iterator::position. It still doesn't work quite right with the reverse_iterator. I think this has to do with not knowing what "end" means for a
-reverse iterator -- or for that matter the iterator returned by end(). 
-
-revese_iterator's ctor calls end() on the underlying iterator; likewise, reverse_iterator::iterator++() calls iterator::operator--(). But since revese_iterator relies on the sole class iterator, how does iterator::operator--() whether it is
-already at the being or already at the end if both are indicated by setting current to nullptr? 
-
-Test that we can go forward and backward with iterator and reverse iterator.
+Rewrote class iterator. Tested it pretty good. Not totally.
 
 insert
 ------

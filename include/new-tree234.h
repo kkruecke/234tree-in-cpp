@@ -2439,16 +2439,18 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
   // If the tree is empty, there is nothing over which to iterate...
    if (!tree.isEmpty()) {
 
-      current = tree.max(tree.root.get()); // Go to largest node.
-      key_index = current->getTotalItems() - 1;
+      const Node *max_node = tree.max(tree.root.get()); // Go to largest node.
+
+      cached_cursor = std::make_pair(max_node, max_node->getTotalItems() - 1);
+
+      current = nullptr; 
 
   } else {
 
       current = nullptr;
       key_index = 0;  
+      cached_cursor = std::make_pair(current, key_index);  
   }
-
-  cached_cursor = std::make_pair(current, key_index);  
 }
 
 
@@ -2501,7 +2503,8 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
   std::pair<const Node *, int> pair = tree.getSuccessor(cached_cursor.first, cached_cursor.second);
 
-  if (pair.first == nullptr) { // nullptr implies there is no successor. Therefore cached_cursore already points to last key/value in tree.
+  if (pair.first == nullptr) { // nullptr implies there is no successor to cached_cursor.first->keys_values[cached_cursor.second].key().
+                               // Therefore cached_cursor already points to last key/value in tree.
 
        current = nullptr; // We are now at the end. 
 
@@ -2524,7 +2527,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
   std::pair<const Node *, int> pair = tree.getPredecessor(cached_cursor.first, cached_cursor.second);
 
-  if (pair.first != nullptr) { // nullptr implies there is no predecessor. Therefore cached_cursore already points to first key/value in tree.
+  if (pair.first != nullptr) { // nullptr implies there is no predecessor cached_cursor.first->keys_values[cached_cursor.second].key().
       
       current = pair.first;
       key_index = pair.second; // current has no change, but key_index has.
