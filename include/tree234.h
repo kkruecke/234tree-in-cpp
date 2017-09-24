@@ -297,6 +297,8 @@ template<typename Key, typename Value> class tree234 {
 
          const typename tree234<Key, Value>::Node *current;
          std::pair<const Node *, int> cached_cursor;
+         const Node *pnode;
+	 int key_index;
          
          int getChildIndex(const typename tree234<Key, Value>::Node *p) const noexcept;
 
@@ -323,13 +325,13 @@ template<typename Key, typename Value> class tree234 {
          constexpr reference dereference() noexcept 
          { 
              // return current->keys_values[key_index].constkey_pair(); 
-             return cached_cursor.first->keys_values[cached_cursor.second].constkey_pair(); 
+             return pnode->keys_values[key_index].constkey_pair(); 
          } 
 
          constexpr const std::pair<const Key, Value>& dereference() const noexcept 
          { 
              // return current->keys_values[key_index].constkey_pair(); 
-             return cached_cursor.first->keys_values[cached_cursor.second].constkey_pair(); 
+             return pnode->keys_values[key_index].constkey_pair(); 
          }
          
          iterator& operator++() noexcept; 
@@ -542,19 +544,13 @@ Requires:
       
     3. If position is in_between, current and key_index do not point to either the first key in the tree or last key in tree. If the tree has only one node,
        the state can only be in_between if the first node is a 3-node.
-
     Returns:
     pair<const Node *, int>, where the Node pointer is the node with the next key and value in in-order sequence. key_index is the index into Node::keys_values[].
     Note, if the last key has already been visited, the pointer returned will be nullptr.
-
     Pseudo code for getting successor (from: http://ee.usc.edu/~redekopp/cs104/slides/L19_BalancedBST_23.pdf):
-
     If left child exists, predecessor is the right most node of the left subtree. Internal node's of a 2 3 tree always have a right branch because 2 3 trees are  balanced.
-
     Else walk up the ancestor chain until you traverse the first right child pointer (find  the first node who is a right child of his parent...that parent is the predecessor)
-
     If you get to the root w/o finding a node who is a right child, there is no predecessor
-
     Side effects. May set:
     1. current
     2. key_index
@@ -630,7 +626,6 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   /*
    pnode is the right-most child of its parent, so we must find the first ancestor--parent, grandparent, great grandparent, etc--that is in a "greater than" node.key(i), i.e., an ancestor->key(j) that is to the right of node.key(i). 
    Note: We know that if it is a 3- or 4-node, then key_index is the right most value in the node. Since a 2-node only has one value, it is by default the "right most".
-
    To find this ancester, we ascend the tree until we encounter the first ancestor that is not a right-most child.  We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
    */
        const Node *parent = pnode->parent;
@@ -659,20 +654,17 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
         ...otherwise, we know that pnode that for 2, 3 and 4-nodes pnode is NOT the right most child of its parent (and it is a leaf). We know that if it is a 2, 3, or 4-node, it is not the right most. 
         We also know that key_index is the right most value of pnode--right? So need to ascertain the index next_index such that pnode->parent->key(next_index) > pnode->key(key_index). How can next_index be calculated
         from the input parameters and this use-case?
-
         Comment: We can view a 3-node as two catenated 2-nodes in which the the middle child is shared between these two "2-nodes", like this
       
            [3,       5]  
            /  \     / \
           /    \   /   \
         [1, 2]  [3, 4]  [6]
-
         While a 4-node can be viewed as three catenated 2-nodes in which the two middle child are shared
           
            [2,   4,   6]  
           /  \  / \  / \
         [1]  [3]   [5]  [7] 
-
         If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is the last, ie, pnode->getTotalItems() - 1. So the we simply go up on level to find the in order successor.    
         We simply need to determine the index in the parent to choose.
       */
@@ -2256,15 +2248,10 @@ template<class Key, class Value> inline std::ostream& tree234<Key, Value>::Node:
 }	
 /*
  TODO: The comments here sometimes be confuse predecessor with successor; likewise, the comments for iterator::getSuccessor confuse the successor with the predecessor!
-
 Two cases are possible: 1.) when current is an internal node and 2.) when current is a leaf node.
-
 case 2:
 If current is a leaf node, and if it is a a 3-node and key-index is 1, then the predecessor is trivial: the first key is the predecessor. If, however, the key_index is 0, we ascend the parent
 chain until we enounter the first parent that is not a left most-child (of its parent). If the root is enounter before such a parent is found, then there is no predecessor.
-
-
-
  nodes as long as the parent is the right-most (or left-most???) child (of its parent). If we reach the root, there is no predecessor.
 Else upon reaching a parent (before the root) that is a middle or left-most child (of its parent), we find the smallest key in the parent's "right" subtree.
  */
@@ -2335,13 +2322,10 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
    /* 
     To find the next smallest node the logic is identical: We walk up the parent chain until we traverse the first parent that is not a left-most child 
     of its parent. That parent is the predecessor. If we get to the root without finding a node that is a right child, there is no predecessor.
-
     Note: In a 2 3 tree, a "right" child pointer will be either the second child of a 2-node or the second, the middle, or the third child of a 3-node. "right" child
     pointer means a pointer to a subtree with larger keys. In a 2 3 tree, the middle child pointer of a 3-node parent is a "right child pointer" of the 1st key
     because all the keys of the subtree whose root is the second (or middle) child pointer are greater than 1st key of the subtree's parent. 
-
     So when we walk up the ancestor chain as long as the parent is the first child. For example, in the tree portion shown below
-
               [5,   10]  
               /   |   \                              
           ...    ...  [27,       70]  
@@ -2355,7 +2339,6 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
      
     if [15] is the pnode leaf node, the predecessor of [15] is the second key of the 3-node [5, 10] because when we walk up the parent chain from [15], the first
     right child pointer we encounter is the parent of [27, 70], which is [5, 10]. So [10] is the next smallest key. In this example
-
               [5,   10]  
               /   |   \                              
           ...    ...  [27,       70]  
@@ -2371,9 +2354,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
       non-first child pointer we encounter is the parent of [45], which is [27, 70]. So the key at index 0, which is [27], is the next smallest key. Therefore, if our
       loop above terminates without encountering the root, we must determine the child index of prior_node in pnode. If pnode is a 2-node, it is trivial: the child
       index is one. If pnode is a three node, the child index is either one or two:
-
       int child_index = 1; // assume pnode is a 2-node.
-
       if (pnode->isThreeNode()) { // if it is a 3-nodee, compare prior_node to children[1]
           child_index = prior_node == pnode->children[1].get() ? 1 : 2;
       }
@@ -2424,10 +2405,11 @@ template<class Key, class Value> tree234<Key, Value>::iterator::iterator(tree234
       current = nullptr;
   }
 
-  cached_cursor = std::make_pair(current, 0);  
+  pnode = current;
+  key_index = 0;  
 }
 
-template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(const iterator& lhs) : tree{lhs.tree}, current{lhs.current}, cached_cursor{lhs.cached_cursor} 
+template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(const iterator& lhs) : tree{lhs.tree}, current{lhs.current}, pnode{lhs.pnode}, key_index{lhs.key_index} 
 {
 }
 
@@ -2437,16 +2419,15 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
   // If the tree is empty, there is nothing over which to iterate...
    if (!tree.isEmpty()) {
 
-      const Node *max_node = tree.max(tree.root.get()); // Go to largest node.
-
-      cached_cursor = std::make_pair(max_node, max_node->getTotalItems() - 1);
+      pnode = tree.max(tree.root.get()); // Go to largest node.
+      key_index = pnode->getTotalItems() - 1;
 
       current = nullptr; 
 
   } else {
 
-      current = nullptr;
-      cached_cursor = std::make_pair(current, 0);  
+      pnode = current = nullptr;
+      key_index = 0;  
   }
 }
 
@@ -2497,17 +2478,17 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
      return *this;  // If tree is empty or we are at the end, do nothing.
   }
 
-  std::pair<const Node *, int> pair = tree.getSuccessor(cached_cursor.first, cached_cursor.second);
+  std::pair<const Node *, int> pair = tree.getSuccessor(pnode, key_index);
 
-  if (pair.first == nullptr) { // nullptr implies there is no successor to cached_cursor.first->keys_values[cached_cursor.second].key().
+  if (pair.first == nullptr) { // nullptr implies there is no successor to pnode->keys_values[key_index].key().
                                // Therefore cached_cursor already points to last key/value in tree.
 
        current = nullptr; // We are now at the end. 
 
   } else {
 
-      current = pair.first;
-      cached_cursor = pair;
+      pnode = current = pair.first;
+      key_index = pair.second;
   }
 
   return *this;
@@ -2521,25 +2502,25 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
   }
 
   if (current == nullptr) { // If already at the end, then simply return the cached value and don't call getPredecessor()
-      current = cached_cursor.first; 
+      current = pnode; 
       return *this;
   }
 
-  std::pair<const Node *, int> pair = tree.getPredecessor(cached_cursor.first, cached_cursor.second);
+  std::pair<const Node *, int> pair = tree.getPredecessor(pnode, key_index);
 
-  if (pair.first != nullptr) { // nullptr implies there is no predecessor cached_cursor.first->keys_values[cached_cursor.second].key().
+  if (pair.first != nullptr) { // nullptr implies there is no predecessor pnode->keys_values[key_index].key().
       
-      current = pair.first;
-      cached_cursor = pair;
+      pnode = current = pair.first;
+      key_index = pair.second;
   }
 
   return *this;
 }
 
 template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(iterator&& lhs) : \
-             tree{lhs.tree}, current{lhs.current}, cached_cursor{std::move(lhs.cached_cursor)} 
+             tree{lhs.tree}, current{lhs.current}, pnode{lhs.pnode}, key_index{lhs.key_index}  
 {
-   lhs.current = nullptr; 
+   lhs.pnode = lhs.current = nullptr; 
 }
 /*
  */
@@ -2548,16 +2529,15 @@ template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(
  if (&lhs.tree == &tree) {
    /*
      The first if-test, checks for "at end".
-
-     If current is nullptr, that signals the iterator is "one past the end.". If current is not nullptr, then current will equal cached_cursor.fist. current is either nullptr or cached_cursor.first. cached_cursor never 
+     If current is nullptr, that signals the iterator is "one past the end.". If current is not nullptr, then current will equal cached_cursor.fist. current is either nullptr or pnode. cached_cursor never 
      becomes nullptr.
-     In the else-if block block, we must check 'current == lhs.current' and not 'cached_cursor.first == lhs.cached_cursor.first' because 'cached_cursor.first' never signals the end of the range, it never becomes nullptr,
+     In the else-if block block, we must check 'current == lhs.current' and not 'pnode == lhs.pnode' because 'pnode' never signals the end of the range, it never becomes nullptr,
      but the iterator returned by tree234::end()'s iterator always sets current to nullptr (to signal "one past the end").
      current to nullptr.
    */
 
    if (current == nullptr && lhs.current == nullptr) return true; 
-   else if (current == lhs.current && cached_cursor.second == lhs.cached_cursor.second) { 
+   else if (current == lhs.current && key_index == lhs.key_index) { 
        
        return true;
    }    
@@ -2567,7 +2547,6 @@ template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(
 
 /*
  int getChildIndex(Node *pnode)
-
  Requires: pnode is not root, and  pnode is a node in the tree for which we want child_index such that
       current->parent->children[child_index] == current
  Returns: child_index as shown above. 
