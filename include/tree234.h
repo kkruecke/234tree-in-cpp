@@ -296,8 +296,7 @@ template<typename Key, typename Value> class tree234 {
          tree234<Key, Value>& tree; 
 
          const typename tree234<Key, Value>::Node *current;
-         std::pair<const Node *, int> cached_cursor;
-         const Node *pnode;
+         const Node *cursor;
 	 int key_index;
          
          int getChildIndex(const typename tree234<Key, Value>::Node *p) const noexcept;
@@ -309,7 +308,6 @@ template<typename Key, typename Value> class tree234 {
          iterator& decrement() noexcept;
 
          iterator(tree234<Key, Value>& lhs, int i);  // called by end()
-
       public:
 
          explicit iterator(tree234<Key, Value>&); 
@@ -324,14 +322,12 @@ template<typename Key, typename Value> class tree234 {
          
          constexpr reference dereference() noexcept 
          { 
-             // return current->keys_values[key_index].constkey_pair(); 
-             return pnode->keys_values[key_index].constkey_pair(); 
+             return cursor->keys_values[key_index].constkey_pair(); 
          } 
 
          constexpr const std::pair<const Key, Value>& dereference() const noexcept 
          { 
-             // return current->keys_values[key_index].constkey_pair(); 
-             return pnode->keys_values[key_index].constkey_pair(); 
+             return cursor->keys_values[key_index].constkey_pair(); 
          }
          
          iterator& operator++() noexcept; 
@@ -2399,17 +2395,17 @@ template<class Key, class Value> tree234<Key, Value>::iterator::iterator(tree234
    if (!tree.isEmpty()) {
 
       current = tree.min(tree.root.get());
-
   } else {
 
       current = nullptr;
   }
 
-  pnode = current;
+  cursor = current;
   key_index = 0;  
 }
 
-template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(const iterator& lhs) : tree{lhs.tree}, current{lhs.current}, pnode{lhs.pnode}, key_index{lhs.key_index} 
+template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(const iterator& lhs) : tree{lhs.tree}, current{lhs.current},\
+        cursor{lhs.cursor}, key_index{lhs.key_index}
 {
 }
 
@@ -2419,14 +2415,14 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
   // If the tree is empty, there is nothing over which to iterate...
    if (!tree.isEmpty()) {
 
-      pnode = tree.max(tree.root.get()); // Go to largest node.
-      key_index = pnode->getTotalItems() - 1;
+      cursor = tree.max(tree.root.get()); // Go to largest node.
+      key_index = cursor->getTotalItems() - 1;
 
       current = nullptr; 
 
   } else {
 
-      pnode = current = nullptr;
+      cursor = current = nullptr;
       key_index = 0;  
   }
 }
@@ -2478,16 +2474,16 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
      return *this;  // If tree is empty or we are at the end, do nothing.
   }
 
-  std::pair<const Node *, int> pair = tree.getSuccessor(pnode, key_index);
+  std::pair<const Node *, int> pair = tree.getSuccessor(cursor, key_index);
 
-  if (pair.first == nullptr) { // nullptr implies there is no successor to pnode->keys_values[key_index].key().
+  if (pair.first == nullptr) { // nullptr implies there is no successor to cursor->keys_values[key_index].key().
                                // Therefore cached_cursor already points to last key/value in tree.
 
        current = nullptr; // We are now at the end. 
 
   } else {
 
-      pnode = current = pair.first;
+      cursor = current = pair.first;
       key_index = pair.second;
   }
 
@@ -2502,15 +2498,15 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
   }
 
   if (current == nullptr) { // If already at the end, then simply return the cached value and don't call getPredecessor()
-      current = pnode; 
+      current = cursor; 
       return *this;
   }
 
-  std::pair<const Node *, int> pair = tree.getPredecessor(pnode, key_index);
+  std::pair<const Node *, int> pair = tree.getPredecessor(cursor, key_index);
 
-  if (pair.first != nullptr) { // nullptr implies there is no predecessor pnode->keys_values[key_index].key().
+  if (pair.first != nullptr) { // nullptr implies there is no predecessor cursor->keys_values[key_index].key().
       
-      pnode = current = pair.first;
+      cursor = current = pair.first;
       key_index = pair.second;
   }
 
@@ -2518,9 +2514,9 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 }
 
 template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(iterator&& lhs) : \
-             tree{lhs.tree}, current{lhs.current}, pnode{lhs.pnode}, key_index{lhs.key_index}  
+             tree{lhs.tree}, current{lhs.current}, cursor{lhs.cursor}, key_index{lhs.key_index}  
 {
-   lhs.pnode = lhs.current = nullptr; 
+   lhs.cursor = lhs.current = nullptr; 
 }
 /*
  */
@@ -2529,9 +2525,9 @@ template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(
  if (&lhs.tree == &tree) {
    /*
      The first if-test, checks for "at end".
-     If current is nullptr, that signals the iterator is "one past the end.". If current is not nullptr, then current will equal cached_cursor.fist. current is either nullptr or pnode. cached_cursor never 
+     If current is nullptr, that signals the iterator is "one past the end.". If current is not nullptr, then current will equal cached_cursor.fist. current is either nullptr or cursor. cached_cursor never 
      becomes nullptr.
-     In the else-if block block, we must check 'current == lhs.current' and not 'pnode == lhs.pnode' because 'pnode' never signals the end of the range, it never becomes nullptr,
+     In the else-if block block, we must check 'current == lhs.current' and not 'cursor == lhs.cursor' because 'cursor' never signals the end of the range, it never becomes nullptr,
      but the iterator returned by tree234::end()'s iterator always sets current to nullptr (to signal "one past the end").
      current to nullptr.
    */
@@ -2546,8 +2542,8 @@ template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(
 }
 
 /*
- int getChildIndex(Node *pnode)
- Requires: pnode is not root, and  pnode is a node in the tree for which we want child_index such that
+ int getChildIndex(Node *cursor)
+ Requires: cursor is not root, and  cursor is a node in the tree for which we want child_index such that
       current->parent->children[child_index] == current
  Returns: child_index as shown above. 
  */
