@@ -3,6 +3,9 @@ TODO
 
 Rewrote class iterator. Tested it pretty thoroughly. Not totally.
 
+const Node * curosr;
+int key_index;
+
 insert
 ------
 

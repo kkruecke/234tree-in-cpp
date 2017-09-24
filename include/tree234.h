@@ -295,7 +295,7 @@ template<typename Key, typename Value> class tree234 {
       private:
          tree234<Key, Value>& tree; 
 
-         const typename tree234<Key, Value>::Node *current;
+         const Node *current;
          const Node *cursor;
 	 int key_index;
          
@@ -2496,12 +2496,12 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
      return *this; 
   }
-
+   
   if (current == nullptr) { // If already at the end, then simply return the cached value and don't call getPredecessor()
       current = cursor; 
       return *this;
   }
-
+  
   std::pair<const Node *, int> pair = tree.getPredecessor(cursor, key_index);
 
   if (pair.first != nullptr) { // nullptr implies there is no predecessor cursor->keys_values[key_index].key().
