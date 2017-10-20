@@ -94,7 +94,7 @@ template<typename Key, typename Value> class tree234 {
         * Returns true if key is found in node and sets index so pNode->keys_values[index] == key
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
-       bool SearchNode(Key key, int& index, int& child_index, const Node *&next) const noexcept;
+       bool SearchNode(Key key, int& index, int& child_index, Node *&next) noexcept;
     
        void insert(KeyValue&& key_value, std::unique_ptr<Node>& newChild) noexcept;
 
@@ -185,7 +185,7 @@ template<typename Key, typename Value> class tree234 {
 
     int  tree_size; // adjusted by insert(), remove(), operator=(const tree234...), move ctor
 
-    bool DoSearch(Key key, const Node *&location, int& index) noexcept;
+    bool DoSearch(Key key, Node *&location, int& index) noexcept;
 
     // implementations of the public depth-frist traversal methods    
     template<typename Functor> void DoInOrderTraverse(Functor f, const std::unique_ptr<Node>& root) const noexcept;
@@ -201,7 +201,7 @@ template<typename Key, typename Value> class tree234 {
     void split(Node *node) noexcept;  // called during insert(Key key) to split 4-nodes encountered.
 
     // Called during remove(Key key)
-    bool remove(Key key, const Node *location); 
+    bool remove(Key key, Node *location); 
 
     // Called during remove(Key key, Node *) to convert two-node to three- or four-node during descent of tree.
     Node *convertTwoNode(Node *node) noexcept;
@@ -1146,7 +1146,7 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node), and
  * it sets child_index such that next->parent->children[child_index] == next.
  */
-template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::SearchNode(Key key, int& index, int& child_index, const Node *&next) const noexcept 
+template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::SearchNode(Key key, int& index, int& child_index, Node *&next) noexcept // ok
 {
   for(auto i = 0; i < totalItems; ++i) {
 
@@ -1338,25 +1338,27 @@ template<typename Key, typename Value> void tree234<Key, Value>::DestroyTree(std
 template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key key) noexcept
 {
     // make sure tree has at least one element    
-    if (root == nullptr) return false;
-
-    else {
+    if (root == nullptr) {
+    
+       return false;
+        
+    } else {
         int index;  
-        const Node *location;
+        Node *location;
         return DoSearch(key, location, index);
     }
 }   
 
-template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key key, const Node *&location, int& index) noexcept // ok
+template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key key, Node *&location, int& index) noexcept // ok
 {
   if (!root) { // <--> if (root.get() == nullptr)
 
      return false;
   }
 
-  const Node *next;
+  Node *next;
   int child_index;
-  const Node *current = root.get();
+  Node *current = root.get();
   
   for(; !current->SearchNode(key, index, child_index, next); current = next) {  
 
@@ -1375,7 +1377,7 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
  * Insertion based on pseudo code at:
  * http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  */
-template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept 
+template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept // ok
 { 
    if (root == nullptr) {
            
@@ -1384,7 +1386,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
       return; 
    } 
 
-   const Node *current = root.get();
+   Node *current = root.get();
 
    // Descend until a leaf node is found, splitting four nodes as they are encountered 
    int child_index;
@@ -1393,7 +1395,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
        
        if(current->isFourNode()) {// if four node encountered, split it, moving a value up to parent.
 
-            split(const_cast<Node *>(current)); // split needs to modify the tree.
+            split(current); 
 
             // resume search with parent.
             current = current->getParent(); 
@@ -1404,7 +1406,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
             break;
 
         } else { // internal node encountered
-            const Node *next;
+             Node *next;
             int index;
             
             if (current->SearchNode(key, index, child_index, next) ) {// return if key is already in tree
@@ -1420,8 +1422,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
          return;
     } 
  
-    // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
-    const_cast<Node *>(current)->insertKeyValue(key, value); 
+    // current node is now a leaf and it is not full (because we split all four nodes while descending).
+    current->insertKeyValue(key, value); 
     ++tree_size;
 }
 
@@ -1448,8 +1450,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
    // 2. Make pnode a 2-node. Note: It stoll retains its two left-most children becoming 
    pnode->totalItems = 1;
    
-   // 3. Insert middle value into parent, or if pnode is the root, create a new root above pnode and 
-   // adopt pnode and largest as children.
+   // 3. Insert middle value into parent, or if pnode is the root, create a new root and 
+   // adopt pnode and largest
    
    if (root.get() == pnode) {
    
@@ -1466,7 +1468,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
 
    } else {
 
-     // The parent will retain pnode, now downgraded to a 2-node, as its child in its current child position. It will insert the new key value and connect/insert largeNode
+     // The parent will keep pnode, now downgraded to a 2-node, as its child in its current position. It will insert the new key value and connect/insert largeNode
      pnode->parent->insert(std::move(pnode->keys_values[1]), largestNode); 
    }
 }
@@ -1542,9 +1544,9 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
  * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  New untested prospective code for remove(Key key, Node *). This is the remove code for the case when the root is not a leaf node.
  */
-template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) 
+template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, Node *current) 
 {
-   const Node *next = nullptr;
+   Node *next = nullptr;
    Node *pfound_node = nullptr;
    int key_index;
    int child_index;
@@ -1560,13 +1562,13 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
        } else if (current != root.get() && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
 
             // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... We special case the root inside of convertTwoNode().
-            current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
+            current = convertTwoNode(current); // ..and resume the key search with the now converted node.
             
            continue;
       
        } else if (current->SearchNode(key, key_index, child_index, next)) { // ...search for item in current node. 
 
-            pfound_node = const_cast<Node *>(current); 
+            pfound_node = current; 
             break; // We found it.  
 
        } else {
@@ -1591,7 +1593,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
         if (current->isTwoNode()) { 
     
-             current = convertTwoNode(const_cast<Node*>(current));
+             current = convertTwoNode(current);
 
              // Check if key move as a result of conversion?
              // Comments:
@@ -1633,7 +1635,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
   pfound_node->keys_values[key_index] = current->keys_values[0];
 
-  const_cast<Node *>(current)->removeKeyValue(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr. 
+  current->removeKeyValue(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr. ++
   --tree_size;
 
   return true;
@@ -1709,11 +1711,11 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
         if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
 
-            convertedNode = parent->fuseWithChildren();
+      convertedNode = parent->fuseWithChildren();
 
         } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
 
-           convertedNode = fuseSiblings(parent, node2_index, sibling_index);
+             convertedNode = fuseSiblings(parent, node2_index, sibling_index);
         }
 
    } else { // it has a 3- or 4-node sibling.
@@ -1833,7 +1835,11 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   std::unique_ptr<Node> pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
 
   // Remove smallest key in sibling
-  parent->keys_values[parent_key_index] = std::move(psibling->removeKeyValue(0)); 
+  //--Key smallest_sibling_key = psibling->removeKey(0);
+
+  //--parent->keys_values[parent_key_index].key() = smallest_sibling_key;  // overwrite parent item with it.
+
+  parent->keys_values[parent_key_index] = std::move(psibling->removeKeyValue(0)); // ++
 
   // add former first child of silbing as right-most child of our 3-node.
   p2node->insertChild(p2node->totalItems, pchild_of_sibling); 
@@ -1912,6 +1918,10 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
        */
       std::unique_ptr<Node> psibling = parent->disconnectChild(sibling_index); // this does #2
       
+      //--Key parent_key = parent->removeKey(parent_key_index); // this will #1
+
+      // p2node->key[0] is already in the correct position
+
       // TODO: Should move() be called?
       p2node->keys_values[1] = parent->removeKeyValue(parent_key_index); // this will #1 // 1. bring down parent key 
 
