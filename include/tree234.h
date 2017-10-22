@@ -1393,10 +1393,10 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
        
        if(current->isFourNode()) {// if four node encountered, split it, moving a value up to parent.
 
-            split(const_cast<Node *>(current)); // split needs to modify the tree.
+          split(const_cast<Node *>(current)); // split needs to modify the tree.
 
-            // resume search with parent.
-            current = current->getParent(); 
+          // resume search with parent.
+          current = current->getParent(); 
                         
        } else {
 
