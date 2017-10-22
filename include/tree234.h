@@ -1370,10 +1370,11 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
   return true;
 }
 /*
- * Rather than search down the tree and then possibly promote and break up 4-nodes on the way back up, we split 4 nodes as we call SearchNode()
- * on the way down.
  * Insertion based on pseudo code at:
  * http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
+ * 4-nodes as the are encountered are split into two 2-nodes, one holding the smallest key, the other the largest. The middle key is inserted into the parent
+ * The two left most children of the former 4-node are assigned to the smaller 2-node, and the two right most children, likewise, are assigned to the larger 
+ * two node. The parent of the former 4-node adopts the two new 2-nodes. Note: the smaller 2-node is simply the original 4-node downsized to a 2-node.
  */
 template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept 
 { 
@@ -1540,7 +1541,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
              if (root->keys_values[index].key() == key ) {
 
                 // * Remove key from root and shift its in-order successor, if any, into its place. 
-                //--root->removeKey(index);
                 root->removeKeyValue(index); //++
                               
                 if (root->isEmpty()) {
@@ -1606,8 +1606,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
             // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... We special case the root inside of convertTwoNode().
             current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
-            
-           continue;
       
        } else if (current->SearchNode(key, key_index, child_index, next)) { // ...search for item in current node. 
 
