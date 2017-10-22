@@ -1409,7 +1409,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
 
           } else if (current->isLeaf()) {
 
-           break;
+             break;
           } 
 
           // set current to next   
