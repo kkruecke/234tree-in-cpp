@@ -1398,27 +1398,24 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
             // resume search with parent.
             current = current->getParent(); 
                         
-       }  else if( current->isLeaf() )  {
+       } else {
 
-             // done descending. 
-            break;
+          const Node *next;
+          int index;
 
-        } else { // internal node encountered
-            const Node *next;
-            int index;
-            
-            if (current->SearchNode(key, index, child_index, next) ) {// return if key is already in tree
+          if (current->SearchNode(key, index, child_index, next) ) {// return if key is already in tree
                 
-                return;
-            } 
-             // set current to next   
-            current = next;  
+             return;
+
+          } else if (current->isLeaf()) {
+
+           break;
+          } 
+
+          // set current to next   
+          current = next;  
        }
     }
-     // Make sure key is not in a leaf node that is 2- or 3-node.
-    if ((!current->isFourNode() && current->keys_values[0].key() == key) || (current->isThreeNode() && current->keys_values[1].key() == key)) {
-         return;
-    } 
  
     // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
     const_cast<Node *>(current)->insertKeyValue(key, value); 
