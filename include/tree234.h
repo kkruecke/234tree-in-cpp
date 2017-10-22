@@ -1390,7 +1390,54 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
    int child_index;
 
     while(true) {
-       
+      
+       // TODO: Do we need to resume the search with the parent? Doesn't this result sometimes in splitting the parent, too, when we don't need to?
+ 
+       if(current->isFourNode()) {// if four node encountered, split it, moving a value up to parent.
+
+          split(const_cast<Node *>(current)); // split needs to modify the tree.
+          current = current->parent;
+       } 
+
+       const Node *next;
+       int index;
+
+       if (current->SearchNode(key, index, child_index, next) ) {// return if key is already in tree
+             
+          return;
+
+       } else if (current->isLeaf()) {
+
+          break;
+       } 
+
+       // set current to next   
+       current = next;  
+    }
+ 
+    // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
+    const_cast<Node *>(current)->insertKeyValue(key, value); 
+    ++tree_size;
+}
+/* Orig
+template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept 
+{ 
+   if (root == nullptr) {
+           
+      root = std::make_unique<Node>(key, value); 
+      ++tree_size;
+      return; 
+   } 
+
+   const Node *current = root.get();
+
+   // Descend until a leaf node is found, splitting four nodes as they are encountered 
+   int child_index;
+
+    while(true) {
+      
+       // TODO: Do we need to resume the search with the parent? Doesn't this result sometimes in splitting the parent, too, when we don't need to?
+ 
        if(current->isFourNode()) {// if four node encountered, split it, moving a value up to parent.
 
           split(const_cast<Node *>(current)); // split needs to modify the tree.
@@ -1421,6 +1468,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
     const_cast<Node *>(current)->insertKeyValue(key, value); 
     ++tree_size;
 }
+*/
 
 /* 
  *  Split pseudocode: 
