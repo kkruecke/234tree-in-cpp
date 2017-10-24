@@ -1543,8 +1543,8 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
 
              if (root->keys_values[index].key() == key ) {
 
-                // * Remove key from root and shift its in-order successor, if any, into its place. 
-                root->removeKeyValue(index); //++
+                // Remove key from root and puts its in-order successor (if it exists) into its place. 
+                root->removeKeyValue(index); 
                               
                 if (root->isEmpty()) {
 
@@ -1592,41 +1592,36 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
  */
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) 
 {
-   const Node *next = nullptr;
    Node *pfound_node = nullptr;
    int key_index;
    int child_index;
 
-   // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found
-   //   the  cursor is advanced. 
+   // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
+   // we continue down the tree. 
    while(true) {
-
-       if (current == nullptr) {
               
-            return false;
+       if (current != root.get() && current->isTwoNode()) { 
 
-       } else if (current != root.get() && current->isTwoNode()) { // got rid of: current != root.get() && current->isTwoNode() 
-
-            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... We special case the root inside of convertTwoNode().
+            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
             current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
-      
-       } else if (current->SearchNode(key, key_index, child_index, next)) { // ...search for item in current node. 
+       } 
+
+       const Node *next = nullptr;
+
+       if (current->SearchNode(key, key_index, child_index, next)) { // ...search for item in current node. 
 
             pfound_node = const_cast<Node *>(current); 
             break; // We found it.  
 
-       } else {
-          // ... If not found, continue to descend. 
-           current = next; 
-           continue;
-       }
-  }
+       } else if (current->isLeaf()) { // else continue to descend. 
 
-  if (current == nullptr) {
+            return false; 
+       } 
 
-       return false; // key not found.
-  }
-   
+       current = next; 
+       continue;
+  } 
+  
   if (!pfound_node->isLeaf()) {// The key is in an internal node, search for its in order successor, converting any 2-nodes encountered.
 
       // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at

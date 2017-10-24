@@ -38,11 +38,9 @@ current_level = 2 [20], [60], [80, 90, 100],
 
 Printing tree in after insert of 120
 
-current_level = 1   [70], 
+current_level = 1  [40, 70, 90], 
 
-current_level = 2  [40], [90], 
-
-current_level = 3 [20], [60], [80], [100, 120], 
+current_level = 2 [20], [60], [80], [100, 120], 
 Test Completed
 
 
