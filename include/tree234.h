@@ -1634,7 +1634,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
     
              current = convertTwoNode(const_cast<Node*>(current));
 
-             // Check if key moved as a result of conversion?
+             // Check if key moved as a result of conversion.
              // Comments:
              // pfound_node is never a 2-node since remove( Key key, Node *) first converts any 2-nodes to 3- or 4-nodes before calling
              // SearchNode()--except in the case when the root is a 2-node. The root does not get immediately converted from a 2-node.
