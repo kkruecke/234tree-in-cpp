@@ -1610,10 +1610,10 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
        if (current->SearchNode(key, key_index, child_index, next)) { // ...search for item in current node. 
 
-            pfound_node = const_cast<Node *>(current); 
-            break; // We found it.  
+            pfound_node = const_cast<Node *>(current); // We found it.  
+            break; 
 
-       } else if (current->isLeaf()) { // else continue to descend. 
+       } else if (current->isLeaf()) { // Are we done? 
 
             return false; 
        } 
@@ -1622,10 +1622,10 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
        continue;
   } 
   
-  if (!pfound_node->isLeaf()) {// The key is in an internal node, search for its in order successor, converting any 2-nodes encountered.
+  if (!pfound_node->isLeaf()) {// The key is in an internal node, so we now search for its in order successor, converting any 2-nodes encountered.
 
-      // The in-order successor(the next largest item in the tee) wil be the smallest item in the subtree rooted at
-      // found_node->children[found_index + 1], which will be the first key in left-most leaf node of the subtree.
+      // current->keys_values[0].key() will eventually hold the in-order successor, the left-most leaf node in the subtree rooted at
+      // found_node->children[found_index + 1].
       current = pfound_node->children[key_index + 1].get(); 
 
       while (true) {
@@ -1634,7 +1634,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
     
              current = convertTwoNode(const_cast<Node*>(current));
 
-             // Check if key move as a result of conversion?
+             // Check if key moved as a result of conversion?
              // Comments:
              // pfound_node is never a 2-node since remove( Key key, Node *) first converts any 2-nodes to 3- or 4-nodes before calling
              // SearchNode()--except in the case when the root is a 2-node. The root does not get immediately converted from a 2-node.
@@ -1649,7 +1649,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
              } 
         } 
 
-        if (current->isLeaf()) {
+        if (current->isLeaf()) { // At in order successor?
 
             break;  
         } 
@@ -1658,8 +1658,8 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
         current = current->children[child_index].get(); // set current to left most child of the node, 
      }
 
-  }  else { // pfound_node is a leaf that has already been converted, if it was a 2-node. The node therefore does not need to be freed.
-            // So simply call removeKey()
+  }  else { // pfound_node is a leaf that has already been converted, if necessary. We therefore do not need to free the node, and we can
+            // simply call removeKeyValue(key_index).
 
       pfound_node->removeKeyValue(key_index); 
       --tree_size;
@@ -1669,10 +1669,10 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
   // We have the item found in pfound_node->keys_values[key_index], which is an internal node. We have current->keys_values[0] as in order successor leaf node, and we know
   // current it is not a leaf node.  So we "swap" the in order successor and the key at pfound_node->keys_values[key_index]. 
-  // Note: We don't actually temporarily save the key to be deleted and then overwrite the former in-order successor with it. Instead we simply delete
-  // the former in-order successor key. 
 
-  pfound_node->keys_values[key_index] = current->keys_values[0];
+  // Note: We simply delete the former in-order
+  // successor key. 
+  pfound_node->keys_values[key_index] = current->keys_values[0]; 
 
   const_cast<Node *>(current)->removeKeyValue(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr. 
   --tree_size;
