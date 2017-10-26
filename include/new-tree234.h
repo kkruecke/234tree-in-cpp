@@ -1608,7 +1608,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
             current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
        } 
 
-       const Node *next = nullptr;
+       const Node *next;
 
        if (current->SearchNode(key, key_index, child_index, next)) { // ...search for item in current node. 
 
@@ -1619,58 +1619,27 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
             return false; 
        } 
-
        current = next; 
        continue;
   } 
-  
-  if (!pfound_node->isLeaf()) {// The key is in an internal node, so we now search for its in order successor, converting any 2-nodes encountered.
-
-      // current->keys_values[0].key() will eventually hold the in-order successor, the left-most leaf node in the subtree rooted at
-      // found_node->children[found_index + 1].
-      current = pfound_node->children[key_index + 1].get(); 
-
-      //++ getInternalNodeSuccessor_remove(current); replaces all code within this if-block.
-
-      while (true) {
-
-        if (current->isTwoNode()) { 
-    
-             current = convertTwoNode(const_cast<Node*>(current));
-
-             // Check if key moved as a result of conversion?
-             // Comments:
-             // pfound_node is never a 2-node since remove( Key key, Node *) first converts any 2-nodes to 3- or 4-nodes before calling
-             // SearchNode()--except in the case when the root is a 2-node. The root does not get immediately converted from a 2-node.
-             // But this code handles that by detecting that the key has moved and recursively calling "remove(key, pfound_node)".
-             // pfound_node is not deleted if pfound_node is the root (and the root is a 2-node), and no nodes get deleted when either a
-             // rightRotation or leftRotation occurs. So pfound_node is safe then. Finally, pfound_node is not deleted during fuseSiblings().
-             // fuseSiblings() deletes a 2-node sibling but not pfound_node itself. 
-            
-             if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys_values[key_index].key() != key) { // then key moved
-
-                 // ...simply recurse, starting with a new initial starting point of pfound_node.
-                 return remove(key, pfound_node); 
-             } 
-        } 
-
-        if (current->isLeaf()) { // At in order successor?
-
-            break;  
-        } 
-
-        child_index = 0; // This must be set inside this loop, as it is used below.
-        current = current->children[child_index].get(); // set current to left most child of the node, 
-     }
-
-  }  else { // pfound_node is a leaf that has already been converted, if necessary. We therefore do not need to free the node, and we can
-            // simply call removeKeyValue(key_index).
+   
+  if (pfound_node->isLeaf()) {
+        // pfound_node is a leaf that has already been converted, if necessary, so we do not need to free the node, and we can
+        // simply call removeKeyValue(key_index).
 
       pfound_node->removeKeyValue(key_index); 
       --tree_size;
       
       return true;
- }
+
+  }  else { // The key is in an internal node, so we now search for its in order successor, converting any 2-nodes encountered.
+
+      // current->keys_values[0].key() will eventually hold the in-order successor, the left-most leaf node in the subtree rooted at
+      // found_node->children[found_index + 1].
+      current = pfound_node->children[key_index + 1].get(); 
+
+      current = getInternalNodeSuccessor_remove(current); 
+  }
 
   // We have the item found in pfound_node->keys_values[key_index], which is an internal node. We have current->keys_values[0] as in order successor leaf node, and we know
   // current it is not a leaf node.  So we "swap" the in order successor and the key at pfound_node->keys_values[key_index]. 
@@ -1685,17 +1654,20 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
   return true;
 }
 /*
- Looks for in order successor while converting any 2-nodes encountered to 3-nodes
+ Looks for in order successor for internal node while converting any 2-nodes encountered to 3-nodes
  */
 template<typename Key, typename Value> const typename tree234<Key, Value>::Node *tree234<Key, Value>::getInternalNodeSuccessor_remove(const Node *current) noexcept
 {
-   while (current->children[0].get() != nullptr) {
+   while (true) {
 
        if (current->isTwoNode()) { 
      
            current = convertTwoNode(const_cast<Node*>(current));
        } 
-
+       
+       if (current->isLeaf()) 
+           break;
+       
        current = current->children[0].get();
    }
 

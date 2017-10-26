@@ -126,7 +126,13 @@ int main(int argc, char** argv)
     auto item = *iter;
     
     cout << "\nTree size is " << tree.size() << " before removing item " << item << endl;
-
+    
+    if (*iter == 1) {
+        
+          int debug = 0;
+          ++debug; 
+    }
+    
     bool rc = tree.remove(item);
        
     string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
@@ -145,7 +151,7 @@ int main(int argc, char** argv)
   
     tree.printInOrder(cout);
 
-    cout << "\n\n========== Test of iterator class ===================" << endl;
+    cout << "\n\n========== Print of tree using for loop ===================" << endl;
 
     print(tree, cout);
  
