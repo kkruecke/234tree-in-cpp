@@ -213,8 +213,6 @@ template<typename Key, typename Value> class tree234 {
 
     Node *rightRotation(Node *p2node, Node *psibling, Node *parent, int parent_key_index) noexcept;
 
-    const Node *getInternalNodeSuccessor_remove(const Node *current) noexcept; // new untested code
-
     // Non recursive in order traversal of tree methods
     std::pair<const Node *, int> getSuccessor(const Node *current, int key_index) const noexcept;
     std::pair<const Node *, int> getPredecessor(const Node *current, int key_index) const noexcept;
@@ -1630,8 +1628,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
       // found_node->children[found_index + 1].
       current = pfound_node->children[key_index + 1].get(); 
 
-      //++ getInternalNodeSuccessor_remove(current); replaces all code within this if-block.
-
       while (true) {
 
         if (current->isTwoNode()) { 
@@ -1649,7 +1645,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
             
              if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys_values[key_index].key() != key) { // then key moved
 
-                 // ...simply recurse, starting with a new initial starting point of pfound_node.
+                 // ...simply recurse, starting the search this time with the subtree rooted at pfound_node.
                  return remove(key, pfound_node); 
              } 
         } 
@@ -1684,23 +1680,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
   return true;
 }
-/*
- Looks for in order successor while converting any 2-nodes encountered to 3-nodes
- */
-template<typename Key, typename Value> const typename tree234<Key, Value>::Node *tree234<Key, Value>::getInternalNodeSuccessor_remove(const Node *current) noexcept
-{
-   while (current->children[0].get() != nullptr) {
 
-       if (current->isTwoNode()) { 
-     
-           current = convertTwoNode(const_cast<Node*>(current));
-       } 
-
-       current = current->children[0].get();
-   }
-
-   return current;
-}
 /*
  * Requires: node is 2-node.
  * Promises: node is converted into either a 3- or a 4-node. 
