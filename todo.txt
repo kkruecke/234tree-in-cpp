@@ -26,3 +26,12 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
        } 
 
 
+Solution: Compare 
+
+http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+
+http://www.cs.toronto.edu/~krueger/cscB63h/lectures/tut04.txt
+
+http://www2.thu.edu.tw/~emtools/Adv.%20Data%20Structure/2-3,2-3-4%26red-blackTree_952.pdf
+
+with current code.
