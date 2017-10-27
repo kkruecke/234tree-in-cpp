@@ -523,6 +523,8 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
     for (auto& x: il) { // simply call insert(x)
          
          insert(x.first, x.second);
+         std::cout << "\nTree contents from tree234(std::initializer_list<std::pair<Key, Value>> il) ctor\n" << std::flush;
+         printlevelOrder(std::cout);
     }
 }
 
@@ -1606,6 +1608,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
        if (current->isTwoNode()) { 
 
            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
+           // TODO: Bug due to trying to convert 2-node root. Is this o.k. Is converting the root part of the pseudocode for remove?
            current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
        } 
 
