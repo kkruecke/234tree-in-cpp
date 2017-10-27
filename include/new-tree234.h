@@ -1624,6 +1624,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
            if (is_internal_node) { 
 
                std::pair<const Node *, int> pr = getRemoveSuccessor(key, pfound_node, key_index);
+               current = pr.first;
            } 
            break;
 
@@ -1667,7 +1668,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 template<typename Key, typename Value>
 std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getRemoveSuccessor(Key key, const Node *pfound_node, int key_index) noexcept
 {
-int child_index;
+int child_index = 0;
 
    // The in-order successor, the left-most leaf node in the subtree rooted at found_node->children[key_index + 1].
    const Node *current = pfound_node->children[key_index + 1].get(); 
@@ -1695,8 +1696,7 @@ int child_index;
 
          break;  
      } 
-
-     child_index = 0; 
+     
      current = current->children[child_index].get(); // set current to left most child of current.
   }
 
