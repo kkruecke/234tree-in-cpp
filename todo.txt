@@ -28,4 +28,4 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
 Solution:
 
-Code partially working now...Need to debug more.
+Code partially working now...When 1 is remove, the tree is no longer properly ordered.

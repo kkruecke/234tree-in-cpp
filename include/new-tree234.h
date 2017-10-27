@@ -1608,6 +1608,9 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
            current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
+           
+           std::cout << "\nPrinting tree after converting 2-node\n" << std::flush; // debug
+           printlevelOrder(std::cout);
        } 
 
        const Node *next = nullptr;
@@ -1999,6 +2002,8 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::printlev
   levelOrderDisplay<tree234<Key, Value>> tree_printer(*this, ostr);  
   
   levelOrderTraverse(tree_printer);
+  
+  ostr << std::flush;
 }
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::printInOrder(std::ostream& ostr) const noexcept
