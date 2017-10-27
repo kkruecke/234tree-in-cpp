@@ -523,8 +523,6 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
     for (auto& x: il) { // simply call insert(x)
          
          insert(x.first, x.second);
-         std::cout << "\nTree contents from tree234(std::initializer_list<std::pair<Key, Value>> il) ctor\n" << std::flush;
-         printlevelOrder(std::cout);
     }
 }
 
@@ -1604,11 +1602,11 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
    // We continue down the tree. 
    while(true) {
-              
-       if (current->isTwoNode()) { 
+
+       // We know the root is not a leaf. That was handled in calling code. So we don't convert a 2-node root.
+       if (current != root.get() && current->isTwoNode()) { 
 
            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
-           // TODO: Bug due to trying to convert 2-node root. Is this o.k. Is converting the root part of the pseudocode for remove?
            current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
        } 
 
@@ -1624,6 +1622,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
                std::pair<const Node *, int> pr = getRemoveSuccessor(key, pfound_node, key_index);
            } 
+           break;
 
        } else if (current->isLeaf()) { // Are we done? 
 
@@ -1718,6 +1717,7 @@ int child_index;
  */
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertTwoNode(Node *node)  noexcept
 {                                                                         
+  
    Node *convertedNode;
    Node *parent = node->getParent();
 
@@ -1729,10 +1729,10 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    int node2_index = 0;
    
    for (; node2_index < parentKeyTotal; ++node2_index) {
-       /*
-        * If we never break, then node->keys_values[0] is greater than the last key of its parent, which means
-        * node == parent->children[parent->totalItems], the last child. 
-        */
+       //
+       // If we never break, then node->keys_values[0] is greater than the last key of its parent, which means
+       // node == parent->children[parent->totalItems], the last child. 
+       //
 
        if (node->keys_values[0].key() < parent->keys_values[node2_index].key() ) { 
             break;                               
@@ -1758,6 +1758,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
    } else if (right_adjacent < parentChildrenTotal) { // There are no 3- or 4-nodes siblings. Therefore the all siblings 
                                                       // are 2-node(s).
+
         sibling_index = right_adjacent; 
 
    } else { // sibling is to the left.
@@ -1785,17 +1786,17 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
     
       Node *p2node = parent->children[node2_index].get();
     
-      /* 
-       * First we get the index of the parent's key value such that either 
-       *
-       *   parent->children[node2_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
-       *     
-       *  or  
-       *
-       *    parent->children[sibling_id]->keys_values[0]  <  parent->keys_values[index] <  parent->children[node2_index]->keys_values[0]
-       *
-       * by taking the minimum of the indecies.
-       */
+      
+      // First we get the index of the parent's key value such that either 
+      // 
+      //   parent->children[node2_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
+      // 
+      // or 
+      // 
+      //   parent->children[sibling_id]->keys_values[0]  <  parent->keys_values[index] <  parent->children[node2_index]->keys_values[0]
+      //
+      // by taking the minimum of the indecies.
+      
     
       int parent_key_index = std::min(node2_index, sibling_index); 
 
@@ -1819,6 +1820,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    
    return convertedNode;
 }
+
 /*
  * Requirements: 
  * 1. Parent node is a 2-node, and its two children are also both 2-nodes. Parent must be the tree's root (this is an inherent property of the
@@ -1837,11 +1839,11 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::Node::fuseWithChildren() noexcept
 {
   // move key of 2-node 
-  keys_values[1] = keys_values[0];
+  keys_values[1] = std::move(keys_values[0]);
 
   // absorb children's keys_values
-  keys_values[0] = children[0]->keys_values[0];    
-  keys_values[2] = children[1]->keys_values[0];       
+  keys_values[0] = std::move(children[0]->keys_values[0]);    
+  keys_values[2] = std::move(children[1]->keys_values[0]);       
 
   totalItems = 3;
   
@@ -1855,7 +1857,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   connectChild(3, rightOrphan->children[1]);
     
   return this;  
-  
 }// <-- Note: leftOrphan and rightOrphan are automatically deleted here when their unique_ptr<Node> go out of scope.
 
 /* 
