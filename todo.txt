@@ -21,11 +21,10 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
        if (current->isTwoNode()) { 
 
            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
-           // TODO: Bug due to trying to convert 2-node root. Is this o.k. Is converting the root part of the pseudocode for remove?
-           current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
+           current = convertTwoNode(const_cast<Node *>(current)); // ... and resume the key search with the now converted node.
        } 
 
 
 Solution:
 
-Code partially working now...When 1 is remove, the tree is no longer properly ordered.
+Code is partially working now..., but when 1 is removed, the tree is no longer ordered properly.

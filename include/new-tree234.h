@@ -1625,6 +1625,8 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
                std::pair<const Node *, int> pr = getRemoveSuccessor(key, pfound_node, key_index);
                current = pr.first;
+               std::cout << "\n\nTree after getRemoveSuccessor() returns\n"; // TODO: remove debug
+               printlevelOrder(std::cout); // TODO: remove debug
            } 
            break;
 
