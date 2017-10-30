@@ -227,8 +227,6 @@ template<typename Key, typename Value> class tree234 {
     const Node *min(const Node* root) const noexcept; 
     const Node *max(const Node* root) const noexcept; 
     
-    std::pair<const Node *, int> getRemoveSuccessor(Key key, const Node *&pfound_node, int& key_index) noexcept;
-
   public:
 
     using value_type      = std::pair<const Key, Value>; 
@@ -1533,9 +1531,11 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
 
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)  // ok
 {
-   if (root == nullptr) return false; 
+   if (root == nullptr) {
 
-   else if (root->isLeaf()) { 
+       return false; 
+
+   } else if (root->isLeaf()) { 
        
          int index = 0;
          
@@ -1548,7 +1548,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
                               
                 if (root->isEmpty()) {
 
-                   root.reset(); // delete root if tree now empty. 
+                     root.reset(); // delete root 
                }  
 
                 --tree_size;
@@ -1558,12 +1558,11 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
 
          return false;
 
-   } else { // there are more nodes than just the root.
+   } else {
  
        return remove(key, root.get()); 
   }
 }
- 
 /*
  * Pseudo code is from slides 50-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *
@@ -1593,122 +1592,93 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
  */
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) 
 {
-   const Node *pfound_node = nullptr; //++++
+   Node *pfound_node = nullptr;
    int key_index;
    int child_index;
 
-   bool is_internal_node;
-
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
-   // We continue down the tree. 
+   // we continue down the tree. 
    while(true) {
-
-       // We know the root is not a leaf. That was handled in calling code. So we don't convert a 2-node root.
+              
        if (current != root.get() && current->isTwoNode()) { 
 
-           // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
-           current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
-           
-           std::cout << "\n\nPrinting tree after converting 2-node:" << std::flush; // Debug
-           printlevelOrder(std::cout);
+            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
+            current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
        } 
 
        const Node *next = nullptr;
 
        if (current->SearchNode(key, key_index, child_index, next)) { // ...search for item in current node. 
 
-           pfound_node = const_cast<Node *>(current); // We found it.  
-
-           std::pair<const Node *, int> pr = getRemoveSuccessor(key, pfound_node, key_index);
-           current = pr.first;
-           
-           std::cout << "\n\nTree after getRemoveSuccessor() returns:"; // Debug
-           printlevelOrder(std::cout); // Debug
-  
-           break;
+            pfound_node = const_cast<Node *>(current); // We found it.  
+            break; 
 
        } else if (current->isLeaf()) { // Are we done? 
 
-           return false; 
+            return false; 
        } 
 
        current = next; 
        continue;
   } 
+  
+  if (!pfound_node->isLeaf()) {// The key is in an internal node, so we now search for its in order successor, converting any 2-nodes encountered.
 
-  if (!pfound_node->isLeaf()) { 
+      // current->keys_values[0].key() will eventually hold the in-order successor, the left-most leaf node in the subtree rooted at
+      // found_node->children[found_index + 1].
+      current = pfound_node->children[key_index + 1].get(); 
 
-      // We have the item found in pfound_node->keys_values[key_index], which is an internal node. We have current->keys_values[0] as in order successor leaf node, and we know
-      // current it is not a leaf node.  So we "swap" the in order successor and the key at pfound_node->keys_values[key_index]. 
+      while (true) {
+
+        if (current->isTwoNode()) { 
     
-      // Note: We simply delete the former in-order
-      // successor key. 
-      const_cast<Node *>(pfound_node)->keys_values[key_index] = current->keys_values[0]; 
-    
-      const_cast<Node *>(current)->removeKeyValue(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr. 
+             current = convertTwoNode(const_cast<Node*>(current));
+
+             // Check if key moved as a result of conversion.
+             // Comments:
+             // pfound_node is never a 2-node since remove( Key key, Node *) first converts any 2-nodes to 3- or 4-nodes before calling
+             // SearchNode()--except in the case when the root is a 2-node. The root does not get immediately converted from a 2-node.
+             // But this code handles that by detecting that the key has moved and recursively calling "remove(key, pfound_node)".
+             // pfound_node is not deleted if pfound_node is the root (and the root is a 2-node), and no nodes get deleted when either a
+             // rightRotation or leftRotation occurs. So pfound_node is safe then. Finally, pfound_node is not deleted during fuseSiblings().
+             // fuseSiblings() deletes a 2-node sibling but not pfound_node itself. 
+            
+             if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys_values[key_index].key() != key) { // then key moved
+
+                 // ...simply recurse, starting the search this time with the subtree rooted at pfound_node.
+                 return remove(key, pfound_node); 
+             } 
+        } 
+
+        if (current->isLeaf()) { // At in order successor?
+
+            break;  
+        } 
+
+        child_index = 0; // This must be set inside this loop, as it is used below.
+        current = current->children[child_index].get(); // set current to left most child of the node, 
+     }
+
+  }  else { // pfound_node is a leaf that has already been converted, if necessary. We therefore do not need to free the node, and we can
+            // simply call removeKeyValue(key_index).
+
+      pfound_node->removeKeyValue(key_index); 
       --tree_size;
+      
+      return true;
+ }
 
-   } else { 
+  // We have the item found in pfound_node->keys_values[key_index], which is an internal node. We have current->keys_values[0] as in order successor leaf node, and we know
+  // current it is not a leaf node.  So we "swap" the in order successor and the key at pfound_node->keys_values[key_index]. 
 
-      // pfound_node is a leaf that has already been converted, if necessary. We therefore do not need to free the node, and we can
-      // simply call removeKeyValue(key_index).
+  // Note: We simply delete the former in-order
+  // successor key. 
+  pfound_node->keys_values[key_index] = current->keys_values[0]; 
 
-      const_cast<Node *>(pfound_node)->removeKeyValue(key_index); 
-      --tree_size;
-   }
+  const_cast<Node *>(current)->removeKeyValue(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr. 
+  --tree_size;
 
-   return true;
-}
-/*
- * Returns the in-order successor of pfound_node->keys(key_index). If pfound_node is an internal node, the in order successor is the left-most leaf node in the subtree rooted
- * at found_node->children[key_index + 1]. If pfound_node is a leaf, the successor is within the leaf itself.
- *
- * It converts any 2-nodes encountered into 3-nodes, and re-searches for the key if it was moved during the 2-node conversion and re-sets pfound_node and key_index, which were
- * are reference paramters.
- * 
- */
-template<typename Key, typename Value>
-std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getRemoveSuccessor(Key key, const Node *&pfound_node, int& key_index) noexcept
-{
-int child_index = 0;
-
-   if (pfound_node->isLeaf()) {  // Is pfound_node already a leaf node.
-     
-       DoSearch(key, pfound_node, key_index);
-       return std::make_pair(pfound_node, key_index);
-   } 
-
-   // The in-order successor, the left-most leaf node in the subtree rooted at found_node->children[key_index + 1].
-   const Node *current = pfound_node->children[key_index + 1].get(); 
-
-   while (true) {
-
-     if (current->isTwoNode()) { 
- 
-          current = convertTwoNode(const_cast<Node*>(current));
-
-          // Check if key moved as a result of conversion.
-          // Comments:
-          // pfound_node is never a 2-node since remove( Key key, Node *) first converts any 2-nodes to 3- or 4-nodes before calling
-         
-          if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys_values[key_index].key() != key) { // Did key move?
-
-              // Re-find the node and the key_index of key
-              DoSearch(key, pfound_node, key_index);
-
-              return getRemoveSuccessor(key, pfound_node, key_index);
-          } 
-     } 
-
-     if (current->isLeaf()) { // At in order successor?
-
-         break;  
-     } 
-     
-     current = current->children[child_index].get(); // set current to left most child of current.
-  }
-
-  return std::make_pair(current, child_index);
+  return true;
 }
 
 /*
@@ -1728,7 +1698,6 @@ int child_index = 0;
  */
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertTwoNode(Node *node)  noexcept
 {                                                                         
-  
    Node *convertedNode;
    Node *parent = node->getParent();
 
@@ -1740,10 +1709,10 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    int node2_index = 0;
    
    for (; node2_index < parentKeyTotal; ++node2_index) {
-       //
-       // If we never break, then node->keys_values[0] is greater than the last key of its parent, which means
-       // node == parent->children[parent->totalItems], the last child. 
-       //
+       /*
+        * If we never break, then node->keys_values[0] is greater than the last key of its parent, which means
+        * node == parent->children[parent->totalItems], the last child. 
+        */
 
        if (node->keys_values[0].key() < parent->keys_values[node2_index].key() ) { 
             break;                               
@@ -1769,7 +1738,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
    } else if (right_adjacent < parentChildrenTotal) { // There are no 3- or 4-nodes siblings. Therefore the all siblings 
                                                       // are 2-node(s).
-
         sibling_index = right_adjacent; 
 
    } else { // sibling is to the left.
@@ -1797,17 +1765,17 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
     
       Node *p2node = parent->children[node2_index].get();
     
-      
-      // First we get the index of the parent's key value such that either 
-      // 
-      //   parent->children[node2_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
-      // 
-      // or 
-      // 
-      //   parent->children[sibling_id]->keys_values[0]  <  parent->keys_values[index] <  parent->children[node2_index]->keys_values[0]
-      //
-      // by taking the minimum of the indecies.
-      
+      /* 
+       * First we get the index of the parent's key value such that either 
+       *
+       *   parent->children[node2_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
+       *     
+       *  or  
+       *
+       *    parent->children[sibling_id]->keys_values[0]  <  parent->keys_values[index] <  parent->children[node2_index]->keys_values[0]
+       *
+       * by taking the minimum of the indecies.
+       */
     
       int parent_key_index = std::min(node2_index, sibling_index); 
 
@@ -1831,7 +1799,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    
    return convertedNode;
 }
-
 /*
  * Requirements: 
  * 1. Parent node is a 2-node, and its two children are also both 2-nodes. Parent must be the tree's root (this is an inherent property of the
@@ -1850,11 +1817,11 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::Node::fuseWithChildren() noexcept
 {
   // move key of 2-node 
-  keys_values[1] = std::move(keys_values[0]);
+  keys_values[1] = keys_values[0];
 
   // absorb children's keys_values
-  keys_values[0] = std::move(children[0]->keys_values[0]);    
-  keys_values[2] = std::move(children[1]->keys_values[0]);       
+  keys_values[0] = children[0]->keys_values[0];    
+  keys_values[2] = children[1]->keys_values[0];       
 
   totalItems = 3;
   
@@ -1868,6 +1835,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   connectChild(3, rightOrphan->children[1]);
     
   return this;  
+  
 }// <-- Note: leftOrphan and rightOrphan are automatically deleted here when their unique_ptr<Node> go out of scope.
 
 /* 
@@ -2010,8 +1978,6 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::printlev
   levelOrderDisplay<tree234<Key, Value>> tree_printer(*this, ostr);  
   
   levelOrderTraverse(tree_printer);
-  
-  ostr << std::flush;
 }
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::printInOrder(std::ostream& ostr) const noexcept
