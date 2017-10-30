@@ -1593,7 +1593,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
  */
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) 
 {
-   const Node *pfound_node = nullptr; //++++
+   const Node *pfound_node = nullptr; 
    int key_index;
    int child_index;
 
@@ -1608,9 +1608,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
            current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
-           
-           std::cout << "\n\nPrinting tree after converting 2-node:" << std::flush; // Debug
-           printlevelOrder(std::cout);
        } 
 
        const Node *next = nullptr;
@@ -1622,9 +1619,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
            std::pair<const Node *, int> pr = getRemoveSuccessor(key, pfound_node, key_index);
            current = pr.first;
            
-           std::cout << "\n\nTree after getRemoveSuccessor() returns:"; // Debug
-           printlevelOrder(std::cout); // Debug
-  
            break;
 
        } else if (current->isLeaf()) { // Are we done? 
@@ -1646,7 +1640,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
       const_cast<Node *>(pfound_node)->keys_values[key_index] = current->keys_values[0]; 
     
       const_cast<Node *>(current)->removeKeyValue(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr. 
-      --tree_size;
 
    } else { 
 
@@ -1654,9 +1647,9 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
       // simply call removeKeyValue(key_index).
 
       const_cast<Node *>(pfound_node)->removeKeyValue(key_index); 
-      --tree_size;
    }
 
+   --tree_size;
    return true;
 }
 /*
