@@ -219,6 +219,10 @@ template<typename Key, typename Value> class tree234 {
     
     std::pair<const Node *, int> getRemoveSuccessor(Key key, const Node *&pfound_node, int& key_index) noexcept;
 
+    int  height(const Node *pnode) const noexcept;
+    int  depth(const Node *pnode) const noexcept;
+    bool isBalanced(const Node *pnode) const noexcept;
+
   public:
 
     using value_type      = std::pair<const Key, Value>; 
@@ -378,7 +382,10 @@ template<typename Key, typename Value> class tree234 {
     reverse_iterator rend() noexcept;  
  
     const_reverse_iterator rbegin() const noexcept;  
-    const_reverse_iterator rend() const noexcept;  
+    const_reverse_iterator rend() const noexcept;    
+
+    int  height() const noexcept;
+    bool isBalanced() const noexcept;
 };
 
 template<class Key, class Value> inline bool tree234<Key, Value>::isEmpty() const noexcept
@@ -2380,4 +2387,107 @@ template<class Key, class Value> inline typename tree234<Key, Value>::const_iter
  return *this;
 }
 
+/*
+ * Returns -1 is pnode not in tree
+ * Returns: 0 for root
+ *          1 for level immediately below root
+ *          2 for level immediately below level 1
+ *          3 for level immediately below level 2
+ *          etc. 
+ */
+template<class Key, class Value> int tree234<Key, Value>::depth(const Node *pnode) const noexcept
+{
+    if (pnode == nullptr) return -1;
+
+    int depth = 0;
+      
+    for (const Node *current = root; current != nullptr; ++depth) {
+
+      if (current->key() == pnode->key()) {
+
+          return depth;
+
+      } else if (pnode->key() < current->key()) {
+
+          current = current->left;
+
+      } else {
+
+          current = current->right;
+      }
+    }
+
+    return -1; // not found
+}
+
+template<class Key, class Value> inline int tree234<Key, Value>::height() const noexcept
+{
+   return height(root);
+}
+
+template<class Key, class Value> int tree234<Key, Value>::height(const Node* pnode) const noexcept
+{
+   if (pnode == nullptr) {
+
+       return -1;
+
+   } else {
+
+      std::array<int, pnode->getChildCount()> children_heights;
+
+      for (auto i = 0; i < pnode->getChildCount(); ++i) {
+
+          children_heights[i] = height(pnode->children[i]);
+      }
+      
+      return std::max_element(children_heights.begin(), children_heights.end()) + 1;
+   }
+}
+ 
+/*
+  Input: pnode must be in tree
+ */
+template<class Key, class Value> bool tree234<Key, Value>::isBalanced(const Node* pnode) const noexcept
+{
+    if (pnode == nullptr) return false; 
+
+    std::array<int, pnode->getChildCount()> heights;
+    
+    for (auto i = 0; i < pnode->getChildCount(); ++i) {
+
+         heights[i] = height(pnode->children[i]);
+    }
+    
+    int minHeight = min_element(heights.begin(), heights.end());
+    int maxHeight = max_element(heights.begin(), heights.end());
+
+    // Get absolute value of difference between max height and min of height of children.
+    int diff = std::abs(maxHeight - minHeight);
+
+    return (diff == 1 || diff ==0) ? true : false; // return true is absolute value is 0 or 1.
+}
+
+// Visits each Node in level order, testing whether it is balanced. Returns false if any node is not balanced.
+template<class Key, class Value> bool tree234<Key, Value>::isBalanced() const noexcept
+{
+    std::stack<Node> nodes;
+
+    nodes.push(root.get());
+
+    while (!nodes.empty()) {
+
+       const Node *current = nodes.pop();
+
+       if (isBalanced(current) == false)  return false; 
+
+       // push its children onto the stack 
+       for (auto i = 0; i < current->getChildCount(); ++i) {
+          
+           if (current->children[i] != nullptr) {
+               nodes.push(current->children[i]);
+           }   
+       }
+    }
+    return true; // All Nodes were balanced.
+}
 #endif
