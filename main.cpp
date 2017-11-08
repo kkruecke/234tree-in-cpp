@@ -170,9 +170,9 @@ int main(int argc, char** argv)
  
     cout << "\n\n========== Test of isBalanced() ===================" << endl;
 
-    bool brc = tree.isBalanced();
+    string str_balanced{ tree.isBalanced() ? "true" : "false"};
 
-    cout << "\ntree.isBalanced() == " << brc << endl;
+    cout << "\ntree.isBalanced() == " << str_balanced << endl;
 
   }
 
