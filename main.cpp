@@ -157,8 +157,8 @@ int main(int argc, char** argv)
  
     cout << "\n\n========== Test of reverse_iterator class ===================" << endl;
 
-    rprint(tree, cout); //Causes BUG?
-   
+    rprint(tree, cout); 
+  
     if (rc == false) {
          
         cerr << "\nExiting upon remove error!!!" << endl;
@@ -167,6 +167,13 @@ int main(int argc, char** argv)
 
         return 0;
     }
+ 
+    cout << "\n\n========== Test of isBalanced() ===================" << endl;
+
+    bool brc = tree.isBalanced();
+
+    cout << "\ntree.isBalanced() == " << brc << endl;
+
   }
 
   cout << "\n==== Final Tree ========\n" << endl;

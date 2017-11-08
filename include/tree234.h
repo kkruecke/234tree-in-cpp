@@ -220,6 +220,7 @@ template<typename Key, typename Value> class tree234 {
     std::pair<const Node *, int> getRemoveSuccessor(Key key, const Node *&pfound_node, int& key_index) noexcept;
 
     int  height(const Node *pnode) const noexcept;
+    
     int  depth(const Node *pnode) const noexcept;
     bool isBalanced(const Node *pnode) const noexcept;
 
@@ -2432,18 +2433,22 @@ template<class Key, class Value> int tree234<Key, Value>::height(const Node* pno
        return -1;
 
    } else {
-
-      std::array<int, pnode->getChildCount()> children_heights;
-
-      for (auto i = 0; i < pnode->getChildCount(); ++i) {
-
-          children_heights[i] = height(pnode->children[i]);
+       
+      std::array<int, 4> heights;
+      
+      int num_children = pnode->getChildCount();
+      
+      for (auto i = 0; i < num_children; ++i) {
+          
+         heights[i] = height(pnode->children[i].get());
       }
       
-      return std::max_element(children_heights.begin(), children_heights.end()) + 1;
+      int max = *std::max_element(heights.begin(), heights.begin() + num_children);
+      
+      return 1 + max;
    }
 }
- 
+
 /*
   Input: pnode must be in tree
  */
@@ -2451,15 +2456,18 @@ template<class Key, class Value> bool tree234<Key, Value>::isBalanced(const Node
 {
     if (pnode == nullptr) return false; 
 
-    std::array<int, pnode->getChildCount()> heights;
+    std::array<int, 4> heights; // four is max number of children.
     
-    for (auto i = 0; i < pnode->getChildCount(); ++i) {
+    int child_num = pnode->getChildCount();
+    
+    for (auto i = 0; i < child_num; ++i) {
 
-         heights[i] = height(pnode->children[i]);
+         heights[i] = height(pnode->children[i].get());
     }
     
-    int minHeight = min_element(heights.begin(), heights.end());
-    int maxHeight = max_element(heights.begin(), heights.end());
+    int minHeight = *std::min_element(heights.begin(), heights.begin() + child_num);
+    
+    int maxHeight = *std::max_element(heights.begin(), heights.begin() + child_num);
 
     // Get absolute value of difference between max height and min of height of children.
     int diff = std::abs(maxHeight - minHeight);
@@ -2470,21 +2478,24 @@ template<class Key, class Value> bool tree234<Key, Value>::isBalanced(const Node
 // Visits each Node in level order, testing whether it is balanced. Returns false if any node is not balanced.
 template<class Key, class Value> bool tree234<Key, Value>::isBalanced() const noexcept
 {
-    std::stack<Node> nodes;
+    std::stack<const Node *> nodes;
 
     nodes.push(root.get());
 
     while (!nodes.empty()) {
 
-       const Node *current = nodes.pop();
-
+       const Node *current = nodes.top();
+       
+       nodes.pop(); // remove top element
+       
        if (isBalanced(current) == false)  return false; 
 
        // push its children onto the stack 
        for (auto i = 0; i < current->getChildCount(); ++i) {
           
            if (current->children[i] != nullptr) {
-               nodes.push(current->children[i]);
+               
+               nodes.push(current->children[i].get());
            }   
        }
     }
