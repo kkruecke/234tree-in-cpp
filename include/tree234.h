@@ -117,8 +117,8 @@ template<typename Key, typename Value> class tree234 {
         * after having been adopted by the parent are deallocated. 
         */
        Node *fuseWithChildren() noexcept; 
-       
-        public:
+
+       public:
              
            Node() noexcept;
 
@@ -247,7 +247,7 @@ template<typename Key, typename Value> class tree234 {
      constexpr int size() const;
      int getHeight() const noexcept; // get depth of tree from root to leaf.
 
-    ~tree234(); 
+    ~tree234() noexcept; 
 
     // Breadth-first traversal
     template<typename Functor> void levelOrderTraverse(Functor f) const noexcept;
@@ -492,7 +492,6 @@ template<class Key, class Value> int tree234<Key, Value>::Node::getIndexInParent
   throw std::logic_error("Cannot find the parent child index of the node. The node may be the tree's root or the invariant may have been violated.");
 }
 
-
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept 
 {
  if (root == lhs.root) { // are they the same?
@@ -522,6 +521,10 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
     }
 }
 
+template<typename Key, typename Value> inline tree234<Key, Value>::~tree234() noexcept 
+{
+  DestroyTree(root);
+}
 /*
 Finding the successor of a given node 
 -------------------------------------
@@ -1301,11 +1304,6 @@ template<class Key, class Value> int tree234<Key, Value>::Node::getChildIndex() 
 template<typename Key, typename Value> inline constexpr  bool tree234<Key, Value>::Node::isLeaf() const  noexcept // ok
 { 
    return !children[0] ? true : false;
-}
-
-template<typename Key, typename Value> inline tree234<Key, Value>::~tree234()
-{
-  DestroyTree(root); 
 }
 
 /*
