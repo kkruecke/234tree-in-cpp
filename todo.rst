@@ -15,6 +15,8 @@ This code is in ~/NetBeansProjects/test/main.cpp
     
     template<typename Key, typename Value> void Node::FreeChildren()
     {
+      if (children[0] == nullptr) return; // Children of leaves are always nullptr, so dont' need freeing.
+
       for(auto i = 0; i < getChildCount(); ++i) {
     
           FreeChildren(children[i]);
