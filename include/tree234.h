@@ -1309,7 +1309,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>::~tree234()
 }
 
 /*
- * Post order traversal, deleting nodes
+ * Recursively delete nodes, starting with children.
  */
 template<typename Key, typename Value> void tree234<Key, Value>::DestroyTree(std::unique_ptr<Node> &current) noexcept 
 {
