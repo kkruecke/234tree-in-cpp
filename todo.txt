@@ -1,0 +1,1 @@
+Finish shared-tree234.h, review code, test nad debug. Understand implications of changes both pros and cons.
