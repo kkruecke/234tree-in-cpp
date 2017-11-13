@@ -1584,8 +1584,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
    int key_index;
    int child_index;
 
-   bool is_internal_node;
-
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
    // We continue down the tree. 
    while(true) {
