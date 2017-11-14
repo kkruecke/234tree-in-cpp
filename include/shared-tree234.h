@@ -85,7 +85,8 @@ template<typename Key, typename Value> class tree234 {
         * And so on for 4-nodes.
         */
     
-       std::array<std::shared_ptr<Node>, 4> children;
+       std::array<std::shared_ptr<Node>, 4> children; // Note: Node does not need an explicit ctor, since array<>'s default dtor will be called, which will call
+                                                      // the dtor for each shared_ptr<Node> child. 
        
        constexpr Node *getParent() noexcept; 
        int getChildIndex() const noexcept;
