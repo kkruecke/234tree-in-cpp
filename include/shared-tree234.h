@@ -159,6 +159,9 @@ template<typename Key, typename Value> class tree234 {
            constexpr bool isFourNode() const noexcept;
            constexpr bool isEmpty() const noexcept; 
 
+           constexpr const std::pair<Key, Value>& pair(int index) const noexcept { return keys_value[index].pair(); }
+           constexpr std::pair<Key, Value>& pair(int index ) noexcept { return keys_value[index].pair(); }
+
            std::ostream& print(std::ostream& ostr) const noexcept;
    
            friend std::ostream& operator<<(std::ostream& ostr, const Node& node234)
@@ -186,7 +189,7 @@ template<typename Key, typename Value> class tree234 {
 
     void DestroyTree(std::shared_ptr<Node> &root) noexcept; 
 
-//--void CloneTree(const std::unique_ptr<Node>& src_node, std::unique_ptr<Node> &dest_node, const Node *parent) noexcept; // called by copy ctor
+    void CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node> &dest_node, const Node *parent) noexcept; 
 
     tree234<Key, Value> clone() const noexcept; 
 
@@ -244,8 +247,6 @@ template<typename Key, typename Value> class tree234 {
 
      tree234(std::initializer_list<std::pair<Key, Value>> list) noexcept; 
      
-     void test_invariant() const noexcept; 
- 
      constexpr int size() const;
      int getHeight() const noexcept; // get depth of tree from root to leaf.
 
@@ -272,6 +273,8 @@ template<typename Key, typename Value> class tree234 {
     void insert(const value_type& pair) noexcept { insert(pair.first, pair.second); } 
 
     bool remove(Key key);
+
+    tree234<Key, Value> clone() const noexcept;
 
     void printlevelOrder(std::ostream&) const noexcept;
     
@@ -431,9 +434,9 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(K
    keys_values[0].value() = value;
 }
 
-template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(const KeyValue& kv1, Node *parent_in)  noexcept : totalItems(1), parent(parent_in), children()
+template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(const KeyValue& kv, Node *parent_in)  noexcept : totalItems(1), parent(parent_in), children()
 { 
-   keys_values[0] = kv1; 
+   keys_values[0] = kv; 
 }
 
 
@@ -501,15 +504,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const
 
       return;
   }
-/*
-  DestroyTree(root); // free all the nodes of the current tree 
 
-  tree_size = lhs.tree_size;
-  
-  CloneTree(lhs.root, root, nullptr);
-*/
-
-  tree_size = lhs.tree_size; // copy shared_ptr
   root = lhs.root;
 }
  
@@ -522,10 +517,10 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(tree2
 
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::initializer_list<std::pair<Key, Value>> il) noexcept : root(nullptr), tree_size{0} 
 {
-    for (auto& x: il) { // simply call insert(x)
+   for (auto& x: il) { // simply call insert(x)
          
-         insert(x.first, x.second);
-    }
+       insert(x.first, x.second);
+   }
 }
 
 /*
@@ -687,7 +682,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, 
   CloneTree(lhs.root, root, nullptr);
 */
   tree_size = lhs.tree_size;         
-  root = lhs.root;  // copy shared_ptr
+  root = lhs.root;  // copy shared_ptr. TODO: This bumps the reference count for the root, but not for lhs.root's children, the entire subtree. Is this a problem when the destructor is called?
 
   return *this;
 }
@@ -1066,16 +1061,16 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
    }
 }
 */
-template<typename Key, typename Value> inline tree234<Key, Value>::CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node> &dest_node, const Node *parent) noexcept
+template<typename Key, typename Value> inline tree234<Key, Value> tree234<Key, Value>::clone() const noexcept
 {
   tree234<Key, Value> tree;
 
-  CloneTree(lhs.root, tree.root, nullptr);
+  CloneTree(root, tree.root, nullptr); 
 
   return tree;
 }
 /*
- * pre-order traversal
+ * pre-order traversal clone.
  */
 template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node> &dest_node, const Node *parent) noexcept
 {
@@ -1141,7 +1136,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const
  */
 template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::connectChild(int childIndex, std::shared_ptr<Node>& child)  noexcept
 {
-  children[childIndex] = std::move( child ); // Note: If children[childIndex] currently holds a managed pointer , it will be freed.
+  children[childIndex] = std::move( child ); 
   
   if (children[childIndex] != nullptr) { 
 
@@ -1431,57 +1426,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
     const_cast<Node *>(current)->insertKeyValue(key, value); 
     ++tree_size;
 }
-/* Orig
-template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept 
-{ 
-   if (root == nullptr) {
-           
-      root = std::make_unique<Node>(key, value); 
-      ++tree_size;
-      return; 
-   } 
-
-   const Node *current = root.get();
-
-   // Descend until a leaf node is found, splitting four nodes as they are encountered 
-   int child_index;
-
-    while(true) {
-      
-       // TODO: Do we need to resume the search with the parent? Doesn't this result sometimes in splitting the parent, too, when we don't need to?
- 
-       if(current->isFourNode()) {// if four node encountered, split it, moving a value up to parent.
-
-          split(const_cast<Node *>(current)); // split needs to modify the tree.
-
-          // resume search with parent.
-          current = current->getParent(); 
-                        
-       } else {
-
-          const Node *next;
-          int index;
-
-          if (current->SearchNode(key, index, child_index, next) ) {// return if key is already in tree
-                
-             return;
-
-          } else if (current->isLeaf()) {
-
-             break;
-          } 
-
-          // set current to next   
-          current = next;  
-       }
-    }
- 
-    // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
-    const_cast<Node *>(current)->insertKeyValue(key, value); 
-    ++tree_size;
-}
-*/
-
 /* 
  *  Split pseudocode: 
  *  
@@ -1602,8 +1546,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
    const Node *pfound_node = nullptr; 
    int key_index;
    int child_index;
-
-   bool is_internal_node;
 
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
    // We continue down the tree. 
@@ -1857,7 +1799,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
   totalItems = 3;
   
-  std::unique_ptr<Node> leftOrphan = std::move(children[0]); // TODO: shared????
+  std::unique_ptr<Node> leftOrphan = std::move(children[0]); // TODO: Should this be changed to shared? What are the implications?
   std::unique_ptr<Node> rightOrphan = std::move(children[1]); 
     
   // make grandchildren the children of this.
@@ -2454,15 +2396,16 @@ template<class Key, class Value> int tree234<Key, Value>::height(const Node* pno
       std::array<int, 4> heights;
       
       int num_children = pnode->getChildCount();
-      
+     
+      // Get the max height of each child subtree.
       for (auto i = 0; i < num_children; ++i) {
           
          heights[i] = height(pnode->children[i].get());
       }
-      
+
       int max = *std::max_element(heights.begin(), heights.begin() + num_children);
       
-      return 1 + max;
+      return 1 + max; // add one to it.
    }
 }
 
