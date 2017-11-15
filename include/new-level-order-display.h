@@ -31,6 +31,16 @@ class levelOrderDisplay  {
     void display_node(std::ostream& ostr, const Node<Key>& node) noexcept; 
     void display_level(std::ostream& ostr,  int level) noexcept;
 };
+template<class Tree>
+int levelOrderDisplay<Tree>::int get_tree_height() const noexcept
+{
+  int height = 0;
+  
+  for (const Node<Key> *current = proot; current != nullptr) {
+      ++height;
+       current = *current->left;
+  }
+}
 
 template<class Tree>
 inline levelOrderDisplay<Tree>::levelOrderDisplay(const std::shared_ptr<Node<Key>>& in_tree, std::ostream& ostr_lhs) : proot{in_tree.get()}, ostr{ostr_lhs}
