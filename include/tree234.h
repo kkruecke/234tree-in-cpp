@@ -1984,7 +1984,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::printlevelOrder(std::ostream& ostr) const noexcept
 {
-  //--BasicTreePrinter tree_printer(*this);
   levelOrderDisplay<tree234<Key, Value>> tree_printer(*this, ostr);  
   
   levelOrderTraverse(tree_printer);
