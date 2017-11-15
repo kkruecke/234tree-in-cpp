@@ -121,11 +121,11 @@ template<typename Key, typename Value> class tree234 {
         public:
              
            Node() noexcept;
-           // Debug only
-          ~Node() 
-          { 
-            std::cout << "~Node(): " << *this << std::flush; 
-          }
+           
+          ~Node() // For debug purposes only
+           { 
+              //std::cout << "~Node(): " << *this << std::flush; 
+           }
           /*
            Note: No explicit destructor is needed. The array<> and shared_ptr<Node> destructors ensure tree nodes are not prematurely destructor.
            */
