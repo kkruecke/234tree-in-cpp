@@ -13,12 +13,11 @@
 #include <iosfwd>
 #include <string>
 #include <iostream>
-#include "level-order-invariant-report.h"
 #include "level-order-display.h"
 
 // fwd declarations
 template<typename Key, typename Value> class tree234;    
-template<typename Key, typename Value> class Node; 
+//template<typename Key, typename Value> class Node; 
 
 class DebugPrinter; 
     
@@ -122,6 +121,11 @@ template<typename Key, typename Value> class tree234 {
         public:
              
            Node() noexcept;
+           // Debug only
+          ~Node() 
+          { 
+            std::cout << "~Node(): " << *this << std::flush; 
+          }
           /*
            Note: No explicit destructor is needed. The array<> and shared_ptr<Node> destructors ensure tree nodes are not prematurely destructor.
            */
@@ -163,8 +167,8 @@ template<typename Key, typename Value> class tree234 {
            constexpr bool isFourNode() const noexcept;
            constexpr bool isEmpty() const noexcept; 
 
-           constexpr const std::pair<Key, Value>& pair(int index) const noexcept { return keys_value[index].pair(); }
-           constexpr std::pair<Key, Value>& pair(int index ) noexcept { return keys_value[index].pair(); }
+           constexpr const std::pair<Key, Value>& pair(int index) const noexcept { return keys_values[index].pair(); }
+           constexpr std::pair<Key, Value>& pair(int index ) noexcept { return keys_values[index].pair(); }
 
            std::ostream& print(std::ostream& ostr) const noexcept;
    
@@ -194,8 +198,6 @@ template<typename Key, typename Value> class tree234 {
     void DestroyTree(std::shared_ptr<Node> &root) noexcept; 
 
     void CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node> &dest_node, const Node *parent) noexcept; 
-
-    tree234<Key, Value> clone() const noexcept; 
 
     void split(Node *node) noexcept;  // called during insert(Key key) to split 4-nodes encountered.
 
@@ -587,7 +589,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
  // Question: Does it take into account that fact that a node may have already been visited in order?
  // Get the smallest node in the subtree rooted at the rightChild, i.e., its left most node...
- for (const Node *cursor =  pnode->children[key_index + 1].get(); cursor != nullptr; cursor = cursor->children[0].get()) { // TODO: This has not been checked/ported for tree234
+ for (const Node *cursor =  pnode->children[key_index + 1].get(); cursor != nullptr; cursor = cursor->children[0].get()) {  
 
     pnode = cursor;
  }
@@ -678,15 +680,9 @@ template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, 
 
        return *this;
   }
-/*
-  DestroyTree(root); // free all nodes and then clone lhs.
 
   tree_size = lhs.tree_size;         
-
-  CloneTree(lhs.root, root, nullptr);
-*/
-  tree_size = lhs.tree_size;         
-  root = lhs.root;  // copy shared_ptr. TODO: This bumps the reference count for the root, but not for lhs.root's children, the entire subtree. Is this a problem when the destructor is called?
+  root = lhs.root;  
 
   return *this;
 }
@@ -1462,12 +1458,16 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
    if (root.get() == pnode) {
    
      std::shared_ptr<Node> new_root = std::make_shared<Node>(std::move(pnode->keys_values[1])); // Middle value will become new root
-
-     root.release(); // We don't want the current root's underlying member, to which pnode points, to be freed when root is assigned below. 
-
+     
+     /*
+     root.release(); // <--- TODO: What do we do now that this is a shared_ptr<Node>?   // We don't want the current root's underlying memory, to which pnode points, to be freed when root is assigned below. 
+      
      std::shared_ptr<Node> tmp{pnode};  
 
-     new_root->connectChild(0, tmp); // TODO: do std::move(tmp)??? 
+     new_root->connectChild(0, tmp); 
+     */
+     
+     new_root->connectChild(0, root); 
      new_root->connectChild(1, largestNode); 
      
      root = std::move(new_root); // reset the root. 
@@ -1806,8 +1806,8 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
   totalItems = 3;
   
-  std::unique_ptr<Node> leftOrphan = std::move(children[0]); // TODO: Should this be changed to shared? What are the implications?
-  std::unique_ptr<Node> rightOrphan = std::move(children[1]); 
+  std::shared_ptr<Node> leftOrphan = std::move(children[0]);  // TODO: children[0].get() OR std::shared_ptr
+  std::shared_ptr<Node> rightOrphan = std::move(children[1]); 
     
   // make grandchildren the children of this.
   connectChild(0, leftOrphan->children[0]); 
@@ -1935,7 +1935,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
        */
       std::shared_ptr<Node> psibling = parent->disconnectChild(sibling_index); // this does #2
       
-      // TODO: Should move() be called?
       p2node->keys_values[1] = parent->removeKeyValue(parent_key_index); // this will #1 // 1. bring down parent key 
 
       p2node->keys_values[2] = std::move(psibling->keys_values[0]);// 2. insert sibling's sole key and value. 
