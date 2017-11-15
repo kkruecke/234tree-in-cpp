@@ -30,6 +30,8 @@ template<typename Key, typename Value> class tree234 {
        std::pair<const Key, Value>  _constkey_pair;  // but always return this member of the union.
 
        KeyValue() {} 
+      ~KeyValue() {}
+      
        KeyValue(Key key, const Value& value) : _pair{key, value} {}
        
        KeyValue(const KeyValue& lhs) : _pair{lhs._pair.first, lhs._pair.second} {}
@@ -124,7 +126,7 @@ template<typename Key, typename Value> class tree234 {
            
           ~Node() // For debug purposes only
            { 
-              //std::cout << "~Node(): " << *this << std::flush; 
+              std::cout << "~Node(): " << *this << std::endl; 
            }
           /*
            Note: No explicit destructor is needed. The array<> and shared_ptr<Node> destructors ensure tree nodes are not prematurely destructor.
@@ -194,8 +196,6 @@ template<typename Key, typename Value> class tree234 {
     template<typename Functor> void DoPostOrderTraverse(Functor f,  const std::shared_ptr<Node>& root) const noexcept;
 
     template<typename Functor> void DoPreOrderTraverse(Functor f, const std::shared_ptr<Node>& root) const noexcept;
-
-    void DestroyTree(std::shared_ptr<Node> &root) noexcept; 
 
     void CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node> &dest_node, const Node *parent) noexcept; 
 
@@ -1319,25 +1319,6 @@ template<typename Key, typename Value> inline constexpr  bool tree234<Key, Value
 
 template<typename Key, typename Value> inline tree234<Key, Value>::~tree234()
 {
-  DestroyTree(root); 
-}
-
-/*
- * Post order traversal, deleting nodes
- */
-template<typename Key, typename Value> void tree234<Key, Value>::DestroyTree(std::shared_ptr<Node> &current) noexcept 
-{
-  if (current == nullptr) {
-
-      return;
-  }
-  
-  for(auto i = 0; i < current->totalItems; ++i) {
-
-      DestroyTree(current->children[i]);
-   }
-
-   current.reset(); // deletes the pointer owned by shared_ptr<Node>.
 }
 
 template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key key) noexcept
