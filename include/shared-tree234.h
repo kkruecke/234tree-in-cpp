@@ -85,10 +85,10 @@ template<typename Key, typename Value> class tree234 {
         * And so on for 4-nodes.
         */
     
-       std::array<std::shared_ptr<Node>, 4> children; // Note: Node does not need an explicit ctor, since array<>'s default dtor will be called, which will call
-                                                      // the dtor for each shared_ptr<Node> child. 
+       std::array<std::shared_ptr<Node>, 4> children;
        
        constexpr Node *getParent() noexcept; 
+
        int getChildIndex() const noexcept;
     
        /* 
@@ -122,6 +122,9 @@ template<typename Key, typename Value> class tree234 {
         public:
              
            Node() noexcept;
+          /*
+           Note: No explicit destructor is needed. The array<> and shared_ptr<Node> destructors ensure tree nodes are not prematurely destructor.
+           */
 
            explicit Node(Key small, const Value& value, Node *parent=nullptr) noexcept;
 
@@ -1239,7 +1242,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(Ke
 
         ++totalItems;        // increase the total item count
 
-          insertChild(i + 2, largerNode); // TODO: Is i + 1 correct?
+          insertChild(i + 2, largerNode); 
           return;      // return index of inserted key.
       } 
     } 
@@ -1249,7 +1252,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(Ke
 
   ++totalItems; // increase the total item count
 
-    insertChild(1, largerNode); // TODO: Is 1 correct--I believe it is?
+    insertChild(1, largerNode); 
     return;
 }
 /*
@@ -1269,6 +1272,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insertChi
    // Then insert the new child whose key is larger than key_value.key().
    connectChild(insert_index,  newChild);
 }
+
 template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyValue tree234<Key, Value>::Node::removeKeyValue(int index) noexcept 
 {
   KeyValue key_value = std::move(keys_values[index]); 
@@ -1284,7 +1288,6 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
   return key_value;
 }
 
-
 template<typename Key, typename Value> inline constexpr typename tree234<Key, Value>::Node * tree234<Key, Value>::Node::getParent()   noexcept // ok
 { 
    return parent;
@@ -1294,6 +1297,7 @@ template<typename Key, typename Value> inline constexpr const typename tree234<K
 { 
    return parent;
 }
+
 /*
   Input: 
    Assumes that "this" is never the root. The parent of the root is nullptr.
@@ -1311,6 +1315,7 @@ template<class Key, class Value> int tree234<Key, Value>::Node::getChildIndex() 
 
   return child_index;
 }
+
 template<typename Key, typename Value> inline constexpr  bool tree234<Key, Value>::Node::isLeaf() const  noexcept // ok
 { 
    return !children[0] ? true : false;
@@ -1341,14 +1346,14 @@ template<typename Key, typename Value> void tree234<Key, Value>::DestroyTree(std
 
 template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key key) noexcept
 {
-    // make sure tree has at least one element    
-    if (root == nullptr) return false;
+   // make sure tree has at least one element    
+   if (root == nullptr) return false;
 
-    else {
-        int index;  
-        const Node *location;
-        return DoSearch(key, location, index);
-    }
+   else {
+       int index;  
+       const Node *location;
+       return DoSearch(key, location, index);
+   }
 }   
 
 template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key key, const Node *&location, int& index) noexcept // ok
@@ -1373,6 +1378,7 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
   location = current;
   return true;
 }
+
 /*
  * Insertion based on pseudo code at:
 
@@ -1464,7 +1470,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
      new_root->connectChild(0, tmp); // TODO: do std::move(tmp)??? 
      new_root->connectChild(1, largestNode); 
      
-     root = std::move(new_root); // reset the root.
+     root = std::move(new_root); // reset the root. 
 
    } else {
 

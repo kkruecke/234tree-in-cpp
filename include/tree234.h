@@ -42,7 +42,7 @@ template<typename Key, typename Value> class tree234 {
        KeyValue& operator=(const KeyValue& lhs) noexcept;  
        KeyValue& operator=(KeyValue&& lhs) noexcept; 
 
-       constexpr Key&  key()  { return _pair.first; }
+       constexpr const Key&  key()  { return _pair.first; }
        constexpr const Key& key() const { return _constkey_pair.first; }
 
        constexpr Value&  value()  { return _pair.second; }
