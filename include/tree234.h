@@ -1794,7 +1794,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   connectChild(3, rightOrphan->children[1]);
     
   return this;  
-}// <-- Note: leftOrphan and rightOrphan are automatically deleted here when their shared_ptr<Node> go out of scope??????????????????/
+}// <-- Note: leftOrphan and rightOrphan are automatically deleted here when their shared_ptr<Node> go out of scope?
 
 /* 
  * Requires: sibling is to the left, therefore: parent->children[sibling_id]->keys_values[0] < parent->keys_values[index] < parent->children[node2_index]->keys_values[0]
