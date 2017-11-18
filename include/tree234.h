@@ -1379,8 +1379,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
 
     while(true) {
       
-       // TODO: Do we need to resume the search with the parent? Doesn't this result sometimes in splitting the parent, too, when we don't need to?
- 
        if(current->isFourNode()) {// if four node encountered, split it, moving a value up to parent.
 
           split(const_cast<Node *>(current)); // split needs to modify the tree.
