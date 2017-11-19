@@ -798,11 +798,7 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
 
    while (!q.empty()) {
 
-        std::pair<const Node *, int> pair_ = q.front();
-
-        const Node *current = pair_.first; // TODO: Use C++17 unpacking here.
-
-        int tree_level = pair_.second;
+        auto [current, tree_level] = q.front(); // uses C++17 unpacking
 
         f(current, tree_level); // For example: print out all the keys_values in current.
          
@@ -831,8 +827,8 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
  
       f(current->keys_values[key_index].pair());
 
-      std::pair<const Node *, int> pair = getSuccessor(current, key_index);  // TODO: Use C++17 unpacking here 
-
+      std::pair<const Node *, int> pair = getSuccessor(current, key_index);  
+  
       current = pair.first;
       key_index = pair.second;
   }
@@ -2175,7 +2171,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
   } else {
 
-      cursor = current = pair.first; // TODO: Use c++17 unpacking here.
+      cursor = current = pair.first; 
       key_index = pair.second;
   }
 
@@ -2198,7 +2194,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
   if (pair.first != nullptr) { // nullptr implies there is no predecessor cursor->keys_values[key_index].key().
       
-      cursor = current = pair.first; // TODO: Use c++17 unpacking here.
+      cursor = current = pair.first; 
       key_index = pair.second;
   }
 
