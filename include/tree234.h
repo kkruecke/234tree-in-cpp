@@ -23,12 +23,13 @@ class DebugPrinter;
     
 template<typename Key, typename Value> class tree234 {
     
-   union KeyValue { // A union is used to hold to two types of pairs, one of which (pair) has a non-const Key; the other has a const Key.
-       friend class tree234<Key, Value>;
+   union KeyValue { // This union is used to hold to two types of pairs: one has a non-const Key, the other a const Key.
+       //--friend class tree234<Key, Value>;
    
        std::pair<Key, Value>        _pair;  // ...this eliminates constantly casting of const_cast<Key>(p.first) = some_noconst_key;
        std::pair<const Key, Value>  _constkey_pair;  // but always return this member of the union.
 
+     public:    
        KeyValue() {} 
       ~KeyValue() {}
       
@@ -49,7 +50,7 @@ template<typename Key, typename Value> class tree234 {
        constexpr Value&  value()  { return _pair.second; }
        constexpr const Value& value() const { return _constkey_pair.second; }
 
-     public:    
+
        constexpr const std::pair<Key, Value>& pair() const { return _pair; }
        constexpr std::pair<Key, Value>& pair() { return _pair; }
         
@@ -287,8 +288,6 @@ template<typename Key, typename Value> class tree234 {
     
     void printPostOrder(std::ostream&) const noexcept;
 
-    void test(Key key);
-
     bool isEmpty() const noexcept;
 
     class iterator : public std::iterator<std::bidirectional_iterator_tag, typename tree234<Key, Value>::value_type> { 
@@ -310,7 +309,14 @@ template<typename Key, typename Value> class tree234 {
 
          iterator& decrement() noexcept;
 
-         iterator(tree234<Key, Value>& lhs, int i);  // called by end()
+         iterator(tree234<Key, Value>& lhs, int i);  // called by end()   
+
+         constexpr reference dereference() noexcept 
+         { 
+             return cursor->keys_values[key_index].constkey_pair(); 
+         } 
+
+
       public:
 
          explicit iterator(tree234<Key, Value>&); 
@@ -322,13 +328,7 @@ template<typename Key, typename Value> class tree234 {
          bool operator==(const iterator& lhs) const;
          
          constexpr bool operator!=(const iterator& lhs) const { return !operator==(lhs); }
-         
-         constexpr reference dereference() noexcept 
-         { 
-             return cursor->keys_values[key_index].constkey_pair(); 
-         } 
-
-         constexpr const std::pair<const Key, Value>& dereference() const noexcept 
+               constexpr const std::pair<const Key, Value>& dereference() const noexcept 
          { 
              return cursor->keys_values[key_index].constkey_pair(); 
          }
@@ -800,7 +800,7 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
 
         std::pair<const Node *, int> pair_ = q.front();
 
-        const Node *current = pair_.first;
+        const Node *current = pair_.first; // TODO: Use C++17 unpacking here.
 
         int tree_level = pair_.second;
 
@@ -831,7 +831,7 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
  
       f(current->keys_values[key_index].pair());
 
-      std::pair<const Node *, int> pair = getSuccessor(current, key_index);   
+      std::pair<const Node *, int> pair = getSuccessor(current, key_index);  // TODO: Use C++17 unpacking here 
 
       current = pair.first;
       key_index = pair.second;
@@ -1153,7 +1153,7 @@ template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::Se
      if (key < keys_values[i].key()) {
             
          next = children[i].get(); 
-         child_index = i;  // new code. index is such that: this->children[index] == next
+         child_index = i;  // index is such that: this->children[index] == next
          return false;
 
      } else if (keys_values[i].key() == key) {
@@ -1435,14 +1435,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
    
      std::shared_ptr<Node> new_root = std::make_shared<Node>(std::move(pnode->keys_values[1])); // Middle value will become new root
      
-     /*
-     root.release(); // <--- TODO: What do we do now that this is a shared_ptr<Node>?   // We don't want the current root's underlying memory, to which pnode points, to be freed when root is assigned below. 
-      
-     std::shared_ptr<Node> tmp{pnode};  
-
-     new_root->connectChild(0, tmp); 
-     */
-     
      new_root->connectChild(0, root); 
      new_root->connectChild(1, largestNode); 
      
@@ -1538,7 +1530,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
        if (current != root.get() && current->isTwoNode()) { 
 
            // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
-           current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node.
+           current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node 
        } 
 
        const Node *next = nullptr;
@@ -1782,7 +1774,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
   totalItems = 3;
   
-  std::shared_ptr<Node> leftOrphan = std::move(children[0]);  // TODO: children[0].get() OR std::shared_ptr
+  std::shared_ptr<Node> leftOrphan = std::move(children[0]);  
   std::shared_ptr<Node> rightOrphan = std::move(children[1]); 
     
   // make grandchildren the children of this.
@@ -1792,7 +1784,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   connectChild(3, rightOrphan->children[1]);
     
   return this;  
-}// <-- Note: leftOrphan and rightOrphan are automatically deleted here when their shared_ptr<Node> go out of scope?
+}// <-- Note: leftOrphan and rightOrphan are automatically deleted here when their shared_ptr<Node> goes out of scope.
 
 /* 
  * Requires: sibling is to the left, therefore: parent->children[sibling_id]->keys_values[0] < parent->keys_values[index] < parent->children[node2_index]->keys_values[0]
@@ -1876,7 +1868,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
        */
       std::shared_ptr<Node> psibling = parent->disconnectChild(sibling_index); // This will do #2. 
       
-      //--Key parent_key = parent->removeKey(parent_key_index); //this will do #1
       KeyValue parent_key_value = parent->removeKeyValue(parent_key_index); //this will do #1
 
       // Now, add both the sibling's and parent's key to 2-node
@@ -1944,7 +1935,7 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::printInO
 }
 	
 /*
- TODO: The comments here sometimes be confuse predecessor with successor; likewise, the comments for iterator::getSuccessor confuse the successor with the predecessor!
+ TODO: The comments here sometimes be confuse predecessor with successor; likewise, the comments for iterator::getSuccessor confuse the successor with the predecessor! Make these comments clearer.
 Two cases are possible: 1.) when current is an internal node and 2.) when current is a leaf node.
 case 2:
 If current is a leaf node, and if it is a a 3-node and key-index is 1, then the predecessor is trivial: the first key is the predecessor. If, however, the key_index is 0, we ascend the parent
@@ -2184,7 +2175,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
   } else {
 
-      cursor = current = pair.first;
+      cursor = current = pair.first; // TODO: Use c++17 unpacking here.
       key_index = pair.second;
   }
 
@@ -2207,7 +2198,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
   if (pair.first != nullptr) { // nullptr implies there is no predecessor cursor->keys_values[key_index].key().
       
-      cursor = current = pair.first;
+      cursor = current = pair.first; // TODO: Use c++17 unpacking here.
       key_index = pair.second;
   }
 
