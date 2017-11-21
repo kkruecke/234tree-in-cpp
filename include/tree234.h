@@ -13,7 +13,6 @@
 #include <iosfwd>
 #include <string>
 #include <iostream>
-#include "level-order-display.h"
 
 // fwd declarations
 template<typename Key, typename Value> class tree234;    
@@ -63,8 +62,6 @@ template<typename Key, typename Value> class tree234 {
        }
    };
  
-  public:
-      
    class Node { // public nested node class Tree<Key, Value>::Node
      private:  
        friend class tree234<Key, Value>;             
@@ -176,6 +173,44 @@ template<typename Key, typename Value> class tree234 {
              return node234.print(ostr);
            }
   }; // end class Tree<Key, Value>::Node  
+
+  class NodeLevelOrderPrinter {
+
+      std::ostream& ostr;
+      int current_level;
+      int height;
+
+      void display_level(std::ostream& ostr, int level) const noexcept
+      {
+        ostr << "\n\n" << "current_level = " <<  current_level << ' '; 
+           
+        // Provide some basic spacing to tree appearance.
+        std::size_t num = height - current_level + 1;
+        
+        std::string str( num, ' ');
+        
+        ostr << str; 
+      }
+    
+     public: 
+        
+     NodeLevelOrderPrinter (int hght, std::ostream& ostr_in): height (hght), ostr (ostr_in), current_level (0) {}
+
+     NodeLevelOrderPrinter (const NodeLevelOrderPrinter& lhs): height{lhs.height}, ostr{lhs.ostr}, current_level{lhs.current_level} {}
+
+     void operator ()(const Node *pnode, int level)
+     { 
+         // Did current_level change?
+         if (current_level != level) { 
+        
+             current_level = level;
+        
+             display_level(ostr, level);       
+         }
+        
+         std::cout << *pnode << ' ' << std::flush;
+     }
+  };
 
  private:
 
@@ -1914,7 +1949,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::printlevelOrder(std::ostream& ostr) const noexcept
 {
-  levelOrderDisplay<tree234<Key, Value>> tree_printer(*this, ostr);  
+  NodeLevelOrderPrinter tree_printer(height(), ostr);  
   
   levelOrderTraverse(tree_printer);
   
