@@ -251,7 +251,6 @@ template<typename Key, typename Value> class tree234 {
      tree234(std::initializer_list<std::pair<Key, Value>> list) noexcept; 
      
      constexpr int size() const;
-     int getHeight() const noexcept; // get depth of tree from root to leaf.
 
     ~tree234(); 
 
@@ -759,7 +758,7 @@ template<typename Key, typename Value> inline constexpr int tree234<Key, Value>:
   return tree_size;
 }
              
-template<typename Key, typename Value> inline int tree234<Key, Value>::getHeight() const noexcept
+template<typename Key, typename Value> inline int tree234<Key, Value>::height() const noexcept
 {
   int depth = 0;
 
@@ -2346,12 +2345,12 @@ template<class Key, class Value> int tree234<Key, Value>::depth(const Node *pnod
 
     return -1; // not found
 }
-
+/*
 template<class Key, class Value> inline int tree234<Key, Value>::height() const noexcept
 {
    return height(root);
 }
-
+*/
 template<class Key, class Value> int tree234<Key, Value>::height(const Node* pnode) const noexcept
 {
    if (pnode == nullptr) {
