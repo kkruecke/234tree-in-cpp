@@ -24,7 +24,6 @@ class DebugPrinter;
 template<typename Key, typename Value> class tree234 {
     
    union KeyValue { // This union is used to hold to two types of pairs: one has a non-const Key, the other a const Key.
-       //--friend class tree234<Key, Value>;
    
        std::pair<Key, Value>        _pair;  // ...this eliminates constantly casting of const_cast<Key>(p.first) = some_noconst_key;
        std::pair<const Key, Value>  _constkey_pair;  // but always return this member of the union.
@@ -1916,7 +1915,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::printlevelOrder(std::ostream& ostr) const noexcept
 {
-  //--BasicTreePrinter tree_printer(*this);
   levelOrderDisplay<tree234<Key, Value>> tree_printer(*this, ostr);  
   
   levelOrderTraverse(tree_printer);
