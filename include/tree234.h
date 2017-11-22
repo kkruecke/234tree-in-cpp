@@ -173,7 +173,7 @@ template<typename Key, typename Value> class tree234 {
              return node234.print(ostr);
            }
   }; // end class Tree<Key, Value>::Node  
-
+  
   class NodeLevelOrderPrinter {
 
       std::ostream& ostr;
@@ -191,12 +191,14 @@ template<typename Key, typename Value> class tree234 {
         
         ostr << str; 
       }
-    
+
+      std::ostream& (Node::*pmf)(std::ostream&) const noexcept;
+
      public: 
         
-     NodeLevelOrderPrinter (int hght, std::ostream& ostr_in): height (hght), ostr (ostr_in), current_level (0) {}
+     NodeLevelOrderPrinter (int hght,  std::ostream& (Node::*pmf_)(std::ostream&) const noexcept, std::ostream& ostr_in): height{hght}, ostr{ostr_in}, current_level{0}, pmf{pmf_} {}
 
-     NodeLevelOrderPrinter (const NodeLevelOrderPrinter& lhs): height{lhs.height}, ostr{lhs.ostr}, current_level{lhs.current_level} {}
+     NodeLevelOrderPrinter (const NodeLevelOrderPrinter& lhs): height{lhs.height}, ostr{lhs.ostr}, current_level{lhs.current_level}, pmf{lhs.pmf} {}
 
      void operator ()(const Node *pnode, int level)
      { 
@@ -207,8 +209,10 @@ template<typename Key, typename Value> class tree234 {
         
              display_level(ostr, level);       
          }
-        
-         std::cout << *pnode << ' ' << std::flush;
+
+         (pnode->*pmf)(std::cout);
+
+         std::cout << ' ' << std::flush;
      }
   };
 
@@ -1949,7 +1953,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::printlevelOrder(std::ostream& ostr) const noexcept
 {
-  NodeLevelOrderPrinter tree_printer(height(), ostr);  
+  NodeLevelOrderPrinter tree_printer(height(), (&Node::print), ostr);  
   
   levelOrderTraverse(tree_printer);
   
