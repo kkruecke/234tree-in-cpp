@@ -835,15 +835,15 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
    while (!q.empty()) {
 
-        auto [current, tree_level] = q.front(); // uses C++17 unpacking
+        auto [pnode, tree_level] = q.front(); // uses C++17 unpacking
 
-        f(current, tree_level); // For example: print out all the keys_values in current.
+        f(pnode, tree_level); // For example: print out all the keys_values in pnode.
          
-        if (!current->isLeaf()) {
+        if (!pnode->isLeaf()) {
             
-            for(auto i = 0; i < current->getChildCount(); ++i) {
+            for(auto i = 0; i < pnode->getChildCount(); ++i) {
 
-               q.push(std::make_pair(current->children[i].get(), tree_level + 1));  
+               q.push(std::make_pair(pnode->children[i].get(), tree_level + 1));  
             }
         }
         q.pop(); 
