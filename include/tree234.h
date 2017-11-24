@@ -822,7 +822,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, 
 /*
  * F is a functor whose function call operator takes two parameters: a Node * and an int indicating the depth of the node from the root, which has depth 1.
  */
-template<typename Key, typename Value> template<typename Functor> inline void tree234<Key, Value>::levelOrderTraverse(Functor f) const noexcept
+template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::levelOrderTraverse(Functor f) const noexcept
 {
    if (root.get() == nullptr) return;
    
