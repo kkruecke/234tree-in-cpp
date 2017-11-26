@@ -365,7 +365,8 @@ template<typename Key, typename Value> class tree234 {
          bool operator==(const iterator& lhs) const;
          
          constexpr bool operator!=(const iterator& lhs) const { return !operator==(lhs); }
-               constexpr const std::pair<const Key, Value>& dereference() const noexcept 
+
+         constexpr const std::pair<const Key, Value>& dereference() const noexcept 
          { 
              return cursor->keys_values[key_index].constkey_pair(); 
          }
@@ -389,7 +390,7 @@ template<typename Key, typename Value> class tree234 {
 
       private:
         iterator iter; 
-         explicit const_iterator(const tree234<Key, Value>& lhs, int i);
+        explicit const_iterator(const tree234<Key, Value>& lhs, int i);
       public:
          
          explicit const_iterator(const tree234<Key, Value>& lhs);
