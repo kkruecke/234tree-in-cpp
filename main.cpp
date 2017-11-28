@@ -76,7 +76,7 @@ int main(int argc, char** argv)
        cout << "\nTest Completed\n";
   }
    
- /*  
+   
   cout << "Printing tree in level order" << endl;
   tree.printlevelOrder(cout);
    
@@ -107,8 +107,8 @@ int main(int argc, char** argv)
   cout << "\nUsing traverse methods to print tree in-order:" << endl;
  
   tree.inOrderTraverse(print_keys);
-*/
-/*  
+
+  
   cout << "\nPrinting the keys to be removed\n\n";
   
   copy(keys.rbegin(), keys.rend(), ostream_iterator<int>(cout, ", "));
@@ -163,6 +163,6 @@ int main(int argc, char** argv)
   
   cout << endl;
   cout << flush;
-*/
-return 0;
+
+  return 0;
 }

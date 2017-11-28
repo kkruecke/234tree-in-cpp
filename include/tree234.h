@@ -1890,9 +1890,9 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   Node *p2node = parent->children[node2_index].get();
 
   // First get the index of the parent's key value to be stolen and added into the 2-node
-  int parent_key_index = std::min(node2_index, sibling_index); 
+  //--int parent_key_index = std::min(node2_index, sibling_index); 
 
-  if (node2_index > sibling_index) { // sibling is to the left: 
+  if (int parent_key_index = std::min(node2_index, sibling_index); node2_index > sibling_index) { // sibling is to the left:   Note: This is the C++17 if with initializer syntax
 
       /* Adjust parent:
          1. Remove parent key (and shift its remaining keys_values and reduce its totalItems)
