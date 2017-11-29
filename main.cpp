@@ -107,13 +107,13 @@ int main(int argc, char** argv)
   cout << "\nUsing traverse methods to print tree in-order:" << endl;
  
   tree.inOrderTraverse(print_keys);
-
   
   cout << "\nPrinting the keys to be removed\n\n";
   
   copy(keys.rbegin(), keys.rend(), ostream_iterator<int>(cout, ", "));
   
   cout << flush;
+  
   for (auto iter = keys.rbegin(); iter != keys.rend(); ++iter) {
     
     auto item = *iter;
