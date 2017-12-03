@@ -592,10 +592,10 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  
          if (!root->isTwoNode() && key_index != (root->getTotalItems() - 1)) { 
 
-             return std::make_pair(current, key_index + 1);
+             return {current, key_index + 1};
          } 
                   
-         return std::make_pair(nullptr, 0); // There is no successor
+         return {nullptr, 0}; // There is no successor
  
      } else {
 
@@ -628,7 +628,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
     pnode = cursor;
  }
 
- return std::make_pair(const_cast<Node *>(pnode), 0);
+ return {const_cast<Node *>(pnode), 0};
 }
 /*
  Requires:
@@ -640,7 +640,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   // Handle the easy case: a 3- or 4-node in which key_index is not the right most value in the node.
   if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { 
 
-      return std::make_pair(pnode, key_index + 1); 
+      return {pnode, key_index + 1}; 
   }
 
   Node *successor = nullptr;
@@ -664,7 +664,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
            // pnode is still the right most child, but if it is also the root, then, there is no successor (because pnode was the largest node in the tree). 
            if (parent == root.get()) {
               
-               return std::make_pair(nullptr, 0);  // To indicate "no-successor" we return the pair: {nullptr, 0}.
+               return {nullptr, 0};  // To indicate "no-successor" we return the pair: {nullptr, 0}.
            }
        
            pnode = parent;
@@ -674,7 +674,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
        for (; successor < parent->getTotalItems() && current_key > parent->keys_values[successor].key(); ++successor);
          
-       return std::make_pair(parent, successor);
+       return {parent, successor};
        
 
   } else { 
@@ -702,7 +702,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
          throw std::logic_error("child_index was not between 0 and 3 in getLeafNodeSuccessor()");
      }
 
-     return std::make_pair(pnode->parent, child_index);
+     return {pnode->parent, child_index};
   }  
 }
 
@@ -831,7 +831,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
    auto level = 1;
 
-   q.push(std::make_pair(root.get(), level));
+   q.push({root.get(), level});
 
    while (!q.empty()) {
 
@@ -843,7 +843,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
             
             for(auto i = 0; i < pnode->getChildCount(); ++i) {
 
-               q.push(std::make_pair(pnode->children[i].get(), tree_level + 1));  
+               q.push({pnode->children[i].get(), tree_level + 1});  
             }
         }
         q.pop(); 
@@ -1398,7 +1398,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
 { 
    if (root == nullptr) {
            
-      root = std::make_unique<Node>(key, value); 
+      root = std::make_shared<Node>(key, value); 
       ++tree_size;
       return; 
    } 
@@ -1622,7 +1622,7 @@ int child_index = 0;
    if (pfound_node->isLeaf()) {  // Is pfound_node already a leaf node.
      
        DoSearch(key, pfound_node, key_index);
-       return std::make_pair(pfound_node, key_index);
+       return {pfound_node, key_index};
    } 
 
    // The in-order successor, the left-most leaf node in the subtree rooted at found_node->children[key_index + 1].
@@ -1655,7 +1655,7 @@ int child_index = 0;
      current = current->children[child_index].get(); // set current to left most child of current.
   }
 
-  return std::make_pair(current, child_index);
+  return {current, child_index};
 }
 
 /*
@@ -1981,9 +1981,9 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
          if (key_index != 0) {
                   
-             return std::make_pair(current, key_index - 1);
+             return {current, key_index - 1};
          } 
-         return std::make_pair(nullptr, 0);
+         return {nullptr, 0};
             
      } else {
 
@@ -2007,7 +2007,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
     pnode = cursor;
  }
 
- return std::make_pair(pnode, pnode->totalItems - 1); 
+ return {pnode, pnode->totalItems - 1}; 
 }
 /* 
 Finding the predecessor of a given node 
@@ -2023,7 +2023,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   // Handle trivial case: if the leaf node is not a 2-node (it is a 3-node or 4-node, and key_index is not the first key), simply set index of predecessor to index - 1. 
   if (!pnode->isTwoNode() && index != 0) {
 
-      return std::make_pair(pnode, index - 1); 
+      return {pnode, index - 1}; 
   }
 
   // Determine child_index such that pnode == pnode->parent->children[child_index]
@@ -2033,7 +2033,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
   if (child_index != 0) { // IF pnode is not the left-most child, the predecessor is in the parent
 
-      return  std::make_pair(pnode->parent, child_index - 1); 
+      return  {pnode->parent, child_index - 1}; 
 
   } else {
 
@@ -2093,7 +2093,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
           // pnode is still the left most child, but if its is the root, we cannot ascend further and there is no predecessor.  
           if (parent == root.get()) {
                 
-              return std::make_pair(nullptr, 0);  // To indicate this we set current, the member of the pair, to nullptr and key_index, the second member, to 0.
+              return {nullptr, 0};  // To indicate this we set current, the member of the pair, to nullptr and key_index, the second member, to 0.
           }
           pnode = parent;
       }
@@ -2103,7 +2103,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
            if (current_key > parent->keys_values[pred_index].key()) {
 
-               return std::make_pair(parent, pred_index);
+               return {parent, pred_index};
            } 
       } 
 
