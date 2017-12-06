@@ -232,7 +232,7 @@ template<typename Key, typename Value> class tree234 {
 
     template<typename Functor> void DoPreOrderTraverse(Functor f, const Node *proot) const noexcept;
 
-    void CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node> &dest_node, const Node *parent) noexcept; 
+    void CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node>& dest_node, const Node *parent) noexcept; 
 
     void split(Node *node) noexcept;  // called during insert(Key key) to split 4-nodes encountered.
 
@@ -249,7 +249,7 @@ template<typename Key, typename Value> class tree234 {
 
     Node *rightRotation(Node *p2node, Node *psibling, Node *parent, int parent_key_index) noexcept;
 
-    // Non recursive in order traversal of tree methods
+    // Non recursive in-order traversal of tree methods
     std::pair<const Node *, int> getSuccessor(const Node *current, int key_index) const noexcept;
     std::pair<const Node *, int> getPredecessor(const Node *current, int key_index) const noexcept;
 
@@ -385,11 +385,12 @@ template<typename Key, typename Value> class tree234 {
 
     class const_iterator : public std::iterator<std::bidirectional_iterator_tag, const value_type> {
 
-       friend class tree234<Key, Value>;   
+         friend class tree234<Key, Value>;   
 
       private:
-        iterator iter; 
-        explicit const_iterator(const tree234<Key, Value>& lhs, int i);
+         iterator iter; 
+ 
+         explicit const_iterator(const tree234<Key, Value>& lhs, int i);
       public:
          
          explicit const_iterator(const tree234<Key, Value>& lhs);
