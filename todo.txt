@@ -1,0 +1,1 @@
+In place of KeyValue, put an anonymous union of { pair<Key. Value>/pair<const Key, value>} in Node and add pair()/constkey_pair()/key()/value() methods to Node instead.
