@@ -43,9 +43,11 @@ template<typename Key, typename Value> class tree234 {
        KeyValue& operator=(KeyValue&& lhs) noexcept; 
 
        constexpr Key&  key()  { return _pair.first; }
+       
        constexpr const Key& key() const { return _constkey_pair.first; }
 
        constexpr Value&  value()  { return _pair.second; }
+       
        constexpr const Value& value() const { return _constkey_pair.second; }
 
        constexpr const std::pair<Key, Value>& pair() const { return _pair; }
@@ -479,26 +481,7 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(K
    keys_values[0].key() = small; 
    keys_values[0].value() = value;
 }
-/*
-template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(const KeyValue& kv, Node *parent_in)  noexcept : totalItems(1), parent(parent_in), children()
-{ 
-   keys_values[0] = kv; 
-}
 
-
-template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(const KeyValue& kv1, const KeyValue& kv2, Node *parent_in)  noexcept : totalItems(2), parent(parent_in), children()
-{ 
-   keys_values[0] = kv1; 
-   keys_values[1] = kv2;
-}
-
-template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(const KeyValue& kv1, const KeyValue& kv2, const KeyValue& kv3, Node *parent_in)  noexcept : totalItems(3), parent(parent_in), children()
-{ 
-   keys_values[0] = kv1; 
-   keys_values[1] = kv2;
-   keys_values[2] = kv3;
-}
-*/
 template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::print(std::ostream& ostr) const noexcept
 {
    ostr << "[";
@@ -1059,42 +1042,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
             break;
    }
 }
-/*
- * post order traversal for debugging purposes
- */
-/*
-template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoPostOrder4Debug(Functor f, const std::unique_ptr<Node>& current) noexcept
-{     
-   
-   if (current == nullptr) {
- return;
-   }
-   switch (current->totalItems) {
-      case 1: // two node
-            DoPostOrder4Debug(f, current->children[0]);
-            DoPostOrder4Debug(f, current->children[1]);
-            f(current->keys_values[0], 0, current, root);
-            break;
-      case 2: // three node
-            DoPostOrder4Debug(f, current->children[0]);
-            DoPostOrder4Debug(f, current->children[1]);
-            f(current->keys_values[0], 0, current, root);
-            DoPostOrder4Debug(f, current->children[2]);
-            f(current->keys_values[1], 1, current, root);
-            break;
-      case 3: // four node
-            DoPostOrder4Debug(f, current->children[0]);
-            DoPostOrder4Debug(f, current->children[1]);
-            f(current->keys_values[0], 0, current, root);
-            DoPostOrder4Debug(f, current->children[2]);
-            f(current->keys_values[1], 1, current, root);
-            DoPostOrder4Debug(f, current->children[3]);
-            f(current->keys_values[2], 2, current, root);
- 
-            break;
-   }
-}
-*/
+
 template<typename Key, typename Value> inline tree234<Key, Value> tree234<Key, Value>::clone() const noexcept
 {
   tree234<Key, Value> tree;
@@ -1109,15 +1057,14 @@ template<typename Key, typename Value> inline tree234<Key, Value> tree234<Key, V
 template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node> &dest_node, const Node *parent) const noexcept
 {
  if (src_node != nullptr) { 
-                              
+
    // copy node
-   switch (src_node->totalItems) {
+   dest_node = std::make_shared<Node>(*src_node,  const_cast<Node*>(parent));             
+
+   switch (src_node->totalItems) { // recurse
 
       case 1: // two node
       {    
-            //--dest_node = std::make_shared<Node>(src_node->keys_values[0],  const_cast<Node*>(parent));
-            dest_node = std::make_shared<Node>(*src_node,  const_cast<Node*>(parent));
-           
             CloneTree(src_node->children[0], dest_node->children[0], dest_node.get()); 
             
             CloneTree(src_node->children[1], dest_node->children[1], dest_node.get()); 
@@ -1127,9 +1074,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const
       } 
       case 2: // three node
       {
-            //--dest_node = std::make_shared<Node>( src_node->keys_values[0], src_node->keys_values[1], const_cast<Node*>(parent)); 
-            dest_node = std::make_shared<Node>(*src_node, const_cast<Node*>(parent)); 
-            
             CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
             
             CloneTree(src_node->children[1], dest_node->children[1], dest_node.get());
@@ -1140,9 +1084,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const
       } 
       case 3: // four node
       {
-            //--dest_node = std::make_shared<Node>( src_node->keys_values[0], src_node->keys_values[1], src_node->keys_values[2], const_cast<Node*>(parent)); 
-            dest_node = std::make_shared<Node>(*src_node, const_cast<Node*>(parent)); 
-            
             CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
             
             CloneTree(src_node->children[1], dest_node->children[1], dest_node.get());
