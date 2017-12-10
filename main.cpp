@@ -79,7 +79,11 @@ int main(int argc, char** argv)
    
   cout << "Printing tree in level order" << endl;
   tree.printlevelOrder(cout);
-   
+
+  cout << "Testing tree::clone()" << endl;
+  
+  tree234<int, int> tree_clone = tree.clone(); 
+
   // Lambda for printing ints in tree234
   // auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
    

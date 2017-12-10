@@ -128,12 +128,16 @@ template<typename Key, typename Value> class tree234 {
 
            explicit Node(Key small, const Value& value, Node *parent=nullptr) noexcept;
 
+           explicit Node(const Node& node, Node *lhs_parent=nullptr) noexcept : keys_values{node.keys_values}, totalItems{node.totalItems}, parent{lhs_parent}
+           {
+           } 
+ /* 
            explicit Node(const KeyValue& key_value, Node *parent=nullptr) noexcept;
 
            explicit Node(const KeyValue&, const KeyValue&, Node *parent=nullptr) noexcept;
            
            explicit Node(const KeyValue&, const KeyValue&,  const KeyValue&, Node *parent=nullptr) noexcept;
-
+*/
            explicit Node(KeyValue&& key_value) noexcept; 
            
            constexpr const Node *getParent() const noexcept;
@@ -233,7 +237,7 @@ template<typename Key, typename Value> class tree234 {
 
     template<typename Functor> void DoPreOrderTraverse(Functor f, const Node *proot) const noexcept;
 
-    void CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node>& dest_node, const Node *parent) noexcept; 
+    void CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node>& dest_node, const Node *parent) const noexcept; 
 
     void split(Node *node) noexcept;  // called during insert(Key key) to split 4-nodes encountered.
 
@@ -475,7 +479,7 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(K
    keys_values[0].key() = small; 
    keys_values[0].value() = value;
 }
-
+/*
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(const KeyValue& kv, Node *parent_in)  noexcept : totalItems(1), parent(parent_in), children()
 { 
    keys_values[0] = kv; 
@@ -494,7 +498,7 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(c
    keys_values[1] = kv2;
    keys_values[2] = kv3;
 }
-
+*/
 template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::print(std::ostream& ostr) const noexcept
 {
    ostr << "[";
@@ -1102,7 +1106,7 @@ template<typename Key, typename Value> inline tree234<Key, Value> tree234<Key, V
 /*
  * pre-order traversal clone.
  */
-template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node> &dest_node, const Node *parent) noexcept
+template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node> &dest_node, const Node *parent) const noexcept
 {
  if (src_node != nullptr) { 
                               
@@ -1111,7 +1115,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const
 
       case 1: // two node
       {    
-            dest_node = std::make_shared<Node>(src_node->keys_values[0],  const_cast<Node*>(parent));
+            //--dest_node = std::make_shared<Node>(src_node->keys_values[0],  const_cast<Node*>(parent));
+            dest_node = std::make_shared<Node>(*src_node,  const_cast<Node*>(parent));
            
             CloneTree(src_node->children[0], dest_node->children[0], dest_node.get()); 
             
@@ -1122,7 +1127,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const
       } 
       case 2: // three node
       {
-            dest_node = std::make_shared<Node>( src_node->keys_values[0], src_node->keys_values[1], const_cast<Node*>(parent)); 
+            //--dest_node = std::make_shared<Node>( src_node->keys_values[0], src_node->keys_values[1], const_cast<Node*>(parent)); 
+            dest_node = std::make_shared<Node>(*src_node, const_cast<Node*>(parent)); 
             
             CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
             
@@ -1134,7 +1140,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const
       } 
       case 3: // four node
       {
-            dest_node = std::make_shared<Node>( src_node->keys_values[0], src_node->keys_values[1], src_node->keys_values[2], const_cast<Node*>(parent)); 
+            //--dest_node = std::make_shared<Node>( src_node->keys_values[0], src_node->keys_values[1], src_node->keys_values[2], const_cast<Node*>(parent)); 
+            dest_node = std::make_shared<Node>(*src_node, const_cast<Node*>(parent)); 
             
             CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
             
