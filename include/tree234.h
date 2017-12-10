@@ -52,6 +52,7 @@ template<typename Key, typename Value> class tree234 {
        constexpr std::pair<Key, Value>& pair() { return _pair; }
                
        constexpr const std::pair<const Key, Value>& constkey_pair() const { return _constkey_pair; }
+
        constexpr       std::pair<const Key, Value>& constkey_pair() { return _constkey_pair; }
 
        friend std::ostream& operator<<(std::ostream& ostr, const KeyValue& key_value)
