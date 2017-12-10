@@ -375,7 +375,7 @@ template<typename Key, typename Value> class tree234 {
 
          constexpr reference dereference() noexcept 
          { 
-             return cursor->keys_values[key_index].constkey_pair(); 
+             return cursor->constkey_pair(key_index); 
          } 
 
 
@@ -393,7 +393,7 @@ template<typename Key, typename Value> class tree234 {
 
          constexpr const std::pair<const Key, Value>& dereference() const noexcept 
          { 
-             return cursor->keys_values[key_index].constkey_pair(); 
+             return cursor->constkey_pair(key_index); 
          }
          
          iterator& operator++() noexcept; 
@@ -465,7 +465,7 @@ template<class Key, class Value> inline bool tree234<Key, Value>::isEmpty() cons
 {
   return root == nullptr ? true : false;
 }
-
+/*
 template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyValue& tree234<Key, Value>::KeyValue::operator=(const KeyValue& lhs) noexcept
 {
   if (this != &lhs) { 
@@ -485,7 +485,7 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
   }
   return *this;
 }
-
+*/
 template<typename Key, typename Value> const int  tree234<Key, Value>::Node::MAX_KEYS = 3; 
 /*
  * Node constructors. Note: While all children are initialized to nullptr, this is not really necessary. 
@@ -497,16 +497,16 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node()
 
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(Key small, const Value& value, Node *parent_in)  noexcept : totalItems(1), parent(parent_in), children()
 { 
-   keys_values[0].key() = small; 
-   keys_values[0].value() = value;
+   key(0) = small; 
+   value(0) = value;
 }
-
+// TODO: Change ctor to not use something else instead of KeyValue
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(const KeyValue& kv, Node *parent_in)  noexcept : totalItems(1), parent(parent_in), children()
 { 
    keys_values[0] = kv; 
 }
 
-
+// TODO: Change ctor to not use something else instead of KeyValue
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(const KeyValue& kv1, const KeyValue& kv2, Node *parent_in)  noexcept : totalItems(2), parent(parent_in), children()
 { 
    keys_values[0] = kv1; 
@@ -884,7 +884,7 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
 
    while (current != nullptr)  {
  
-      f(current->keys_values[key_index].pair());
+      f(current->pair(key_index));
 
       std::pair<const Node *, int> pair = getSuccessor(current, key_index);  
   
@@ -946,7 +946,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
             DoPostOrderTraverse(f, current->children[1].get());
 
-            f(current->keys_values[0].constkey_pair());
+            f(current->constkey_pair(0));
             break;
 
       case 2: // three node
@@ -954,11 +954,11 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
             DoPostOrderTraverse(f, current->children[1].get());
 
-            f(current->keys_values[0].constkey_pair());
+            f(current->constkey_pair(0));
 
             DoPostOrderTraverse(f, current->children[2].get());
 
-            f(current->keys_values[1].constkey_pair());
+            f(current->constkey_pair(1));
             break;
 
       case 3: // four node
@@ -966,15 +966,15 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
             DoPostOrderTraverse(f, current->children[1].get());
 
-            f(current->keys_values[0].constkey_pair());
+            f(current->constkey_pair(0));
 
             DoPostOrderTraverse(f, current->children[2].get());
 
-            f(current->keys_values[1].constkey_pair());
+            f(current->constkey_pair(1));
 
             DoPostOrderTraverse(f, current->children[3].get());
 
-            f(current->keys_values[2].constkey_pair());
+            f(current->constkey_pair(2));
  
             break;
    }
@@ -993,7 +993,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
    switch (current->totalItems) {
 
       case 1: // two node
-            f(current->keys_values[0].constkey_pair());
+            f(current->constkey_pair(0));
 
             DoPreOrderTraverse(f, current->children[0].get());
 
@@ -1002,30 +1002,30 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
             break;
 
       case 2: // three node
-            f(current->keys_values[0].constkey_pair());
+            f(current->constkey_pair(0));
 
             DoPreOrderTraverse(f, current->children[0].get());
 
             DoPreOrderTraverse(f, current->children[1].get());
 
-            f(current->keys_values[1].constkey_pair());
+            f(current->constkey_pair(1));
 
             DoPreOrderTraverse(f, current->children[2].get());
 
             break;
 
       case 3: // four node
-            f(current->keys_values[0].constkey_pair());
+            f(current->constkey_pair(0));
 
             DoPreOrderTraverse(f, current->children[0].get());
 
             DoPreOrderTraverse(f, current->children[1].get());
 
-            f(current->keys_values[1].constkey_pair());
+            f(current->constkey_pair(1));
 
             DoPreOrderTraverse(f, current->children[2].get());
 
-            f(current->keys_values[2].constkey_pair());
+            f(current->constkey_pair(2));
 
             DoPreOrderTraverse(f, current->children[3].get());
 
@@ -1045,7 +1045,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
       case 1: // two node
             DoInOrderTraverse(f, current->children[0].get());
 
-            f(current->keys_values[0].constkey_pair());
+            f(current->constkey_pair(0));
 
             DoInOrderTraverse(f, current->children[1].get());
             break;
@@ -1053,11 +1053,11 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
       case 2: // three node
             DoInOrderTraverse(f, current->children[0].get());
 
-            f(current->keys_values[0].constkey_pair());
+            f(current->constkey_pair(0));
 
             DoInOrderTraverse(f, current->children[1].get());
  
-            f(current->keys_values[1].constkey_pair());
+            f(current->constkey_pair(1));
 
             DoInOrderTraverse(f, current->children[2].get());
             break;
@@ -1065,15 +1065,15 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
       case 3: // four node
             DoInOrderTraverse(f, current->children[0].get());
 
-            f(current->keys_values[0].constkey_pair());
+            f(current->constkey_pair(0));
 
             DoInOrderTraverse(f, current->children[1].get());
  
-            f(current->keys_values[1].constkey_pair());
+            f(current->constkey_pair(1));
 
             DoInOrderTraverse(f, current->children[2].get());
 
-            f(current->keys_values[2].constkey_pair());
+            f(current->constkey_pair(2));
 
             DoInOrderTraverse(f, current->children[3].get());
  
