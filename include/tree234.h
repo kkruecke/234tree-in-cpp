@@ -133,13 +133,7 @@ template<typename Key, typename Value> class tree234 {
            explicit Node(const Node& node, Node *lhs_parent=nullptr) noexcept : keys_values{node.keys_values}, totalItems{node.totalItems}, parent{lhs_parent}
            {
            } 
- /* 
-           explicit Node(const KeyValue& key_value, Node *parent=nullptr) noexcept;
 
-           explicit Node(const KeyValue&, const KeyValue&, Node *parent=nullptr) noexcept;
-           
-           explicit Node(const KeyValue&, const KeyValue&,  const KeyValue&, Node *parent=nullptr) noexcept;
-*/
            explicit Node(KeyValue&& key_value) noexcept; 
            
            constexpr const Node *getParent() const noexcept;
@@ -156,11 +150,12 @@ template<typename Key, typename Value> class tree234 {
 
            constexpr const Key& key(int i ) const { return keys_values[i].key(); } 
 
+           constexpr Value& value(int i ) { return keys_values[i].value(); } 
+
+           constexpr const Value& value(int i ) const { return keys_values[i].value(); } 
+
            int getIndexInParent() const;
 
-           constexpr Value& value(int i ) { return keys_values[i].value(); } 
-           const Value& value(int i ) const { return keys_values[i].value(); } 
-    
            bool findKey(Key key, int& index) const noexcept;
            constexpr Key getKey(int i) const;
            constexpr bool isLeaf() const noexcept; 
