@@ -21,46 +21,7 @@ template<typename Key, typename Value> class tree234;
 class DebugPrinter; 
     
 template<typename Key, typename Value> class tree234 {
-   /* 
-   union KeyValue { // This union is used to hold to two types of pairs: one has a non-const Key, the other a const Key.
-   
-       std::pair<Key, Value>        _pair;  // ...this eliminates constantly casting of const_cast<Key>(p.first) = some_noconst_key;
-       std::pair<const Key, Value>  _constkey_pair;  // but always return this member of the union.
 
-     public:    
-       KeyValue() {} 
-      ~KeyValue() {}
-      
-       KeyValue(Key key, const Value& value) : _pair{key, value} {}
-       
-       KeyValue(const KeyValue& lhs) : _pair{lhs._pair.first, lhs._pair.second} {}
-       
-       KeyValue(Key k, Value&& v) : _pair{k, std::move(v)} {} 
-   
-       KeyValue(KeyValue&& lhs) :  _pair{move(lhs._pair)} {}
-   
-       KeyValue& operator=(const KeyValue& lhs) noexcept;  
-       KeyValue& operator=(KeyValue&& lhs) noexcept; 
-
-       constexpr Key&  key()  { return _pair.first; }
-       constexpr const Key& key() const { return _constkey_pair.first; }
-
-       constexpr Value&  value()  { return _pair.second; }
-       constexpr const Value& value() const { return _constkey_pair.second; }
-
-       constexpr const std::pair<Key, Value>& pair() const { return _pair; }
-       constexpr std::pair<Key, Value>& pair() { return _pair; }
-               
-       constexpr const std::pair<const Key, Value>& constkey_pair() const { return _constkey_pair; }
-       constexpr       std::pair<const Key, Value>& constkey_pair() { return _constkey_pair; }
-
-       friend std::ostream& operator<<(std::ostream& ostr, const KeyValue& key_value)
-       {
-          ostr << "{" << key_value._pair.first << ',' <<  key_value._pair.second <<  "}, ";
-          return ostr;
-       }
-   };
-   */
    class Node { // public nested node class Tree<Key, Value>::Node
      private:  
        friend class tree234<Key, Value>;             
@@ -69,32 +30,33 @@ template<typename Key, typename Value> class tree234 {
 
        enum class NodeType : int { two_node=1, three_node=2, four_node=3 };
 
-       //++
-       union { // anonymous union
-          std::pair<Key, Value>        _pair;  // ...this eliminates constantly casting of const_cast<Key>(p.first) = some_noconst_key;
-          std::pair<const Key, Value>  _constkey_pair;  // but always return this member of the union.
-       };
+       constexpr Key&  key(int i)  { return  pairs[i].first; }
 
-       constexpr Key&  key(int i)  { return  keys_values[i]._pair.first; }
-       constexpr const Key& key(int i) const { return  keys_values[i]._constkey_pair.first; }
+       constexpr const Key& key(int i) const { return  static_cast<const Key&>(pairs[i].first); }
 
-       constexpr Value&  value(int i)  { return keys_values[i]._pair.second; }
-       constexpr const Value& value(int i) const { return  keys_values[i]._constkey_pair.second; }
+       constexpr Value&  value(int i)  { return pairs[i].second; }
 
-       constexpr const std::pair<Key, Value>& pair(int i) const { return  keys_values[i]._pair; }
-       constexpr std::pair<Key, Value>& pair(int i) { return  keys_values[i]._pair; }
-               
+       constexpr const Value& value(int i) const { return  static_cast<const Value&>(pairs[i].second); }
+
+       constexpr const std::pair<Key, Value>& pair(int i) const { return  pairs[i]; }
+
+       constexpr std::pair<Key, Value>& pair(int i) { return  pairs[i]; }
+
+       /*--        
        constexpr const std::pair<const Key, Value>& constkey_pair(int i) const { return  keys_values[i]._constkey_pair; }
-       constexpr       std::pair<const Key, Value>& constkey_pair(int i) { return  keys_values[i]._constkey_pair; }
-       //++ 
 
+       constexpr std::pair<const Key, Value>& constkey_pair(int i) { return  keys_values[i]._constkey_pair; }
+       */        
+      constexpr const std::pair<const Key, Value>& constkey_pair(int i) const { return  {static_cast<const Key>(pairs[i].first), pairs[i].second}; } // C++17 initialization. Does this invoke copy ctor?
+    
+      constexpr std::pair<const Key, Value>& constkey_pair(int i) { return  {static_cast<const Key>(pairs[i].first), pairs[i].second}; } // C++17 initialization. Does this invoke copy ctor?
 
        Node *parent; /* parent is only used for navigation of the tree. It does not own the memory
                            it points to. */
     
        int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
     
-       std::array<KeyValue, 3> keys_values; // This implementation does not have an associated value for the key.
+       std::array<std::pair<Key, Value>, 3> pairs; // This implementation does not have an associated value for the key.
        
        /*
         * For 2-nodes, children[0] is left pointer, children[1] is right pointer.
@@ -114,8 +76,6 @@ template<typename Key, typename Value> class tree234 {
         */
        bool SearchNode(Key key, int& index, int& child_index, const Node *&next) const noexcept;
     
-       void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
-
        int insertKeyValue(Key key, const Value& value) noexcept;
        
        // Remove key, if found, from node, shifting remaining keys_values to fill its gap.
@@ -147,11 +107,17 @@ template<typename Key, typename Value> class tree234 {
 
            explicit Node(Key small, const Value& value, Node *parent=nullptr) noexcept;
 
+           Node(const Node& lhs, Node *lhs_parent=nullptr) noexcept : pairs{lhs.pairs}, parent{lhs_parent}, totalItems{lhs.totalItems} 
+           {
+           }
+
+           /*--
            explicit Node(const KeyValue& key_value, Node *parent=nullptr) noexcept;
 
            explicit Node(const KeyValue&, const KeyValue&, Node *parent=nullptr) noexcept;
            
            explicit Node(const KeyValue&, const KeyValue&,  const KeyValue&, Node *parent=nullptr) noexcept;
+           */
 
            explicit Node(KeyValue&& key_value) noexcept; 
            
@@ -336,7 +302,8 @@ template<typename Key, typename Value> class tree234 {
 
     void insert(Key key, const Value &) noexcept; 
     
-    void insert(const value_type& pair) noexcept { insert(pair.first, pair.second); } 
+    // value_type is std::pair<const Key, Value>
+    void insert(const value_type& pair) noexcept { insert(pair); }  
 
     bool remove(Key key);
 
@@ -1083,39 +1050,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 /*
  * post order traversal for debugging purposes
  */
-/*
-template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoPostOrder4Debug(Functor f, const std::unique_ptr<Node>& current) noexcept
-{     
-   
-   if (current == nullptr) {
- return;
-   }
-   switch (current->totalItems) {
-      case 1: // two node
-            DoPostOrder4Debug(f, current->children[0]);
-            DoPostOrder4Debug(f, current->children[1]);
-            f(current->keys_values[0], 0, current, root);
-            break;
-      case 2: // three node
-            DoPostOrder4Debug(f, current->children[0]);
-            DoPostOrder4Debug(f, current->children[1]);
-            f(current->keys_values[0], 0, current, root);
-            DoPostOrder4Debug(f, current->children[2]);
-            f(current->keys_values[1], 1, current, root);
-            break;
-      case 3: // four node
-            DoPostOrder4Debug(f, current->children[0]);
-            DoPostOrder4Debug(f, current->children[1]);
-            f(current->keys_values[0], 0, current, root);
-            DoPostOrder4Debug(f, current->children[2]);
-            f(current->keys_values[1], 1, current, root);
-            DoPostOrder4Debug(f, current->children[3]);
-            f(current->keys_values[2], 2, current, root);
- 
-            break;
-   }
-}
-*/
+
 template<typename Key, typename Value> inline tree234<Key, Value> tree234<Key, Value>::clone() const noexcept
 {
   tree234<Key, Value> tree;
@@ -1135,8 +1070,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const
    switch (src_node->totalItems) {
 
       case 1: // two node
-      {    
-            dest_node = std::make_shared<Node>(src_node->keys_values[0],  const_cast<Node*>(parent));
+      {     
+            dest_node = std::make_shared<Node>(src_node,  const_cast<Node*>(parent));
            
             CloneTree(src_node->children[0], dest_node->children[0], dest_node.get()); 
             
@@ -1147,7 +1082,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const
       } 
       case 2: // three node
       {
-            dest_node = std::make_shared<Node>( src_node->keys_values[0], src_node->keys_values[1], const_cast<Node*>(parent)); 
+            dest_node = std::make_shared<Node>(src_node, const_cast<Node*>(parent)); 
             
             CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
             
@@ -1159,7 +1094,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const
       } 
       case 3: // four node
       {
-            dest_node = std::make_shared<Node>( src_node->keys_values[0], src_node->keys_values[1], src_node->keys_values[2], const_cast<Node*>(parent)); 
+            dest_node = std::make_shared<Node>(src_node, const_cast<Node*>(parent)); 
             
             CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
             
@@ -1278,18 +1213,18 @@ template<typename Key, typename Value> int  tree234<Key, Value>::Node::insertKey
     return 0;
 }
 
-template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(KeyValue&& key_value, std::shared_ptr<Node>& largerNode) noexcept 
+template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(std::pair<const Key, Value>&& pair, std::shared_ptr<Node>& largerNode) noexcept 
 { 
   // start on right, examine items
   for(auto i = totalItems - 1; i >= 0 ; --i) {
 
-      if (key_value.key() < keys_values[i].key()) { // if key[i] is bigger
+      if (pair.first < key(i)) { // if key(i) is bigger
 
-          keys_values[i + 1] = std::move(keys_values[i]); // shift it right...
+          pairs[i + 1] = std::move(pairs[i]); // shift it right...
 
       } else {
 
-          keys_values[i + 1] = std::move(key_value);
+          pairs[i + 1] = std::move(pair);
 
         ++totalItems;        // increase the total item count
 
@@ -1299,7 +1234,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(Ke
     } 
 
     // key is smaller than all keys_values, so insert it at position 0
-    keys_values[0] = std::move(key_value); 
+    pairs[0] = std::move(pair); 
 
   ++totalItems; // increase the total item count
 
@@ -1478,7 +1413,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
 template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pnode) noexcept
 {
    // 1. create a new node from largest key and adopt pnode's tworight most children
-   std::shared_ptr<Node> largestNode = std::make_shared<Node>(std::move(pnode->keys_values[2]));
+   std::shared_ptr<Node> largestNode = std::make_shared<Node>(std::move(pnode->pairs[2]));
    
    largestNode->connectChild(0, pnode->children[2]); 
    largestNode->connectChild(1, pnode->children[3]);
@@ -1491,7 +1426,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
    
    if (root.get() == pnode) {
    
-     std::shared_ptr<Node> new_root = std::make_shared<Node>(std::move(pnode->keys_values[1])); // Middle value will become new root
+     std::shared_ptr<Node> new_root = std::make_shared<Node>(std::move(pnode->pairs[1])); // Middle value will become new root
      
      new_root->connectChild(0, root); 
      new_root->connectChild(1, largestNode); 
