@@ -1,1 +1,3 @@
-In place of KeyValue, put an anonymous union of { pair<Key. Value>/pair<const Key, value>} in Node and add pair()/constkey_pair()/key()/value() methods to Node instead.
+In ntree234.h, change xxx_pair().apir() to be xxx_pair(i)/pair(i), same thing use for key(i) and value(i) instead of key() and value().
+
+
