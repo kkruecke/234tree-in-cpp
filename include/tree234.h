@@ -1205,7 +1205,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(Ke
   // start on right, examine items
   for(auto i = totalItems - 1; i >= 0 ; --i) {
 
-      if (key_value.key() < keys_values[i].key()) { // if key[i] is bigger
+      if (key_value.key() < key(i)) { // if key[i] is bigger
 
           keys_values[i + 1] = std::move(keys_values[i]); // shift it right...
 
@@ -1444,7 +1444,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
          
          for (; index < root->getTotalItems(); ++index) {
 
-             if (root->keys_values[index].key() == key ) {
+             if (root->key(index) == key ) {
 
                 // Remove key from root and puts its in-order successor (if it exists) into its place. 
                 root->removeKeyValue(index); 
@@ -1585,7 +1585,7 @@ int child_index = 0;
           // Comments:
           // pfound_node is never a 2-node since remove( Key key, Node *) first converts any 2-nodes to 3- or 4-nodes before calling
          
-          if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->keys_values[key_index].key() != key) { // Did key move?
+          if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->key(key_index) != key) { // Did key move?
 
               // Re-find the node and the key_index of key
               DoSearch(key, pfound_node, key_index);
@@ -2032,7 +2032,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
       */
       const Node *parent = pnode->parent;
       
-      Key current_key = pnode->keys_values[index].key();
+      Key current_key = pnode->key(index);
 
       // Ascend the parent pointer chain as long as pnode is the left most child of its parent.
       for(; pnode == parent->children[0].get();  parent = parent->parent)  {
@@ -2048,7 +2048,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
       // The predecessor will be the first key, starting with the right most key, that is less than current_key. 
       for (int pred_index = parent->getTotalItems() - 1; pred_index >= 0; --pred_index) {
 
-           if (current_key > parent->keys_values[pred_index].key()) {
+           if (current_key > parent->key(pred_index)) {
 
                return {parent, pred_index};
            } 
@@ -2173,7 +2173,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
   
   std::pair<const Node *, int> pair = tree.getPredecessor(cursor, key_index);
 
-  if (pair.first != nullptr) { // nullptr implies there is no predecessor cursor->keys_values[key_index].key().
+  if (pair.first != nullptr) { // nullptr implies there is no predecessor cursor->key(key_index).
       
       cursor = current = pair.first; 
       key_index = pair.second;
@@ -2388,6 +2388,8 @@ template<class Key, class Value> bool tree234<Key, Value>::isBalanced(const Node
 // Visits each Node in level order, testing whether it is balanced. Returns false if any node is not balanced.
 template<class Key, class Value> bool tree234<Key, Value>::isBalanced() const noexcept
 {
+    if (root ==nullptr) return true;
+    
     std::queue<const Node *> nodes;
 
     nodes.push(root.get());
