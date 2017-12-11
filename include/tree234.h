@@ -477,8 +477,6 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node()
 
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(Key small, const Value& value_in, Node *parent_in)  noexcept : totalItems(1), parent(parent_in), children()
 { 
-//   keys_values[0].key() = small; 
-//   keys_values[0].value() = value;
    key(0) = small; 
    value(0) = value_in;
 }
@@ -1128,17 +1126,17 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node), and
  * it sets child_index such that next->parent->children[child_index] == next.
  */
-template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::SearchNode(Key key, int& index, int& child_index, const Node *&next) const noexcept 
+template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::SearchNode(Key lhs_key, int& index, int& child_index, const Node *&next) const noexcept 
 {
   for(auto i = 0; i < totalItems; ++i) {
 
-     if (key < keys_values[i].key()) {
+     if (lhs_key < key(i)) {
             
          next = children[i].get(); 
          child_index = i;  // index is such that: this->children[index] == next
          return false;
 
-     } else if (keys_values[i].key() == key) {
+     } else if (key(i) == lhs_key) {
 
          index = i;
          return true;
@@ -1177,27 +1175,27 @@ template<typename Key, typename Value> inline std::shared_ptr<typename tree234<K
  * of inserted key.
  */
 
-template<typename Key, typename Value> int  tree234<Key, Value>::Node::insertKeyValue(Key key, const Value& value)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
+template<typename Key, typename Value> int  tree234<Key, Value>::Node::insertKeyValue(Key lhs_key, const Value& lhs_value)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
 { 
   // start on right, examine items
   for(auto i = totalItems - 1; i >= 0 ; --i) {
 
-      if (key < keys_values[i].key()) { // if key[i] is bigger
+      if (lhs_key < key(i)) { // if key[i] is bigger
 
           keys_values[i + 1] = std::move(keys_values[i]); // shift it right
 
       } else {
 
-          keys_values[i + 1].key() = key; // insert new item
-          keys_values[i + 1].value() = value;  
+          key(i + 1) = lhs_key; // insert new item
+          value(i + 1) = lhs_value;  
         ++totalItems;        // increase the total item count
           return i + 1;      // return index of inserted key.
       } 
     } 
 
     // key is smaller than all keys_values, so insert it at position 0
-    keys_values[0].key() = key;  
-    keys_values[0].value() = value; 
+    key(0) = lhs_key;  
+    value(0) = lhs_value; 
   ++totalItems; // increase the total item count
     return 0;
 }
@@ -1337,10 +1335,8 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
 
 /*
  * Insertion based on pseudo code at:
-
  1. http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
  2. http://www.serc.iisc.ernet.in/~viren/Courses/2010/SE286/Lecture16.pdf 
-
  * 4-nodes as the are encountered are split into two 2-nodes, one holding the smallest key, the other the largest. The middle key is inserted into the parent
  * The two left most children of the former 4-node are assigned to the smaller 2-node, and the two right most children, likewise, are assigned to the larger 
  * two node. The parent of the former 4-node adopts the two new 2-nodes. Note: the smaller 2-node is simply the original 4-node downsized to a 2-node.
@@ -1643,7 +1639,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
        // node == parent->children[parent->totalItems], the last child. 
        //
 
-       if (node->keys_values[0].key() < parent->keys_values[node2_index].key() ) { 
+       if (node->key(0) < parent->key(node2_index) ) { 
             break;                               
        } 
    }
@@ -2032,7 +2028,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
             pnode->children[child_index] == prior_node;
       
       Determine which key is the predecessor. If child_index is one, the middle child, then the predecessor is pnode->keys_values[0]. If child_index is two, then
-      the predecessor is pnode->keys_values[1].key(). Thus, the predecessor is the key at child_index - 1.
+      the predecessor is pnode->key(1). Thus, the predecessor is the key at child_index - 1.
       */
       const Node *parent = pnode->parent;
       
