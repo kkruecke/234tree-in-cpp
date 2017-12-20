@@ -1122,6 +1122,8 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
   }
 }
 /*
+ * Returns true if key is found in node, and set next to nullptr.
+ * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node). 
  */
 template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::SearchNode(Key lhs_key, const Node *&next) const noexcept 
 {
@@ -1134,6 +1136,7 @@ template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::Se
 
      } else if (key(i) == lhs_key) {
 
+         next = nullptr;
          return true;
      }
   }
