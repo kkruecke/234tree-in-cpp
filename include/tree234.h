@@ -96,7 +96,7 @@ template<typename Key, typename Value> class tree234 {
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
        bool SearchNode(Key key, int& index, int& child_index, const Node *&next) const noexcept;
-       bool SearchNode(Key key, const Node *&next) const noexcept;
+       std::pair<bool, const Node *> SearchNode(Key key) const noexcept;
     
        void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
 
@@ -549,6 +549,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
    for (auto& x: il) { // simply call insert(x)
          
        insert(x.first, x.second);
+  
    }
 }
 
@@ -1125,25 +1126,25 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
  * Returns true if key is found in node, and set next to nullptr.
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node). 
  */
-template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::SearchNode(Key lhs_key, const Node *&next) const noexcept 
+template<class Key, class Value> inline std::pair<bool, const typename tree234<Key, Value>::Node *> tree234<Key, Value>::Node::SearchNode(Key lhs_key) const noexcept 
 {
   for(auto i = 0; i < totalItems; ++i) {
 
      if (lhs_key < key(i)) {
             
-         next = children[i].get(); 
-         return false;
+         //next = children[i].get(); 
+         return {false, children[i].get() };
 
      } else if (key(i) == lhs_key) {
 
-         next = nullptr;
-         return true;
+         //next = nullptr;
+         return {true, nullptr};
      }
   }
 
   // It must be greater than the last key (because it is not less than or equal to it).
-  next = children[totalItems].get(); 
-  return false;
+  //next = children[totalItems].get(); 
+  return {false, children[totalItems].get()};
 }
 /*
  * Returns true if key is found in node, and it set index so that this->keys_values[index] == key.
@@ -1326,15 +1327,22 @@ template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key
 {
    // make sure tree has at least one element    
    if (root == nullptr) return false;
-
-   else {
-       int index;  
-       const Node *location;
-       return DoSearch(key, location, index);
+      
+   for(const Node *current = root.get(); current != nullptr;)  { 
+       
+       auto pair = current->SearchNode(key);
+       
+       if (pair.first) return true;
+       
+       current = pair.second;
    }
-}   
-
-template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key key, const Node *&location, int& index) noexcept // ok
+   
+   return false;
+}
+/*
+ * TODO: DoSearch ignores its third parameter completely--that is base coding.
+ */
+template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key key, const Node *&location, int& index) noexcept // TODO: See what  code calls this method, and maybe change it based on its client's needs and better C++17 compatibility.
 {
   if (!root) { // <--> if (root.get() == nullptr)
 
@@ -1343,8 +1351,9 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
 
   const Node *next;
   const Node *current = root.get();
+  int child_index;
   
-  for(; !current->SearchNode(key, next); current = next) {  
+  for(; !current->SearchNode(key, index, child_index, next); current = next) {  
 
       if (current->isLeaf()) { 
 
@@ -1364,6 +1373,7 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
  * The two left most children of the former 4-node are assigned to the smaller 2-node, and the two right most children, likewise, are assigned to the larger 
  * two node. The parent of the former 4-node adopts the two new 2-nodes. Note: the smaller 2-node is simply the original 4-node downsized to a 2-node.
  */
+/*
 template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept 
 { 
    if (root == nullptr) {
@@ -1388,7 +1398,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
 
        const Node *next;
 
-       if (current->SearchNode(key, next) ) {// return if key is already in tree
+       if (auto [rc, next] = current->SearchNode(key); rc ) {// return if key is already in tree
              
           return;
 
@@ -1399,6 +1409,50 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
 
        // set current to next   
        current = next;  
+    }
+ 
+    // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
+    const_cast<Node *>(current)->insertKeyValue(key, value); 
+    ++tree_size;
+}
+*/
+
+template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept 
+{ 
+   if (root == nullptr) {
+           
+      root = std::make_shared<Node>(key, value); 
+      ++tree_size;
+      return; 
+   } 
+
+   const Node *current = root.get();
+
+   // Descend until a leaf node is found, splitting four nodes as they are encountered 
+   int child_index;
+
+    while(true) {
+      
+       if(current->isFourNode()) {// if four node encountered, split it, moving a value up to parent.
+
+          split(const_cast<Node *>(current)); // split needs to modify the tree.
+          current = current->parent;
+       } 
+
+       //const Node *next;
+       std::pair<bool, const Node *> pair;
+
+       if (pair = current->SearchNode(key); pair.first) {// return if key is already in tree
+             
+          return;
+
+       } else if (current->isLeaf()) {
+
+          break;
+       } 
+
+       // set current to next   
+       current = pair.second;  
     }
  
     // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
