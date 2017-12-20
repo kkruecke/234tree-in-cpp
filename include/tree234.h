@@ -96,6 +96,7 @@ template<typename Key, typename Value> class tree234 {
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
        bool SearchNode(Key key, int& index, int& child_index, const Node *&next) const noexcept;
+       bool SearchNode(Key key, const Node *&next) const noexcept;
     
        void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
 
@@ -1120,7 +1121,27 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
        children[childIndex]->parent = this; 
   }
 }
+/*
+ */
+template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::SearchNode(Key lhs_key, const Node *&next) const noexcept 
+{
+  for(auto i = 0; i < totalItems; ++i) {
 
+     if (lhs_key < key(i)) {
+            
+         next = children[i].get(); 
+         return false;
+
+     } else if (key(i) == lhs_key) {
+
+         return true;
+     }
+  }
+
+  // It must be greater than the last key (because it is not less than or equal to it).
+  next = children[totalItems].get(); 
+  return false;
+}
 /*
  * Returns true if key is found in node, and it set index so that this->keys_values[index] == key.
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node), and
@@ -1318,10 +1339,9 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
   }
 
   const Node *next;
-  int child_index;
   const Node *current = root.get();
   
-  for(; !current->SearchNode(key, index, child_index, next); current = next) {  
+  for(; !current->SearchNode(key, next); current = next) {  
 
       if (current->isLeaf()) { 
 
@@ -1364,9 +1384,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
        } 
 
        const Node *next;
-       int index;
 
-       if (current->SearchNode(key, index, child_index, next) ) {// return if key is already in tree
+       if (current->SearchNode(key, next) ) {// return if key is already in tree
              
           return;
 
