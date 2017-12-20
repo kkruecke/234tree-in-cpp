@@ -1,0 +1,1 @@
+include/n tree234.h has two versions of SearchNode, but with it, the code now seems to go into an infinite loop. These new SearchNodes were improvements. Find bug through introspection and fix.
