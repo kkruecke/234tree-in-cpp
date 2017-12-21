@@ -163,7 +163,6 @@ template<typename Key, typename Value> class tree234 {
            int getIndexInParent() const;
 
            bool findKey(Key key, int& index) const noexcept;
-           constexpr Key getKey(int i) const;
            constexpr bool isLeaf() const noexcept; 
            constexpr bool isTwoNode() const noexcept;
            constexpr bool isThreeNode() const noexcept;
@@ -719,7 +718,7 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::Node::pr
 
   for(auto i = 0; i < getTotalItems(); ++i) {
 
-      ostr << getKey(i);
+      ostr << key(i);
 
       if (i < getTotalItems() - 1)       {
 
@@ -733,16 +732,6 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::Node::pr
 template<typename Key, typename Value> inline constexpr int tree234<Key, Value>::Node::getTotalItems() const noexcept
 {
    return totalItems; 
-}
-
-template<typename Key, typename Value> inline constexpr Key tree234<Key, Value>::Node::getKey(int i) const 
-{
-    if (0 <= i && i < getTotalItems()) {
-        
-        return key(i);
-    }
-    
-    throw std::range_error{"key of Node not in range"};     
 }
 
 template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::findKey(Key key, int& index) const noexcept
