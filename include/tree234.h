@@ -95,7 +95,8 @@ template<typename Key, typename Value> class tree234 {
         * Returns true if key is found in node and sets index so pNode->keys_values[index] == key
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
-       bool SearchNode(Key key, int& index, const Node *&next) const noexcept;
+       //bool SearchNode(Key key, int& index, const Node *&next) const noexcept;
+       std::pair<bool, const Node *> SearchNode(Key key, int& index) const noexcept;
        std::pair<bool, const Node *> SearchNode(Key key) const noexcept;
     
        void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
@@ -1150,25 +1151,23 @@ template<class Key, class Value> inline std::pair<bool, const typename tree234<K
  * Returns true if key is found in node, and it set index so that this->keys_values[index] == key.
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node)
  */
-template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::SearchNode(Key lhs_key, int& index, const Node *&next) const noexcept 
+template<class Key, class Value> inline std::pair<bool, const typename tree234<Key, Value>::Node *> tree234<Key, Value>::Node::SearchNode(Key lhs_key, int& index) const noexcept 
 {
   for(auto i = 0; i < totalItems; ++i) {
 
      if (lhs_key < key(i)) {
             
-         next = children[i].get(); 
-         return false;
+         return {false, children[i].get()};
 
      } else if (key(i) == lhs_key) {
 
          index = i;
-         return true;
+         return {true, this};
      }
   }
 
   // It must be greater than the last key (because it is not less than or equal to it).
-  next = children[totalItems].get(); 
-  return false;
+  return {false, children[totalItems].get()}; 
 }
 /*
  * Require: childIndex is within the range for the type of node.
@@ -1325,17 +1324,18 @@ template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key
       
    for(const Node *current = root.get(); current != nullptr;)  { 
        
-       auto pair = current->SearchNode(key);
+       auto [bool_found, next] = current->SearchNode(key);
        
-       if (pair.first) return true;
+       if (bool_found) return true;
        
-       current = pair.second;
+       current = next;
+
    }
    
    return false;
 }
 /*
- * TODO: DoSearch ignores its third parameter completely--that is base coding.
+ * 
  */
 template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key key, const Node *&location, int& index) noexcept // TODO: See what  code calls this method, and maybe change it based on its client's needs and better C++17 compatibility.
 {
@@ -1344,19 +1344,22 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
      return false;
   }
 
-  const Node *next;
-  const Node *current = root.get();
-  
-  for(; !current->SearchNode(key, index, next); current = next) {  
+  for(const Node *current = root.get(); current != nullptr;) {  
 
-      if (current->isLeaf()) { 
+      if (auto [bool_found, pnode] = current->SearchNode(key, index); bool_found) {
 
-          return false; // wasn't found
+          location = pnode;
+          return true; 
+
+      }  else if (current->isLeaf()) { 
+          
+          return false; // wasn't found and we 
+
+      }  else {
+
+         current = pnode;
       } 
   }
-
-  location = current;
-  return true;
 }
 
 /*
@@ -1598,7 +1601,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
        const Node *next = nullptr;
 
-       if (current->SearchNode(key, key_index, next)) { // ...search for item in current node. 
+       if (auto [bool_found, pnode] = current->SearchNode(key, key_index); bool_found) { // ...search for item in current node. 
 
            pfound_node = const_cast<Node *>(current); // We found it.  
 
@@ -1610,10 +1613,11 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
        } else if (current->isLeaf()) { // Are we done? 
 
            return false; 
-       } 
 
-       current = next; 
-       continue;
+       } else { 
+
+          current = pnode; 
+       }
   } 
 
   if (!pfound_node->isLeaf()) { 
