@@ -1367,6 +1367,7 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
  * The two left most children of the former 4-node are assigned to the smaller 2-node, and the two right most children, likewise, are assigned to the larger 
  * two node. The parent of the former 4-node adopts the two new 2-nodes. Note: the smaller 2-node is simply the original 4-node downsized to a 2-node.
  */
+/*
 template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept 
 { 
    if (root == nullptr) {
@@ -1379,7 +1380,9 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
    const Node *current = root.get();
 
    // Descend until a leaf node is found, splitting four nodes as they are encountered 
-   while(true) {
+   int child_index;
+
+    while(true) {
       
        if(current->isFourNode()) {// if four node encountered, split it, moving a value up to parent.
 
@@ -1387,24 +1390,68 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
           current = current->parent;
        } 
 
-       if (auto [bool_found, next] = current->SearchNode(key); bool_found) {// return if key is already in tree
+       const Node *next;
+
+       if (auto [rc, next] = current->SearchNode(key); rc ) {// return if key is already in tree
              
           return;
 
        } else if (current->isLeaf()) {
 
           break;
+       } 
 
-       } else {
-
-          // set current to next   
-          current = next;  
-       }
-   }
+       // set current to next   
+       current = next;  
+    }
  
-   // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
-   const_cast<Node *>(current)->insertKeyValue(key, value); 
-   ++tree_size;
+    // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
+    const_cast<Node *>(current)->insertKeyValue(key, value); 
+    ++tree_size;
+}
+*/
+
+template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept 
+{ 
+   if (root == nullptr) {
+           
+      root = std::make_shared<Node>(key, value); 
+      ++tree_size;
+      return; 
+   } 
+
+   const Node *current = root.get();
+
+   // Descend until a leaf node is found, splitting four nodes as they are encountered 
+   int child_index;
+
+    while(true) {
+      
+       if(current->isFourNode()) {// if four node encountered, split it, moving a value up to parent.
+
+          split(const_cast<Node *>(current)); // split needs to modify the tree.
+          current = current->parent;
+       } 
+
+       //const Node *next;
+       std::pair<bool, const Node *> pair;
+
+       if (pair = current->SearchNode(key); pair.first) {// return if key is already in tree
+             
+          return;
+
+       } else if (current->isLeaf()) {
+
+          break;
+       } 
+
+       // set current to next   
+       current = pair.second;  
+    }
+ 
+    // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
+    const_cast<Node *>(current)->insertKeyValue(key, value); 
+    ++tree_size;
 }
 /* 
  *  Split pseudocode: 
@@ -1517,69 +1564,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
  * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  New untested prospective code for remove(Key key, Node *). This is the remove code for the case when the root is not a leaf node.
  */
-/*++
-template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) 
-{
-   const Node *pfound_node = nullptr; 
-   int key_index;
-
-   // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
-   // We continue down the tree. 
-   for(current = root.get(); current != nullptr; ) {
-
-       // We know the root is not a leaf. That was handled in calling code. So we don't convert a 2-node root.
-       if (current != root.get() && current->isTwoNode()) { 
-
-           // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
-           current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node 
-       } 
-
-       //--const Node *next = nullptr;
-
-       //--if (current->SearchNode(key, key_index, next)) { // ...search for item in current node. 
-       
-       if (auto pair = current->SearchNode(key, key_index, next); pair.first) { // ...search for item in current node. 
-
-           pfound_node = const_cast<Node *>(current); // We found it.  
-
-           auto [successor, not_used] = getRemoveSuccessor(key, pfound_node, key_index);
-           current = successor;
-           break;
-
-       } else if (current->isLeaf()) { // Are we done? 
-
-           return false; 
-
-       } else {
-
-          current = next; 
-       }
-  } 
-
-  if (!pfound_node->isLeaf()) { 
-
-      // We have the item found in pfound_node->keys_values[key_index], which is an internal node. We have current->keys_values[0] as in order successor leaf node, and we know
-      // current it is not a leaf node.  So we "swap" the in order successor and the key at pfound_node->keys_values[key_index]. 
-    
-      // Note: We simply delete the former in-order
-      // successor key. 
-      const_cast<Node *>(pfound_node)->keys_values[key_index] = current->keys_values[0]; 
-    
-      const_cast<Node *>(current)->removeKeyValue(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr. 
-
-   } else { 
-
-      // pfound_node is a leaf that has already been converted, if necessary. We therefore do not need to free the node, and we can
-      // simply call removeKeyValue(key_index).
-
-      const_cast<Node *>(pfound_node)->removeKeyValue(key_index); 
-   }
-
-   --tree_size;
-   return true;
-}
-++*/
-//--Prospective
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) 
 {
    const Node *pfound_node = nullptr; 
@@ -1638,7 +1622,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
    --tree_size;
    return true;
 }
-//--
 /*
  * Returns the in-order successor of pfound_node->keys(key_index). If pfound_node is an internal node, the in order successor is the left-most leaf node in the subtree rooted
  * at found_node->children[key_index + 1]. If pfound_node is a leaf, the successor is within the leaf itself.
