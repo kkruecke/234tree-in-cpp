@@ -1,0 +1,7 @@
+Change code so that it does not return values using reference parameters anywhere. To this end...:
+
+1. RVO
+2. Undeerstand std::tuple
+3. std::move()
+
+I will need to redesign DoSearch() and all methods that used DoSearch(). DoSearch() is called by the class iterator. Re-examine the iterator class? Can I make it simplier?
