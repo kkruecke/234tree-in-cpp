@@ -5,3 +5,5 @@ Change code so that it does not return values using reference parameters anywher
 3. std::move()
 
 I will need to redesign DoSearch() and all methods that used DoSearch(). DoSearch() is called by the class iterator. Re-examine the iterator class? Can I make it simplier?
+DoSearch() is only called by getRemoveSuccessor(). They don't seem a whole lot different. They both, however, use reference paramaters to return values. I want to eliminate this and use either a pair, a struct or a tuple to 
+return the value using RVO.
