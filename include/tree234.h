@@ -95,7 +95,7 @@ template<typename Key, typename Value> class tree234 {
         * Returns true if key is found in node and sets index so pNode->keys_values[index] == key
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
-       bool SearchNode(Key key, int& index, int& child_index, const Node *&next) const noexcept;
+       bool SearchNode(Key key, int& index, const Node *&next) const noexcept;
        std::pair<bool, const Node *> SearchNode(Key key) const noexcept;
     
        void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
@@ -1123,8 +1123,8 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
   }
 }
 /*
- * Returns true if key is found in node, and set next to nullptr.
- * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node). 
+ * Returns {true, *this} if key is found in node.
+ * Returns {false, point to next child with which to continue the descent search downward (toward a leaf node)} if key not found. 
  */
 template<class Key, class Value> inline std::pair<bool, const typename tree234<Key, Value>::Node *> tree234<Key, Value>::Node::SearchNode(Key lhs_key) const noexcept 
 {
@@ -1138,7 +1138,7 @@ template<class Key, class Value> inline std::pair<bool, const typename tree234<K
      } else if (key(i) == lhs_key) {
 
          //next = nullptr;
-         return {true, nullptr};
+         return {true, this};
      }
   }
 
@@ -1151,6 +1151,7 @@ template<class Key, class Value> inline std::pair<bool, const typename tree234<K
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node), and
  * it sets child_index such that next->parent->children[child_index] == next.
  */
+/*
 template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::SearchNode(Key lhs_key, int& index, int& child_index, const Node *&next) const noexcept 
 {
   for(auto i = 0; i < totalItems; ++i) {
@@ -1174,7 +1175,27 @@ template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::Se
 
   return false;
 }
+*/
+template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::SearchNode(Key lhs_key, int& index, const Node *&next) const noexcept 
+{
+  for(auto i = 0; i < totalItems; ++i) {
 
+     if (lhs_key < key(i)) {
+            
+         next = children[i].get(); 
+         return false;
+
+     } else if (key(i) == lhs_key) {
+
+         index = i;
+         return true;
+     }
+  }
+
+  // It must be greater than the last key (because it is not less than or equal to it).
+  next = children[totalItems].get(); 
+  return false;
+}
 /*
  * Require: childIndex is within the range for the type of node.
  * Returns: child pointer.
@@ -1351,9 +1372,8 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
 
   const Node *next;
   const Node *current = root.get();
-  int child_index;
   
-  for(; !current->SearchNode(key, index, child_index, next); current = next) {  
+  for(; !current->SearchNode(key, index, next); current = next) {  
 
       if (current->isLeaf()) { 
 
@@ -1574,7 +1594,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 {
    const Node *pfound_node = nullptr; 
    int key_index;
-   int child_index;
 
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
    // We continue down the tree. 
@@ -1589,7 +1608,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
        const Node *next = nullptr;
 
-       if (current->SearchNode(key, key_index, child_index, next)) { // ...search for item in current node. 
+       if (current->SearchNode(key, key_index, next)) { // ...search for item in current node. 
 
            pfound_node = const_cast<Node *>(current); // We found it.  
 
