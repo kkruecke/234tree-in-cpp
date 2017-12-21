@@ -95,7 +95,6 @@ template<typename Key, typename Value> class tree234 {
         * Returns true if key is found in node and sets index so pNode->keys_values[index] == key
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
-       //bool SearchNode(Key key, int& index, const Node *&next) const noexcept;
        std::pair<bool, const Node *> SearchNode(Key key, int& index) const noexcept;
        std::pair<bool, const Node *> SearchNode(Key key) const noexcept;
     
@@ -1326,7 +1325,7 @@ template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key
 /*
  * 
  */
-template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key key, const Node *&location, int& index) noexcept // TODO: See what  code calls this method, and maybe change it based on its client's needs and better C++17 compatibility.
+template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key key, const Node *&location, int& index) noexcept
 {
   if (!root) { // <--> if (root.get() == nullptr)
 
@@ -1509,69 +1508,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
  * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  New untested prospective code for remove(Key key, Node *). This is the remove code for the case when the root is not a leaf node.
  */
-/*++
-template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) 
-{
-   const Node *pfound_node = nullptr; 
-   int key_index;
-
-   // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
-   // We continue down the tree. 
-   for(current = root.get(); current != nullptr; ) {
-
-       // We know the root is not a leaf. That was handled in calling code. So we don't convert a 2-node root.
-       if (current != root.get() && current->isTwoNode()) { 
-
-           // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
-           current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node 
-       } 
-
-       //--const Node *next = nullptr;
-
-       //--if (current->SearchNode(key, key_index, next)) { // ...search for item in current node. 
-       
-       if (auto pair = current->SearchNode(key, key_index, next); pair.first) { // ...search for item in current node. 
-
-           pfound_node = const_cast<Node *>(current); // We found it.  
-
-           auto [successor, not_used] = getRemoveSuccessor(key, pfound_node, key_index);
-           current = successor;
-           break;
-
-       } else if (current->isLeaf()) { // Are we done? 
-
-           return false; 
-
-       } else {
-
-          current = next; 
-       }
-  } 
-
-  if (!pfound_node->isLeaf()) { 
-
-      // We have the item found in pfound_node->keys_values[key_index], which is an internal node. We have current->keys_values[0] as in order successor leaf node, and we know
-      // current it is not a leaf node.  So we "swap" the in order successor and the key at pfound_node->keys_values[key_index]. 
-    
-      // Note: We simply delete the former in-order
-      // successor key. 
-      const_cast<Node *>(pfound_node)->keys_values[key_index] = current->keys_values[0]; 
-    
-      const_cast<Node *>(current)->removeKeyValue(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr. 
-
-   } else { 
-
-      // pfound_node is a leaf that has already been converted, if necessary. We therefore do not need to free the node, and we can
-      // simply call removeKeyValue(key_index).
-
-      const_cast<Node *>(pfound_node)->removeKeyValue(key_index); 
-   }
-
-   --tree_size;
-   return true;
-}
-++*/
-//--Prospective
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) 
 {
    const Node *pfound_node = nullptr; 
@@ -1631,12 +1567,11 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
    --tree_size;
    return true;
 }
-//--
 /*
- * Returns the in-order successor of pfound_node->keys(key_index). If pfound_node is an internal node, the in order successor is the left-most leaf node in the subtree rooted
+ * 1. Returns the in-order successor of pfound_node->keys(key_index). If pfound_node is an internal node, the in order successor is the left-most leaf node in the subtree rooted
  * at found_node->children[key_index + 1]. If pfound_node is a leaf, the successor is within the leaf itself.
  *
- * It converts any 2-nodes encountered into 3-nodes, and re-searches for the key if it was moved during the 2-node conversion and re-sets pfound_node and key_index, which were
+ * 2. Converts all 2-nodes encountered into 3-nodes, and re-searches for the key if it was moved during the 2-node conversion and re-sets pfound_node and key_index, which were
  * are reference paramters.
  * 
  */
@@ -1662,14 +1597,14 @@ int child_index = 0;
 
           // Check if key moved as a result of conversion.
           // Comments:
-          // pfound_node is never a 2-node since remove( Key key, Node *) first converts any 2-nodes to 3- or 4-nodes before calling
+          // pfound_node is never a 2-node since 'remove( Key key, Node *)' first converts any 2-nodes to 3- or 4-nodes before calling
          
           if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->key(key_index) != key) { // Did key move?
 
               // Re-find the node and the key_index of key
-              DoSearch(key, pfound_node, key_index);
+              DoSearch(key, pfound_node, key_index);  // <--- TODO: DoSearch() always starts searching from the root node. Is that what I want here?
 
-              return getRemoveSuccessor(key, pfound_node, key_index);
+              return getRemoveSuccessor(key, pfound_node, key_index); 
           } 
      } 
 

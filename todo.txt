@@ -1,9 +1,11 @@
-Change code so that it does not return values using reference parameters anywhere. To this end...:
+Change code so that it does not return values using reference parameters anywhere in code. Methods affected:
 
-1. RVO
-2. Undeerstand std::tuple
-3. std::move()
+1. SearchNode(Key key, int index& index);
+2. DoSearch(.....)
+3. getRemoveSuccessor(...) which calls DoSearch()
 
 I will need to redesign DoSearch() and all methods that used DoSearch(). DoSearch() is called by the class iterator. Re-examine the iterator class? Can I make it simplier?
 DoSearch() is only called by getRemoveSuccessor(). They don't seem a whole lot different. They both, however, use reference paramaters to return values. I want to eliminate this and use either a pair, a struct or a tuple to 
 return the value using RVO.
+
+Start with the TODO in code. This will require understanding what the code is doing by drawing illustrations, relearning what it is doing, etc.
