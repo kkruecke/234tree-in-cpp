@@ -179,7 +179,7 @@ template<typename Key, typename Value> class tree234 {
            }
 
            // Iterator for range-for loops 
-           class iterator : public std::iterator<std::forward_iterator_tag, KeyValue> {
+           class iterator : public std::iterator<std::forward_iterator_tag, KeyValue> {// TODO: Test with sample code
 
                   const Node& node;
                   int index;
@@ -220,7 +220,7 @@ template<typename Key, typename Value> class tree234 {
                   }  
            };
         
-           class const_iterator : public std::iterator<std::forward_iterator_tag, const KeyValue>, private iterator {
+           class const_iterator : public std::iterator<std::forward_iterator_tag, const KeyValue>, private iterator {// TODO: Test with sample code
 
                   const Node& node;
                   int index;
