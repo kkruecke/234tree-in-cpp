@@ -1568,7 +1568,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
    return true;
 }
 /*
- * 1. Returns the in-order successor of pfound_node->keys(key_index). If pfound_node is an internal node, the in order successor is the left-most leaf node in the subtree rooted
+ * 1. Returns the in-order successor of pfound_node->key(key_index). If pfound_node is an internal node, the in order successor is the left-most leaf node in the subtree rooted
  * at found_node->children[key_index + 1]. If pfound_node is a leaf, the successor is within the leaf itself.
  *
  * 2. Converts all 2-nodes encountered into 3-nodes, and re-searches for the key if it was moved during the 2-node conversion and re-sets pfound_node and key_index, which were
@@ -1608,7 +1608,7 @@ int child_index = 0;
           } 
      } 
 
-     if (current->isLeaf()) { // At in order successor?
+     if (current->isLeaf()) { // At in-order successor?
 
          break;  
      } 

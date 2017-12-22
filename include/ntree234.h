@@ -95,7 +95,6 @@ template<typename Key, typename Value> class tree234 {
         * Returns true if key is found in node and sets index so pNode->keys_values[index] == key
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
-       //--std::pair<bool, const Node *> SearchNode(Key key, int& index) const noexcept;
        std::tuple<bool, const Node *, int> SearchNode(Key key) const noexcept;
        std::pair<bool, const Node *> SearchNode(Key key) const noexcept;
     
@@ -1555,10 +1554,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
            current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node 
        } 
 
-       //--const Node *next = nullptr;
-
-       //--if (current->SearchNode(key, key_index, next)) { // ...search for item in current node. 
-       
        if (auto pair = current->SearchNode(key, key_index, next); pair.first) { // ...search for item in current node. 
 
            pfound_node = const_cast<Node *>(current); // We found it.  
@@ -1623,8 +1618,8 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
            pfound_node = const_cast<Node *>(current); // We found it.  
 
-           std::pair<const Node *, int> pr = getRemoveSuccessor(key, pfound_node, key_index);
-           current = pr.first;
+           auto [successor, not_used] = getRemoveSuccessor(key, pfound_node, key_index);
+           current = successor;
            
            break;
 
@@ -1669,6 +1664,8 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
  * are reference paramters.
  * 
  */
+//TODO: Get rid of reference parameters. Simply use input parameters and return, if multiple values are needed, a tuple or a struct.
+//++std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getRemoveSuccessor(Key key, const Node *pfound_node, int key_index) noexcept
 template<typename Key, typename Value>
 std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getRemoveSuccessor(Key key, const Node *&pfound_node, int& key_index) noexcept
 {
@@ -1676,7 +1673,7 @@ int child_index = 0;
 
    if (pfound_node->isLeaf()) {  // Is pfound_node already a leaf node.
      
-       DoSearch(key, pfound_node, key_index);
+       DoSearch(key, pfound_node, key_index); // TODO: This looks wrong. Aren't we just searching 
        return {pfound_node, key_index};
    } 
 
