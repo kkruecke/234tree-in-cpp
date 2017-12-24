@@ -1546,15 +1546,14 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
  New untested prospective code for remove(Key key, Node *). This is the remove code for the case when the root is not a leaf node.
  */
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) //-- 
-//++template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, Node *current) 
+//++ Prospective replace code below. Alos add to ~/temp
 {
    const Node *pfound_node = nullptr; //--
    int key_index;
 
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
    // We continue down the tree. 
-   //-- prospective remove
-   while(true) { // TODO: Try adding convert_find(), analagous to split_find().
+   while(true) { 
 
        // We know the root is not a leaf. That was handled in calling code. So we don't convert a 2-node root.
        if (current != root.get() && current->isTwoNode()) { 
@@ -1582,10 +1581,8 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
           current = pnode; 
        }
-  } //-- 
+  } 
 
-  //++ auto [b_found, pfound_node]  = convert_find(current, key); TODO: DOES NOT WORK right because it does not find successor all by itself.
- 
   if (!pfound_node->isLeaf()) { 
 
       // We have the item found in pfound_node->keys_values[key_index], which is an internal node. We have current->keys_values[0] as in order successor leaf node, and we know
@@ -1608,6 +1605,37 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
    --tree_size;
    return true;
 }
+/*++ Presective replaement code
+template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, Node *current) 
+{
+   int key_index;
+
+   // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
+   // We continue down the tree. 
+
+   // Reurn tuple
+   auto [b_found, pfound_node, index]  = convert_find(current, key);
+
+   if (!b_found) return;
+
+   if (!pfound_node->isLeaf()) { // If internal node
+
+         Node *psuccessor = convert_min_find();  
+         pfound_node->keys_values[index] = psucessor->keys_values[0];
+         psuccessor->removeKeyValue(0);
+
+   } else { 
+
+      // pfound_node is a leaf that has already been converted, if necessary. We therefore do not need to free the node, and we can
+      // simply call removeKeyValue(key_index).
+
+      pfound_node->removeKeyValue(key_index); 
+   }
+
+   --tree_size;
+   return true;
+}
+++*/
 
 // Prospect new code from remove
 template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::convert_find(Node *pnode, Key key) noexcept
