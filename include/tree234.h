@@ -279,6 +279,9 @@ template<typename Key, typename Value> class tree234 {
     bool isBalanced(const Node *pnode) const noexcept;
 
     bool find(const Node *current, Key key) const noexcept;
+
+    std::pair<bool, Node *> split_find(Node *pnode, Key key) noexcept;
+
   public:
 
     using value_type      = std::pair<const Key, Value>; 
@@ -1364,6 +1367,43 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
       } 
   }
 }
+/*
+ * Called by insert(Key key, const Value& value) to determine if key exits or not. Return pair<bool, const Node>, where first indicates
+ * if key already exists or not, and second is the node where it exists, if first is true; otherwise, if first is false, second is the leaf
+ * into which key and value should be inserted.
+ * Assume pnode is never nullptr.
+ */
+template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::split_find(Node *pnode, Key key) noexcept
+{
+   if (pnode->isFourNode()) {
+
+       split(pnode);
+       pnode = pnode->parent; 
+   }
+
+   auto i = 0;
+
+   for(; i < pnode->getTotalItems(); ++i) {
+
+       if (key < pnode->key(i)) {
+
+           if (pnode->isLeaf()) return {false, pnode};
+ 
+           return split_find(pnode->children[i].get(), key); // search left subtree of pnode->key(i)
+       } 
+
+       if (key == pnode->key(i)) {
+
+          return {true, pnode};  // located at std::pair{pnode, i};  
+       }
+   }
+
+   if (pnode->isLeaf()) {
+      return {false, pnode};
+   } 
+
+   return split_find(pnode->children[i].get(), key); // It was greater than all values in pnode, search right-most subtree.
+}
 
 /*
  * Insertion based on pseudo code at:
@@ -1382,10 +1422,11 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
       return; 
    } 
 
+   /*--
    const Node *current = root.get();
 
    // Descend until a leaf node is found, splitting four nodes as they are encountered 
-   while(true) {
+   while(true) { // TODO: Use new subroutine split_find().
       
        if(current->isFourNode()) {// if four node encountered, split it, moving a value up to parent.
 
@@ -1407,7 +1448,12 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
           current = next;  
        }
    }
- 
+   --*/
+   
+   auto [bool_found, current] = split_find(root.get(), key);
+   
+   if (bool_found) return;
+
    // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
    const_cast<Node *>(current)->insertKeyValue(key, value); 
    ++tree_size;
