@@ -278,6 +278,7 @@ template<typename Key, typename Value> class tree234 {
     int  depth(const Node *pnode) const noexcept;
     bool isBalanced(const Node *pnode) const noexcept;
 
+    bool find(const Node *current, Key key) const noexcept;
   public:
 
     using value_type      = std::pair<const Key, Value>; 
@@ -314,7 +315,7 @@ template<typename Key, typename Value> class tree234 {
     // Used during development and testing 
     template<typename Functor> void debug_dump(Functor f) noexcept;
 
-    bool find(Key key) noexcept;
+    bool find(Key key) const noexcept;
 
     void insert(Key key, const Value &) noexcept; 
     
@@ -1306,23 +1307,35 @@ template<typename Key, typename Value> inline constexpr  bool tree234<Key, Value
 template<typename Key, typename Value> inline tree234<Key, Value>::~tree234()
 {
 }
+/*
+ * Recursive version of find
+ */
+template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key key) const noexcept
+{
+    return find_(root.get(), key);
+}
 
-template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key key) noexcept
+template<typename Key, typename Value> inline bool tree234<Key, Value>::find(const Node *pnode, Key key) const noexcept
 {
    // make sure tree has at least one element    
-   if (root == nullptr) return false;
-      
-   for(const Node *current = root.get(); current != nullptr;)  { 
-       
-       auto [bool_found, next] = current->SearchNode(key);
-       
-       if (bool_found) return true;
-       
-       current = next;
+   if (pnode == nullptr) return false;
 
+   auto i = 0;  
+
+   for(; i < pnode->getTotalItems(); ++i) {
+
+       if (key < pnode->key(i)) {
+
+           return find_(pnode->children[i].get(), key); // search left subtree of pnode->key(i)
+       } 
+
+       if (key == pnode->key(i)) {
+
+          return true;  // located at std::pair{pnode, i};  
+       }
    }
    
-   return false;
+   return find_(pnode->children[i], key); // It was greater than all values in pnode, search right-most subtree.
 }
 /*
  * 
