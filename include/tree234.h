@@ -246,7 +246,6 @@ template<typename Key, typename Value> class tree234 {
 
     // Called during remove(Key key)
     bool remove(Key key, const Node *location); 
-    //++bool remove(Key key, Node *location); 
 
     // Called during remove(Key key, Node *) to convert two-node to three- or four-node during descent of tree.
     Node *convertTwoNode(Node *node) noexcept;
@@ -282,8 +281,9 @@ template<typename Key, typename Value> class tree234 {
     bool find(const Node *current, Key key) const noexcept;
 
     std::pair<bool, Node *> split_find(Node *pnode, Key key) noexcept; // TODO: merge these two methods using a template method with two functors.
-    std::pair<bool, Node *> convert_find(Node *pnode, Key key) noexcept;
-    std::pair<bool, Node *> convert_min(Node *pnode) noexcept;
+    std::tuple<bool, Node *, int> convert_find(Node *pnode, Key key) noexcept;
+
+    Node *convert_min(Node *pnode) noexcept;
 
   public:
 
@@ -1546,7 +1546,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
  * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  New untested prospective code for remove(Key key, Node *). This is the remove code for the case when the root is not a leaf node.
  */
-//--
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) //-- 
 {
    const Node *pfound_node = nullptr; //--
@@ -1606,7 +1605,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
    --tree_size;
    return true;
 }
-//--*/
 /*++ Presective replaement code
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, Node *pnode) 
 {
@@ -1616,15 +1614,15 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
    // We continue down the tree. 
 
    // Reurn tuple
-   auto [b_found, pnode, index]  = convert_find(pnode, key); // Is this the same pnode on both side of assignment?
+   auto [b_found, pfound, found_index]  = convert_find(pnode, key); // Is this the same pfound on both side of assignment?
 
-   if (!b_found) return;  // nothing to remove
+   if (!b_found) return false;  // nothing to remove
 
-   if (!pnode->isLeaf()) { // If internal node
+   if (!pfound->isLeaf()) { // If internal node
 
-         Node *psuccessor = convert_min(pnode->children[index + 1]);  
+         Node *psuccessor = convert_min(pfound->children[found_index + 1].get());  
 
-         pnode->keys_values[index] = psuccessor->keys_values[0];
+         pfound->keys_values[found_index] = psuccessor->keys_values[0];
 
          psuccessor->removeKeyValue(0);
 
@@ -1633,16 +1631,16 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
       // pfound_node is a leaf that has already been converted, if necessary. We therefore do not need to free the node, and we can
       // simply call removeKeyValue(key_index).
 
-      pnode->removeKeyValue(key_index); 
+      pfound->removeKeyValue(key_index); 
    }
 
    --tree_size;
    return true;
 }
-//+*/
+*/
 
 // Prospect new code from remove
-template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::convert_find(Node *pnode, Key key) noexcept
+template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::Node *, int>  tree234<Key, Value>::convert_find(Node *pnode, Key key) noexcept
 {
    if (pnode != root.get() && pnode->isTwoNode()) {
 
@@ -1655,32 +1653,33 @@ template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::N
 
        if (key < pnode->key(i)) {
 
-           if (pnode->isLeaf()) return {false, pnode};
+           if (pnode->isLeaf()) return {false, pnode, 0};
  
            return convert_find(pnode->children[i].get(), key); // search left subtree of pnode->key(i)
        } 
 
        if (key == pnode->key(i)) {
 
-          return {true, pnode};  // located at std::pair{pnode, i};  
+          return {true, pnode, i};  // located at std::pair{pnode, i};  
        }
    }
 
    if (pnode->isLeaf()) { // could not find key in the leaf.
-      return {false, pnode};
+       
+      return {false, pnode, 0};
    } 
 
    return convert_find(pnode->children[i].get(), key); // It was greater than all values in pnode, search right-most subtree.
 }
 
-template<class Key, class Value> inline tree234<Key, Value>::Node& tree234<Key, Value>::convert_min(Node *pnode) noexcept
+template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::convert_min(Node *pnode) noexcept
 {
-  while(!pmin->isLeaf()) {
+  while(!pnode->isLeaf()) {
 
-     pmin = pmin->children[0];
+     pnode = pnode->children[0].get();
   }
 
-  return pmin;
+  return pnode;
 }
 
 /*

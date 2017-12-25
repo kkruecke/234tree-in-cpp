@@ -1,18 +1,10 @@
 Things TODO
 ===========
 
-
-There is a bug in remove(Kye kye, Node *current) and in convert_find()
+Latest code in in ~/4/include/ntree234.h. The new remove() code works in part. It need correct pseudo code, then implemntation, then debugging.
 
 Improve and Correct remove(Key key)
 -----------------------------------
-
-IDEA: Can create a convert_find() method that is analagous to the recursive descent method split_find()? First we must confirm the correct pseudo code for remove()!!!
-ANd maybe split_find() and convert_find() only differ in that one splits and the other converts--this might be true.
-
-Change code so that it does not return values using reference parameters anywhere in code. This happens only in the ::remove() code, which therfore needs to be redsigned from the ground up. Eliminate the use of references for return values.
-Instead use either a pair, a struct or a tuple to return values using RVO.
-
 
 Design. The pseudo code for remove is here:
 
