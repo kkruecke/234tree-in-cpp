@@ -1394,7 +1394,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
    if (bool_found) return;
 
    // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
-   const_cast<Node *>(current)->insertKeyValue(key, value); 
+   current->insertKeyValue(key, value); 
    ++tree_size;
 }
 /*
@@ -1548,7 +1548,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
  * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  New untested prospective code for remove(Key key, Node *). This is the remove code for the case when the root is not a leaf node.
  */
-template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) //-- 
+template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) 
 {
    const Node *pfound_node = nullptr; //--
    int key_index;
