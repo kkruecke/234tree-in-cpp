@@ -285,6 +285,8 @@ template<typename Key, typename Value> class tree234 {
 
     Node *convert_min(Node *pnode) noexcept;
 
+    template<class Functor> std::pair<bool, Node *>  descent_transform(Node *pnode, Key key, Functor f) noexcept;
+
   public:
 
     using value_type      = std::pair<const Key, Value>; 
@@ -1672,6 +1674,45 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
    return convert_find(pnode->children[i].get(), key); // It was greater than all values in pnode, search right-most subtree.
 }
 
+/*
+  transform_descent() generalizes convert_find() and split_find(), allowing us to use one method instead of two.
+ 
+  Make split_find generic with this lambda:
+
+  lambda_functor = [&](Node *pnode) -> Node * { if (pnode->isFourNode()) { split(pnode); return pnode->parent; };
+
+  Make convert_find generic with this lambda:
+  
+  lambada_functor = [&](Node *pnode) -> Node * { if (pnode != root.get() && pnode->isTwoNode()) { return convertTwoNode(pnode); };    }
+*/
+ 
+template<class Key, class Value> template<class Functor> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::descent_transform(Node *pnode, Key key, Functor f) noexcept
+{
+   pnode = F(pnode);
+
+   auto i = 0;
+
+   for(; i < pnode->getTotalItems(); ++i) {
+
+       if (key < pnode->key(i)) {
+
+           if (pnode->isLeaf()) return {false, pnode};
+ 
+           return split_find(pnode->children[i].get(), key); // search left subtree of pnode->key(i)
+       } 
+
+       if (key == pnode->key(i)) {
+
+          return {true, pnode};  // located at std::pair{pnode, i};  
+       }
+   }
+
+   if (pnode->isLeaf()) {
+      return {false, pnode};
+   } 
+
+   return split_find(pnode->children[i].get(), key); // It was greater than all values in pnode, search right-most subtree.
+}
 template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::convert_min(Node *pnode) noexcept
 {
   while(!pnode->isLeaf()) {
