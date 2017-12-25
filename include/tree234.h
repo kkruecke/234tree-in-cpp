@@ -1546,8 +1546,8 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
  * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  New untested prospective code for remove(Key key, Node *). This is the remove code for the case when the root is not a leaf node.
  */
+//--
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) //-- 
-//++ Prospective replace code below. Alos add to ~/temp
 {
    const Node *pfound_node = nullptr; //--
    int key_index;
@@ -1606,6 +1606,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
    --tree_size;
    return true;
 }
+//--*/
 /*++ Presective replaement code
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, Node *pnode) 
 {
@@ -1623,7 +1624,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
          Node *psuccessor = convert_min(pnode->children[index + 1]);  
 
-         pnode->keys_values[index] = psucessor->keys_values[0];
+         pnode->keys_values[index] = psuccessor->keys_values[0];
 
          psuccessor->removeKeyValue(0);
 
@@ -1638,7 +1639,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
    --tree_size;
    return true;
 }
-++*/
+//+*/
 
 // Prospect new code from remove
 template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::convert_find(Node *pnode, Key key) noexcept
