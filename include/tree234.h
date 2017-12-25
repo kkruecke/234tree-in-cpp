@@ -1495,10 +1495,32 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
  * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *
  * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the deleted key
- * with its in-order successor.
+ * with its in-order successor and then deleting the key moved to its successor's prior position. To prevent deleting it from a two node, which
+ * would leave an empty node, as we descend we convert all 2-nodes to 3 or 4-nodes using the stratagies below.
+ *  
+ * If the key is an internal node, then its successor will be the minimum key in its first right subtree. To ensure that the successor of the
+ * internal node is not a 2-node, we again convert all 2-nodes to 3- or 4-nodes as we descend. 
+ * 
+ * Conversion Strategies:
+ * 
+ * case 1: Convert the 2-node to a 3-node.
+ * If an adjacent sibling has 2 or 3 items, "steal" an item from sibling by rotating items and moving subtree 
+ *
+ * case 2:
+ * 
+ *
+ * 
+ *
+ * 
+ *
+ * 
+ *
+ * 
+ *
+ *
  */
 
-template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)  // ok
+template<typename key, typename value> bool tree234<key, value>::remove(Key key)  // ok
 {
    if (root == nullptr) return false; 
 
@@ -1560,7 +1582,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key)
  */
 template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) 
 {
-   const Node *pfound_node = nullptr; //--
+   const Node *pfound_node = nullptr; 
    int key_index;
 
    // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
