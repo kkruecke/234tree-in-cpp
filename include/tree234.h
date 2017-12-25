@@ -1385,11 +1385,22 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
    if (root == nullptr) {
            
       root = std::make_shared<Node>(key, value); 
-      ++tree_size;
+    ++tree_size;
       return; 
    } 
 
-   auto [bool_found, current] = split_find(root.get(), key);
+   auto lambda_func = [&](Node *pnode) {  
+       if (pnode->isFourNode()) { 
+           
+           split(pnode); 
+           return pnode->parent;
+       }    
+       else {
+           return pnode; 
+       }
+      };
+ 
+   auto [bool_found, current] = descent_transform(root.get(), key, lambda_func);
    
    if (bool_found) return;
 
@@ -1406,11 +1417,11 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
  */
 template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::split_find(Node *pnode, Key key) noexcept
 {
-   if (pnode->isFourNode()) {
+   if (pnode->isFourNode()) { // START prospective lambda for 
 
        split(pnode);
        pnode = pnode->parent; 
-   }
+   } // END
 
    auto i = 0;
 
@@ -1435,7 +1446,6 @@ template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::N
 
    return split_find(pnode->children[i].get(), key); // It was greater than all values in pnode, search right-most subtree.
 }
-
 
 /* 
  *  Split pseudocode: 
@@ -1686,9 +1696,9 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
   lambada_functor = [&](Node *pnode) -> Node * { if (pnode != root.get() && pnode->isTwoNode()) { return convertTwoNode(pnode); };    }
 */
  
-template<class Key, class Value> template<class Functor> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::descent_transform(Node *pnode, Key key, Functor f) noexcept
+template<class Key, class Value> template<class Functor> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::descent_transform(Node *pnode, Key key, Functor functor) noexcept
 {
-   pnode = F(pnode);
+   pnode = functor(pnode);
 
    auto i = 0;
 

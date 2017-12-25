@@ -4,7 +4,6 @@ Things TODO
 Latest code in in ~/4/include/ntree234.h. The new remove() code works in part. It need correct pseudo code, then re-implemnt it, then debug it.
 After both split_find() and remove()/conrt_find() are working, use the newer descent_transform() method instead. Make sure it is working. Then make the changes below.
 
-
 Improve and Correct remove(Key key)
 -----------------------------------
 
