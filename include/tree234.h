@@ -1755,11 +1755,12 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
 
      if (pnode->isTwoNode()) {
 
-         pnode = convertTwoNode(pnode); /* TODO: Doesn't converting a 2-node to a 4- or 4-node bring down a key from the parent? If pnode's parent has the key we wish to remove, the position of the key to be remove may change: it
-                                           may be brought down or ...? TODO: Illustrate the pseudo code with example, so that the entire algorithm, including this key step, can be thoroughly understood.
-         If the key moved, then we re-find it, but we start the search from the node where it had been.  Perhaps we use convert_find() again, but simply start with where the key had been. There must be recursive step here somewhere we can
-         utilize.
-     */
+         pnode = convertTwoNode(pnode); /* TODO: If pnode is the immediate child of the internal node that has the key to be removed, that key to be removed maybe be brought down into pnode during the conversion from a two node.
+    It may be brought down as result of either the rotation of keys that results when we barrow from a sibling, or it maybe brought down as a result of merging pnode with its sibling and a parent key.
+    We need to check if it has been brough down, and if so, restart the removal from its new node. Doesn't this imply a recursive call?
+
+    TODO: Write down the pseudo code using the deletion user cases I have in the folder.`
+    */
                                    
      }
 
