@@ -95,8 +95,8 @@ template<typename Key, typename Value> class tree234 {
         * Returns true if key is found in node and sets index so pNode->keys_values[index] == key
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
-       std::pair<bool, const Node *> SearchNode(Key key, int& index) const noexcept;
-       std::pair<bool, const Node *> SearchNode(Key key) const noexcept;
+       std::pair<bool, const Node *> find(Key key, int& index) const noexcept;
+       std::pair<bool, const Node *> find(Key key) const noexcept;
     
        void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
 
@@ -1129,7 +1129,7 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
  * Returns {true, *this} if key is found in node.
  * Returns {false, point to next child with which to continue the descent search downward (toward a leaf node)} if key not found. 
  */
-template<class Key, class Value> inline std::pair<bool, const typename tree234<Key, Value>::Node *> tree234<Key, Value>::Node::SearchNode(Key lhs_key) const noexcept 
+template<class Key, class Value> inline std::pair<bool, const typename tree234<Key, Value>::Node *> tree234<Key, Value>::Node::find(Key lhs_key) const noexcept 
 {
   for(auto i = 0; i < totalItems; ++i) {
 
@@ -1153,7 +1153,7 @@ template<class Key, class Value> inline std::pair<bool, const typename tree234<K
  * Returns true if key is found in node, and it set index so that this->keys_values[index] == key.
  * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node)
  */
-template<class Key, class Value> inline std::pair<bool, const typename tree234<Key, Value>::Node *> tree234<Key, Value>::Node::SearchNode(Key lhs_key, int& index) const noexcept 
+template<class Key, class Value> inline std::pair<bool, const typename tree234<Key, Value>::Node *> tree234<Key, Value>::Node::find(Key lhs_key, int& index) const noexcept 
 {
   for(auto i = 0; i < totalItems; ++i) {
 
@@ -1360,7 +1360,7 @@ template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key k
 
   for(const Node *current = root.get(); current != nullptr;) {  
 
-      if (auto [bool_found, pnode] = current->SearchNode(key, index); bool_found) {
+      if (auto [bool_found, pnode] = current->find(key, index); bool_found) {
 
           location = pnode;
           return true; 
@@ -1403,7 +1403,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
        }
       };
  
-   auto [bool_found, current] = descent_transform(root.get(), key, lambda_func);
+   //--auto [bool_found, current] = descent_transform(root.get(), key, lambda_func);
+   auto [bool_found, current] = split_find(root.get(), key);
    
    if (bool_found) return;
 
@@ -1522,8 +1523,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
  *
  *
  */
-
-template<typename key, typename value> bool tree234<key, value>::remove(Key key)  // ok
+template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)  // ok
 {
    if (root == nullptr) return false; 
 
@@ -1601,7 +1601,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key,
 
        const Node *next = nullptr;
 
-       if (auto [bool_found, pnode] = current->SearchNode(key, key_index); bool_found) { // ...search for item in current node. 
+       if (auto [bool_found, pnode] = current->find(key, key_index); bool_found) { // ...search for item in current node. 
 
            pfound_node = const_cast<Node *>(current); // We found it.  
 
@@ -1767,17 +1767,6 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
      pnode = pnode->children[0].get();
 
   } while(!pnode->isLeaf()); 
-
-  return pnode;
-}
-
-
-template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::convert_min(Node *pnode) noexcept
-{
-  while(!pnode->isLeaf()) {
-
-     pnode = pnode->children[0].get();
-  }
 
   return pnode;
 }

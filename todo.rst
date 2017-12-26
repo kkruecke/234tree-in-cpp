@@ -1,8 +1,10 @@
 Things TODO
 ===========
 
-Latest code in in ~/4/include/ntree234.h. The new remove() code works in part, but seems to have a bug. 
-After it has been debugged, use the newer descent_transform() method instead. Make sure it is working. Then make the changes below.
+Latest code in in ~/4/include/ntree234.h. The reworked methods called by remove(Node *, key) cause a segementation fault. 
+I think I need to do what is suggest in the convert_min() method: create use cases and write down pseudo code from the use cases.
+
+descent_transform() may or may not be useful.
 
 See the TODOES in getSucessor() and convert_min.
 
