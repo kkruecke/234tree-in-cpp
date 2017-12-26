@@ -1755,13 +1755,7 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
 
      if (pnode->isTwoNode()) {
 
-         pnode = convertTwoNode(pnode); /* TODO: If pnode is the immediate child of the internal node that has the key to be removed, that key to be removed maybe be brought down into pnode during the conversion from a two node.
-    It may be brought down as result of either the rotation of keys that results when we barrow from a sibling, or it maybe brought down as a result of merging pnode with its sibling and a parent key.
-    We need to check if it has been brough down, and if so, restart the removal from its new node. Doesn't this imply a recursive call?
-
-    TODO: Write down the pseudo code using the deletion user cases I have in the folder.`
-    */
-                                   
+         pnode = convertTwoNode(pnode);                                    
      }
 
      pnode = pnode->children[0].get();
@@ -2632,3 +2626,4 @@ template<class Key, class Value> bool tree234<Key, Value>::isBalanced() const no
     return true; // All Nodes were balanced.
 }
 #endif
+
