@@ -13,6 +13,7 @@
 #include <iosfwd>
 #include <string>
 #include <iostream>
+#include <tuple>
 
 // fwd declarations
 template<typename Key, typename Value> class tree234;    
@@ -95,7 +96,7 @@ template<typename Key, typename Value> class tree234 {
         * Returns true if key is found in node and sets index so pNode->keys_values[index] == key
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
-       std::pair<bool, const Node *> find(Key key) const noexcept;
+       std::tuple<bool, const Node *, int> find(Key key) const noexcept;
     
        void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
 
@@ -244,7 +245,7 @@ template<typename Key, typename Value> class tree234 {
     void split(Node *node) noexcept;  // called during insert(Key key) to split 4-nodes encountered.
 
     // Called during remove(Key key)
-    bool remove(Key key, const Node *location); 
+    bool remove(Key key, Node *location); 
 
     // Called during remove(Key key, Node *) to convert two-node to three- or four-node during descent of tree.
     Node *convertTwoNode(Node *node) noexcept;
@@ -1561,9 +1562,9 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)  // o
  * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  New untested prospective code for remove(Key key, Node *). This is the remove code for the case when the root is not a leaf node.
  */
-template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree, Key key)
+template<class Key, class Value> bool tree234<Key, Value>::remove(Key key, Node *psubtree)
 {
-  tupe<bool, Node *, int> tuple = {false, nullptr, 0};
+  std::tuple<bool, Node *, int> result_tuple = {false, nullptr, 0};
 
   Node *current = psubtree;
 
@@ -1588,7 +1589,7 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
   } 
 */
 
-  for (Node *current = psubtree; get<0>(result_tuple) == false; current = get<1>(result_tuple)) {
+  for (Node *current = psubtree; std::get<0>(result_tuple) == false; current = get<1>(result_tuple)) {
 
     if (current->isTwoNode()) {
 
@@ -1599,20 +1600,20 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
   } 
 
 
-  if (get<1>(result_tuple)->isLeaf()) {
+  if (std::get<1>(result_tuple)->isLeaf()) {
 
      // Remove from node
      pfound_node->removeKeyValue(key_index); 
 
   } else { // internal node. Find successor, converting 2-nodes as we search.
      // get immediate right subtree.
-     Node *pnode = get<1>(result_tuple);
+     Node *pnode = std::get<1>(result_tuple);
 
-     int key_index get<2>(result_tuple);
+     int key_index = std::get<2>(result_tuple);
 
      Node *pchildSubTree = pnode->children[key_index + 1].get();
 
-     if (pchildSubTree->isTwoNode)) { // If we need to convert it...
+     if (pchildSubTree->isTwoNode())) { // If we need to convert it...
 
         convertTwoNode(pchildSubTree); 
 
