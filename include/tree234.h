@@ -95,8 +95,8 @@ template<typename Key, typename Value> class tree234 {
         * Returns true if key is found in node and sets index so pNode->keys_values[index] == key
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
-        std::tuple<bool, const typename tree234<Key, Value>::Node *, int>  find(Key key) const noexcept;
-       //--std::pair<bool, const Node *> find(Key key) const noexcept;
+       std::pair<bool, const Node *> find(Key key, int& index) const noexcept;
+       std::pair<bool, const Node *> find(Key key) const noexcept;
     
        void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
 
@@ -231,7 +231,7 @@ template<typename Key, typename Value> class tree234 {
 
     int  tree_size; // adjusted by insert(), remove(), operator=(const tree234...), move ctor
 
-    std::pair<const Node *, int> DoSearch(Key key) noexcept;
+    bool DoSearch(Key key, const Node *&location, int& index) noexcept;
 
     // implementations of the public depth-frist traversal methods    
     template<typename Functor> void DoInOrderTraverse(Functor f, const Node *proot) const noexcept;
@@ -245,7 +245,7 @@ template<typename Key, typename Value> class tree234 {
     void split(Node *node) noexcept;  // called during insert(Key key) to split 4-nodes encountered.
 
     // Called during remove(Key key)
-    bool remove(Node *location, Key key); 
+    bool remove(Key key, const Node *location); 
 
     // Called during remove(Key key, Node *) to convert two-node to three- or four-node during descent of tree.
     Node *convertTwoNode(Node *node) noexcept;
@@ -271,7 +271,7 @@ template<typename Key, typename Value> class tree234 {
     const Node *min(const Node* root) const noexcept; 
     const Node *max(const Node* root) const noexcept; 
     
-    std::pair<const Node *, int> getRemoveSuccessor(Key key, const Node *pfound_node, int key_index) noexcept;
+    std::pair<const Node *, int> getRemoveSuccessor(Key key, const Node *&pfound_node, int& key_index) noexcept;
 
     int  height(const Node *pnode) const noexcept;
     
@@ -634,7 +634,6 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  Requires:
  1. pnode is a leaf node, either a 2 or 3-node
  2. If pnode is 3-node, then key_index, the key index into pnode->keys_values[].key() must be 1, the second key. It can never be 0, the first key.
-
  TODO: I could return a tuple<bool, const Node *, int> instead of pair<const Node *, int>.
  TODO: Can I pass the child index of pnode instead of calculating it? 
  */
@@ -1126,30 +1125,51 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
   }
 }
 /*
- * Returns {true, *this, key's index} if key is found in node.
- * Returns {false, point to next child with which to continue the descent search downward (toward a leaf node), 0} if key not found. 
+ * Returns {true, *this} if key is found in node.
+ * Returns {false, point to next child with which to continue the descent search downward (toward a leaf node)} if key not found. 
  */
-template<class Key, class Value> inline std::tuple<bool, const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::Node::find(Key lhs_key) const noexcept 
+template<class Key, class Value> inline std::pair<bool, const typename tree234<Key, Value>::Node *> tree234<Key, Value>::Node::find(Key lhs_key) const noexcept 
 {
   for(auto i = 0; i < totalItems; ++i) {
 
      if (lhs_key < key(i)) {
             
          //next = children[i].get(); 
-         return {false, children[i].get(), 0};
+         return {false, children[i].get() };
 
      } else if (key(i) == lhs_key) {
 
          //next = nullptr;
-         return {true, this, i};
+         return {true, this};
      }
   }
 
   // It must be greater than the last key (because it is not less than or equal to it).
   //next = children[totalItems].get(); 
-  return {false, children[totalItems].get(), 0};
+  return {false, children[totalItems].get()};
 }
+/*
+ * Returns true if key is found in node, and it set index so that this->keys_values[index] == key.
+ * Returns false if key is if not found, and it sets next to point to next child with which to continue the descent search downward (toward a leaf node)
+ */
+template<class Key, class Value> inline std::pair<bool, const typename tree234<Key, Value>::Node *> tree234<Key, Value>::Node::find(Key lhs_key, int& index) const noexcept 
+{
+  for(auto i = 0; i < totalItems; ++i) {
 
+     if (lhs_key < key(i)) {
+            
+         return {false, children[i].get()};
+
+     } else if (key(i) == lhs_key) {
+
+         index = i;
+         return {true, this};
+     }
+  }
+
+  // It must be greater than the last key (because it is not less than or equal to it).
+  return {false, children[totalItems].get()}; 
+}
 /*
  * Require: childIndex is within the range for the type of node.
  * Returns: child pointer.
@@ -1300,10 +1320,9 @@ template<typename Key, typename Value> inline tree234<Key, Value>::~tree234()
 /*
  * Recursive version of find
  */
-/*
 template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key key) const noexcept
 {
-    return find_(root.get(), key); // TODO: There is no find_().
+    return find_(root.get(), key);
 }
 
 template<typename Key, typename Value> inline bool tree234<Key, Value>::find(const Node *pnode, Key key) const noexcept
@@ -1328,26 +1347,26 @@ template<typename Key, typename Value> inline bool tree234<Key, Value>::find(con
    
    return find_(pnode->children[i], key); // It was greater than all values in pnode, search right-most subtree.
 }
-*/
-/*  If found, returns pair of 'Node *' and 'index in keys_values' of key.
- *  If not found, returns {nullptr, 0}
+/*
+ * 
  */
-template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::DoSearch(Key key) noexcept // <--- TODO: DoSearch() always starts searching from the root node. Is that what I want here?
+template<typename Key, typename Value>  bool tree234<Key, Value>::DoSearch(Key key, const Node *&location, int& index) noexcept
 {
   if (!root) { // <--> if (root.get() == nullptr)
 
-     return {nullptr, 0}; //--false;
+     return false;
   }
 
   for(const Node *current = root.get(); current != nullptr;) {  
 
-      if (auto [bool_found, pnode, index] = current->find(key); bool_found) {
+      if (auto [bool_found, pnode] = current->find(key, index); bool_found) {
 
-          return {pnode, index}; 
+          location = pnode;
+          return true; 
 
       }  else if (current->isLeaf()) { 
           
-          return {nullptr, 0}; // wasn't found 
+          return false; // wasn't found and we 
 
       }  else {
 
@@ -1383,7 +1402,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
        }
       };
  
-   auto [bool_found, current] = descent_transform(root.get(), key, lambda_func);
+   //--auto [bool_found, current] = descent_transform(root.get(), key, lambda_func);
+   auto [bool_found, current] = split_find(root.get(), key);
    
    if (bool_found) return;
 
@@ -1531,7 +1551,7 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)  // o
 
    } else { // there are more nodes than just the root.
  
-       return remove(root.get(), key); 
+       return remove(key, root.get()); 
   }
 }
  
@@ -1562,80 +1582,89 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)  // o
  * http://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  New untested prospective code for remove(Key key, Node *). This is the remove code for the case when the root is not a leaf node.
  */
-template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree, Key key)
+template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, const Node *current) 
 {
-  std::tuple<bool, const Node *, int> result_tuple = {false, nullptr, 0};
+   const Node *pfound_node = nullptr; 
+   int key_index;
 
-  Node *current = psubtree;
+   // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
+   // We continue down the tree. 
+   while(true) { 
 
-/*
-  while (true) { 
+       // We know the root is not a leaf. That was handled in calling code. So we don't convert a 2-node root.
+       if (current != root.get() && current->isTwoNode()) { 
 
-    if (current->isTwoNode()) {
+           // If not the root, convert 2-nodes encountered while descending into 3- or 4-nodes... 
+           current = convertTwoNode(const_cast<Node *>(current)); // ..and resume the key search with the now converted node 
+       } 
 
-        current = convertTwoNode(current);
-    }
+       const Node *next = nullptr;
 
-    result_tuple = current->find(key);
+       if (auto [bool_found, pnode] = current->find(key, key_index); bool_found) { // ...search for item in current node. 
 
-    if (get<0>(result_tuple)) { // found
+           pfound_node = const_cast<Node *>(current); // We found it.  
 
-        break;
+           std::pair<const Node *, int> pr = getRemoveSuccessor(key, pfound_node, key_index);
+           current = pr.first;
+           
+           break;
 
-    } else {
+       } else if (current->isLeaf()) { // Are we done? 
 
-     current = pnode;
+           return false; 
 
+       } else { 
+
+          current = pnode; 
+       }
   } 
+
+  if (!pfound_node->isLeaf()) { 
+
+      // We have the item found in pfound_node->keys_values[key_index], which is an internal node. We have current->keys_values[0] as in order successor leaf node, and we know
+      // current it is not a leaf node.  So we "swap" the in order successor and the key at pfound_node->keys_values[key_index]. 
+    
+      // Note: We simply delete the former in-order
+      // successor key. 
+      const_cast<Node *>(pfound_node)->keys_values[key_index] = current->keys_values[0]; 
+    
+      const_cast<Node *>(current)->removeKeyValue(0); // Since current is not a 2-node, it does not need to be freed. Since it is a leaf, its children are all nullptr. 
+
+   } else { 
+
+      // pfound_node is a leaf that has already been converted, if necessary. We therefore do not need to free the node, and we can
+      // simply call removeKeyValue(key_index).
+
+      const_cast<Node *>(pfound_node)->removeKeyValue(key_index); 
+   }
+
+   --tree_size;
+   return true;
+}
+/*++ Presective replaement code
+template<typename Key, typename Value> bool tree234<Key, Value>::remove(Key key, Node *pnode) 
+{
+   int key_index;
+   // Search, looking for key, converting 2-nodes encountered into 3- or 4-nodes. After the conversion, the node is searched for the key and, if not found,
+   // We continue down the tree. 
+   // Reurn tuple
+   auto [b_found, pfound, found_index]  = convert_find(pnode, key); // Is this the same pfound on both side of assignment?
+   if (!b_found) return false;  // nothing to remove
+   if (!pfound->isLeaf()) { // If internal node
+         Node *psuccessor = convert_min(pfound->children[found_index + 1].get());  
+         pfound->keys_values[found_index] = psuccessor->keys_values[0];
+         psuccessor->removeKeyValue(0);
+   } else { 
+      // pfound_node is a leaf that has already been converted, if necessary. We therefore do not need to free the node, and we can
+      // simply call removeKeyValue(key_index).
+      pfound->removeKeyValue(key_index); 
+   }
+   --tree_size;
+   return true;
+}
 */
 
-  for (Node *current = psubtree; std::get<0>(result_tuple) == false; current = const_cast<Node *>(std::get<1>(result_tuple))) {
-
-    if (current != root.get() && current->isTwoNode()) {
-
-        current = convertTwoNode(current);
-    }
-
-    result_tuple = current->find(key); 
-  } 
-
-  Node *pnode = const_cast<Node *>(std::get<1>(result_tuple));
-
-  int key_index = std::get<2>(result_tuple);
-
-  if (std::get<1>(result_tuple)->isLeaf()) {
-
-     // Remove from node
-     pnode->removeKeyValue(key_index); 
-
-  } else { // internal node. Find successor, converting 2-nodes as we search.
-
-     // get immediate right subtree.
-     Node *pchildSubTree = pnode->children[key_index + 1].get();
-
-     if (pchildSubTree->isTwoNode()) { // If we need to convert it...
-
-        convertTwoNode(pchildSubTree); 
-
-        if (pchildSubTree->getTotalItems() - 1 < key_index || pchildSubTree->key(key_index) != key) { // did our key move?
-
-            return remove(pchildSubTree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
-        } 
-
-        pchildSubTree = pchildSubTree->children[0].get(); // else it didn't move, so set new pchildSubTree to its left most child.
-     }
-     
-     // find min and convert 2-nodes as we search.
-     Node *pmin = convert_min(pchildSubTree);
-
-     pnode->keys_values[key_index] = pmin->keys_values[0]; // overwrite key to be deleted with its successor.
-    
-     pmin->removeKeyValue(0); // Since successor is not in a 2-node, delete it from the leaf.
-  }
-}
-
-
-
+// Prospect new code from remove
 template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::Node *, int>  tree234<Key, Value>::convert_find(Node *pnode, Key key) noexcept
 {
    if (pnode != root.get() && pnode->isTwoNode()) {
@@ -1672,9 +1701,7 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
   transform_descent() generalizes convert_find() and split_find(), allowing us to use one method instead of two.
  
   Make split_find generic with this lambda:
-
   lambda_functor = [&](Node *pnode) -> Node * { if (pnode->isFourNode()) { split(pnode); return pnode->parent; };
-
   Make convert_find generic with this lambda:
   
   lambada_functor = [&](Node *pnode) -> Node * { if (pnode != root.get() && pnode->isTwoNode()) { return convertTwoNode(pnode); };    }
@@ -1714,13 +1741,7 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
 
      if (pnode->isTwoNode()) {
 
-         pnode = convertTwoNode(pnode); /* TODO: If pnode is the immediate child of the internal node that has the key to be removed, that key to be removed maybe be brought down into pnode during the conversion from a two node.
-    It may be brought down as result of either the rotation of keys that results when we barrow from a sibling, or it maybe brought down as a result of merging pnode with its sibling and a parent key.
-    We need to check if it has been brough down, and if so, restart the removal from its new node. Doesn't this imply a recursive call?
-
-    TODO: Write down the pseudo code using the deletion user cases I have in the folder.`
-    */
-                                   
+         pnode = convertTwoNode(pnode);                                    
      }
 
      pnode = pnode->children[0].get();
@@ -1739,19 +1760,18 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
  * 
  */
 template<typename Key, typename Value>
-std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getRemoveSuccessor(Key key, const Node *pnode, int key_index) noexcept
+std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getRemoveSuccessor(Key key, const Node *&pfound_node, int& key_index) noexcept
 {
 int child_index = 0;
 
-   if (pnode->isLeaf()) {  // Is pnode already a leaf node.
+   if (pfound_node->isLeaf()) {  // Is pfound_node already a leaf node.
      
-       auto[found_node, found_index] = DoSearch(key); // TODO: We 
-
-       return {found_node, found_index};
+       DoSearch(key, pfound_node, key_index);
+       return {pfound_node, key_index};
    } 
 
    // The in-order successor, the left-most leaf node in the subtree rooted at found_node->children[key_index + 1].
-   const Node *current = pnode->children[key_index + 1].get(); 
+   const Node *current = pfound_node->children[key_index + 1].get(); 
 
    while (true) {
 
@@ -1761,14 +1781,14 @@ int child_index = 0;
 
           // Check if key moved as a result of conversion.
           // Comments:
-          // pnode is never a 2-node since 'remove( Key key, Node *)' first converts any 2-nodes to 3- or 4-nodes before calling
+          // pfound_node is never a 2-node since 'remove( Key key, Node *)' first converts any 2-nodes to 3- or 4-nodes before calling
          
-          if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) { // Did key move?
+          if (pfound_node->getTotalItems() - 1 < key_index || pfound_node->key(key_index) != key) { // Did key move?
 
               // Re-find the node and the key_index of key
-              auto [found_node, found_index] = DoSearch(key); 
+              DoSearch(key, pfound_node, key_index);  // <--- TODO: DoSearch() always starts searching from the root node. Is that what I want here?
 
-              return getRemoveSuccessor(key, found_node, found_index); 
+              return getRemoveSuccessor(key, pfound_node, key_index); 
           } 
      } 
 

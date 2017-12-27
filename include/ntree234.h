@@ -343,6 +343,16 @@ template<typename Key, typename Value> class tree234 {
 
     bool isEmpty() const noexcept;
 
+    int  height() const noexcept;
+
+    bool isBalanced() const noexcept;
+
+    friend std::ostream& operator<<(std::ostream& ostr, const tree234<Key, Value>& tree)
+    {
+       tree.printlevelOrder(ostr);
+       return ostr;
+    }
+
     class iterator : public std::iterator<std::bidirectional_iterator_tag, typename tree234<Key, Value>::value_type> { 
                                                  
        friend class tree234<Key, Value>;   
@@ -447,9 +457,6 @@ template<typename Key, typename Value> class tree234 {
  
     const_reverse_iterator rbegin() const noexcept;  
     const_reverse_iterator rend() const noexcept;    
-
-    int  height() const noexcept;
-    bool isBalanced() const noexcept;
 };
 
 template<class Key, class Value> inline bool tree234<Key, Value>::isEmpty() const noexcept
@@ -1571,7 +1578,7 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
 /*
   while (true) { 
 
-    if (current->isTwoNode()) {
+    if (current != root.get() && current->isTwoNode()) {
 
         current = convertTwoNode(current);
     }
@@ -1591,9 +1598,11 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
 
   for (Node *current = psubtree; std::get<0>(result_tuple) == false; current = const_cast<Node *>(std::get<1>(result_tuple))) {
 
-    if (current->isTwoNode()) {
+    if (current != root.get() && current->isTwoNode()) {
 
         current = convertTwoNode(current);
+
+        std::cout << "Converted 2-node. Printing tree:\n" << *this << std::endl; // DEBUG
     }
 
     result_tuple = current->find(key); 
