@@ -3,10 +3,10 @@ Things TODO
 
 Latest code in in ~/4/include/ntree234.h, in which the methods called remove(Node *, key) were reworked, causes a segementation fault. 
 
-Write down the use cases for remove, using the printed examples in the folder, and from these create the pseudo code. 
+New code in inlude/ntree234.h
 
 pseduo code
-remove(Node *psubtree, Key key)
+bool remove(Node *psubtree, Key key)
 {
   tupe<bool, Node *, int> tuple = {false, nullptr, 0};
 
