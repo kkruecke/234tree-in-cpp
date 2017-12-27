@@ -50,23 +50,23 @@ remove(Node *psubtree, Key key)
      pfound_node->removeKeyValue(key_index); 
 
   } else { // internal node. Find successor, converting 2-nodes as we search.
-
+     // get immediate right subtree.
      Node *pnode = get<1>(result_tuple);
 
      int key_index get<2>(result_tuple);
 
      Node *pchildSubTree = pnode->children[key_index + 1].get();
 
-     if (pchildSubTree->isTwoNode)) {
+     if (pchildSubTree->isTwoNode)) { // If we need to convert it...
 
         convertTwoNode(pchildSubTree); 
 
-        if (pchildSubTree->getTotalItems() - 1 < key_index || pchildSubTree->key(key_index) != key) { // If key moved... 
+        if (pchildSubTree->getTotalItems() - 1 < key_index || pchildSubTree->key(key_index) != key) { // did our key move?
 
-            return remove(pchildSubTree, key);     // ...recurse, with new subtree as starting point.
+            return remove(pchildSubTree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
         } 
 
-        pchildSubTree = pchildSubTree->children[0].get(); // else we converted it, and set new pchildSubTree to its left most child.
+        pchildSubTree = pchildSubTree->children[0].get(); // else it didn't move, so set new pchildSubTree to its left most child.
      }
      
      // find min and convert 2-nodes as we search.
