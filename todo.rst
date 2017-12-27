@@ -1,11 +1,11 @@
 Things TODO
 ===========
 
-Latest code in in ~/4/include/ntree234.h, in which the methods called remove(Node *, key) were reworked, causes a segementation fault. 
+Latest code in in ~/4/include/ntree234.h. It needs to be debugged.
 
 descent_transform() may or may not be useful.
 
-See the TODOES in getSucessor() and convert_min.
+See the TODOES in getSucessor().
 
 Key References
 --------------
