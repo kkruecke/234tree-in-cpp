@@ -1,11 +1,7 @@
 Things TODO
 ===========
 
-Latest code in in ~/4/include/ntree234.h. It needs to be debugged.
-
-descent_transform() may or may not be useful.
-
-See the TODOES in getSucessor().
+Fix the iterators to not use reference return values. Make the code more readable and logical.
 
 Key References
 --------------
