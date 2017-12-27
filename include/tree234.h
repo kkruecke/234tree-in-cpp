@@ -96,7 +96,6 @@ template<typename Key, typename Value> class tree234 {
         * Returns false if key is if not found, and sets next to the next in-order child.
         */
         std::tuple<bool, const typename tree234<Key, Value>::Node *, int>  find(Key key) const noexcept;
-       //--std::pair<bool, const Node *> find(Key key) const noexcept;
     
        void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
 
@@ -231,8 +230,6 @@ template<typename Key, typename Value> class tree234 {
 
     int  tree_size; // adjusted by insert(), remove(), operator=(const tree234...), move ctor
 
-    std::pair<const Node *, int> DoSearch(Key key) noexcept;
-
     // implementations of the public depth-frist traversal methods    
     template<typename Functor> void DoInOrderTraverse(Functor f, const Node *proot) const noexcept;
 
@@ -271,8 +268,6 @@ template<typename Key, typename Value> class tree234 {
     const Node *min(const Node* root) const noexcept; 
     const Node *max(const Node* root) const noexcept; 
     
-    std::pair<const Node *, int> getRemoveSuccessor(Key key, const Node *pfound_node, int key_index) noexcept;
-
     int  height(const Node *pnode) const noexcept;
     
     int  depth(const Node *pnode) const noexcept;
@@ -377,7 +372,6 @@ template<typename Key, typename Value> class tree234 {
          { 
              return cursor->constkey_pair(key_index); 
          } 
-
 
       public:
 
@@ -642,7 +636,6 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  2. If pnode is 3-node, then key_index, the key index into pnode->keys_values[].key() must be 1, the second key. It can never be 0, the first key.
 
  TODO: I could return a tuple<bool, const Node *, int> instead of pair<const Node *, int>.
- TODO: Can I pass the child index of pnode instead of calculating it? 
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getLeafNodeSuccessor(const Node *pnode, int key_index) const 
 {
@@ -654,7 +647,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   // Key is the right most key in a leaf node
   Node *successor = nullptr;
 
-  int child_index = pnode->getChildIndex(); // TODO: Can I pass this value into the method instead of calculating it? 
+  int child_index = pnode->getChildIndex(); 
   
   int current_key = pnode->key(key_index);
 
@@ -1313,32 +1306,6 @@ template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key
 }
 */
 
-/*  If found, returns pair of 'Node *' and 'index in keys_values' of key.
- *  If not found, returns {nullptr, 0}
- */
-template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::DoSearch(Key key) noexcept // <--- TODO: DoSearch() always starts searching from the root node. Is that what I want here?
-{
-  if (!root) { // <--> if (root.get() == nullptr)
-
-     return {nullptr, 0}; //--false;
-  }
-
-  for(const Node *current = root.get(); current != nullptr;) {  
-
-      if (auto [bool_found, pnode, index] = current->find(key); bool_found) {
-
-          return {pnode, index}; 
-
-      }  else if (current->isLeaf()) { 
-          
-          return {nullptr, 0}; // wasn't found 
-
-      }  else {
-
-         current = pnode;
-      } 
-  }
-}
 /*
  * Insertion based on pseudo code at:
  1. http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
@@ -1644,59 +1611,6 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
  }
 
   return pnode;
-}
-
-/*
- * 1. Returns the in-order successor of pfound_node->key(key_index). If pfound_node is an internal node, the in order successor is the left-most leaf node in the subtree rooted
- * at found_node->children[key_index + 1]. If pfound_node is a leaf, the successor is within the leaf itself.
- *
- * 2. Converts all 2-nodes encountered into 3-nodes, and re-searches for the key if it was moved during the 2-node conversion and re-sets pfound_node and key_index, which were
- * are reference paramters.
- * 
- */
-template<typename Key, typename Value>
-std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getRemoveSuccessor(Key key, const Node *pnode, int key_index) noexcept
-{
-int child_index = 0;
-
-   if (pnode->isLeaf()) {  // Is pnode already a leaf node.
-     
-       auto[found_node, found_index] = DoSearch(key); 
-
-       return {found_node, found_index};
-   } 
-
-   // The in-order successor, the left-most leaf node in the subtree rooted at found_node->children[key_index + 1].
-   const Node *current = pnode->children[key_index + 1].get(); 
-
-   while (true) {
-
-     if (current->isTwoNode()) { 
- 
-          current = convertTwoNode(const_cast<Node*>(current));
-
-          // Check if key moved as a result of conversion.
-          // Comments:
-          // pnode is never a 2-node since 'remove( Key key, Node *)' first converts any 2-nodes to 3- or 4-nodes before calling
-         
-          if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) { // Did key move?
-
-              // Re-find the node and the key_index of key
-              auto [found_node, found_index] = DoSearch(key); 
-
-              return getRemoveSuccessor(key, found_node, found_index); 
-          } 
-     } 
-
-     if (current->isLeaf()) { // At in-order successor?
-
-         break;  
-     } 
-     
-     current = current->children[child_index].get(); // set current to left most child of current.
-  }
-
-  return {current, child_index};
 }
 
 /*
