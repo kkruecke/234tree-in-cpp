@@ -93,9 +93,9 @@ template<typename Key, typename Value> class tree234 {
     
        /* 
         * Returns true if key is found in node and sets index so pNode->keys_values[index] == key
-        * Returns false if key is if not found, and sets next to the next in-order child.
+        * Returns false if key is if not found, and sets next to the next in-order child that should be searched.
         */
-        std::tuple<bool, const typename tree234<Key, Value>::Node *, int>  find(Key key) const noexcept;
+       std::tuple<bool, const typename tree234<Key, Value>::Node *, int>  find(Key key) const noexcept;
     
        void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
 
@@ -160,15 +160,21 @@ template<typename Key, typename Value> class tree234 {
 
            int getIndexInParent() const;
 
-           bool findKey(Key key, int& index) const noexcept;
            constexpr bool isLeaf() const noexcept; 
            constexpr bool isTwoNode() const noexcept;
            constexpr bool isThreeNode() const noexcept;
            constexpr bool isFourNode() const noexcept;
            constexpr bool isEmpty() const noexcept; 
 
-           constexpr const std::pair<Key, Value>& pair(int index) const noexcept { return keys_values[index].pair(); }
-           constexpr std::pair<Key, Value>& pair(int index ) noexcept { return keys_values[index].pair(); }
+           constexpr const std::pair<Key, Value>& pair(int index) const noexcept 
+           {
+             return keys_values[index].pair(); 
+           }
+
+           constexpr std::pair<Key, Value>& pair(int index ) noexcept 
+           { 
+             return keys_values[index].pair(); 
+           }
 
            std::ostream& print(std::ostream& ostr) const noexcept;
    
@@ -176,7 +182,6 @@ template<typename Key, typename Value> class tree234 {
            { 
              return node234.print(ostr);
            }
-
 
   }; // end class Tree<Key, Value>::Node  
   
@@ -279,8 +284,6 @@ template<typename Key, typename Value> class tree234 {
 
     Node *convert_min(Node *pnode) noexcept;
 
-    template<class Functor> std::pair<bool, Node *>  descent_transform(Node *pnode, Key key, Functor f) noexcept;
-
   public:
 
     using value_type      = std::pair<const Key, Value>; 
@@ -377,7 +380,7 @@ template<typename Key, typename Value> class tree234 {
 
          explicit iterator(tree234<Key, Value>&); 
 
-         iterator(const iterator& lhs); // What does explicit do?
+         iterator(const iterator& lhs); 
 
          iterator(iterator&& lhs); 
  
@@ -418,7 +421,8 @@ template<typename Key, typename Value> class tree234 {
          const_iterator(const const_iterator& lhs);
          const_iterator(const_iterator&& lhs); 
 
-         const_iterator(const typename tree234<Key, Value>::iterator& lhs); // this ctor provide implicit conversion from iterator to const_iterator     
+         // This ctor provide implicit conversion from iterator to const_iterator     
+         const_iterator(const typename tree234<Key, Value>::iterator& lhs); 
 
          bool operator==(const const_iterator& lhs) const;
          bool operator!=(const const_iterator& lhs) const;
@@ -478,6 +482,7 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
 }
 
 template<typename Key, typename Value> const int  tree234<Key, Value>::Node::MAX_KEYS = 3; 
+
 /*
  * Node constructors. Note: While all children are initialized to nullptr, this is not really necessary. 
  * Instead your can simply set children[0] = nullptr, since a Node is a leaf if and only if children[0] == 0'
@@ -559,7 +564,6 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
    for (auto& x: il) { // simply call insert(x)
          
        insert(x.first, x.second);
-  
    }
 }
 
@@ -630,12 +634,11 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
  return {const_cast<Node *>(pnode), 0};
 }
+
 /*
  Requires:
  1. pnode is a leaf node, either a 2 or 3-node
  2. If pnode is 3-node, then key_index, the key index into pnode->keys_values[].key() must be 1, the second key. It can never be 0, the first key.
-
- TODO: I could return a tuple<bool, const Node *, int> instead of pair<const Node *, int>.
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getLeafNodeSuccessor(const Node *pnode, int key_index) const 
 {
@@ -708,7 +711,6 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   }  
 }
 
-
 // copy assignment
 template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, Value>::operator=(const tree234& lhs) noexcept 
 {
@@ -744,19 +746,6 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::Node::pr
 template<typename Key, typename Value> inline constexpr int tree234<Key, Value>::Node::getTotalItems() const noexcept
 {
    return totalItems; 
-}
-
-template<typename Key, typename Value> inline bool tree234<Key, Value>::Node::findKey(Key key, int& index) const noexcept
-{
-   for(index = 0; index < totalItems; ++index) {
-       
-       if (key(index) == key) {
-           
-           return true;
-       }
-   }   
-
-   return false;
 }
 
 template<typename Key, typename Value> inline constexpr int tree234<Key, Value>::Node::getChildCount() const noexcept
@@ -1346,8 +1335,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
  * Called by insert(Key key, const Value& value) to determine if key exits or not.
  *
  * Precondition: pnode is never nullptr.
- * Return pair<bool, const Node>, where first indicates if key already exists or not, and second is the node where it exists, if first is true; otherwise,
- * if first is false, second is the leaf into which key and value should be inserted.
+ * Returns pair<bool, const Node>, where first indicates if key already exists or not, and second is the node where it exists, if first is true;
+ * otherwise, if first is false, second is the leaf into which key and value should be inserted.
  */
 template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::split_find(Node *pnode, Key key) noexcept
 {
@@ -1406,7 +1395,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
    
    // 3. Insert middle value into parent, or if pnode is the root, create a new root above pnode and 
    // adopt pnode and largest as children.
-   
    if (root.get() == pnode) {
    
      std::shared_ptr<Node> new_root = std::make_shared<Node>(std::move(pnode->keys_values[1])); // Middle value will become new root
@@ -1456,7 +1444,7 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)
          
          for (; index < root->getTotalItems(); ++index) {
 
-             if (root->key(index) == key ) {
+             if (root->key(index) == key) {
 
                 // Remove key from root and puts its in-order successor (if it exists) into its place. 
                 root->removeKeyValue(index); 
@@ -1478,7 +1466,6 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)
        return remove(root.get(), key); 
   }
 }
- 
 
 template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree, Key key)
 {
@@ -1530,15 +1517,10 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
 
         convertTwoNode(pchildSubTree); 
         
-        std::cout << "Just convert 2-node in remove(). Printing tree:\n";
-        printlevelOrder(std::cout);
-
         if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) { // did our key move?
 
             return remove(pchildSubTree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
         } 
-
-        //pchildSubTree = pchildSubTree->children[0].get(); // else it didn't move, so set new pchildSubTree to its left most child.
      }
      
      // find min and convert 2-nodes as we search.
@@ -1552,45 +1534,6 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
   return true;
 }
 
-/*
-  transform_descent() generalizes convert_find() and split_find(), allowing us to use one method instead of two.
- 
-  Make split_find generic with this lambda:
-
-  lambda_functor = [&](Node *pnode) -> Node * { if (pnode->isFourNode()) { split(pnode); return pnode->parent; };
-
-  Make convert_find generic with this lambda:
-  
-  lambada_functor = [&](Node *pnode) -> Node * { if (pnode != root.get() && pnode->isTwoNode()) { return convertTwoNode(pnode); };    }
-*/
- 
-template<class Key, class Value> template<class Functor> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::descent_transform(Node *pnode, Key key, Functor functor) noexcept
-{
-   pnode = functor(pnode);
-
-   auto i = 0;
-
-   for(; i < pnode->getTotalItems(); ++i) {
-
-       if (key < pnode->key(i)) {
-
-           if (pnode->isLeaf()) return {false, pnode};
- 
-           return split_find(pnode->children[i].get(), key); // search left subtree of pnode->key(i)
-       } 
-
-       if (key == pnode->key(i)) {
-
-          return {true, pnode};  // located at std::pair{pnode, i};  
-       }
-   }
-
-   if (pnode->isLeaf()) {
-      return {false, pnode};
-   } 
-
-   return split_find(pnode->children[i].get(), key); // It was greater than all values in pnode, search right-most subtree.
-}
 /*
  *  Converts 2-nodes to 3- or 4-nodes as we descend to the left-most leaf node of the substree rooted at pnode.
  *  Return min leaf node.
@@ -1842,8 +1785,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   Node *p2node = parent->children[node2_index].get();
 
   // First get the index of the parent's key value to be stolen and added into the 2-node
-  //--int parent_key_index = std::min(node2_index, sibling_index); 
-
   if (int parent_key_index = std::min(node2_index, sibling_index); node2_index > sibling_index) { // sibling is to the left:   Note: This is the C++17 if with initializer syntax
 
       /* Adjust parent:
@@ -1919,15 +1860,6 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::printInO
   inOrderTraverse(lambda); 
 }
 	
-/*
- TODO: The comments here sometimes be confuse predecessor with successor; likewise, the comments for iterator::getSuccessor confuse the successor with the predecessor! Make these comments clearer.
-Two cases are possible: 1.) when current is an internal node and 2.) when current is a leaf node.
-case 2:
-If current is a leaf node, and if it is a a 3-node and key-index is 1, then the predecessor is trivial: the first key is the predecessor. If, however, the key_index is 0, we ascend the parent
-chain until we enounter the first parent that is not a left most-child (of its parent). If the root is enounter before such a parent is found, then there is no predecessor.
- nodes as long as the parent is the right-most (or left-most???) child (of its parent). If we reach the root, there is no predecessor.
-Else upon reaching a parent (before the root) that is a middle or left-most child (of its parent), we find the smallest key in the parent's "right" subtree.
- */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getPredecessor(const typename  tree234<Key, Value>::Node *current, int key_index) const noexcept
 {
   if (current->isLeaf()) { // If leaf node
