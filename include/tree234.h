@@ -278,7 +278,7 @@ template<typename Key, typename Value> class tree234 {
     int  depth(const Node *pnode) const noexcept;
     bool isBalanced(const Node *pnode) const noexcept;
 
-    bool find(const Node *current, Key key) const noexcept;
+    bool find_(const Node *current, Key key) const noexcept;
 
     std::pair<bool, Node *> split_find(Node *pnode, Key key) noexcept; 
 
@@ -572,22 +572,17 @@ Finding the successor of a given node
 -------------------------------------
 Requires:
     1. If position is beg, current and key_index MUST point to first key in tree. 
-    2. If position is end,  current and key_index MUST point to last key in tree.
+    2. If position is end, current and key_index MUST point to last key in tree.
       
-    3. If position is in_between, current and key_index do not point to either the first key in the tree or last key in tree. If the tree has only one node,
+    3. If position is in_between, current and key_index do not point to either the first key in the tree or last key. If the tree has only one node,
        the state can only be in_between if the first node is a 3-node.
+
     Returns:
-    pair<const Node *, int>, where the Node pointer is the node with the next key and value in in-order sequence. key_index is the index into Node::keys_values[].
-    Note, if the last key has already been visited, the pointer returned will be nullptr.
-    Pseudo code for getting successor (from: http://ee.usc.edu/~redekopp/cs104/slides/L19_BalancedBST_23.pdf):
-    If left child exists, predecessor is the right most node of the left subtree. Internal node's of a 2 3 tree always have a right branch because 2 3 trees are  balanced.
-    Else walk up the ancestor chain until you traverse the first right child pointer (find  the first node who is a right child of his parent...that parent is the predecessor)
-    If you get to the root w/o finding a node who is a right child, there is no predecessor
-    Side effects. May set:
-    1. current
-    2. key_index
-    3. position
- */
+
+    pair<const Node *, int>, where first[key_index].key() is next in-order key. Note, if the last key has already been visited, the pointer returned will be nullptr.
+
+    The pseudo code for getting the successor is from: http://ee.usc.edu/~redekopp/cs104/slides/L19_BalancedBST_23.pdf:
+*/
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getSuccessor(const Node *current, int key_index) const noexcept
 {
   if (current->isLeaf()) { // If leaf node
@@ -618,15 +613,13 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
    2. If pnode is a 3-node, key_index is 1 not 0.
    Returns:
    pointer to successor node.
-Note: When a 2 3 tree node is a 3-node, it has two "right" chidren from the point of view of its first key and two "left" children from the point of view of its
-second key.
+
+   Note: When a 2 3 tree node is a 3-node, it has two "right" chidren from the point of view of its first key and two "left" children from the point of view of its
+   second key.
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getInternalNodeSuccessor(const typename tree234<Key, Value>::Node *pnode, int key_index) const noexcept	    
 {
- // Get next right child node of pnode based on key_index.
-
- // Question: Does it take into account that fact that a node may have already been visited in order?
- // Get the smallest node in the subtree rooted at the rightChild, i.e., its left most node...
+ // Get first right subtree of pnode, and descend to its left most left node.
  for (const Node *cursor =  pnode->children[key_index + 1].get(); cursor != nullptr; cursor = cursor->children[0].get()) {  
 
     pnode = cursor;
@@ -947,43 +940,43 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
    switch (current->totalItems) {
 
       case 1: // two node
-            f(current->constkey_pair(0));
+        f(current->constkey_pair(0));
 
-            DoPreOrderTraverse(f, current->children[0].get());
+        DoPreOrderTraverse(f, current->children[0].get());
 
-            DoPreOrderTraverse(f, current->children[1].get());
+        DoPreOrderTraverse(f, current->children[1].get());
 
-            break;
+        break;
 
       case 2: // three node
-            f(current->constkey_pair(0));
+        f(current->constkey_pair(0));
 
-            DoPreOrderTraverse(f, current->children[0].get());
+        DoPreOrderTraverse(f, current->children[0].get());
 
-            DoPreOrderTraverse(f, current->children[1].get());
+        DoPreOrderTraverse(f, current->children[1].get());
 
-            f(current->constkey_pair(1));
+        f(current->constkey_pair(1));
 
-            DoPreOrderTraverse(f, current->children[2].get());
+        DoPreOrderTraverse(f, current->children[2].get());
 
-            break;
+        break;
 
       case 3: // four node
-            f(current->constkey_pair(0));
+        f(current->constkey_pair(0));
 
-            DoPreOrderTraverse(f, current->children[0].get());
+        DoPreOrderTraverse(f, current->children[0].get());
 
-            DoPreOrderTraverse(f, current->children[1].get());
+        DoPreOrderTraverse(f, current->children[1].get());
 
-            f(current->constkey_pair(1));
+        f(current->constkey_pair(1));
 
-            DoPreOrderTraverse(f, current->children[2].get());
+        DoPreOrderTraverse(f, current->children[2].get());
 
-            f(current->constkey_pair(2));
+        f(current->constkey_pair(2));
 
-            DoPreOrderTraverse(f, current->children[3].get());
+        DoPreOrderTraverse(f, current->children[3].get());
 
-            break;
+        break;
    }
 }
 
@@ -997,41 +990,41 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
    switch (current->getTotalItems()) {
 
       case 1: // two node
-            DoInOrderTraverse(f, current->children[0].get());
+        DoInOrderTraverse(f, current->children[0].get());
 
-            f(current->constkey_pair(0));
+        f(current->constkey_pair(0));
 
-            DoInOrderTraverse(f, current->children[1].get());
-            break;
+        DoInOrderTraverse(f, current->children[1].get());
+        break;
 
       case 2: // three node
-            DoInOrderTraverse(f, current->children[0].get());
+        DoInOrderTraverse(f, current->children[0].get());
 
-            f(current->constkey_pair(0));
+        f(current->constkey_pair(0));
 
-            DoInOrderTraverse(f, current->children[1].get());
+        DoInOrderTraverse(f, current->children[1].get());
  
-            f(current->constkey_pair(1));
+        f(current->constkey_pair(1));
 
-            DoInOrderTraverse(f, current->children[2].get());
-            break;
+        DoInOrderTraverse(f, current->children[2].get());
+        break;
 
       case 3: // four node
-            DoInOrderTraverse(f, current->children[0].get());
+        DoInOrderTraverse(f, current->children[0].get());
 
-            f(current->constkey_pair(0));
+        f(current->constkey_pair(0));
 
-            DoInOrderTraverse(f, current->children[1].get());
+        DoInOrderTraverse(f, current->children[1].get());
  
-            f(current->constkey_pair(1));
+        f(current->constkey_pair(1));
 
-            DoInOrderTraverse(f, current->children[2].get());
+        DoInOrderTraverse(f, current->children[2].get());
 
-            f(current->constkey_pair(2));
+        f(current->constkey_pair(2));
 
-            DoInOrderTraverse(f, current->children[3].get());
+        DoInOrderTraverse(f, current->children[3].get());
  
-            break;
+        break;
    }
 }
 
@@ -1287,13 +1280,29 @@ template<typename Key, typename Value> inline tree234<Key, Value>::~tree234()
 }
 /*
  * Recursive version of find
- *
- 
+ */
 template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key key) const noexcept
 {
-    return find_(root.get(), key); // TODO: There is no find_().
+    return find_(root.get(), key); 
+} 
+/*
+ * find helper method.
+ */
+template<typename Key, typename Value> bool tree234<Key, Value>::find_(cont Node *pnode, Key key) const noexcept
+{
+   if (pnode == nullptr) return false;
+
+   for (auto i = 0; i < pnode->getTotalItems(); ++i) {
+
+      if (key < pnode->key(i)) 
+         return find_(pnode->children[i].get(), key); 
+    
+      else if (key == pnode->key(i)) 
+         return true;
+   }
+
+   return find_(pnode->children[i].get(), key);
 }
-*/
 
 /*
  * Insertion based on pseudo code at:
@@ -1431,8 +1440,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
  * Case 2: If each adjacent sibling (there are at most two) has only one item, we fuse together the two siblings, plus an item we bring down from parent (which we
  * know is not a 2-node), forming a 4-node and shifting all children effected appropriately. 
  *
- * See slide 52 at: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
- * 
  */
 template<class Key, class Value> bool tree234<Key, Value>::remove(Key key) 
 {
