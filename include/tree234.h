@@ -499,17 +499,17 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::print(
 {
    ostr << "[";
 
-   if (totalItems == 0) { // remove() situation when merge2Nodes() is called
+   if (getTotalItems() == 0) { // remove() situation when merge2Nodes() is called
 
        ostr << "empty"; 
 
    } else {
 
-        for (auto i = 0; i < totalItems; ++i) {
+        for (auto i = 0; i < getTotalItems(); ++i) {
 
             ostr << key(i); // or to print both keys and values do: ostr << keys_values[i];
 
-            if (i + 1 == totalItems)  {
+            if (i + 1 == getTotalItems())  {
                 continue;
 
             } else { 
@@ -529,7 +529,7 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(K
 
 template<class Key, class Value> int tree234<Key, Value>::Node::getIndexInParent() const 
 {
-  for (int child_index = 0; child_index <= parent->totalItems; ++child_index) { // Check the address of each of the children of the parent with the address of "this".
+  for (int child_index = 0; child_index <= parent->getTotalItems(); ++child_index) { // Check the address of each of the children of the parent with the address of "this".
 
        if (this == parent->children[child_index].get()) {
            return  child_index;
@@ -641,9 +641,9 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   // Key is the right most key in a leaf node
   Node *successor = nullptr;
 
-  int child_index = pnode->getChildIndex(); 
+  auto child_index = pnode->getChildIndex(); 
   
-  int current_key = pnode->key(key_index);
+  auto current_key = pnode->key(key_index);
 
   if (pnode->parent->children[child_index].get() == pnode->parent->getRightMostChild()) { // If pnode is the right-most child of its parent... 
 
@@ -666,7 +666,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
            pnode = parent;
        }
        // We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
-       int successor = 0;
+       auto successor = 0;
 
        for (; successor < parent->getTotalItems() && current_key > parent->key(successor); ++successor);
          
@@ -884,7 +884,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
         return;
    }
 
-   switch (current->totalItems) {
+   switch (current->getTotalItems()) {
 
       case 1: // two node
             DoPostOrderTraverse(f, current->children[0].get());
@@ -935,7 +935,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
         return;
    }
 
-   switch (current->totalItems) {
+   switch (current->getTotalItems()) {
 
       case 1: // two node
         f(current->constkey_pair(0));
@@ -1110,7 +1110,7 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
  */
 template<class Key, class Value> inline std::tuple<bool, const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::Node::find(Key lhs_key) const noexcept 
 {
-  for(auto i = 0; i < totalItems; ++i) {
+  for(auto i = 0; i < getTotalItems(); ++i) {
 
      if (lhs_key < key(i)) {
             
@@ -1126,7 +1126,7 @@ template<class Key, class Value> inline std::tuple<bool, const typename tree234<
 
   // It must be greater than the last key (because it is not less than or equal to it).
   //next = children[totalItems].get(); 
-  return {false, children[totalItems].get(), 0};
+  return {false, children[getTotalItems()].get(), 0};
 }
 
 /*
@@ -1141,7 +1141,7 @@ template<typename Key, typename Value> inline std::shared_ptr<typename tree234<K
   std::shared_ptr<Node> node{ std::move(children[childIndex] ) }; // invokes shared_ptr<Node> move ctor.
 
   // shift children (whose last 0-based index is totalItems) left to overwrite removed child i.
-  for(auto i = childIndex; i < totalItems; ++i) {
+  for(auto i = childIndex; i < getTotalItems(); ++i) {
 
        children[i] = std::move(children[i + 1]); // shift remaining children to the left. Calls shared_ptr<Node>::operator=(shared_ptr<Node>&&)
   } 
@@ -1157,7 +1157,7 @@ template<typename Key, typename Value> inline std::shared_ptr<typename tree234<K
 template<typename Key, typename Value> int  tree234<Key, Value>::Node::insertKeyValue(Key lhs_key, const Value& lhs_value)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
 { 
   // start on right, examine items
-  for(auto i = totalItems - 1; i >= 0 ; --i) {
+  for(auto i = getTotalItems() - 1; i >= 0 ; --i) {
 
       if (lhs_key < key(i)) { // if key[i] is bigger
 
@@ -1182,7 +1182,7 @@ template<typename Key, typename Value> int  tree234<Key, Value>::Node::insertKey
 template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(KeyValue&& key_value, std::shared_ptr<Node>& largerNode) noexcept 
 { 
   // start on right, examine items
-  for(auto i = totalItems - 1; i >= 0 ; --i) {
+  for(auto i = getTotalItems() - 1; i >= 0 ; --i) {
 
       if (key_value.key() < key(i)) { // if key[i] is bigger
 
@@ -1212,7 +1212,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(Ke
  */
 template<typename Key, typename Value> void tree234<Key, Value>::Node::insertChild(int insert_index, std::shared_ptr<Node>& newChild) noexcept
 {
-   int last_index = totalItems - 1;  // While totalItems reflects the correct number of keys, the number of children currently is also equal to the number of keys.
+   int last_index = getTotalItems() - 1;  // While totalItems reflects the correct number of keys, the number of children currently is also equal to the number of keys.
  
 
    // ...move its children right, starting from its last child index and stopping just before insert_index.
@@ -1230,7 +1230,7 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
   KeyValue key_value = std::move(keys_values[index]); 
 
   // shift to the left all keys_values to the right of index to the left
-  for(auto i = index; i < totalItems - 1; ++i) {
+  for(auto i = index; i < getTotalItems() - 1; ++i) {
 
       keys_values[i] = std::move(keys_values[i + 1]); 
   } 
@@ -1736,7 +1736,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
   p2node->totalItems = static_cast<int>(tree234<Key, Value>::Node::NodeType::three_node); // 3. increase total items
 
-  int total_sibling_keys_values = psibling->totalItems; 
+  int total_sibling_keys_values = psibling->getTotalItems(); 
 
   // 4. disconnect right-most child of sibling
   std::shared_ptr<Node> pchild_of_sibling = psibling->disconnectChild(total_sibling_keys_values); 
@@ -1763,7 +1763,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   parent->keys_values[parent_key_index] = std::move(psibling->removeKeyValue(0)); 
 
   // add former first child of silbing as right-most child of our 3-node.
-  p2node->insertChild(p2node->totalItems, pchild_of_sibling); 
+  p2node->insertChild(p2node->getTotalItems(), pchild_of_sibling); 
 
   return p2node;
 }
@@ -1896,7 +1896,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  // Get next left child node of pnode based on key_index. This will be the child at pnode->children[index]. 
  const Node *leftChild = pnode->children[key_index].get();
 
- for (const Node *cursor = leftChild; cursor != nullptr; cursor = cursor->children[cursor->totalItems].get()) {
+ for (const Node *cursor = leftChild; cursor != nullptr; cursor = cursor->children[cursor->getTotalItems()].get()) {
 
     pnode = cursor;
  }
