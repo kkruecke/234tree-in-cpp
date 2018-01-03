@@ -282,7 +282,7 @@ template<typename Key, typename Value> class tree234 {
 
     std::pair<bool, Node *> split_find(Node *pnode, Key key) noexcept; 
 
-    Node *convert_min(Node *pnode) noexcept;
+    Node *convert_findmin(Node *pnode) noexcept;
 
   public:
 
@@ -327,8 +327,6 @@ template<typename Key, typename Value> class tree234 {
     void insert(const value_type& pair) noexcept { insert(pair.first, pair.second); } 
 
     bool remove(Key key);
-
-    tree234<Key, Value> clone() const noexcept;
 
     void printlevelOrder(std::ostream&) const noexcept;
     
@@ -1027,7 +1025,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
         break;
    }
 }
-
+/*
 template<typename Key, typename Value> inline tree234<Key, Value> tree234<Key, Value>::clone() const noexcept
 {
   tree234<Key, Value> tree;
@@ -1036,9 +1034,9 @@ template<typename Key, typename Value> inline tree234<Key, Value> tree234<Key, V
 
   return tree;
 }
-/*
- * pre-order traversal clone.
- */
+*
+* pre-order traversal clone.
+ 
 template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node> &dest_node, const Node *parent) const noexcept
 {
  if (src_node != nullptr) { 
@@ -1085,7 +1083,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const
     dest_node = nullptr;
  } 
 }
-
+*/
 /*
  * Requires: childIndex is within the range for the type of node.
  * child is not nullptr.
@@ -1288,11 +1286,13 @@ template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key
 /*
  * find helper method.
  */
-template<typename Key, typename Value> bool tree234<Key, Value>::find_(cont Node *pnode, Key key) const noexcept
+template<typename Key, typename Value> bool tree234<Key, Value>::find_(const Node *pnode, Key key) const noexcept
 {
    if (pnode == nullptr) return false;
-
-   for (auto i = 0; i < pnode->getTotalItems(); ++i) {
+   
+   auto i = 0;
+   
+   for (; i < pnode->getTotalItems(); ++i) {
 
       if (key < pnode->key(i)) 
          return find_(pnode->children[i].get(), key); 
@@ -1531,7 +1531,7 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
      }
      
      // find min and convert 2-nodes as we search.
-     Node *pmin = convert_min(pchildSubTree);
+     Node *pmin = convert_findmin(pchildSubTree);
 
      pnode->keys_values[key_index] = pmin->keys_values[0]; // overwrite key to be deleted with its successor.
     
@@ -1545,7 +1545,7 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
  *  Converts 2-nodes to 3- or 4-nodes as we descend to the left-most leaf node of the substree rooted at pnode.
  *  Return min leaf node.
  */
-template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::convert_min(Node *pnode) noexcept
+template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::convert_findmin(Node *pnode) noexcept
 {
  while (true) {
  
