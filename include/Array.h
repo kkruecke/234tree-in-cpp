@@ -1,6 +1,6 @@
 template<class T, std::size_t sz> class Array {
-   int   size_;
-   T elements[sz]; 
+   std::size_t   size_;
+   T array[sz]; 
 
   public:
 
@@ -52,4 +52,155 @@ template<class T, std::size_t sz> class Array {
   constexpr reverse_iterator rend() noexcept;
   constexpr const_reverse_iterator rend() const noexcept;
   constexpr const_reverse_iterator crend() const noexcept;
+
+
+      // TODO: Add 'constexpr' and 'const' and 'noexcept' where appropriate.
+      // Iterators.
+       iterator
+       begin()
+       { return iterator(&array[0]); }
+ 
+       const_iterator
+       begin() const 
+       { return const_iterator(&array[0]); }
+ 
+       iterator
+       end() 
+       { return iterator(&array[_Nm]); }
+ 
+       const_iterator
+       end() const
+       { return const_iterator(&array[_Nm]); }
+ 
+       reverse_iterator 
+       rbegin()
+       { return reverse_iterator(end()); }
+ 
+       const_reverse_iterator 
+       rbegin() const
+       { return const_reverse_iterator(end()); }
+ 
+       reverse_iterator 
+       rend()
+       { return reverse_iterator(begin()); }
+ 
+       const_reverse_iterator 
+       rend() const
+       { return const_reverse_iterator(begin()); }
+ 
+       // Capacity.
+       size_type 
+       size() const { return _Nm; }
+ 
+       size_type 
+       max_size() const { return _Nm; }
+ 
+       bool 
+       empty() const { return size() == 0; }
+ 
+       // Element access.
+       reference
+       operator[](size_type __n)
+       { return array[__n]; }
+ 
+       const_reference
+       operator[](size_type __n) const
+       { return array[__n]; }
+ 
+       reference
+       at(size_type __n)
+       { return _at<_Nm>(__n); }
+ 
+       const_reference
+       at(size_type __n) const
+       { return _at<_Nm>(__n); }
+ 
+       reference 
+       front()
+       { return *begin(); }
+ 
+       const_reference 
+       front() const
+       { return *begin(); }
+ 
+       reference 
+       back()
+       { return _Nm ? *(end() - 1) : *end(); }
+ 
+       const_reference 
+       back() const
+       { return _Nm ? *(end() - 1) : *end(); }
+ 
+       _Tp* 
+       data()
+       { return &array[0]; }
+ 
+       const _Tp* 
+       data() const
+       { return &array[0]; }
+ 
+     private:
+       template<std::size_t _Mm> reference _at(int n)
+       {
+          if (n >= _Mm, false)
+             throw std::range_error("array::_at");
+
+          return array[n];
+       }
+
+       template<std::size_t _Mm> reference _at(int n)
+       {
+          if (n >= _Mm, false)
+             throw std::range_error("array::_at");
+
+          return array[n];
+       }
+ 
+        
+ size_type size() const { return _Nm; }
+ 
+      bool 
+       empty() const { return size() == 0; }
+ 
+       // Element access.
+       reference
+       operator[](size_type __n)
+       { return array[__n]; }
+ 
+       const_reference
+       operator[](size_type __n) const
+       { return array[__n]; }
+ 
+       reference
+       at(size_type __n)
+       { return _at<_Nm>(__n); }
+ 
+       const_reference
+       at(size_type __n) const
+       { return _at<_Nm>(__n); }
+ 
+      constexpr  reference
+       front()
+       { return *begin(); }
+ 
+       constexpr const_reference
+       front() const
+       { return *begin(); }
+ 
+      constexpr  reference
+       back()
+       { return _Nm ? *(end() - 1) : *end(); }
+ 
+       constexpr const_reference
+       back() const
+       { return _Nm ? *(end() - 1) : *end(); }
+ 
+       _Tp* 
+       data()
+       { return &array[0]; }
+ 
+       const _Tp* 
+       data() const
+       { return &array[0]; }
+ 
 };
