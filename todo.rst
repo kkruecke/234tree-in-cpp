@@ -1,4 +1,4 @@
 TODO
 ====
 
-Finish Array.h, test it, then make it a nested class of tree234.
+Array.h doesn't really seem worth the effort.

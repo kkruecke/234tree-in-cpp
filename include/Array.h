@@ -1,6 +1,7 @@
-template<class T, std::size_t sz> class Array {
-   std::size_t   size_;
-   T array[sz]; 
+template<class T, std::size_t _Num> class Array { // For 2 3 tree, Array<KeyValue, 2>. For 2 3 4 tree, Array<KeyValue, 3>
+
+   std::size_t   size_;  
+   T array[_Num]; 
 
   public:
 
@@ -55,6 +56,8 @@ template<class T, std::size_t sz> class Array {
 
 
       // TODO: Add 'constexpr' and 'const' and 'noexcept' where appropriate.
+      // TODO: increase size_ as elements are added. So check index value 
+      // TODO:
       // Iterators.
        iterator
        begin()
@@ -66,11 +69,11 @@ template<class T, std::size_t sz> class Array {
  
        iterator
        end() 
-       { return iterator(&array[_Nm]); }
+       { return iterator(&array[_Num]); }
  
        const_iterator
        end() const
-       { return const_iterator(&array[_Nm]); }
+       { return const_iterator(&array[_Num]); }
  
        reverse_iterator 
        rbegin()
@@ -90,10 +93,10 @@ template<class T, std::size_t sz> class Array {
  
        // Capacity.
        size_type 
-       size() const { return _Nm; }
+       size() const { return _Num; }
  
        size_type 
-       max_size() const { return _Nm; }
+       max_size() const { return _Num; }
  
        bool 
        empty() const { return size() == 0; }
@@ -109,11 +112,11 @@ template<class T, std::size_t sz> class Array {
  
        reference
        at(size_type __n)
-       { return _at<_Nm>(__n); }
+       { return _at<_Num>(__n); }
  
        const_reference
        at(size_type __n) const
-       { return _at<_Nm>(__n); }
+       { return _at<_Num>(__n); }
  
        reference 
        front()
@@ -125,11 +128,11 @@ template<class T, std::size_t sz> class Array {
  
        reference 
        back()
-       { return _Nm ? *(end() - 1) : *end(); }
+       { return _Num ? *(end() - 1) : *end(); }
  
        const_reference 
        back() const
-       { return _Nm ? *(end() - 1) : *end(); }
+       { return _Num ? *(end() - 1) : *end(); }
  
        _Tp* 
        data()
@@ -157,7 +160,7 @@ template<class T, std::size_t sz> class Array {
        }
  
         
- size_type size() const { return _Nm; }
+ size_type size() const { return _Num; }
  
       bool 
        empty() const { return size() == 0; }
@@ -173,11 +176,11 @@ template<class T, std::size_t sz> class Array {
  
        reference
        at(size_type __n)
-       { return _at<_Nm>(__n); }
+       { return _at<_Num>(__n); }
  
        const_reference
        at(size_type __n) const
-       { return _at<_Nm>(__n); }
+       { return _at<_Num>(__n); }
  
       constexpr  reference
        front()
@@ -189,11 +192,11 @@ template<class T, std::size_t sz> class Array {
  
       constexpr  reference
        back()
-       { return _Nm ? *(end() - 1) : *end(); }
+       { return _Num ? *(end() - 1) : *end(); }
  
        constexpr const_reference
        back() const
-       { return _Nm ? *(end() - 1) : *end(); }
+       { return _Num ? *(end() - 1) : *end(); }
  
        _Tp* 
        data()
