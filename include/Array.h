@@ -59,64 +59,61 @@ template<class T, std::size_t _Num> class Array { // For 2 3 tree, Array<KeyValu
       // TODO: increase size_ as elements are added. So check index value 
       // TODO:
       // Iterators.
-       iterator
-       begin()
+       constexpr iterator
+       begin() noexcept
        { return iterator(&array[0]); }
  
-       const_iterator
-       begin() const 
+       constexpr const_iterator
+       begin() const noexcept
        { return const_iterator(&array[0]); }
  
-       iterator
-       end() 
-       { return iterator(&array[_Num]); }
+       constexpr iterator
+       end() noexcept
+       { return iterator(&array[size_]); }
  
-       const_iterator
-       end() const
-       { return const_iterator(&array[_Num]); }
+       constexpr const_iterator
+       end() const noexcept
+       { return const_iterator(&array[size_]); } // <--
  
-       reverse_iterator 
-       rbegin()
+       constexpr reverse_iterator 
+       rbegin() noexcept
        { return reverse_iterator(end()); }
  
-       const_reverse_iterator 
-       rbegin() const
+       constexpr const_reverse_iterator 
+       rbegin() const noexcept
        { return const_reverse_iterator(end()); }
  
-       reverse_iterator 
-       rend()
+       constexpr reverse_iterator 
+       rend() noexcept
        { return reverse_iterator(begin()); }
  
-       const_reverse_iterator 
-       rend() const
+       constexpr const_reverse_iterator 
+       rend() const noexcept
        { return const_reverse_iterator(begin()); }
  
        // Capacity.
-       size_type 
-       size() const { return _Num; }
+       constexpr size_type 
+       size() const noexcept { return size_; }
  
-       size_type 
-       max_size() const { return _Num; }
- 
-       bool 
-       empty() const { return size() == 0; }
+       constexpr bool 
+       empty() const noexcept { return size() == 0; }
  
        // Element access.
        reference
-       operator[](size_type __n)
-       { return array[__n]; }
+       operator[](size_type i)
+       { return array[i]; }
  
        const_reference
-       operator[](size_type __n) const
-       { return array[__n]; }
+       operator[](size_type i) const
+       { return array[i]; }
  
        reference
-       at(size_type __n)
-       { return _at<_Num>(__n); }
+       at(size_type i)
+       { return _at<_Num>(i); }
  
        const_reference
        at(size_type __n) const
-       { return _at<_Num>(__n); }
+       { return _at<_Num>(i); }
  
        reference 
        front()
@@ -145,7 +142,7 @@ template<class T, std::size_t _Num> class Array { // For 2 3 tree, Array<KeyValu
      private:
        template<std::size_t _Mm> reference _at(int n)
        {
-          if (n >= _Mm, false)
+          if (n >= _Mm) // n > size_????
              throw std::range_error("array::_at");
 
           return array[n];
@@ -153,7 +150,7 @@ template<class T, std::size_t _Num> class Array { // For 2 3 tree, Array<KeyValu
 
        template<std::size_t _Mm> reference _at(int n)
        {
-          if (n >= _Mm, false)
+          if (n >= _Mm) // n > size_
              throw std::range_error("array::_at");
 
           return array[n];
