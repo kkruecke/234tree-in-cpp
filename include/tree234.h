@@ -1422,18 +1422,13 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)
 
 template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree, Key key)
 {
-  std::tuple<bool, Node *, int> result_tuple = {false, nullptr, 0};
+  std::tuple<bool, Node *, int> result_tuple;
 
-  Node *current = psubtree;
-
-  while (true) { 
+  for (Node *current = psubtree; true; current = std::get<1>(result_tuple)) { 
 
     if (current != root.get() && current->isTwoNode()) {
 
         current = convertTwoNode(current);
-        
-        std::cout << "Just convert 2-node in remove(). Printing tree:\n";
-        printlevelOrder(std::cout);
     }
 
     result_tuple = current->find(key);
@@ -1446,17 +1441,10 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
 
         return false;
 
-    } else {
-
-        current = const_cast<Node *>(std::get<1>(result_tuple));
     } 
   }
 
-  //Node *pnode = const_cast<Node *>(std::get<1>(result_tuple));
-
-  //int key_index = std::get<2>(result_tuple);
-
-  auto [b_found, pnode, key_index] = result_tuple;
+  auto [found, pnode, key_index] = result_tuple;
 
   if (pnode->isLeaf()) {
 
