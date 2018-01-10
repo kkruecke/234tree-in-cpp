@@ -22,10 +22,10 @@ class DebugPrinter;
     
 template<typename Key, typename Value> class tree234 {
     
-   union KeyValue { // This union is used to hold to two types of pairs: one has a non-const Key, the other a const Key.
+   union KeyValue { // This union is used to hold to two types of pairs: one pair has a non-const Key, the other pair has a const Key.
    
-       std::pair<Key, Value>        _pair;  // ...this eliminates constantly casting of const_cast<Key>(p.first) = some_noconst_key;
-       std::pair<const Key, Value>  _constkey_pair;  // but always return this member of the union.
+       std::pair<Key, Value>        _pair;  // ...this pair eliminates constantly having to do: const_cast<Key>(p.first) = some_noconst_key;
+       std::pair<const Key, Value>  _constkey_pair;  // but always pair shows that Key is intended to be const.
 
      public:    
        KeyValue() {} 
@@ -64,7 +64,7 @@ template<typename Key, typename Value> class tree234 {
        }
    };
    class Node; // Forward feference. 
-   class Node { // public nested node class Tree<Key, Value>::Node
+   class Node { 
      private:  
        friend class tree234<Key, Value>;             
        friend class DebugPrinter;
@@ -92,8 +92,8 @@ template<typename Key, typename Value> class tree234 {
        int getChildIndex() const noexcept;
     
        /* 
-        * Returns true if key is found in node and sets index so pNode->keys_values[index] == key
-        * Returns false if key is if not found, and sets next to the next in-order child that should be searched.
+        * Returns true if key is found in node and sets {Node * pnode, int index} such that index so pnode->keys_values[index] == key
+        * Returns false if key is if not found, and sets {Node * pnode, int index} such that pnode->keys_values[index] is the next Node is descent order.
         */
        std::tuple<bool, const typename tree234<Key, Value>::Node *, int>  find(Key key) const noexcept;
     
