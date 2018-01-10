@@ -22,10 +22,11 @@ class DebugPrinter;
     
 template<typename Key, typename Value> class tree234 {
     
-   union KeyValue { // This union is used to hold to two types of pairs: one pair has a non-const Key, the other pair has a const Key.
+   union KeyValue { // This union is used to hold to two types of pairs: one where first, of type Key, is const; the other pair where first is non-const.
+                    // It implements various move constructors and assignment constructors
    
        std::pair<Key, Value>        _pair;  // ...this pair eliminates constantly having to do: const_cast<Key>(p.first) = some_noconst_key;
-       std::pair<const Key, Value>  _constkey_pair;  // but always pair shows that Key is intended to be const.
+       std::pair<const Key, Value>  _constkey_pair; 
 
      public:    
        KeyValue() {} 
@@ -92,19 +93,20 @@ template<typename Key, typename Value> class tree234 {
        int getChildIndex() const noexcept;
     
        /* 
-        * Returns true if key is found in node and sets {Node * pnode, int index} such that index so pnode->keys_values[index] == key
-        * Returns false if key is if not found, and sets {Node * pnode, int index} such that pnode->keys_values[index] is the next Node is descent order.
+        * Returns true if key is found in node and sets {Node * pnode, int index} such that pnode->keys_values[index] == key
+        * Returns false if key is if not found, and sets {Node * pnode, int index} such that pnode->keys_values[index] is the next Node in insert search order.
         */
-       std::tuple<bool, const typename tree234<Key, Value>::Node *, int>  find(Key key) const noexcept;
+       std::tuple<bool, typename tree234<Key, Value>::Node *, int>  find(Key key) const noexcept;
     
        void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
 
        int insertKeyValue(Key key, const Value& value) noexcept;
        
-       // Remove key, if found, from node, shifting remaining keys_values to fill its gap.
+       // Remove key at index, if found, from node, shifting remaining keys_values to fill the gap.
        KeyValue removeKeyValue(int index) noexcept; 
     
        void connectChild(int childNum, std::shared_ptr<Node>& child) noexcept;
+
        /*
         * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
         */  
@@ -119,7 +121,7 @@ template<typename Key, typename Value> class tree234 {
         */
        Node *fuseWithChildren() noexcept; 
        
-        public:
+      public:
              
            Node() noexcept;
            
@@ -608,9 +610,9 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 /* 
    Requires:
    1. pnode is an internal node not a leaf node.
-   2. If pnode is a 3-node, key_index is 1 not 0.
+   2. If pnode is a 3-node, then key_index is 1 not 0.
    Returns:
-   pointer to successor node.
+   pointer to successor of internal node.
 
    Note: When a 2 3 tree node is a 3-node, it has two "right" chidren from the point of view of its first key and two "left" children from the point of view of its
    second key.
@@ -629,7 +631,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 /*
  Requires:
  1. pnode is a leaf node, either a 2 or 3-node
- 2. If pnode is 3-node, then key_index, the key index into pnode->keys_values[].key() must be 1, the second key. It can never be 0, the first key.
+ 2. If pnode is 3-node, then key_index, the index into pnode->keys_values[].key(), must be 1, the second key. It can never be 0, the first key.
  */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getLeafNodeSuccessor(const Node *pnode, int key_index) const 
 {
@@ -1025,65 +1027,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
         break;
    }
 }
-/*
-template<typename Key, typename Value> inline tree234<Key, Value> tree234<Key, Value>::clone() const noexcept
-{
-  tree234<Key, Value> tree;
 
-  CloneTree(root, tree.root, nullptr); 
-
-  return tree;
-}
-*
-* pre-order traversal clone.
- 
-template<typename Key, typename Value> void tree234<Key, Value>::CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node> &dest_node, const Node *parent) const noexcept
-{
- if (src_node != nullptr) { 
-
-   // copy node
-   dest_node = std::make_shared<Node>(*src_node,  const_cast<Node*>(parent));             
-
-   switch (src_node->totalItems) { // recurse
-
-      case 1: // two node
-      {    
-            CloneTree(src_node->children[0], dest_node->children[0], dest_node.get()); 
-            
-            CloneTree(src_node->children[1], dest_node->children[1], dest_node.get()); 
-
-            break;
-
-      } 
-      case 2: // three node
-      {
-            CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
-            
-            CloneTree(src_node->children[1], dest_node->children[1], dest_node.get());
-            
-            CloneTree(src_node->children[2], dest_node->children[2], dest_node.get());
-
-            break;
-      } 
-      case 3: // four node
-      {
-            CloneTree(src_node->children[0], dest_node->children[0], dest_node.get());
-            
-            CloneTree(src_node->children[1], dest_node->children[1], dest_node.get());
-            
-            CloneTree(src_node->children[2], dest_node->children[2], dest_node.get());
-            
-            CloneTree(src_node->children[3], dest_node->children[3], dest_node.get());
- 
-            break;
-      } 
-   }
- } else {
-
-    dest_node = nullptr;
- } 
-}
-*/
 /*
  * Requires: childIndex is within the range for the type of node.
  * child is not nullptr.
@@ -1108,7 +1052,7 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
  * Returns {true, *this, key's index} if key is found in node.
  * Returns {false, point to next child with which to continue the descent search downward (toward a leaf node), 0} if key not found. 
  */
-template<class Key, class Value> inline std::tuple<bool, const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::Node::find(Key lhs_key) const noexcept 
+template<class Key, class Value> inline std::tuple<bool, typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::Node::find(Key lhs_key) const noexcept 
 {
   for(auto i = 0; i < getTotalItems(); ++i) {
 
@@ -1120,7 +1064,7 @@ template<class Key, class Value> inline std::tuple<bool, const typename tree234<
      } else if (key(i) == lhs_key) {
 
          //next = nullptr;
-         return {true, this, i};
+         return {true, const_cast<Node *>(this), i};
      }
   }
 
@@ -1382,11 +1326,13 @@ template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::N
 /* 
  *  Split pseudocode: 
  *  
- *  Upon encountering a four node: split it into a 2-node
+ *  Upon encountering a four node: split it into a 2-node by doing:
  *  
- *  1. We move the largest key into a newly allocated 2-node and connect the two right most children of the input 3-node to it.
+ *  1. We move the largest key into a new 2-node and then connect the two right most children of the inputted 4-node to it.
  *  2. We convert pnode into a 2-node by setting totalItems to 1, but keeping its smallest key and its two left-most chidren, 
- *  3. We move the middle key up to the parent( which we know is not a 4-node; else it too would have been split already), and we connect the node step #1 to it as a new child.
+ *  3. We move the middle key up to the parent( which we know is not a 4-node; otherwise, it too would have already been split), and we connect the new node step from #1 to
+ *    it as a new child.
+ *
  *  Note: if pnode is the root, we special case this by creating a new root above the current root.
  *  
  */ 
@@ -1476,7 +1422,7 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)
 
 template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree, Key key)
 {
-  std::tuple<bool, const Node *, int> result_tuple = {false, nullptr, 0};
+  std::tuple<bool, Node *, int> result_tuple = {false, nullptr, 0};
 
   Node *current = psubtree;
 
@@ -1506,11 +1452,13 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
     } 
   }
 
-  Node *pnode = const_cast<Node *>(std::get<1>(result_tuple));
+  //Node *pnode = const_cast<Node *>(std::get<1>(result_tuple));
 
-  int key_index = std::get<2>(result_tuple);
+  //int key_index = std::get<2>(result_tuple);
 
-  if (std::get<1>(result_tuple)->isLeaf()) {
+  auto [b_found, pnode, key_index] = result_tuple;
+
+  if (pnode->isLeaf()) {
 
      // Remove from leaf node
      pnode->removeKeyValue(key_index); 
