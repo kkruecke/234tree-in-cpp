@@ -576,11 +576,8 @@ Requires:
       
     3. If position is in_between, current and key_index do not point to either the first key in the tree or last key. If the tree has only one node,
        the state can only be in_between if the first node is a 3-node.
-
     Returns:
-
     pair<const Node *, int>, where first[key_index].key() is next in-order key. Note, if the last key has already been visited, the pointer returned will be nullptr.
-
     The pseudo code for getting the successor is from: http://ee.usc.edu/~redekopp/cs104/slides/L19_BalancedBST_23.pdf:
 */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getSuccessor(const Node *current, int key_index) const noexcept
@@ -613,7 +610,6 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
    2. If pnode is a 3-node, then key_index is 1 not 0.
    Returns:
    pointer to successor of internal node.
-
    Note: When a 2 3 tree node is a 3-node, it has two "right" chidren from the point of view of its first key and two "left" children from the point of view of its
    second key.
  */
@@ -1265,17 +1261,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
       return; 
    } 
 
-   auto lambda_func = [&](Node *pnode) {  
-       if (pnode->isFourNode()) { 
-           
-           split(pnode); 
-           return pnode->parent;
-       }    
-       else {
-           return pnode; 
-       }
-      };
- 
    auto [bool_found, current] = split_find(root.get(), key);  // descent_transform(root.get(), key, lambda_func);
    
    if (bool_found) return;
@@ -1379,7 +1364,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
  * internal node is not a 2-node, we again convert all 2-nodes to 3- or 4-nodes as we descend. 
  * 
  * Conversion Strategies:
-
  * Case 1: If an adjacent sibling has 2 or 3 items (and the parent is a 3- or 4-node), we "steal" an item from sibling by
  * rotating items and moving subtree. See slide #51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *         
