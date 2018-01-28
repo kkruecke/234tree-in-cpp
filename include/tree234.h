@@ -100,7 +100,7 @@ template<typename Key, typename Value> class tree234 {
     
        void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
 
-       int insertKeyValue(Key key, const Value& value) noexcept;
+       int insert(Key key, const Value& value) noexcept;
        
        // Remove key at index, if found, from node, shifting remaining keys_values to fill the gap.
        KeyValue removeKeyValue(int index) noexcept; 
@@ -250,7 +250,7 @@ template<typename Key, typename Value> class tree234 {
 
     // Called during remove(Key key)
     bool remove(Node *location, Key key); 
-
+    
     // Called during remove(Key key, Node *) to convert two-node to three- or four-node during descent of tree.
     Node *convertTwoNode(Node *node) noexcept;
 
@@ -561,7 +561,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(tree2
 
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::initializer_list<std::pair<Key, Value>> il) noexcept : root(nullptr), tree_size{0} 
 {
-   for (auto& x: il) { // simply call insert(x)
+   for (auto& x: il) { // simply call tree234<Key, Value>::insert(x)
          
        insert(x.first, x.second);
    }
@@ -1054,12 +1054,10 @@ template<class Key, class Value> inline std::tuple<bool, typename tree234<Key, V
 
      if (lhs_key < key(i)) {
             
-         //next = children[i].get(); 
          return {false, children[i].get(), 0};
 
      } else if (key(i) == lhs_key) {
 
-         //next = nullptr;
          return {true, const_cast<Node *>(this), i};
      }
   }
@@ -1094,7 +1092,7 @@ template<typename Key, typename Value> inline std::shared_ptr<typename tree234<K
  * of inserted key.
  */
 
-template<typename Key, typename Value> int  tree234<Key, Value>::Node::insertKeyValue(Key lhs_key, const Value& lhs_value)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
+template<typename Key, typename Value> int  tree234<Key, Value>::Node::insert(Key lhs_key, const Value& lhs_value)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
 { 
   // start on right, examine items
   for(auto i = getTotalItems() - 1; i >= 0 ; --i) {
@@ -1266,7 +1264,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
    if (bool_found) return;
 
    // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
-   current->insertKeyValue(key, value); 
+   current->insert(key, value); 
    ++tree_size;
 }
 /*
@@ -1460,7 +1458,6 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
 
   return true;
 }
-
 /*
  *  Converts 2-nodes to 3- or 4-nodes as we descend to the left-most leaf node of the substree rooted at pnode.
  *  Return min leaf node.
