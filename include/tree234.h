@@ -573,13 +573,14 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
 Finding the successor of a given node 
 -------------------------------------
 Requires:
-    1. If position is beg, current and key_index MUST point to first key in tree. 
-    2. If position is end, current and key_index MUST point to last key in tree.
+    1. If position is beg, Node *current and key_index MUST point to first key in tree. 
+    2. If position is end, Node *current and key_index MUST point to last key in tree.
       
     3. If position is in_between, current and key_index do not point to either the first key in the tree or last key. If the tree has only one node,
        the state can only be in_between if the first node is a 3-node.
+
     Returns:
-    pair<const Node *, int>, where first[key_index].key() is next in-order key. Note, if the last key has already been visited, the pointer returned will be nullptr.
+    pair<const Node *, int>, where pnode->key(key_index) is next in-order key. Note, if the last key has already been visited, the pointer returned will be nullptr.
     The pseudo code for getting the successor is from: http://ee.usc.edu/~redekopp/cs104/slides/L19_BalancedBST_23.pdf:
 */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::getSuccessor(const Node *current, int key_index) const noexcept
