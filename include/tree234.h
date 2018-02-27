@@ -1262,7 +1262,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
       return; 
    } 
 
-   auto [bool_found, current] = split_find(root.get(), key);  // descent_transform(root.get(), key, lambda_func);
+   auto [bool_found, current] = split_find(root.get(), key);  
    
    if (bool_found) return;
 
@@ -1272,9 +1272,12 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
 }
 /*
  * Called by insert(Key key, const Value& value) to determine if key exits or not.
- *
+
+ * Recursive method that searches the tree for key. It split 4-nodes as they are encountered. If key is not found, it terminates at the leaf node where key should be inserted and returns
+ * the  pair {true, pnode_where_key_found}; otherwise, it returns {false, pnode_leaf_where_key_should_be_inserted}.
+
  * Precondition: pnode is never nullptr.
- * Returns pair<bool, const Node>, where first indicates if key already exists or not, and second is the node where it exists, if first is true;
+ * Returns pair<bool, const Node *>, where first indicates if key already exists or not, and second is the node where it exists, if first was true;
  * otherwise, if first is false, second is the leaf into which key and value should be inserted.
  */
 template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::split_find(Node *pnode, Key key) noexcept
