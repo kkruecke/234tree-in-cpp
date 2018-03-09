@@ -65,6 +65,11 @@ template<typename Key, typename Value> class tree234 {
    };
    class Node; // Forward feference. 
    class Node { // The tree node class. 
+     /*
+       Note: Since Node depends on both of tree23's template parameters Key and Value, it is safe  
+       to make it a nested class. Hand it depended on only one template parameter, it would not be 
+       a nested class.
+      */
      private:  
        friend class tree234<Key, Value>;             
        friend class DebugPrinter;
