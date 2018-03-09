@@ -494,11 +494,11 @@ template<typename Key, typename Value> const int  tree234<Key, Value>::Node::MAX
  * Node constructors. Note: While all children are initialized to nullptr, this is not really necessary. 
  * Instead your can simply set children[0] = nullptr, since a Node is a leaf if and only if children[0] == 0'
  */
-template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node()  noexcept : totalItems(0), parent(nullptr), children()
+template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node()  noexcept : totalItems{0}, parent{nullptr}, children()
 { 
 }
 
-template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(Key small, const Value& value_in, Node *parent_in)  noexcept : totalItems(1), parent(parent_in), children()
+template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(Key small, const Value& value_in, Node *parent_in)  noexcept : totalItems{1}, parent{parent_in}, children()
 { 
    key(0) = small; 
    value(0) = value_in;
