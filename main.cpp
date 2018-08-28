@@ -4,8 +4,9 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
-#include "include/tree234.h"
-#include "include/test.h"
+#include "tree234.h"
+#include "test.h"
+#include "sample-value.h"
 
 using namespace std;
 
@@ -170,6 +171,12 @@ int main(int argc, char** argv)
   cout << "\n==== Final Tree ========\n" << endl;
   //tree.levelOrderTraverse(BasicTreePrinter{});
   tree.printlevelOrder(cout);
+  
+  {
+  tree234<int, sample_value> x{ {1, sample_value()} , {10, sample_value()}, {20, sample_value()}, {30, sample_value()}, {50, sample_value()}, {-1, sample_value()}, {-10, sample_value()}, {0, sample_value()}, {34, sample_value()}, {2, sample_value()},  {99, sample_value()}, {7, sample_value()}, {4, sample_value()} };
+  auto debug = 10;
+  cout << "==================" << endl;
+  }
   
   cout << endl;
   cout << flush;

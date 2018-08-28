@@ -29,7 +29,11 @@ template<typename Key, typename Value> class tree234 {
 
      public:    
        KeyValue() {} 
-      ~KeyValue() {}
+      ~KeyValue() 
+       {
+         _pair.first.~Key();  // Note: Anonymous unions require explicit destructor calls.
+         _pair.second.~Value();
+       } 
       
        KeyValue(Key key, const Value& value) : _pair{key, value} {}
        
