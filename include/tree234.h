@@ -23,7 +23,7 @@ template<typename Key, typename Value> class tree234 {
 
      /*
       * This union eliminates always having to do: const_cast<Key>(p.first) = some_noconst_key;
-      * by holding two pairs: _constkey_pair, where member first is 'const Key'; and _pair, where member 
+      * by holding two different types of pairs: _constkey_pair, where member first is 'const Key'; and _pair, where member 
       * first is 'Key'.
       *
       * Note 1: Anonymous unions do not implicitly destruct their members, so we do so explicitly.
