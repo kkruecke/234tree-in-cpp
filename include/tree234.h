@@ -1350,11 +1350,11 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
    largestNode->connectChild(0, pnode->children[2]); 
    largestNode->connectChild(1, pnode->children[3]);
    
-   // 2. Make pnode a 2-node. Note: It stoll retains its two left-most children becoming 
+   // 2. Make pnode a 2-node. Note: It still retains its two left-most children, 
    pnode->totalItems = 1;
    
    // 3. Insert middle value into parent, or if pnode is the root, create a new root above pnode and 
-   // adopt pnode and largest as children.
+   // adopt 'pnode' and 'largest' as children.
    if (root.get() == pnode) {
    
      std::shared_ptr<Node> new_root = std::make_shared<Node>(std::move(pnode->keys_values[1])); // Middle value will become new root
@@ -1533,7 +1533,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    for (; node2_index < parentKeyTotal; ++node2_index) {
        //
        // If we never break, then node->keys_values[0] is greater than the last key of its parent, which means
-       // node == parent->children[parent->totalItems], the last child. 
+       // node == parent->children[parent->totalItems]. It is the last child. 
        //
 
        if (node->key(0) < parent->key(node2_index) ) { 
