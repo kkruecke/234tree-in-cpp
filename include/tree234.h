@@ -20,19 +20,26 @@ template<typename Key, typename Value> class tree234;  // Forward declaration
 class DebugPrinter; 
     
 template<typename Key, typename Value> class tree234 {
-    
-   union KeyValue { // This union is used to hold to two types of pairs: one where pair::first (of type Key) is const; the other, in which pair::first is not const.
-                    // To make it easier to use, it implements a move constructor and move assignment constructor, as well as the usual constructors.
-   
-       std::pair<Key, Value>        _pair;  // ...this pair eliminates constantly having to do: const_cast<Key>(p.first) = some_noconst_key;
+
+     /*
+      * This union eliminates always having to do: const_cast<Key>(p.first) = some_noconst_key;
+      * by holding two pairs: _constkey_pair, where member first is 'const Key'; and _pair, where member 
+      * first is 'Key'.
+      *
+      * Note 1: Anonymous unions do not implicitly destruct their members, so we do so explicitly.
+      * Note 2: A user declared destructor by default causes the move constructor and move assignment to be not declared, so
+      * we declare and defined them.
+      */
+
+   union KeyValue { 
+       std::pair<Key, Value>        _pair;  // ...this pair
        std::pair<const Key, Value>  _constkey_pair; 
 
      public:    
        KeyValue() {} 
       ~KeyValue() 
        {
-         _pair.first.~Key();  // Note: Anonymous unions require explicit destructor calls.
-         _pair.second.~Value();
+         _pair.first.~Key();           _pair.second.~Value();
        } 
       
        KeyValue(Key key, const Value& value) : _pair{key, value} {}
