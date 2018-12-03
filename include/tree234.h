@@ -74,7 +74,9 @@ template<typename Key, typename Value> class tree234 {
           return ostr;
        }
    };
+
    class Node; // Forward feference. 
+
    class Node { // The tree node class. 
      /*
        Note: Since Node depends on both of tree23's template parameters Key and Value, it is safe  
@@ -88,7 +90,7 @@ template<typename Key, typename Value> class tree234 {
 
        enum class NodeType : int { two_node=1, three_node=2, four_node=3 };
     
-       Node *parent; /* parent is only used for navigation of the tree. It does not own the memory
+       Node *parent; /* parent is only used for navigation of the tree. It never owns the memory
                         it points to. */
     
        int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */   
