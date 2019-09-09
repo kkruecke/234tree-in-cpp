@@ -26,9 +26,10 @@ template<typename Key, typename Value> class tree234 {
       * by holding two different types of pairs: _constkey_pair, where member first is 'const Key'; and _pair, where member 
       * first is 'Key'.
       *
-      * Note 1: Anonymous unions do not implicitly destruct their members, so we do so explicitly.
+      * Note 1: Anonymous unions do not implicitly destruct their members. Therefore we must explicitly call their destructors within 
+      *         KeyValue::~KeyValue().
       * Note 2: A user declared destructor by default causes the move constructor and move assignment to be not declared, so
-      * we declare and defined them.
+      *         we explictily declare and defined them.
       */
 
    union KeyValue { 
@@ -39,7 +40,8 @@ template<typename Key, typename Value> class tree234 {
        KeyValue() {} 
       ~KeyValue() 
        {
-         _pair.first.~Key();           _pair.second.~Value();
+         _pair.first.~Key();
+         _pair.second.~Value();
        } 
       
        KeyValue(Key key, const Value& value) : _pair{key, value} {}
