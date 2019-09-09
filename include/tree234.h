@@ -40,6 +40,7 @@ template<typename Key, typename Value> class tree234 {
        KeyValue() {} 
       ~KeyValue() 
        {
+         // Anonymous unions do not implicitly destruct their members. It must be done explicitly.
          _pair.first.~Key();
          _pair.second.~Value();
        } 
@@ -81,9 +82,8 @@ template<typename Key, typename Value> class tree234 {
 
    class Node { // The tree node class. 
      /*
-       Note: Since Node depends on both of tree23's template parameters Key and Value, it is safe  
-       to make it a nested class. Hand it depended on only one template parameter, it would not be 
-       a nested class.
+       Note: Since Node depends on both of tree234's template parameters, on both Key and Value, we can 
+       make it a nested class. Had it depended on only one template parameter, it could not be a nested class.
       */
      private:  
        friend class tree234<Key, Value>;             
@@ -112,8 +112,9 @@ template<typename Key, typename Value> class tree234 {
        int getChildIndex() const noexcept;
     
        /* 
-        * Returns true if key is found in node and sets {Node * pnode, int index} such that pnode->keys_values[index] == key
-        * Returns false if key is if not found, and sets {Node * pnode, int index} such that pnode->keys_values[index] is the next prospective node one level lower to be searched next.
+        * Returns {true, Node * pnode, int index} if key is found in node and sets pnode and index such that pnode->keys_values[index] == key
+        * Returns {false, Node * pnode, int index} if key is if not found, and sets pnode and index such that pnode->keys_values[index] is the
+        * next prospective node to be searched one level lower in the tree.
         */
        std::tuple<bool, typename tree234<Key, Value>::Node *, int>  find(Key key) const noexcept;
     
@@ -262,8 +263,6 @@ template<typename Key, typename Value> class tree234 {
     template<typename Functor> void DoPostOrderTraverse(Functor f,  const Node *proot) const noexcept;
 
     template<typename Functor> void DoPreOrderTraverse(Functor f, const Node *proot) const noexcept;
-
-    void CloneTree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node>& dest_node, const Node *parent) const noexcept; 
 
     void split(Node *node) noexcept;  // called during insert(Key key) to split 4-nodes when encountered.
 
@@ -1174,7 +1173,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(Ke
 template<typename Key, typename Value> void tree234<Key, Value>::Node::insertChild(int insert_index, std::shared_ptr<Node>& newChild) noexcept
 {
    int last_index = getTotalItems() - 1;  // While totalItems reflects the correct number of keys, the number of children currently is also equal to the number of keys.
- 
 
    // ...move its children right, starting from its last child index and stopping just before insert_index.
    for(auto i = last_index; i >= insert_index; i--)  {
@@ -1293,12 +1291,12 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
 /*
  * Called by insert(Key key, const Value& value) to determine if key exits or not.
 
- * Recursive method that searches the tree for key. It split 4-nodes as they are encountered. If key is not found, it terminates at the leaf node where key should be inserted and returns
- * the  pair {true, pnode_where_key_found}; otherwise, it returns {false, pnode_leaf_where_key_should_be_inserted}.
+ * Recursive method that searches the tree for key. It splits 4-nodes as they are encountered. If key is not found, it terminates at the leaf node where key should be inserted and returns
+ * the pair {true, pnode_where_key_found}; otherwise, it returns {false, pnode_leaf_where_key_should_be_inserted}.
 
  * Precondition: pnode is never nullptr.
- * Returns pair<bool, const Node *>, where first indicates if key already exists or not, and second is the node where it exists, if first was true;
- * otherwise, if first is false, second is the leaf into which key and value should be inserted.
+ * Returns pair<bool, const Node *>, where first indicates if key already exists or not, and second is the node where it exists, if first was true, and if first was false,
+ * second is the leaf into which key and value should be inserted.
  */
 template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::split_find(Node *pnode, Key key) noexcept
 {
@@ -1401,30 +1399,30 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)
 
    else if (root->isLeaf()) { 
        
-         int index = 0;
-         
-         for (; index < root->getTotalItems(); ++index) {
+      int index = 0;
+      
+      for (; index < root->getTotalItems(); ++index) {
 
-             if (root->key(index) == key) {
+          if (root->key(index) == key) {
 
-                // Remove key from root and puts its in-order successor (if it exists) into its place. 
-                root->removeKeyValue(index); 
-                              
-                if (root->isEmpty()) {
+             // Remove key from root and puts its in-order successor (if it exists) into its place. 
+             root->removeKeyValue(index); 
+                           
+             if (root->isEmpty()) {
 
-                   root.reset(); // delete root if tree now empty. 
-               }  
+                root.reset(); // delete root if tree now empty. 
+            }  
 
-                --tree_size;
-                return true;
-             } 
-         }
+             --tree_size;
+             return true;
+          } 
+      }
 
-         return false;
+      return false;
 
    } else { // there are more nodes than just the root.
  
-       return remove(root.get(), key); 
+      return remove(root.get(), key); 
   }
 }
 
