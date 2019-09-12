@@ -19,24 +19,6 @@ template<class Key, class Value> void print(const tree234<Key, Value>& tree, ost
    
    ostr << endl;
 }
-/*
-template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, ostream& ostr)
-{
-   // This works
-   typename tree234<Key, Value>::const_iterator start{tree,  tree234<Key, Value>::iterator_position::end};
-   typename tree234<Key, Value>::const_iterator finish(tree, tree234<Key, Value>::iterator_position::beg);
- 
-   while( start != finish) {
- 
-      auto& pr = *start;
-      ostr << pr.first << ", " << flush;
-           
-      --start;
-   }
-   
-   ostr << endl;
-}
-*/
 
 template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, ostream& ostr)
 {

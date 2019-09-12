@@ -371,7 +371,6 @@ template<typename Key, typename Value> class tree234 {
     }
 
     // Bidirectional stl-compatible constant iterator
-    //class iterator : public std::iterator<std::bidirectional_iterator_tag, typename tree234<Key, Value>::value_type> { 
     class iterator { 
                                                  
       public:
@@ -483,10 +482,10 @@ template<typename Key, typename Value> class tree234 {
   
     const_iterator begin() const noexcept;  
     const_iterator end() const noexcept;  
-  
-    using  reverse_iterator       = std::reverse_iterator<typename tree234<Key, Value>::iterator>; 
-    using  const_reverse_iterator = std::reverse_iterator<typename tree234<Key, Value>::const_iterator>;
-
+    
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+    
     reverse_iterator rbegin() noexcept;  
     reverse_iterator rend() noexcept;  
  
