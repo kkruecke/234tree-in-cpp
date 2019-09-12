@@ -435,7 +435,7 @@ template<typename Key, typename Value> class tree234 {
          typename tree234<Key, Value>::KeyValue *operator->() noexcept;
     };
 
-    class const_iterator : public std::iterator<std::bidirectional_iterator_tag, const value_type> {
+    class const_iterator {
                                                  
       public:
         using difference_type   = std::ptrdiff_t; 
