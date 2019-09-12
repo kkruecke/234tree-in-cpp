@@ -371,9 +371,22 @@ template<typename Key, typename Value> class tree234 {
     }
 
     // Bidirectional stl-compatible constant iterator
-    class iterator : public std::iterator<std::bidirectional_iterator_tag, typename tree234<Key, Value>::value_type> { 
+    //class iterator : public std::iterator<std::bidirectional_iterator_tag, typename tree234<Key, Value>::value_type> { 
+    class iterator { 
                                                  
-       friend class tree234<Key, Value>;   
+       friend class tree234<Key, Value>; 
+       /*
+        TODO: Use these typedefs/using instead of deriving from std::iterator<....>   
+
+        See: https://fluentcpp.com/2018/05/08/std-iterator-deprecated/
+       */
+
+        using difference_type = ptrdiff_t; //	Type to express the result of subtracting one iterator from another.
+        using value_type =  typename tree234<Key, Value>::value_type; //	The type of the element the iterator can point to.
+        using pointer = typename tree234<Key, Value>::value_type *; //	The type of a pointer to an element the iterator can point to.
+        using reference	= typename tree234<Key, Value>::value_type&; // The type of a reference to an element the iterator can point to.
+        using iterator_category = std::bidirectional_iterator_tag; 
+
 
       private:
          tree234<Key, Value>& tree; 
