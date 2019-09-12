@@ -374,19 +374,15 @@ template<typename Key, typename Value> class tree234 {
     //class iterator : public std::iterator<std::bidirectional_iterator_tag, typename tree234<Key, Value>::value_type> { 
     class iterator { 
                                                  
-       friend class tree234<Key, Value>; 
-       /*
-        TODO: Use these typedefs/using instead of deriving from std::iterator<....>   
-
-        See: https://fluentcpp.com/2018/05/08/std-iterator-deprecated/
-       */
-
-        using difference_type = ptrdiff_t; //	Type to express the result of subtracting one iterator from another.
-        using value_type =  typename tree234<Key, Value>::value_type; //	The type of the element the iterator can point to.
-        using pointer = typename tree234<Key, Value>::value_type *; //	The type of a pointer to an element the iterator can point to.
-        using reference	= typename tree234<Key, Value>::value_type&; // The type of a reference to an element the iterator can point to.
+      public:
+        using difference_type   = std::ptrdiff_t; 
+        using value_type        = tree234<Key, Value>::value_type; 
+        using reference	        = value_type&; 
+        using pointer           = value_type*;
+        
         using iterator_category = std::bidirectional_iterator_tag; 
-
+                                            
+        friend class tree234<Key, Value>; 
 
       private:
          tree234<Key, Value>& tree; 
@@ -441,8 +437,16 @@ template<typename Key, typename Value> class tree234 {
     };
 
     class const_iterator : public std::iterator<std::bidirectional_iterator_tag, const value_type> {
-
-         friend class tree234<Key, Value>;   
+                                                 
+      public:
+        using difference_type   = std::ptrdiff_t; 
+        using value_type        = tree234<Key, Value>::value_type; 
+        using reference	        = const value_type&; 
+        using pointer           = const value_type*;
+        
+        using iterator_category = std::bidirectional_iterator_tag; 
+                                            
+        friend class tree234<Key, Value>;   
 
       private:
          iterator iter; 
