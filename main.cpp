@@ -42,6 +42,7 @@ template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, os
 {
    // This has a  bug. 
    auto end = tree.rend();
+   
    auto iter = tree.rbegin();
    
    while( iter != end) {
