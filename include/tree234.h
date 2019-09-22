@@ -2048,6 +2048,21 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
      return *this;  // If tree is empty or we are at the end, do nothing.
   }
 
+  // TODO: Use structured binding.
+  /*-- 
+  std::pair<const Node *, int> pair = tree.getSuccessor(cursor, key_index);
+
+  if (pair.first == nullptr) { // nullptr implies there is no successor to cursor->keys_values[key_index].key().
+                               // Therefore cached_cursor already points to last key/value in tree.
+
+       current = nullptr; // We are now at the end. 
+
+  } else {
+
+      cursor = current = pair.first; 
+      key_index = pair.second;
+  }
+  */
   auto [curr_ptr, index] = tree.getSuccessor(cursor, key_index);
 
   if (curr_ptr == nullptr) { // nullptr implies there is no successor to cursor->keys_values[key_index].key().
@@ -2074,7 +2089,15 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
       current = cursor; 
       return *this;
   }
-  
+  /*--  
+  std::pair<const Node *, int> pair = tree.getPredecessor(cursor, key_index);
+
+  if (pair.first != nullptr) { // nullptr implies there is no predecessor cursor->key(key_index).
+      
+      cursor = current = pair.first; 
+      key_index = pair.second;
+  }
+  */
   auto [curr_ptr, index] = tree.getPredecessor(cursor, key_index);
 
   if (curr_ptr != nullptr) { // nullptr implies there is no predecessor cursor->key(key_index).
@@ -2093,7 +2116,7 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
 /*
  */
 
-// TODO: Can we use C++17 range-base for __end?
+// TODO: Can we use C++17 range-base for __end by simply having end() be nullptr.
 template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(const iterator& lhs) const
 {
  if (&lhs.tree == &tree) {
