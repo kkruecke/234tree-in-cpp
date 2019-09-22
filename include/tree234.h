@@ -387,7 +387,7 @@ template<typename Key, typename Value> class tree234 {
          tree234<Key, Value>& tree; 
 
          const Node *current;
-         const Node *cursor;
+         const Node *cursor; //  points to "current" node.
 	 int key_index;
          
          int getChildIndex(const typename tree234<Key, Value>::Node *p) const noexcept;
@@ -674,7 +674,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
       return {pnode, key_index + 1}; 
   }
-  // Key is the right most key in a leaf node
+  // Key is the right-most key in a leaf node
   Node *successor = nullptr;
 
   auto child_index = pnode->getChildIndex(); 
@@ -707,19 +707,22 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
        for (; successor < parent->getTotalItems() && current_key > parent->key(successor); ++successor);
          
        return {parent, successor};
-       
 
   } else { 
       /* 
-        ...otherwise, we know that pnode that for 2, 3 and 4-nodes pnode is NOT the right most child of its parent (and it is a leaf). We know that if it is a 2, 3, or 4-node, it is not the right most. 
-        We also know that key_index is the right most value of pnode--right? So need to ascertain the index next_index such that pnode->parent->key(next_index) > pnode->key(key_index). How can next_index be calculated
-        from the input parameters and this use-case?
-        Comment: We can view a 3-node as two catenated 2-nodes in which the the middle child is shared between these two "2-nodes", like this
+        TODO: Rewrite these comments and rewrite the comments for the whole routine so the logic is clear. 
+
+        ...otherwise, we know that pnode is NOT the right most child of its parent (and it is a leaf). We also know that key_index is the right most value of pnode(obviously, in the case of a 2-node, key_index can only have the value zero, and it
+        is considered also as the "right-most" index.
+
+        We need to ascertain the next index, next_index, such that pnode->parent->key(next_index) > pnode->key(key_index). To determine next_index, we can view a 3-node as two catenated 2-nodes in which the the middle child is shared between these
+        two "2-nodes", like this
       
            [3,       5]  
            /  \     / \
           /    \   /   \
         [1, 2]  [3, 4]  [6]
+
         While a 4-node can be viewed as three catenated 2-nodes in which the two middle child are shared
           
            [2,   4,   6]  
@@ -2048,31 +2051,16 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
      return *this;  // If tree is empty or we are at the end, do nothing.
   }
 
-  // TODO: Use structured binding.
-  /*-- 
-  std::pair<const Node *, int> pair = tree.getSuccessor(cursor, key_index);
-
-  if (pair.first == nullptr) { // nullptr implies there is no successor to cursor->keys_values[key_index].key().
-                               // Therefore cached_cursor already points to last key/value in tree.
-
-       current = nullptr; // We are now at the end. 
-
-  } else {
-
-      cursor = current = pair.first; 
-      key_index = pair.second;
-  }
-  */
-  auto [curr_ptr, index] = tree.getSuccessor(cursor, key_index);
+  auto [successor, index] = tree.getSuccessor(cursor, key_index);
 
   if (curr_ptr == nullptr) { // nullptr implies there is no successor to cursor->keys_values[key_index].key().
-                               // Therefore cached_cursor already points to last key/value in tree.
+                             // Therefore cursor already points to last key/value in tree.
 
        current = nullptr; // We are now at the end. 
 
   } else {
 
-      cursor = current = curr_ptr; 
+      cursor = current = successor; 
       key_index = index;
   }
   return *this;
@@ -2089,22 +2077,16 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
       current = cursor; 
       return *this;
   }
-  /*--  
-  std::pair<const Node *, int> pair = tree.getPredecessor(cursor, key_index);
-
-  if (pair.first != nullptr) { // nullptr implies there is no predecessor cursor->key(key_index).
-      
-      cursor = current = pair.first; 
-      key_index = pair.second;
-  }
-  */
-  auto [curr_ptr, index] = tree.getPredecessor(cursor, key_index);
+  
+  auto [predecessor, index] = tree.getPredecessor(cursor, key_index);
 
   if (curr_ptr != nullptr) { // nullptr implies there is no predecessor cursor->key(key_index).
       
-      cursor = current = curr_ptr; 
+      cursor = current = predecessor; 
       key_index = index;
-  }
+
+  } // TODO: Do we need an else statement like in iterator::increment() that sets current to nullptr? I need to create a test case for this.
+  
   return *this;
 }
 
