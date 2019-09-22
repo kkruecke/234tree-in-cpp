@@ -1968,6 +1968,7 @@ template<class Key, class Value> tree234<Key, Value>::iterator::iterator(tree234
    if (!tree.isEmpty()) {
 
       current = tree.min(tree.root.get());
+
   } else {
 
       current = nullptr;
@@ -2047,19 +2048,18 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
      return *this;  // If tree is empty or we are at the end, do nothing.
   }
 
-  std::pair<const Node *, int> pair = tree.getSuccessor(cursor, key_index);
+  auto [curr_ptr, index] = tree.getSuccessor(cursor, key_index);
 
-  if (pair.first == nullptr) { // nullptr implies there is no successor to cursor->keys_values[key_index].key().
+  if (curr_ptr == nullptr) { // nullptr implies there is no successor to cursor->keys_values[key_index].key().
                                // Therefore cached_cursor already points to last key/value in tree.
 
        current = nullptr; // We are now at the end. 
 
   } else {
 
-      cursor = current = pair.first; 
-      key_index = pair.second;
+      cursor = current = curr_ptr; 
+      key_index = index;
   }
-
   return *this;
 }
 
@@ -2075,14 +2075,13 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
       return *this;
   }
   
-  std::pair<const Node *, int> pair = tree.getPredecessor(cursor, key_index);
+  auto [curr_ptr, index] = tree.getPredecessor(cursor, key_index);
 
-  if (pair.first != nullptr) { // nullptr implies there is no predecessor cursor->key(key_index).
+  if (curr_ptr != nullptr) { // nullptr implies there is no predecessor cursor->key(key_index).
       
-      cursor = current = pair.first; 
-      key_index = pair.second;
+      cursor = current = curr_ptr; 
+      key_index = index;
   }
-
   return *this;
 }
 
@@ -2093,6 +2092,8 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
 }
 /*
  */
+
+// TODO: Can we use C++17 range-base for __end?
 template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(const iterator& lhs) const
 {
  if (&lhs.tree == &tree) {

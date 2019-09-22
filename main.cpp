@@ -75,7 +75,7 @@ int main(int argc, char** argv)
   tree.printlevelOrder(cout);
    
   // Lambda for printing ints in tree234
-  // auto print_keys = [&](int i) -> ostream& { cout << i << ' '; return cout; };
+  // auto print_keys = [&](auto& x) -> ostream& { cout << x << ' '; return cout; };
    
   cout << "\n======================" << endl;
     
@@ -98,6 +98,7 @@ int main(int argc, char** argv)
   auto print_keys = [&](const pair<int, int>& pr) { 
                            cout << pr.first << ", "; 
         }; // lambda closure
+
   cout << "\nUsing traverse methods to print tree in-order:" << endl;
  
   tree.inOrderTraverse(print_keys);
