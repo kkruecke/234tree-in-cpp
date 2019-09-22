@@ -1,7 +1,7 @@
 TODO 
 ====
 
-* Use C++17 range-base for __end by simply having end() be nullptr.
+* Use C++17 range-base for __end by simply having end() be nullptr. Does iterator need the cursor variable?
 
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
