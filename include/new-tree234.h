@@ -412,10 +412,25 @@ template<typename Key, typename Value> class tree234 {
          iterator(const iterator& lhs); 
 
          iterator(iterator&& lhs); 
- 
+
+         /* 
          bool operator==(const iterator& lhs) const;
          
          constexpr bool operator!=(const iterator& lhs) const { return !operator==(lhs); }
+         */
+
+         struct End {};
+
+         // Compile error. Does 
+         constexpr friend auto operator!=(const iterator& lhs, const End& end) 
+         { 
+            return lhs.current != nullptr;
+         }
+
+         constexpr friend auto operator!=(const End& end, const iterator& lhs) 
+         {
+            return lhs.current != nullptr; 
+         }
 
          constexpr const std::pair<const Key, Value>& dereference() const noexcept 
          { 
@@ -461,7 +476,7 @@ template<typename Key, typename Value> class tree234 {
          // This ctor provide implicit conversion from iterator to const_iterator     
          const_iterator(const typename tree234<Key, Value>::iterator& lhs); 
 
-         bool operator==(const const_iterator& lhs) const;
+         //--bool operator==(const const_iterator& lhs) const;
          bool operator!=(const const_iterator& lhs) const;
          
          const_iterator& operator++() noexcept;
@@ -682,31 +697,29 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   if (pnode->parent->children[child_index].get() == pnode->parent->getRightMostChild()) { 
 
   /*
-   pnode is a leaf node, and pnode is the right-most child of its parent, and key_index is the right-most index or last index into pnode->keys(). To find the successor, we need the first ancestor node that contains
-   a value great than current_key. To find this ancester, we ascend the tree until we encounter the first ancestor node that is not a right-most child of its parent, that is, where
-
-   ancester != ancestor->parent->getRightMostChild(). If the ancestor becomes equal to the root before this happens, there is no successor: pnode is the right most node in the tree and key_index is its right-most key.
+   pnode is a leaf node. pnode is the right-most child of its parent, and key_index is the right-most index or last index into pnode->keys(). To find the successor, we the find first ancestor node that contains
+   a value great than current_key. To find this ancester, we ascend the tree until we encounter the first ancestor node that is not a right-most child of its parent. If the ancestor becomes equal to the root, there
+   is no successor: pnode is the right most node in the tree and key_index is its right-most key.
    */
-     auto child = pnode;
-     auto parent = child->parent;
-   
-     // Ascend the parent pointer as long as the child continues to be the right most child (of its parent). 
-     for(;child == parent->getRightMostChild(); parent = parent->parent)  { 
-   
-         // child is still the right most child, but if it is also the root, then, there is no successor. child holds the largest keys in the tree. 
-         if (parent == root.get()) {
-          
-             return {nullptr, 0};  // To indicate "no-successor" we return the pair: {nullptr, 0}. 
-         }
-   
-         child = parent;
-     }
-     // We select the ancestor's smallest key that is larger than current_key.
-     auto successor_index = 0;
+       const Node *parent = pnode->parent;
+       
+       // Ascend the parent pointer as long as the node continues to be the right most child (of its parent). 
+       for(;pnode == parent->getRightMostChild(); parent = parent->parent)  { 
+       
+           // pnode is still the right most child, but if it is also the root, then, there is no successor. pnode holds the largest keys in the tree. 
+           if (parent == root.get()) {
+              
+               return {nullptr, 0};  // To indicate "no-successor" we return the pair: {nullptr, 0} TODO: I could return a tuple<bool, const Node *, int>
+           }
+       
+           pnode = parent;
+       }
+       // We select the ancestor's smallest key that is larger than current_key.
+       auto successor_index = 0;
 
-     for (; successor_index < parent->getTotalItems() && current_key > parent->key(successor_index); ++successor_index);
-     
-     return {parent, successor_index};
+       for (; successor_index < parent->getTotalItems() && current_key > parent->key(successor_index); ++successor_index);
+         
+       return {parent, successor_index};
 
   } else { // Handle the case: pnode is not the right-most child of its parent. 
       /* 
@@ -2014,6 +2027,27 @@ template<class Key, class Value> inline typename tree234<Key, Value>::const_iter
 
 template<class Key, class Value> inline typename tree234<Key, Value>::iterator tree234<Key, Value>::end() noexcept
 {
+  /* 
+    TODO: Simply return
+
+    class iterator {
+     //...
+  
+     public:
+
+       struct End {}; // End type used only for friend: bool operator!=(iterator& iter, End& end)
+
+       friend auto operator!=(tree234::iterator& iter, tree234::iterator::End& end_iter)
+       {
+         return iter.current != nullptr;
+       }
+
+       friend auto operator!=(tree234::iterator::End& end_iter, tree234::iterator& iter)
+       {
+         return iter.current != nullptr;
+       }
+    };
+   */
    return iterator(const_cast<tree234<Key, Value>&>(*this), 0);
 }
 
@@ -2099,18 +2133,11 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
  */
 
 // TODO: Can we use C++17 range-base for __end by simply having end() be nullptr.
+/*
 template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(const iterator& lhs) const
 {
  if (&lhs.tree == &tree) {
-   /*
-     The first if-test, checks for "at end".
-     If current is nullptr, that signals the iterator is "one past the end.". If current is not nullptr, then current will equal cached_cursor.fist. current is either nullptr or cursor. cached_cursor never 
-     becomes nullptr.
-     In the else-if block block, we must check 'current == lhs.current' and not 'cursor == lhs.cursor' because 'cursor' never signals the end of the range, it never becomes nullptr,
-     but the iterator returned by tree234::end()'s iterator always sets current to nullptr (to signal "one past the end").
-     current to nullptr.
-   */
-
+  
    if (current == nullptr && lhs.current == nullptr) return true; 
    else if (current == lhs.current && key_index == lhs.key_index) { 
        
@@ -2119,7 +2146,7 @@ template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(
  } 
  return false;
 }
-
+*/
 /*
  int getChildIndex(Node *cursor)
  Requires: cursor is not root, and  cursor is a node in the tree for which we want child_index such that
@@ -2166,17 +2193,17 @@ template<class Key, class Value> inline tree234<Key, Value>::const_iterator::con
 template<class Key, class Value> inline tree234<Key, Value>::const_iterator::const_iterator::const_iterator(const typename tree234<Key, Value>::iterator& lhs) : iter{lhs}
 {
 }
-
+/*
 template<class Key, class Value> inline bool tree234<Key, Value>::const_iterator::operator==(const const_iterator& lhs) const 
 { 
   return iter.operator==(lhs.iter); 
 }
-
+*/   
 template<class Key, class Value> inline  bool tree234<Key, Value>::const_iterator::operator!=(const const_iterator& lhs) const
 { 
   return iter.operator!=(lhs.iter); 
 }
-     
+  
 template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator& tree234<Key, Value>::const_iterator::operator++() noexcept	    
 {
   iter.increment();
