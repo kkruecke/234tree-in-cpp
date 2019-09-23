@@ -687,8 +687,8 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
    ancester != ancestor->parent->getRightMostChild(). If the ancestor becomes equal to the root before this happens, there is no successor: pnode is the right most node in the tree and key_index is its right-most key.
    */
-     auto child = pnode;
-     auto parent = child->parent;
+     const Node *child = pnode;
+     const Node *parent = child->parent;
    
      // Ascend the parent pointer as long as the child continues to be the right most child (of its parent). 
      for(;child == parent->getRightMostChild(); parent = parent->parent)  { 
@@ -1883,7 +1883,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
   int pred_key_index;
 
-  if (child_index != 0) { // IF pnode is not the left-most child, the predecessor is in the parent
+  if (child_index != 0) { // If pnode is not the left-most child, the predecessor is in the parent
 
       return  {pnode->parent, child_index - 1}; 
 
@@ -1935,19 +1935,21 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
       Determine which key is the predecessor. If child_index is one, the middle child, then the predecessor is pnode->keys_values[0]. If child_index is two, then
       the predecessor is pnode->key(1). Thus, the predecessor is the key at child_index - 1.
       */
-      const Node *parent = pnode->parent;
-      
-      Key current_key = pnode->key(index);
 
-      // Ascend the parent pointer chain as long as pnode is the left most child of its parent.
-      for(; pnode == parent->children[0].get();  parent = parent->parent)  {
+      auto  child = pnode;
+      const Node *parent = child->parent;
       
-          // pnode is still the left most child, but if its is the root, we cannot ascend further and there is no predecessor.  
+      Key current_key = child->key(index);
+
+      // Ascend the parent pointer chain as long as child is the left most child of its parent.
+      for(; child == parent->children[0].get();  parent = parent->parent)  {
+      
+          // child is still the left most child, but if its is the root, we cannot ascend further and there is no predecessor.  
           if (parent == root.get()) {
                 
               return {nullptr, 0};  // To indicate this we set current, the member of the pair, to nullptr and key_index, the second member, to 0.
           }
-          pnode = parent;
+          child = parent;
       }
 
       // The predecessor will be the first key, starting with the right most key, that is less than current_key. 

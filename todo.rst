@@ -1,9 +1,6 @@
 TODO 
 ====
 
-Use C++17 range-base for __end by simply having end() be nullptr. Does iterator need the cursor variable?
-See ~/n/test/main.cpp and https://stackoverflow.com/questions/39117330/how-the-new-range-based-for-loop-in-c17-helps-ranges-ts
-
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
 
