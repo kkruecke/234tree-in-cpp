@@ -674,17 +674,21 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
       return {pnode, key_index + 1}; 
   }
-  // Key is the right-most key in a leaf node
+
+  // Handle the harder case: pnode is a leaf node and pnode->keys_values[key_index] is the right-most key/value in this node.
   Node *successor = nullptr;
 
+  // Determine the parent node's child index such that parent->children[child_index] == pnode.
   auto child_index = pnode->getChildIndex(); 
   
   auto current_key = pnode->key(key_index);
 
-  if (pnode->parent->children[child_index].get() == pnode->parent->getRightMostChild()) { // If pnode is the right-most child of its parent... 
+  // Handle the case: pnode is the right-most child of its parent... 
+  if (pnode->parent->children[child_index].get() == pnode->parent->getRightMostChild()) { 
 
   /*
-   pnode is the right-most child of its parent, so we must find the first ancestor--parent, grandparent, great grandparent, etc--that is in a "greater than" node.key(i), i.e., an ancestor->key(j) that is to the right of node.key(i). 
+   pnode is the right-most child of its parent. To find the successor, we must find the first ancestor--parent, grandparent, great grandparent, etc--that is in a "greater than" pnode->key(key_index), i.e., an ancestor->key(j)
+   that is to the right of node.key(i). 
    Note: We know that if it is a 3- or 4-node, then key_index is the right most value in the node. Since a 2-node only has one value, it is by default the "right most".
    To find this ancester, we ascend the tree until we encounter the first ancestor that is not a right-most child.  We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
    */
@@ -701,14 +705,14 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
        
            pnode = parent;
        }
-       // We select its left-most value since it is the smallest value that is larger than pnode->key(key_index).
+       // We select its left-most value since it is the smallest value that is larger than current_key or pnode->key(key_index).
        auto successor = 0;
 
        for (; successor < parent->getTotalItems() && current_key > parent->key(successor); ++successor);
          
        return {parent, successor};
 
-  } else { 
+  } else { // Handle the case: pnode is not the right-most child of its parent. 
       /* 
         TODO: Rewrite these comments and rewrite the comments for the whole routine so the logic is clear. 
 
@@ -1229,8 +1233,7 @@ template<typename Key, typename Value> inline constexpr const typename tree234<K
 }
 
 /*
-  Input: 
-   Assumes that "this" is never the root. The parent of the root is nullptr.
+  Input: Assumes that "this" is never the root. The parent of the root is always the nullptr.
  */
 template<class Key, class Value> int tree234<Key, Value>::Node::getChildIndex() const noexcept
 {
