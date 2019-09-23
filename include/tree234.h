@@ -1936,7 +1936,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
       the predecessor is pnode->key(1). Thus, the predecessor is the key at child_index - 1.
       */
 
-      auto  child = pnode;
+      const Node *child = pnode;
       const Node *parent = child->parent;
       
       Key current_key = child->key(index);
