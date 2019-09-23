@@ -714,24 +714,23 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
   } else { // Handle the case: pnode is not the right-most child of its parent. 
       /* 
-        TODO: Rewrite these comments and rewrite the comments for the whole routine so the logic is clear. 
+        ...else we know that pnode is NOT the right most child of its parent (and it is a leaf). We also know that key_index is the right most value of pnode(in the case of a 2-node, key_index can only have the value zero, and it
+        is considered also as the "right-most" index).
 
-        ...otherwise, we know that pnode is NOT the right most child of its parent (and it is a leaf). We also know that key_index is the right most value of pnode(obviously, in the case of a 2-node, key_index can only have the value zero, and it
-        is considered also as the "right-most" index.
-
-        We need to ascertain the next index, next_index, such that pnode->parent->key(next_index) > pnode->key(key_index). To determine next_index, we can view a 3-node as two catenated 2-nodes in which the the middle child is shared between these
-        two "2-nodes", like this
+        We need to ascertain the next index, next_index, such that pnode->parent->key(next_index) > pnode->key(key_index). To determine next_index, we can view a 3-node as two catenated 2-nodes in which the the middle child is
+        shared between these two "2-nodes", like this
       
            [3,       5]  
            /  \     / \
           /    \   /   \
         [1, 2]  [3, 4]  [6]
 
-        While a 4-node can be viewed as three catenated 2-nodes in which the two middle child are shared
+        and a 4-node can be viewed as three catenated 2-nodes in which the two middle child are shared
           
            [2,   4,   6]  
           /  \  / \  / \
         [1]  [3]   [5]  [7] 
+
         If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is the last, ie, pnode->getTotalItems() - 1. So the we simply go up on level to find the in order successor.    
         We simply need to determine the index in the parent to choose.
       */
