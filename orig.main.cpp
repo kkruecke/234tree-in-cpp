@@ -135,25 +135,21 @@ int main(int argc, char** argv)
     cout << "\n\n=================== Normal Tree Print =======================\n" << endl;
   
     tree.printInOrder(cout);
-
     cout << "\n\n========== Print of tree using for loop ===================" << endl;
-
     print(tree, cout);
  
     cout << "\n\n========== Test of reverse_iterator class ===================" << endl;
-
     rprint(tree, cout); 
   
     if (rc == false) {
          
         cerr << "\nExiting upon remove error!!!" << endl;
+        //--cout << "\n\n=======Tree Debug =====================" << endl;
         return 0;
     }
  
     cout << "\n\n========== Test of isBalanced() ===================" << endl;
-
     string str_balanced{ tree.isBalanced() ? "true" : "false"};
-
     cout << "\ntree.isBalanced() == " << str_balanced << endl;
   }
   cout << "\n==== Final Tree ========\n" << endl;
