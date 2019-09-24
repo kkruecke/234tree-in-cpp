@@ -421,12 +421,31 @@ template<typename Key, typename Value> class tree234 {
              return cursor->constkey_pair(key_index); 
          }
          
-         iterator& operator++() noexcept; 
-         iterator operator++(int) noexcept;
+         iterator& operator++() noexcept 
+         {
+            increment();
+            return *this;
+         } 
 
-         iterator& operator--() noexcept;
-         iterator operator--(int) noexcept;
+         iterator operator++(int) noexcept
+         {
+            iterator tmp(*this);
+            increment();
+            return tmp;
+         } 
          
+         iterator& operator--() noexcept 
+         {
+            decrement();
+            return *this;
+         } 
+
+         iterator operator--(int) noexcept
+         {
+            iterator tmp(*this);
+            decrement();
+            return tmp;
+         } 
          std::pair<const Key, Value>& operator*() noexcept { return dereference(); } 
 
          const std::pair<const Key, Value>& operator*() const noexcept { return dereference(); }
@@ -463,10 +482,31 @@ template<typename Key, typename Value> class tree234 {
          bool operator==(const const_iterator& lhs) const;
          bool operator!=(const const_iterator& lhs) const;
          
-         const_iterator& operator++() noexcept;
-         const_iterator operator++(int) noexcept;
-         const_iterator& operator--() noexcept;
-         const_iterator operator--(int) noexcept;
+         const_iterator& operator++() noexcept 
+         {
+            iter.increment();
+            return *this;
+         } 
+
+         const_iterator operator++(int) noexcept
+         {
+            const_iterator tmp(*this);
+            iter.increment();
+            return tmp;
+         } 
+         
+         const_iterator& operator--() noexcept 
+         {
+            iter.decrement();
+            return *this;
+         } 
+
+         const_iterator operator--(int) noexcept
+         {
+            const_iterator tmp(*this);
+            iter.decrement();
+            return tmp;
+         }
 
          const std::pair<const Key,Value>&  operator*() const noexcept 
          {
@@ -1938,7 +1978,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
       // Ascend the parent pointer chain as long as child is the left most child of its parent.
       for(; child == parent->children[0].get();  parent = parent->parent)  {
       
-          // child is still the left most child, but if its is the root, we cannot ascend further and there is no predecessor.  
+          // child is still the left most child of its parent, but if it is the root, there is no predecessor.  
           if (parent == root.get()) {
                 
               return {nullptr, 0};  // To indicate this we set current, the member of the pair, to nullptr and key_index, the second member, to 0.
@@ -1962,6 +2002,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 template<class Key, class Value> tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree) : tree{lhs_tree} 
 {
   // If the tree is empty, there is nothing over which to iterate...
+/*
    if (!tree.isEmpty()) {
 
       current = tree.min(tree.root.get());
@@ -1970,6 +2011,8 @@ template<class Key, class Value> tree234<Key, Value>::iterator::iterator(tree234
 
       current = nullptr;
   }
+*/
+  current = (!tree.isEmpty()) ? tree.min(tree.root.get()) : nullptr;
 
   cursor = current;
   key_index = 0;  
@@ -2171,36 +2214,6 @@ template<class Key, class Value> inline bool tree234<Key, Value>::const_iterator
 template<class Key, class Value> inline  bool tree234<Key, Value>::const_iterator::operator!=(const const_iterator& lhs) const
 { 
   return iter.operator!=(lhs.iter); 
-}
-     
-template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator& tree234<Key, Value>::const_iterator::operator++() noexcept	    
-{
-  iter.increment();
-  return *this;
-}
-
-template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator tree234<Key, Value>::const_iterator::operator++(int) noexcept	    
-{
- const_iterator tmp{*this};
-
- iter.increment(); 
-
- return *this;
-}
-
-template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator& tree234<Key, Value>::const_iterator::operator--() noexcept	    
-{
-   iter.decrement();
-   return *this;
-}
-
-template<class Key, class Value> inline typename tree234<Key, Value>::const_iterator tree234<Key, Value>::const_iterator::operator--(int) noexcept	    
-{
- const_iterator tmp{*this};
-
- iter.decrement(); 
-
- return *this;
 }
 
 /*
