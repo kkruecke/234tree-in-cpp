@@ -14,7 +14,6 @@
 #include <string>
 #include <iostream>
 
-
 template<typename Key, typename Value> class tree234;  // Forward declaration
 
 class DebugPrinter; 
@@ -28,7 +27,7 @@ template<typename Key, typename Value> class tree234 {
       *
       * Note 1: Anonymous unions do not implicitly destruct their members. Therefore we must explicitly call their destructors within 
       *         KeyValue::~KeyValue().
-      * Note 2: A user declared destructor by default causes the move constructor and move assignment to be not declared, so
+      * Note 2: A user-declared destructor by default causes the move constructor and move assignment to be not declared, so
       *         we explictily declare and defined them.
       */
 
@@ -107,7 +106,7 @@ template<typename Key, typename Value> class tree234 {
     
        std::array<std::shared_ptr<Node>, 4> children;
        
-       constexpr Node *getParent() noexcept; 
+       constexpr Node *getParent() noexcept { return parent; }
 
        int getChildIndex() const noexcept;
     
@@ -168,13 +167,13 @@ template<typename Key, typename Value> class tree234 {
            // method to help in debugging
            void printKeys(std::ostream&);
 
-           constexpr Key& key(int i ) { return keys_values[i].key(); } 
+           constexpr Key& key(int i) { return keys_values[i].key(); } 
 
-           constexpr const Key& key(int i ) const { return keys_values[i].key(); } 
+           constexpr const Key& key(int i) const { return keys_values[i].key(); } 
 
-           constexpr Value& value(int i ) { return keys_values[i].value(); } 
+           constexpr Value& value(int i) { return keys_values[i].value(); } 
 
-           constexpr const Value& value(int i ) const { return keys_values[i].value(); } 
+           constexpr const Value& value(int i) const { return keys_values[i].value(); } 
                
            constexpr const std::pair<const Key, Value>& constkey_pair(int i) const { return keys_values[i].constkey_pair(); }
     
@@ -692,7 +691,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
    
      // Ascend the parent pointer as long as the child continues to be the right most child (of its parent). 
      for(;child == parent->getRightMostChild(); parent = parent->parent)  { 
-   
+        
          // child is still the right most child, but if it is also the root, then, there is no successor. child holds the largest keys in the tree. 
          if (parent == root.get()) {
           
@@ -1215,11 +1214,6 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
   --totalItems;
 
   return key_value;
-}
-
-template<typename Key, typename Value> inline constexpr typename tree234<Key, Value>::Node * tree234<Key, Value>::Node::getParent()   noexcept // ok
-{ 
-   return parent;
 }
 
 template<typename Key, typename Value> inline constexpr const typename tree234<Key, Value>::Node *tree234<Key, Value>::Node::getParent() const  noexcept // ok
