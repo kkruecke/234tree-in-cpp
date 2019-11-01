@@ -857,7 +857,7 @@ template<typename Key, typename Value> inline int tree234<Key, Value>::height() 
 
   return depth;
 }
-// move assignment
+// Move assignment operator
 template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, Value>::operator=(tree234&& lhs) noexcept 
 {
     tree_size = lhs.tree_size;
@@ -869,36 +869,40 @@ template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, 
     root->parent = nullptr;
 }
 /*
- * F is a functor whose function call operator takes two parameters: a Node * and an int indicating the depth of the node from the root, which has depth 1.
+ * F is a functor whose function call operator takes a 1.) const Node * and an 2.) int, indicating the depth of the node from the root,
+   which has depth 1.
  */
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::levelOrderTraverse(Functor f) const noexcept
 {
    if (root.get() == nullptr) return;
    
    // pair of: 1. Node pointer and 2. level of tree.
-   std::queue<std::pair<const Node*, int>> q; 
+   std::queue<std::pair<const Node*, int>> queue; 
 
    auto level = 1;
 
-   q.push({root.get(), level});
+   queue.push({root.get(), level});
 
-   while (!q.empty()) {
+   while (!queue.empty()) {
 
-        auto [pnode, tree_level] = q.front(); // uses C++17 unpacking
+        auto [pnode, tree_level] = queue.front(); 
 
-        f(pnode, tree_level); // For example: print out all the keys_values in pnode.
+        f(pnode, tree_level); // Call functor. 
          
-        if (!pnode->isLeaf()) {
+        if (!pnode->isLeaf()) { // If it was not a leaf node, push its children onto the queue
             
             for(auto i = 0; i < pnode->getChildCount(); ++i) {
 
-               q.push({pnode->children[i].get(), tree_level + 1});  
+               queue.push({pnode->children[i].get(), tree_level + 1});  
             }
         }
-        q.pop(); 
+
+        queue.pop(); // Remove the node used in the call to functor f above.
    }
 }
-
+/*
+ * This method allows the tree to be traversed in-order step-by-step
+ */
 template<typename Key, typename Value> template<typename Functor> inline void tree234<Key, Value>::iterativeInOrderTraverse(Functor f) const noexcept
 {
    const Node *current = min(root.get());
@@ -914,7 +918,9 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
       key_index = pair.second;
   }
 }
-
+/*
+ * Return the node with the "smallest" key in the tree, the left most left node.
+ */
 template<typename Key, typename Value> inline const typename tree234<Key, Value>::Node *tree234<Key, Value>::min(const Node *current) const noexcept
 {
    while (current->children[0].get() != nullptr) {
@@ -923,7 +929,9 @@ template<typename Key, typename Value> inline const typename tree234<Key, Value>
    }
    return current;
 }
-
+/*
+ * Return the node with the largest key in the tree, the right most left node.
+ */
 template<typename Key, typename Value> inline const typename tree234<Key, Value>::Node *tree234<Key, Value>::max(const Node *current) const noexcept
 {
    while (current->getRightMostChild() != nullptr) {
@@ -932,6 +940,7 @@ template<typename Key, typename Value> inline const typename tree234<Key, Value>
    }
    return current;
 }
+
 template<typename Key, typename Value> template<typename Functor> inline void tree234<Key, Value>::inOrderTraverse(Functor f) const noexcept
 {
    DoInOrderTraverse(f, root.get());
@@ -952,7 +961,7 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
    DoPostOrder4Debug(f, root.get());
 }
 /*
- * post order traversal 
+ * Calls functor on each node in post order. Uses recursion.
  */
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoPostOrderTraverse(Functor f, const Node *current) const noexcept
 {  
@@ -1001,8 +1010,9 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
             break;
    }
 }
-/*
- * pre order traversal 
+
+/* 
+ * Calls functor on each node in pre order. Uses recursion.
  */
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoPreOrderTraverse(Functor f, const Node *current) const noexcept
 {  
@@ -1056,8 +1066,9 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 }
 
 /*
- * In order traversal
+ * Calls functor on each node in in-order traversal. Uses recursion.
  */
+
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoInOrderTraverse(Functor f, const Node *current) const noexcept
 {     
    if (current == nullptr) return;
@@ -1104,15 +1115,13 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 }
 
 /*
- * Requires: childIndex is within the range for the type of node.
- * child is not nullptr.
- * connectChild() is equivalent to doing:
+ * Preconditionss: childIndex is within the range for the type of node, and child is not nullptr.
+ *  
+ * connectChild() adopts input child node as its (childIndex + 1)th child by doing:
  *
- * newRight->children[0] = std::move(node->children[2]);
- * newRight->children[0]->parent = newRight; 
- * newRight->children[1] = std::move(node->children[3]);
- * newRight->children[1]->parent = newRight; 
- *
+ *    children[childIndex] = std::move(child);
+ *    children[childIndex]->parent = this; 
+ *  
  */
 template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::connectChild(int childIndex, std::shared_ptr<Node>& child)  noexcept
 {
@@ -1124,8 +1133,9 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
   }
 }
 /*
- * Returns {true, *this, key's index} if key is found in node.
- * Returns {false, point to next child with which to continue the descent search downward (toward a leaf node), 0} if key not found. 
+ * Returns tuple of three values: <bool, Node *, int>. 
+ * If key found n this Node, we return this tuple: {true, pointer to node containing key, the index into Node::key_values of the key}.
+ * If key is not found, we return this tuple: {false, pointer to next child with which to continue the downward search of the tree, 0}. 
  */
 template<class Key, class Value> inline std::tuple<bool, typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::Node::find(Key lhs_key) const noexcept 
 {
@@ -1142,15 +1152,15 @@ template<class Key, class Value> inline std::tuple<bool, typename tree234<Key, V
   }
 
   // It must be greater than the last key (because it is not less than or equal to it).
-  //next = children[totalItems].get(); 
+  // next = children[totalItems].get(); 
   return {false, children[getTotalItems()].get(), 0};
 }
 
 /*
  * Require: childIndex is within the range for the type of node.
  * Returns: child pointer.
- * Note: Always call disconnectChild() before removeItem(), or it will not work correctly because totalItems
- * will have been altered.
+ * Note: disconnectChild() must always be called before removeItem(); otherwise, it will not work correctly (because totalItems
+ * will have been altered).
  */
 
 template<typename Key, typename Value> inline std::shared_ptr<typename tree234<Key, Value>::Node> tree234<Key, Value>::Node::disconnectChild(int childIndex) noexcept // ok
@@ -1166,9 +1176,8 @@ template<typename Key, typename Value> inline std::shared_ptr<typename tree234<K
   return node; // invokes shared_ptr<Node> move constructor since node is an rvalue.
 }
 /*
- * Preconditions: node is not full, not a four node, and key is not present in node, which may or may not
- * be a leaf node.  Shifts keys_values in node as needed so that key will be inserted in sorted position. Returns index
- * of inserted key.
+ * Preconditions: node is not a four node, and key is not present in node.
+ * Purpose: Shifts keys_values needed so key is inserted in sorted position. Returns index of inserted key.
  */
 
 template<typename Key, typename Value> int  tree234<Key, Value>::Node::insert(Key lhs_key, const Value& lhs_value)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
@@ -1195,7 +1204,9 @@ template<typename Key, typename Value> int  tree234<Key, Value>::Node::insert(Ke
   ++totalItems; // increase the total item count
     return 0;
 }
-
+/*
+ * Inserts key_value pair into its sorted position in this Node and makes largerNode its right most child.
+ */
 template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(KeyValue&& key_value, std::shared_ptr<Node>& largerNode) noexcept 
 { 
   // start on right, examine items
@@ -1315,12 +1326,16 @@ template<typename Key, typename Value> bool tree234<Key, Value>::find_(const Nod
 }
 
 /*
- * Insertion based on pseudo code at:
- 1. http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt
- 2. http://www.serc.iisc.ernet.in/~viren/Courses/2010/SE286/Lecture16.pdf 
- * 4-nodes as the are encountered are split into two 2-nodes, one holding the smallest key, the other the largest. The middle key is inserted into the parent
- * The two left most children of the former 4-node are assigned to the smaller 2-node, and the two right most children, likewise, are assigned to the larger 
- * two node. The parent of the former 4-node adopts the two new 2-nodes. Note: the smaller 2-node is simply the original 4-node downsized to a 2-node.
+ * This insertion method is based on the pseudo code at:
+ *
+ *   http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt and 
+ *   http://www.serc.iisc.ernet.in/~viren/Courses/2010/SE286/Lecture16.pdf 
+ *
+ * As 4-nodes are encountered, they are split into two 2-nodes: one holding the smallest key, the other the largest. The middle key is inserted into the parent.
+ * iThen the two left most children of the former 4-node are assigned to the smaller 2-node, and the two right most children, likewise, are assigned to the larger 
+ * two node. The parent of the former 4-node adopts the two new 2-nodes
+ *
+ * Note: the smaller 2-node is simply the original 4-node downsized to a 2-node.
  */
 template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept 
 { 
@@ -1342,12 +1357,11 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
 /*
  * Called by insert(Key key, const Value& value) to determine if key exits or not.
 
- * Recursive method that searches the tree for key. It splits 4-nodes as they are encountered. If key is not found, it terminates at the leaf node where key should be inserted and returns
- * the pair {true, pnode_where_key_found}; otherwise, it returns {false, pnode_leaf_where_key_should_be_inserted}.
-
  * Precondition: pnode is never nullptr.
- * Returns pair<bool, const Node *>, where first indicates if key already exists or not, and second is the node where it exists, if first was true, and if first was false,
- * second is the leaf into which key and value should be inserted.
+ *
+ * Purpose: Recursive method that searches the tree for input key. A it searches, it splits 4-nodes as they are encountered. If key is not found, it terminates at
+ * the leaf node where the key should now be inserted and returns the pair {false, pnode_leaf_where_key_should_be_inserted}. If key was found, it returns the pair
+ * {true, pnode_where_key_found}.
  */
 template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::split_find(Node *pnode, Key key) noexcept
 {
@@ -1382,19 +1396,17 @@ template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::N
 }
 
 /* 
- *  Split pseudocode: 
+ *  split pseudocode: 
  *  
- *  Upon encountering a four node: split it into a 2-node by doing:
+ *  Upon encountering a four node, it is split into a 2-node by doing:
  *  
- *  1. We move the largest key into a new 2-node and then connect the two right most children of the inputted 4-node to it.
- *  2. We convert pnode into a 2-node by setting totalItems to 1, but keeping its smallest key and its two left-most chidren, 
+ *  1. move the largest key into a newly create 2-node, and then connect the two right-most children of the prior four node to it.
+ *  2. convert pnode into a 2-node by setting totalItems to 1, keeping its smallest key and its two left-most chidren, 
  *  3. We move the middle key up to the parent( which we know is not a 4-node; otherwise, it too would have already been split), and we connect the new node step from #1 to
  *    it as a new child.
  *
  *  Note: if pnode is the root, we special case this by creating a new root above the current root.
- *  
  */ 
-
 template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pnode) noexcept
 {
    // 1. create a new node from largest key and adopt pnode's tworight most children
@@ -1425,9 +1437,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
 }
 
 /*
- * Deletion based on pseudo code from pages 50-53 of: 
- *
- * www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ * Deletion based on pseudo code on pages 50-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *
  * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the deleted key
  * with its in-order successor and then deleting the key moved to its successor's prior position. To prevent deleting it from a two node, which
@@ -1701,7 +1711,8 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   keys_values[2] = std::move(children[1]->keys_values[0]);       
 
   totalItems = 3;
-  
+
+  // leftOrphan and rightOrphan will be automatically deleted when methhod returns. 
   std::shared_ptr<Node> leftOrphan = std::move(children[0]);  
   std::shared_ptr<Node> rightOrphan = std::move(children[1]); 
     
@@ -1711,8 +1722,9 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   connectChild(2, rightOrphan->children[0]); 
   connectChild(3, rightOrphan->children[1]);
     
-  return this;  
-}// <-- Note: leftOrphan and rightOrphan are automatically deleted here when their shared_ptr<Node> goes out of scope.
+  return this;
+
+}
 
 /* 
  * Requires: sibling is to the left, therefore: parent->children[sibling_id]->keys_values[0] < parent->keys_values[index] < parent->children[node2_index]->keys_values[0]
