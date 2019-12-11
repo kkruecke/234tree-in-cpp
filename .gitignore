@@ -1,12 +1,5 @@
-project.xml
-*.mk
-Makefile
-dist/
-docs/
-build/
-nbproject/
-Tree234.java
-*.pdf
-new.txt
-out*.txt
-x
+.cproject
+.project
+.settings
+Debug/
+Release/

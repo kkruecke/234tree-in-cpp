@@ -1,5 +1,5 @@
-#include "include/test.h"
-#include "include/tree234.h"
+//#include "include/test.h"
+#include "tree234.h"
 #include <iostream>
 
 using namespace std;
