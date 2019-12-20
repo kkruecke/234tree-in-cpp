@@ -1690,13 +1690,12 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
  *
  * Promises: 
  * 1. 4-node resulting from fusing of the two 2-nodes' keys_values into the parent. 
- * 2. Deletion of the 2-node children from the tree
- * 3. Adoption of the 2-node children's children as children of parent.
+ * 2. Adoption of the 2-node children's children as children of parent.
  *
  * Pseudo code: 
  *
  * 1. Absorbs its children's keys_values as its own. 
- * 2. Makes its grandchildren its children and deletes its former, now orphaned child nodes.
+ * 2. Makes its grandchildren its children.
  */
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::Node::fuseWithChildren() noexcept
 {
@@ -1709,11 +1708,9 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
   totalItems = 3;
 
-  // leftOrphan and rightOrphan will be automatically deleted when method returns. 
-  std::shared_ptr<Node> leftOrphan = std::move(children[0]);  
-  std::shared_ptr<Node> rightOrphan = std::move(children[1]); 
+  std::shared_ptr<Node> leftOrphan { std::move(children[0]) };  
+  std::shared_ptr<Node> rightOrphan { std::move(children[1]) }; 
     
-  // make grandchildren the children of this.
   connectChild(0, leftOrphan->children[0]); 
   connectChild(1, leftOrphan->children[1]);
   connectChild(2, rightOrphan->children[0]); 
