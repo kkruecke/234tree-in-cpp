@@ -1605,11 +1605,11 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    }
 
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
-   bool has3or4NodeSibling = false;
-   int sibling_index;
-
    int left_adjacent = node2_index - 1;
    int right_adjacent = node2_index  + 1;
+
+   bool has3or4NodeSibling = false;
+   int sibling_index = left_adjacent;
     
    if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
 
@@ -1626,10 +1626,11 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
         sibling_index = right_adjacent; 
 
-   } else { // sibling is to the left.
+   } /* else { // sibling is to the left.
 
         sibling_index = left_adjacent; 
    }
+   */
 
    // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
    // Check if its parent 2-node (or 3- or 4-node).
@@ -1650,7 +1651,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
       Node *psibling = parent->children[sibling_index].get();
     
       Node *p2node = parent->children[node2_index].get();
-    
       
       // First we get the index of the parent's key value such that either 
       // 
