@@ -1609,7 +1609,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    int right_adjacent = node2_index  + 1;
 
    bool has3or4NodeSibling = false;
-   int sibling_index = left_adjacent;
+   int sibling_index = left_adjacent; // assume sibling is to the left unless we discover otherwise.
     
    if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
 
@@ -1625,17 +1625,12 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
                                                       // are 2-node(s).
 
         sibling_index = right_adjacent; 
+   } 
 
-   } /* else { // sibling is to the left.
+   // Determine whether to rotate or fuse based on whether the parent is a two node, 
 
-        sibling_index = left_adjacent; 
-   }
-   */
-
-   // Determine, based on whether the parent is a two node, whether to rotate or fuse. 
-   // Check if its parent 2-node (or 3- or 4-node).
-
-   if (has3or4NodeSibling == false) { // All adjacent siblings are also 2-nodes...
+   // If all adjacent siblings are also 2-nodes...
+   if (has3or4NodeSibling == false) { 
 
         if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
 
@@ -1665,20 +1660,22 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
     
       int parent_key_index = std::min(node2_index, sibling_index); 
 
-      if (node2_index > sibling_index) { /* If sibling is to the left, then
-                                    *
-                                    *  parent->children[sibling_id]->keys_values[0] < parent->keys_values[index] < parent->children[node2_index]->keys_values[0]
-                                    * 
-                                    * and we do a right rotation
-                                    */ 
-    
+      /*   If sibling is to the left, then this relation holds
+       *
+       *      parent->children[sibling_id]->keys_values[0] < parent->keys_values[index] < parent->children[node2_index]->keys_values[0]
+       * 
+       *   and we do a right rotation
+       */ 
+      if (node2_index > sibling_index) { 
+                                  
           convertedNode = rightRotation(p2node, psibling, parent, parent_key_index);
     
-      } else { /* else sibling is to the right and 
+      } else { /* else sibling is to the right and this relation holds
+                * 
                 *    parent->children[node2_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
-                * therefore do a left rotation
-           */ 
-    
+                *
+                * therefore we do a left rotation
+                */ 
           convertedNode = leftRotation(p2node, psibling, parent, parent_key_index);
       }
    }
@@ -1712,7 +1709,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
   totalItems = 3;
 
-  // leftOrphan and rightOrphan will be automatically deleted when methhod returns. 
+  // leftOrphan and rightOrphan will be automatically deleted when method returns. 
   std::shared_ptr<Node> leftOrphan = std::move(children[0]);  
   std::shared_ptr<Node> rightOrphan = std::move(children[1]); 
     
@@ -1723,7 +1720,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   connectChild(3, rightOrphan->children[1]);
     
   return this;
-
 }
 
 /* 
