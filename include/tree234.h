@@ -1710,6 +1710,14 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
   std::shared_ptr<Node> leftOrphan { std::move(children[0]) };  
   std::shared_ptr<Node> rightOrphan { std::move(children[1]) }; 
+
+/* 
+   I think this is sufficient and the std::move above is not need because
+   when connectChild is done below both children[0] and children[1] are reassigned.
+
+  std::shared_ptr<Node> leftOrphan {children[0]};  
+  std::shared_ptr<Node> rightOrphan {children[1]}; 
+ */
     
   connectChild(0, leftOrphan->children[0]); 
   connectChild(1, leftOrphan->children[1]);
