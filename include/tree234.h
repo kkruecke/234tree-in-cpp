@@ -101,7 +101,7 @@ template<typename Key, typename Value> class tree234 {
        /*
         * For 2-nodes, children[0] is left pointer, children[1] is right pointer.
         * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
-        * And so on for 4-nodes.
+        * For 4-nodes, children[0] is left pointer, children[1] the left middle pointer, and children[2] is the right middle pointer, and children[3] is the right pointer.
         */
     
        std::array<std::shared_ptr<Node>, 4> children;
