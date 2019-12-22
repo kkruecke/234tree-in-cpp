@@ -124,7 +124,7 @@ template<typename Key, typename Value> class tree234 {
        // Remove key at index, if found, from node, shifting remaining keys_values to fill the gap.
        KeyValue removeKeyValue(int index) noexcept; 
     
-       void connectChild(int childNum, std::shared_ptr<Node>& child) noexcept;
+       void connectChild(int childNum, std::shared_ptr<Node>&& child) noexcept;
 
        /*
         * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
@@ -1123,7 +1123,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
  *    children[childIndex]->parent = this; 
  *  
  */
-template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::connectChild(int childIndex, std::shared_ptr<Node>& child)  noexcept
+template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::connectChild(int childIndex, std::shared_ptr<Node>&& child)  noexcept
 {
   children[childIndex] = std::move( child ); 
   
@@ -1245,11 +1245,11 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insertChi
    // ...move its children right, starting from its last child index and stopping just before insert_index.
    for(auto i = last_index; i >= insert_index; i--)  {
 
-       connectChild(i + 1, children[i]);       
+       connectChild(i + 1, std::move(std::move( children[i])));       
    }
 
    // Then insert the new child whose key is larger than key_value.key().
-   connectChild(insert_index,  newChild);
+   connectChild(insert_index, std::move( newChild));
 }
 
 template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyValue tree234<Key, Value>::Node::removeKeyValue(int index) noexcept 
@@ -1412,8 +1412,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
    // 1. create a new node from largest key and adopt pnode's tworight most children
    std::shared_ptr<Node> largestNode = std::make_shared<Node>(std::move(pnode->keys_values[2]));
    
-   largestNode->connectChild(0, pnode->children[2]); 
-   largestNode->connectChild(1, pnode->children[3]);
+   largestNode->connectChild(0, std::move(pnode->children[2])); 
+   largestNode->connectChild(1, std::move(pnode->children[3]));
    
    // 2. Make pnode a 2-node. Note: It still retains its two left-most children, 
    pnode->totalItems = 1;
@@ -1424,8 +1424,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
    
      std::shared_ptr<Node> new_root = std::make_shared<Node>(std::move(pnode->keys_values[1])); // Middle value will become new root
      
-     new_root->connectChild(0, root); 
-     new_root->connectChild(1, largestNode); 
+     new_root->connectChild(0, std::move(root)); 
+     new_root->connectChild(1, std::move(largestNode)); 
      
      root = std::move(new_root); // reset the root. 
 
@@ -1482,8 +1482,12 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)
       return false;
 
    } else { // there are more nodes than just the root.
- 
-      return remove(root.get(), key); 
+      
+      auto rc = remove(root.get(), key);   
+
+      if (rc)   --tree_size;
+
+      return rc; 
   }
 }
 
@@ -1708,21 +1712,16 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
   totalItems = 3;
 
-  std::shared_ptr<Node> leftOrphan { std::move(children[0]) };  
-  std::shared_ptr<Node> rightOrphan { std::move(children[1]) }; 
-
-/* 
-   I think this is sufficient and the std::move above is not need because
-   when connectChild is done below both children[0] and children[1] are reassigned.
+//  This is sufficient and the std::move above is not need because
+//  when connectChild is done below both children[0] and children[1] are reassigned.
 
   std::shared_ptr<Node> leftOrphan {children[0]};  
   std::shared_ptr<Node> rightOrphan {children[1]}; 
- */
-    
-  connectChild(0, leftOrphan->children[0]); 
-  connectChild(1, leftOrphan->children[1]);
-  connectChild(2, rightOrphan->children[0]); 
-  connectChild(3, rightOrphan->children[1]);
+     
+  connectChild(0, std::move(leftOrphan->children[0])); 
+  connectChild(1, std::move(leftOrphan->children[1]));
+  connectChild(2, std::move(rightOrphan->children[0])); 
+  connectChild(3, std::move(rightOrphan->children[1]));
     
   return this;
 }
@@ -1826,8 +1825,8 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
       p2node->children[2] = std::move(p2node->children[0]);
 
       // Insert sibling's first two child. Note: connectChild() will also reset the parent pointer of these children (to be p2node). 
-      p2node->connectChild(1, psibling->children[1]); 
-      p2node->connectChild(0, psibling->children[0]); 
+      p2node->connectChild(1, std::move(psibling->children[1])); 
+      p2node->connectChild(0, std::move(psibling->children[0])); 
 
    // <-- automatic deletion of psibling in above after } immediately below
   } else { // sibling is to the right:
@@ -1849,8 +1848,8 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
       // Insert sibling's last two child. Note: connectChild() will also reset the parent pointer of these children (to be p2node). 
 
-      p2node->connectChild(3, psibling->children[1]);  // Add sibling's children
-      p2node->connectChild(2, psibling->children[0]);  
+      p2node->connectChild(3, std::move(psibling->children[1]));  // Add sibling's children
+      p2node->connectChild(2, std::move(psibling->children[0]));  
       
   } // <-- automatic deletion of psibling's underlying raw memory
 
