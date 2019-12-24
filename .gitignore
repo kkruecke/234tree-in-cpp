@@ -3,5 +3,8 @@
 .settings
 Debug/
 Release/
-/build/
-/dist/
+build/
+dist/
+nbproject/
+Makefile
+.dep.inc
