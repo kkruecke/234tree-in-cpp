@@ -138,6 +138,7 @@ template<typename Key, typename Value> class tree234 {
         * after having been adopted by the parent are deallocated. 
         */
        Node *fuseWithChildren() noexcept; 
+       int getSubTreeIndex(int i) const noexcept;
        
       public:
              
@@ -1265,6 +1266,34 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
 
   return key_value;
 }
+/*
+ * Requires: i to be valid key index of 'this'.  
+ *   
+ * Promises:
+ * Get the first child index in the parent such that pnode is its left child, that is, such that pnode is the root of its left subtree.
+ * If there is no such left child, the pnode is the right-most child of its parent. 
+ *  
+ */
+template<typename Key, typename Value> inline int tree234<Key, Value>::Node::getSubTreeIndex(int i) const noexcept
+{
+   int child_index = 0;
+   int parentKeyTotal = parent->getTotalItems();
+  
+   // Get the first child index in the parent such that pnode is its left child, that is, such that pnode is the root of its left subtree.
+   // If pnode is not in left subtree, then pnode is the right-most child of its parent, and it is in the right-most subtree of its parent. 
+   for (; child_index < parentKeyTotal; ++child_index) {
+       //
+       // If we never break, then this->key(i) is greater than the last key of its parent, which means
+       // pnode == parent->children[parent->totalItems]; that is, pnode is the last child of its parent, and therefore in its right most
+       // subtree. 
+       
+       if (key(i) < parent->key(child_index) ) { 
+            break;                               
+       } 
+   }
+
+   return child_index;
+}
 
 template<typename Key, typename Value> inline constexpr const typename tree234<Key, Value>::Node *tree234<Key, Value>::Node::getParent() const  noexcept // ok
 { 
@@ -1582,31 +1611,9 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
  * we fuse the three together into a 4-node. In either case, we shift the children as required.
  * 
  */
-//--template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertTwoNode(Node *node)  noexcept
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertTwoNode(Node *pnode)  noexcept
 {                                                                         
-  
-   Node *convertedNode;
-   Node *parent = pnode->getParent();
-
-   int parentKeyTotal = parent->getTotalItems();
-   int parentChildrenTotal = parent->getChildCount();
-   
-   int node2_index = 0;
-  
-   // Get the first child index in the parent such that pnode is its left child, that is, such that pnode is the root of its left subtree.
-   // If there is no such left child, the pnode is the right-most child of its parent. 
-   // TODO: But what is the overall point--is this mention in the introductory comments?
-   for (; node2_index < parentKeyTotal; ++node2_index) {
-       //
-       // If we never break, then pnode->keys_values[0] is greater than the last key of its parent, which means
-       // pnode == parent->children[parent->totalItems], that is, pnode is the last child of its parent. 
-       //
-
-       if (pnode->key(0) < parent->key(node2_index) ) { 
-            break;                               
-       } 
-   }
+   auto node2_index = pnode->getSubTreeIndex(0); 
 
    // TODO: Can these series of if-tests immediately below be made into a separate method.
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
@@ -1614,6 +1621,11 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    int right_adjacent = node2_index  + 1;
 
    bool has3or4NodeSibling = false;
+
+   Node *parent = pnode->getParent();
+
+   int parentChildrenTotal = parent->getChildCount();
+
    int sibling_index = left_adjacent; // We assume sibling is to the left unless we discover otherwise.
     
    if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
@@ -1635,6 +1647,8 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    // Determine whether to rotate or fuse based on whether the parent is a two node, 
 
    // If all adjacent siblings are also 2-nodes...
+   Node *convertedNode = nullptr;
+
    if (has3or4NodeSibling == false) { 
 
         if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
