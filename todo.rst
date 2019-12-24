@@ -1,6 +1,8 @@
 TODO 
 ====
 
+Simplify the code in ``convertTwoNode(Node *pnode)`` 
+
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
 

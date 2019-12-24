@@ -1592,16 +1592,15 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    int parentKeyTotal = parent->getTotalItems();
    int parentChildrenTotal = parent->getChildCount();
    
-   // First, we find the index of the 2-node such that parent->children[node2_index] == node, by comparing node's key to its
-   // parent's keys_values.
    int node2_index = 0;
   
-   // TODO: Isn't there a method to do this? 
-   // Determine the first parent child such that node is its left child.
+   // Get the first child index in the parent such that pnode is its left child, that is, such that pnode is the root of its left subtree.
+   // If there is no such left child, the pnode is the right-most child of its parent. 
+   // TODO: But what is the overall point--is this mention in the introductory comments?
    for (; node2_index < parentKeyTotal; ++node2_index) {
        //
-       // If we never break, then node->keys_values[0] is greater than the last key of its parent, which means
-       // pnode == parent->children[parent->totalItems]. It is the last child. 
+       // If we never break, then pnode->keys_values[0] is greater than the last key of its parent, which means
+       // pnode == parent->children[parent->totalItems], that is, pnode is the last child of its parent. 
        //
 
        if (pnode->key(0) < parent->key(node2_index) ) { 
@@ -1609,7 +1608,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
        } 
    }
 
-   // TODO: Make the series of if-tests immediately below into a separate method.
+   // TODO: Can these series of if-tests immediately below be made into a separate method.
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
    int left_adjacent = node2_index - 1;
    int right_adjacent = node2_index  + 1;
