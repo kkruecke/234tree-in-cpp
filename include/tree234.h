@@ -16,7 +16,7 @@
 
 template<typename Key, typename Value> class tree234;  // Forward declaration
 
-class DebugPrinter; 
+class DebugPrinter;  
     
 template<typename Key, typename Value> class tree234 {
 
@@ -103,7 +103,6 @@ template<typename Key, typename Value> class tree234 {
         * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
         * For 4-nodes, children[0] is left pointer, children[1] the left middle pointer, and children[2] is the right middle pointer, and children[3] is the right pointer.
         */
-    
        std::array<std::shared_ptr<Node>, 4> children;
        
        constexpr Node *getParent() noexcept { return parent; }
@@ -876,7 +875,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 {
    if (root.get() == nullptr) return;
    
-   // pair of: 1. Node pointer and 2. level of tree.
+   // pair of: 1. const Node * and 2. level of tree.
    std::queue<std::pair<const Node*, int>> queue; 
 
    auto level = 1;
@@ -887,7 +886,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
         auto [pnode, tree_level] = queue.front(); 
 
-        f(pnode, tree_level); // Call functor. 
+        f(pnode, tree_level); // Call functor 
          
         if (!pnode->isLeaf()) { // If it was not a leaf node, push its children onto the queue
             
@@ -1143,7 +1142,7 @@ template<class Key, class Value> inline std::tuple<bool, typename tree234<Key, V
 
      if (lhs_key < key(i)) {
             
-         return {false, children[i].get(), 0};
+         return {false, children[i].get(), 0}; 
 
      } else if (key(i) == lhs_key) {
 
@@ -1249,7 +1248,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insertChi
    }
 
    // Then insert the new child whose key is larger than key_value.key().
-   connectChild(insert_index, std::move( newChild));
+   connectChild(insert_index, std::move(newChild));
 }
 
 template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyValue tree234<Key, Value>::Node::removeKeyValue(int index) noexcept 
@@ -1313,7 +1312,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::find_(const Nod
    
    auto i = 0;
    
-   for (; i < pnode->getTotalItems(); ++i) {
+   for (;i < pnode->getTotalItems(); ++i) {
 
       if (key < pnode->key(i)) 
          return find_(pnode->children[i].get(), key); 
@@ -1359,9 +1358,9 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
 
  * Precondition: pnode is never nullptr.
  *
- * Purpose: Recursive method that searches the tree for input key. A it searches, it splits 4-nodes as they are encountered. If key is not found, it terminates at
- * the leaf node where the key should now be inserted and returns the pair {false, pnode_leaf_where_key_should_be_inserted}. If key was found, it returns the pair
- * {true, pnode_where_key_found}.
+ * Purpose: Recursive method that searches the tree for 'key', splitting 4-nodes when encountered. If key is not found, the tree descent terminates at
+ * the leaf node where the new 'key' should be inserted, and it returns the pair {false, pnode_leaf_where_key_should_be_inserted}. If key was found,
+ * it returns the pair {true, Node *pnode_where_key_found}.
  */
 template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::split_find(Node *pnode, Key key) noexcept
 {
@@ -1379,12 +1378,12 @@ template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::N
 
            if (pnode->isLeaf()) return {false, pnode};
  
-           return split_find(pnode->children[i].get(), key); // search left subtree of pnode->key(i)
+           return split_find(pnode->children[i].get(), key); // Recurse left subtree of pnode->key(i)
        } 
 
        if (key == pnode->key(i)) {
 
-          return {true, pnode};  // located at std::pair{pnode, i};  
+          return {true, pnode};  // key located at std::pair{pnode, i};  
        }
    }
 
@@ -1392,24 +1391,24 @@ template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::N
       return {false, pnode};
    } 
 
-   return split_find(pnode->children[i].get(), key); // It was greater than all values in pnode, search right-most subtree.
+   return split_find(pnode->children[i].get(), key); // key is greater than all values in pnode, search right-most subtree.
 }
 
 /* 
  *  split pseudocode: 
  *  
- *  Upon encountering a four node, it is split into a 2-node by doing:
+ *  pnode is a four node that is is split follows:
  *  
- *  1. move the largest key into a newly create 2-node, and then connect the two right-most children of the prior four node to it.
- *  2. convert pnode into a 2-node by setting totalItems to 1, keeping its smallest key and its two left-most chidren, 
- *  3. We move the middle key up to the parent( which we know is not a 4-node; otherwise, it too would have already been split), and we connect the new node step from #1 to
- *    it as a new child.
+ *  1. Create a new 2-node holding pnode's largest key and adopt pnode's two right-most children.
+ *  2. Convert pnode into a 2-node by setting totalItems to 1, effectively keeping only its smallest key and its two left-most chidren, 
+ *  3. Move the middle key up to the parent (which we know is not a 4-node. If it was, it has already been split), and connect the new
+ *    2-node step from #1 to it as a new child.
  *
- *  Note: if pnode is the root, we special case this by creating a new root above the current root.
+ *  Special case: if pnode is the root, we special case this by creating a new root above the current root.
  */ 
 template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pnode) noexcept
 {
-   // 1. create a new node from largest key and adopt pnode's tworight most children
+   // 1. create a new node from largest key of pnode and adopt pnode's two right-most children
    std::shared_ptr<Node> largestNode = std::make_shared<Node>(std::move(pnode->keys_values[2]));
    
    largestNode->connectChild(0, std::move(pnode->children[2])); 
@@ -1485,7 +1484,7 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)
       
       auto rc = remove(root.get(), key);   
 
-      if (rc)   --tree_size;
+      if (rc)  --tree_size;
 
       return rc; 
   }
@@ -1511,7 +1510,6 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
     } else if (current->isLeaf()) { // not in tree
 
         return false;
-
     } 
   }
 
@@ -1584,11 +1582,12 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
  * we fuse the three together into a 4-node. In either case, we shift the children as required.
  * 
  */
-template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertTwoNode(Node *node)  noexcept
+//--template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertTwoNode(Node *node)  noexcept
+template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertTwoNode(Node *pnode)  noexcept
 {                                                                         
   
    Node *convertedNode;
-   Node *parent = node->getParent();
+   Node *parent = pnode->getParent();
 
    int parentKeyTotal = parent->getTotalItems();
    int parentChildrenTotal = parent->getChildCount();
@@ -1596,24 +1595,27 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    // First, we find the index of the 2-node such that parent->children[node2_index] == node, by comparing node's key to its
    // parent's keys_values.
    int node2_index = 0;
-   
+  
+   // TODO: Isn't there a method to do this? 
+   // Determine the first parent child such that node is its left child.
    for (; node2_index < parentKeyTotal; ++node2_index) {
        //
        // If we never break, then node->keys_values[0] is greater than the last key of its parent, which means
-       // node == parent->children[parent->totalItems]. It is the last child. 
+       // pnode == parent->children[parent->totalItems]. It is the last child. 
        //
 
-       if (node->key(0) < parent->key(node2_index) ) { 
+       if (pnode->key(0) < parent->key(node2_index) ) { 
             break;                               
        } 
    }
 
+   // TODO: Make the series of if-tests immediately below into a separate method.
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
    int left_adjacent = node2_index - 1;
    int right_adjacent = node2_index  + 1;
 
    bool has3or4NodeSibling = false;
-   int sibling_index = left_adjacent; // assume sibling is to the left unless we discover otherwise.
+   int sibling_index = left_adjacent; // We assume sibling is to the left unless we discover otherwise.
     
    if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
 
