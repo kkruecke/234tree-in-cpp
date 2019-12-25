@@ -1,8 +1,6 @@
 TODO 
 ====
 
-Test chooseSibling() code.  Then incorporate it. 
-
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
 

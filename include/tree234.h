@@ -132,7 +132,7 @@ template<typename Key, typename Value> class tree234 {
     
        void insertChild(int childNum, std::shared_ptr<Node> &pChild) noexcept;
 
-       std::pair<bool, int> Node::chooseSibling(int child_index) const noexcept;
+       std::pair<bool, int> chooseSibling(int child_index) const noexcept;
     
        /* 
         * Called during remove(Key keym, Node *).
@@ -1274,7 +1274,7 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
  * second -- contains the child index of the sibling to be used. 
  *
  */
-template<typename Key, typename Value> inline std::pair<bool, int> Node::chooseSibling(int child_index) const noexcept
+template<typename Key, typename Value> inline std::pair<bool, int>  tree234<Key, Value>::Node::chooseSibling(int child_index) const noexcept
 {
 
    int left_adjacent = child_index - 1;
@@ -1627,8 +1627,8 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
    // TODO: Can these series of if-tests immediately below be made into a separate method, say, 'std::pair<bool,int> get3or4NodeSiblingIndex()'.
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
-   //++ pnode->chooseSibling(child_index);
-
+   auto [has3or4NodeSibling, sibling_index] = pnode->chooseSibling(child_index);
+   /*
    int left_adjacent = child_index - 1;
    int right_adjacent = child_index  + 1;
 
@@ -1655,11 +1655,13 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
         sibling_index = right_adjacent; 
    } 
+   */
 
    // Determine whether to rotate or fuse based on whether the parent is a two node, 
 
    // If all adjacent siblings are also 2-nodes...
    Node *convertedNode = nullptr;
+   auto parent = pnode->getParent();
 
    if (has3or4NodeSibling == false) { 
 
