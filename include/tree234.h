@@ -138,7 +138,6 @@ template<typename Key, typename Value> class tree234 {
         * after having been adopted by the parent are deallocated. 
         */
        Node *fuseWithChildren() noexcept; 
-       int getSubTreeIndex(int i) const noexcept;
        
       public:
              
@@ -1266,34 +1265,6 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
 
   return key_value;
 }
-/*
- * Requires: i to be valid key index of 'this'.  
- *   
- * Promises:
- * Get the first child index in the parent such that pnode is its left child, that is, such that pnode is the root of its left subtree.
- * If there is no such left child, the pnode is the right-most child of its parent. 
- *  
- */
-template<typename Key, typename Value> inline int tree234<Key, Value>::Node::getSubTreeIndex(int i) const noexcept
-{
-   int child_index = 0;
-   int parentKeyTotal = parent->getTotalItems();
-  
-   // Get the first child index in the parent such that pnode is its left child, that is, such that pnode is the root of its left subtree.
-   // If pnode is not in left subtree, then pnode is the right-most child of its parent, and it is in the right-most subtree of its parent. 
-   for (; child_index < parentKeyTotal; ++child_index) {
-       //
-       // If we never break, then this->key(i) is greater than the last key of its parent, which means
-       // pnode == parent->children[parent->totalItems]; that is, pnode is the last child of its parent, and therefore in its right most
-       // subtree. 
-       
-       if (key(i) < parent->key(child_index) ) { 
-            break;                               
-       } 
-   }
-
-   return child_index;
-}
 
 template<typename Key, typename Value> inline constexpr const typename tree234<Key, Value>::Node *tree234<Key, Value>::Node::getParent() const  noexcept // ok
 { 
@@ -1613,12 +1584,13 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
  */
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertTwoNode(Node *pnode)  noexcept
 {                                                                         
-   auto node2_index = pnode->getSubTreeIndex(0); 
+   // Return the parent->children[node2_index] such that pnode is root of the left subtree of 
+   auto child_index = pnode->getChildIndex(); 
 
    // TODO: Can these series of if-tests immediately below be made into a separate method.
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
-   int left_adjacent = node2_index - 1;
-   int right_adjacent = node2_index  + 1;
+   int left_adjacent = child_index - 1;
+   int right_adjacent = child_index  + 1;
 
    bool has3or4NodeSibling = false;
 
@@ -1657,41 +1629,41 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
         } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
 
-           convertedNode = fuseSiblings(parent, node2_index, sibling_index);
+           convertedNode = fuseSiblings(parent, child_index, sibling_index);
         }
 
    } else { // it has a 3- or 4-node sibling.
 
       Node *psibling = parent->children[sibling_index].get();
     
-      Node *p2node = parent->children[node2_index].get();
+      Node *p2node = parent->children[child_index].get();
       
       // First we get the index of the parent's key value such that either 
       // 
-      //   parent->children[node2_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
+      //   parent->children[child_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
       // 
       // or 
       // 
-      //   parent->children[sibling_id]->keys_values[0]  <  parent->keys_values[index] <  parent->children[node2_index]->keys_values[0]
+      //   parent->children[sibling_id]->keys_values[0]  <  parent->keys_values[index] <  parent->children[child_index]->keys_values[0]
       //
       // by taking the minimum of the indecies.
       
     
-      int parent_key_index = std::min(node2_index, sibling_index); 
+      int parent_key_index = std::min(child_index, sibling_index); 
 
       /*   If sibling is to the left, then this relation holds
        *
-       *      parent->children[sibling_id]->keys_values[0] < parent->keys_values[index] < parent->children[node2_index]->keys_values[0]
+       *      parent->children[sibling_id]->keys_values[0] < parent->keys_values[index] < parent->children[child_index]->keys_values[0]
        * 
        *   and we do a right rotation
        */ 
-      if (node2_index > sibling_index) { 
+      if (child_index > sibling_index) { 
                                   
           convertedNode = rightRotation(p2node, psibling, parent, parent_key_index);
     
       } else { /* else sibling is to the right and this relation holds
                 * 
-                *    parent->children[node2_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
+                *    parent->children[child_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
                 *
                 * therefore we do a left rotation
                 */ 
