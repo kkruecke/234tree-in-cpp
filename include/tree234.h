@@ -1391,6 +1391,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
    current->insert(key, value); 
    ++tree_size;
 }
+
 /*
  * Called by insert(Key key, const Value& value) to determine if key exits or not.
 
@@ -1532,6 +1533,7 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
 {
   std::tuple<bool, Node *, int> result_tuple;
 
+  // Loop until inner if-test satisfied.
   for (Node *current = psubtree; true; current = std::get<1>(result_tuple)) { 
 
     if (current != root.get() && current->isTwoNode()) {
@@ -1625,37 +1627,8 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    // Return the parent->children[node2_index] such that pnode is root of the left subtree of 
    auto child_index = pnode->getChildIndex(); 
 
-   // TODO: Can these series of if-tests immediately below be made into a separate method, say, 'std::pair<bool,int> get3or4NodeSiblingIndex()'.
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
    auto [has3or4NodeSibling, sibling_index] = pnode->chooseSibling(child_index);
-   /*
-   int left_adjacent = child_index - 1;
-   int right_adjacent = child_index  + 1;
-
-   bool has3or4NodeSibling = false;
-
-   Node *parent = pnode->getParent();
-
-   int parentChildrenTotal = parent->getChildCount();
-
-   int sibling_index = left_adjacent; // We assume sibling is to the left unless we discover otherwise.
-    
-   if (right_adjacent < parentChildrenTotal && !parent->children[right_adjacent]->isTwoNode()) {
-
-        has3or4NodeSibling = true;
-        sibling_index = right_adjacent;  
-
-   } else if (left_adjacent >= 0 && !parent->children[left_adjacent]->isTwoNode()) {
-
-        has3or4NodeSibling = true;
-        sibling_index = left_adjacent;  
-
-   } else if (right_adjacent < parentChildrenTotal) { // There are no 3- or 4-nodes siblings. Therefore the all siblings 
-                                                      // are 2-node(s).
-
-        sibling_index = right_adjacent; 
-   } 
-   */
 
    // Determine whether to rotate or fuse based on whether the parent is a two node, 
 

@@ -1,6 +1,8 @@
 TODO 
 ====
 
+* Consider using C++17 sentinel value for value returned by iterator and const_iterator end() methods, to simplify the implementation.
+
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
 
