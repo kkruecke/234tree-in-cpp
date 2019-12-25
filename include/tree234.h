@@ -1587,7 +1587,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    // Return the parent->children[node2_index] such that pnode is root of the left subtree of 
    auto child_index = pnode->getChildIndex(); 
 
-   // TODO: Can these series of if-tests immediately below be made into a separate method.
+   // TODO: Can these series of if-tests immediately below be made into a separate method, say, 'std::pair<bool,int> get3or4NodeSiblingIndex()'.
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
    int left_adjacent = child_index - 1;
    int right_adjacent = child_index  + 1;
