@@ -1367,6 +1367,8 @@ template<typename Key, typename Value> bool tree234<Key, Value>::find_(const Nod
  *
  * Is the pseudo code the same for each website below?
  *
+ * https://www.cs.usfca.edu/~galles/visualization/BTree.html       <-- Best manually insert/delete animation
+ * https://www.educative.io/page/5689413791121408/80001            <-- Top notch animation of insert and delete.
  * https://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf         <-- Thorough explanation with illustrations.
  * https://www.cs.purdue.edu/homes/ayg/CS251/slides/chap13a.pdf    <-- Has good illustrations
  * https://www.cs.mcgill.ca/~cs251/ClosestPair/2-4trees.html
