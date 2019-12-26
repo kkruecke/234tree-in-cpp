@@ -1370,7 +1370,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::find_(const Nod
  * https://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf         <-- Thorough explanation with illustrations.
  * https://www.cs.purdue.edu/homes/ayg/CS251/slides/chap13a.pdf    <-- Has good illustrations
  * https://www.cs.mcgill.ca/~cs251/ClosestPair/2-4trees.html
- * https://algorithmtutor.com/Data-Structures/Tree/2-3-4-Trees/
+ * https://algorithmtutor.com/Data-Structures/Tree/2-3-4-Trees/    <-- Introduces reb-black trees, too
  *
  *
  * As 4-nodes are encountered, they are split into two 2-nodes: one holding the smallest key, the other the largest. The middle key is inserted into the parent.
