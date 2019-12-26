@@ -1363,10 +1363,13 @@ template<typename Key, typename Value> bool tree234<Key, Value>::find_(const Nod
 }
 
 /*
- * This insertion method is based on the pseudo code at:
+ * Insert and Delete based on
  *
- *   http://www.unf.edu/~broggio/cop3540/Chapter%2010%20-%202-3-4%20Trees%20-%20Part%201.ppt and 
- *   http://www.serc.iisc.ernet.in/~viren/Courses/2010/SE286/Lecture16.pdf 
+ * https://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+ * https://www.cs.purdue.edu/homes/ayg/CS251/slides/chap13a.pdf
+ * https://www.cs.mcgill.ca/~cs251/ClosestPair/2-4trees.html
+ * https://algorithmtutor.com/Data-Structures/Tree/2-3-4-Trees/
+ *
  *
  * As 4-nodes are encountered, they are split into two 2-nodes: one holding the smallest key, the other the largest. The middle key is inserted into the parent.
  * iThen the two left most children of the former 4-node are assigned to the smaller 2-node, and the two right most children, likewise, are assigned to the larger 
@@ -1475,7 +1478,12 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
 }
 
 /*
- * Deletion based on pseudo code on pages 50-53 of: www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ * Insert and Delete based on
+ * 
+ * https://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
+ * https://www.cs.purdue.edu/homes/ayg/CS251/slides/chap13a.pdf
+ * https://www.cs.mcgill.ca/~cs251/ClosestPair/2-4trees.html
+ * https://algorithmtutor.com/Data-Structures/Tree/2-3-4-Trees/
  *
  * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the deleted key
  * with its in-order successor and then deleting the key moved to its successor's prior position. To prevent deleting it from a two node, which
