@@ -5,9 +5,9 @@
 #include <vector>
 #include <utility>
 
-template<class Key, class Value> class tree234; // Fwd ref.
+234tree-in-cpplate<class Key, class Value> class tree234; // Fwd ref.
 
-template<class  Key, class Value> void test_insert(std::vector<std::pair<Key, Value>>& vec_pairs)
+234tree-in-cpplate<class  Key, class Value> void test_insert(std::vector<std::pair<Key, Value>>& vec_pairs)
 {
   tree234<Key, Value> tree;
   
@@ -21,7 +21,7 @@ template<class  Key, class Value> void test_insert(std::vector<std::pair<Key, Va
   }
 }  
     // Test copy constructor:
-template<class Key, class Value> void test_copy_ctor(const tree234<Key, Value>& tree)  
+234tree-in-cpplate<class Key, class Value> void test_copy_ctor(const tree234<Key, Value>& tree)  
 {
   tree234<Key, Value> tree2nd  {tree};
   
