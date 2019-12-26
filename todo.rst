@@ -1,6 +1,8 @@
 TODO 
 ====
 
+For the tree234::debug() method add a variadic constructor for class Node that takes from one to three parameters of type std::pair<Key, Value>
+
 * Consider using C++17 sentinel value for value returned by iterator and const_iterator end() methods, to simplify the implementation.
 * reimplement insert and delte after reviewing algorithms and understand them better and what member variables their implementation will use.
   See the website urls by ::insert and ::delete. Read them, see how they compare or differ and then write out a canonical example and run it

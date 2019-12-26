@@ -535,6 +535,14 @@ template<typename Key, typename Value> class tree234 {
    const_reverse_iterator rend() const noexcept;    
 };
 
+template<class Key, class Value> tree234<Key, Value>::debug() noexcept
+{
+
+
+
+
+}
+
 template<class Key, class Value> inline bool tree234<Key, Value>::isEmpty() const noexcept
 {
    return root == nullptr ? true : false;
@@ -576,6 +584,11 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(K
    value(0) = value_in;
 }
 
+template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(KeyValue&& key_value) noexcept : parent{nullptr}, totalItems{1}
+{
+   keys_values[0] = std::move(key_value); 
+}
+
 template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::print(std::ostream& ostr) const noexcept
 {
    ostr << "[";
@@ -601,11 +614,6 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::print(
    
    ostr << "]";
    return ostr;
-}
-
-template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(KeyValue&& key_value) noexcept : parent{nullptr}, totalItems{1}
-{
-   keys_values[0] = std::move(key_value); 
 }
 
 template<class Key, class Value> int tree234<Key, Value>::Node::getIndexInParent() const 
