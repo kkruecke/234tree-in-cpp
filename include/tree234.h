@@ -32,16 +32,17 @@ template<typename Key, typename Value> class tree234 {
    */
    
    union KeyValue { 
-      std::pair<Key, Value>        _pair;  // ...this pair
+
+       std::pair<Key, Value>        _pair;  // ...this pair
        std::pair<const Key, Value>  _constkey_pair; 
        
        public:    
        KeyValue() {} 
        ~KeyValue() 
        {
-        // Anonymous unions do not implicitly destruct their members. It must be done explicitly.
-        _pair.first.~Key();
-        _pair.second.~Value();
+           // Anonymous unions do not implicitly destruct their members. It must be done explicitly.
+           _pair.first.~Key();
+           _pair.second.~Value();
        } 
        
        KeyValue(Key key, const Value& value) : _pair{key, value} {}
@@ -72,8 +73,8 @@ template<typename Key, typename Value> class tree234 {
        
        friend std::ostream& operator<<(std::ostream& ostr, const KeyValue& key_value)
        {
-         ostr << "{" << key_value._pair.first << ',' <<  key_value._pair.second <<  "}, ";
-         return ostr;
+          ostr << "{" << key_value._pair.first << ',' <<  key_value._pair.second <<  "}, ";
+          return ostr;
        }
    };
    
@@ -155,7 +156,7 @@ template<typename Key, typename Value> class tree234 {
          explicit Node(const Node& node, Node *lhs_parent=nullptr) noexcept : keys_values{node.keys_values}, totalItems{node.totalItems}, parent{lhs_parent}
          {
          } 
-      
+
          explicit Node(KeyValue&& key_value) noexcept; 
          
          constexpr const Node *getParent() const noexcept;
@@ -537,7 +538,13 @@ template<typename Key, typename Value> class tree234 {
 
 template<class Key, class Value> tree234<Key, Value>::debug() noexcept
 {
+   root = make_shared<Node>(10, 10);
+   root->insert(90, 90); // second key
 
+   leftChild = make_shared<Node>(1, 1);
+   leftChild->insert(8, 8);
+
+   root->children[0] = leftChild; 
 
 
 
