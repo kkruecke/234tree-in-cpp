@@ -301,7 +301,7 @@ bool isBalanced(const Node *pnode) const noexcept;
 
 bool find_(const Node *current, Key key) const noexcept; // called by 'bool find(Key keu) const'
 
-std::pair<bool, Node *> split_find(Node *pnode, Key key) noexcept;  // Called during insert
+std::pair<bool, Node *> insert_descent(Node *pnode, Key key) noexcept;  // Called during insert
 
 Node *convert_findmin(Node *pnode) noexcept; // Called during remove()
 
@@ -1363,24 +1363,28 @@ template<typename Key, typename Value> bool tree234<Key, Value>::find_(const Nod
 }
 
 /*
- * Insert and Delete based on 
+ * Insersion algorithm is based on https://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf   
  *
- * Is the pseudo code the same for each website below?
- * Starting on page 488 of CHLR text B-Tree algoritms discussion
+ * Other helpful links are:
  *
  * https://www.cs.usfca.edu/~galles/visualization/BTree.html       <-- Best manually insert/delete animation
  * https://www.educative.io/page/5689413791121408/80001            <-- Top notch animation of insert and delete.
- * https://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf         <-- Thorough explanation with illustrations.
  * https://www.cs.purdue.edu/homes/ayg/CS251/slides/chap13a.pdf    <-- Has good illustrations
  * https://www.cs.mcgill.ca/~cs251/ClosestPair/2-4trees.html
  * https://algorithmtutor.com/Data-Structures/Tree/2-3-4-Trees/    <-- Introduces reb-black trees, too
  *
+ * Insertion Algorithm 
  *
- * As 4-nodes are encountered, they are split into two 2-nodes: one holding the smallest key, the other the largest. The middle key is inserted into the parent.
- * iThen the two left most children of the former 4-node are assigned to the smaller 2-node, and the two right most children, likewise, are assigned to the larger 
- * two node. The parent of the former 4-node adopts the two new 2-nodes
+ * The insert algorithm is based on the this description of `B-Trees <https://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf>`_.  New keys are inserted at leaf nodes.
+ * If the leaf node is a 4-node, we must first split it by pushing its middle key up a level to make room for the new key. To ensure the parent can always accomodate a
+ * key, we must first split the parent if it is a 4-node. And to ensure the parent's parent can accomodate a new key, we split all 4-nodes as we descend the tree. 
  *
- * Note: the smaller 2-node is simply the original 4-node downsized to a 2-node.
+ * If the root must be split (because it is the parent of the leaf or is itself a leaf), the tree will grows upward when a new root node is inserted above the old.
+ *
+ * The split algorithm converts the fromer 4-node into 2-node that containing only its left key. This downsized node retains it two left-most children. The middle key is
+ * pushed into the parent, and the right key is moved into a new 2-node. This newly created 2-node takes ownership of the two right-most children of the former 4-node, and
+ * this newly created 2-node is made a child of the parent. The child indexes in the parent are adjusted to properly reflect the new relationships between these nodes.
+ *
  */
 template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept 
 { 
@@ -1391,7 +1395,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
       return; 
    } 
 
-   auto [bool_found, current] = split_find(root.get(), key);  
+   auto [bool_found, current] = insert_descent(root.get(), key);  
    
    if (bool_found) return;
 
@@ -1409,26 +1413,26 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
  * the leaf node where the new 'key' should be inserted, and it returns the pair {false, pnode_leaf_where_key_should_be_inserted}. If key was found,
  * it returns the pair {true, Node *pnode_where_key_found}.
  */
-template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::split_find(Node *pnode, Key key) noexcept
+template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::insert_descent(Node *pnode, Key new_key) noexcept
 {
    if (pnode->isFourNode()) { 
 
        split(pnode);
-       pnode = pnode->parent; 
+       pnode = pnode->parent; // TODO: This doesn't seem correct. Why resume the descent at the parent. We already visited it.  
    }
 
    auto i = 0;
 
    for(; i < pnode->getTotalItems(); ++i) {
 
-       if (key < pnode->key(i)) {
+       if (new_key < pnode->key(i)) {
 
            if (pnode->isLeaf()) return {false, pnode};
  
-           return split_find(pnode->children[i].get(), key); // Recurse left subtree of pnode->key(i)
+           return insert_descent(pnode->children[i].get(), new_key); // Recurse left subtree of pnode->key(i)
        } 
 
-       if (key == pnode->key(i)) {
+       if (new_key == pnode->key(i)) {
 
           return {true, pnode};  // key located at std::pair{pnode, i};  
        }
@@ -1438,7 +1442,7 @@ template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::N
       return {false, pnode};
    } 
 
-   return split_find(pnode->children[i].get(), key); // key is greater than all values in pnode, search right-most subtree.
+   return insert_descent(pnode->children[i].get(), new_key); // key is greater than all values in pnode, search right-most subtree.
 }
 
 /* 
