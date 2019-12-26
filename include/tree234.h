@@ -1418,7 +1418,8 @@ Requires:
    if (pnode->isFourNode()) { 
 
        split(pnode);
-       pnode = pnode->parent; // TODO: This doesn't seem correct. Why resume the descent at the parent. We already visited it.  
+       pnode = pnode->parent; // TODO: It would better is split() returned a 'Node *' for continuing the descent. With the current approach the parent node might be needlessly split. This would happen when the parent, which wasn't a 3-node beforehand, becomes
+                              //  a 3-node after its pnode child was split. This same problem might perculate up the tree. So we need logic to select which the Node pointer with which to continue the tree descent without that logic needlessly split the parent.
    }
 
    auto i = 0;
