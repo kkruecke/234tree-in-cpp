@@ -314,6 +314,8 @@ template<typename Key, typename Value> class tree234 {
    using reference       = value_type&; 
    using node_type       = Node; 
    
+   void debug() noexcept;  // As an aid in writting any future debug code.
+ 
    explicit tree234() noexcept : root{}, tree_size{0} { } 
    
    tree234(const tree234& lhs) noexcept; 
