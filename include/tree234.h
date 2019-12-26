@@ -1363,10 +1363,12 @@ template<typename Key, typename Value> bool tree234<Key, Value>::find_(const Nod
 }
 
 /*
- * Insert and Delete based on
+ * Insert and Delete based on 
  *
- * https://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
- * https://www.cs.purdue.edu/homes/ayg/CS251/slides/chap13a.pdf
+ * Is the pseudo code the same for each website below?
+ *
+ * https://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf         <-- Thorough explanation with illustrations.
+ * https://www.cs.purdue.edu/homes/ayg/CS251/slides/chap13a.pdf    <-- Has good illustrations
  * https://www.cs.mcgill.ca/~cs251/ClosestPair/2-4trees.html
  * https://algorithmtutor.com/Data-Structures/Tree/2-3-4-Trees/
  *
