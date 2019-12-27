@@ -265,7 +265,7 @@ template<typename Key, typename Value> class tree234 {
    
    template<typename Functor> void DoPreOrderTraverse(Functor f, const Node *proot) const noexcept;
    
-   void split(Node *node) noexcept;  // called during insert(Key key) to split 4-nodes when encountered.
+   std::pair<bool, Node *> split(Node *node, Key new_key) noexcept;  // called during insert(Key key) to split 4-nodes when encountered.
    
    // Called during remove(Key key)
    bool remove(Node *location, Key key); 
@@ -302,7 +302,7 @@ template<typename Key, typename Value> class tree234 {
    
    bool find_(const Node *current, Key key) const noexcept; // called by 'bool find(Key keu) const'
    
-   std::pair<bool, Node *> insert_descent(Node *pnode, Key key) noexcept;  // Called during insert
+   std::pair<bool, Node *> insert_descent(Node *pnode, Key new_key) noexcept;  // Called during insert
    
    Node *convert_findmin(Node *pnode) noexcept; // Called during remove()
    
@@ -535,20 +535,6 @@ template<typename Key, typename Value> class tree234 {
    const_reverse_iterator rbegin() const noexcept;  
    const_reverse_iterator rend() const noexcept;    
 };
-
-template<class Key, class Value> tree234<Key, Value>::debug() noexcept
-{
-   root = make_shared<Node>(10, 10);
-   root->insert(90, 90); // second key
-
-   leftChild = make_shared<Node>(1, 1);
-   leftChild->insert(8, 8);
-
-   root->children[0] = leftChild; 
-
-
-
-}
 
 template<class Key, class Value> inline bool tree234<Key, Value>::isEmpty() const noexcept
 {
@@ -1398,21 +1384,21 @@ template<typename Key, typename Value> bool tree234<Key, Value>::find_(const Nod
  * this newly created 2-node is made a child of the parent. The child indexes in the parent are adjusted to properly reflect the new relationships between these nodes.
  *
  */
-template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key, const Value& value) noexcept 
+template<typename Key, typename Value> void tree234<Key, Value>::insert(Key new_key, const Value& value) noexcept 
 { 
    if (root == nullptr) {
            
-      root = std::make_shared<Node>(key, value); 
+      root = std::make_shared<Node>(new_key, value); 
     ++tree_size;
       return; 
    } 
-
-   auto [bool_found, current] = insert_descent(root.get(), key);  
+   
+   auto [bool_found, current] = insert_descent(root.get(), new_key);  
    
    if (bool_found) return;
 
    // current node is now a leaf and it is not full (because we split all four nodes while descending). We cast away constness in order to change the node.
-   current->insert(key, value); 
+   current->insert(new_key, value); 
    ++tree_size;
 }
 
@@ -1424,42 +1410,46 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key key,
  * the leaf node where the new 'key' should be inserted, and it returns the pair {false, pnode_leaf_where_key_should_be_inserted}. If key was found,
  * it returns the pair {true, Node *pnode_where_key_found}.
  */
-template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::insert_descent(Node *pnode, Key new_key) noexcept
+template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::insert_descent(Node *pcurrent, Key new_key) noexcept
 {
-   if (pnode->isFourNode()) { 
-
-       split(pnode);
-       pnode = pnode->parent; // TODO: This doesn't seem correct. Why resume the descent at the parent. We already visited it.  
+   if (pcurrent->isFourNode()) { 
+       
+       auto[found, pnext] = split(pcurrent, new_key);   //++
+       
+       if (found) return {true, pnext}; //++
+       
+       pcurrent = pnext; //++
+       
    }
 
    auto i = 0;
 
-   for(; i < pnode->getTotalItems(); ++i) {
+   for(; i < pcurrent->getTotalItems(); ++i) {
 
-       if (new_key < pnode->key(i)) {
+       if (new_key < pcurrent->key(i)) {
 
-           if (pnode->isLeaf()) return {false, pnode};
+           if (pcurrent->isLeaf()) return {false, pcurrent};
  
-           return insert_descent(pnode->children[i].get(), new_key); // Recurse left subtree of pnode->key(i)
+           return insert_descent(pcurrent->children[i].get(), new_key); // Recurse left subtree of pcurrent->key(i)
        } 
 
-       if (new_key == pnode->key(i)) {
+       if (new_key == pcurrent->key(i)) {
 
-          return {true, pnode};  // key located at std::pair{pnode, i};  
+           return {true, pcurrent};  // key located at std::pair{pcurrent, i};  
        }
    }
 
-   if (pnode->isLeaf()) {
-      return {false, pnode};
+   if (pcurrent->isLeaf()) {
+      return {false, pcurrent};
    } 
 
-   return insert_descent(pnode->children[i].get(), new_key); // key is greater than all values in pnode, search right-most subtree.
+   return insert_descent(pcurrent->children[i].get(), new_key); // key is greater than all values in pcurrent, search right-most subtree.
 }
 
 /* 
  *  split pseudocode: 
  *  
- *  pnode is a four node that is is split follows:
+ *  pnode is a 4-node that is is split follows:
  *  
  *  1. Create a new 2-node holding pnode's largest key and adopt pnode's two right-most children.
  *  2. Convert pnode into a 2-node by setting totalItems to 1, effectively keeping only its smallest key and its two left-most chidren, 
@@ -1468,16 +1458,28 @@ template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::N
  *
  *  Special case: if pnode is the root, we special case this by creating a new root above the current root.
  */ 
-template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pnode) noexcept
+template<typename Key, typename Value> std::pair<bool, typename tree234<Key, Value>::Node *> tree234<Key, Value>::split(Node *pnode, Key new_key) noexcept
 {
+   Node *pnode_parent = pnode->parent;
+
+   auto middle_key = pnode->key(1); // Save the middle key that will be pushed to the parent.
+
+   if (new_key == middle_key) { // No need to split the node
+
+       return {true, pnode};
+   }
+ 
    // 1. create a new node from largest key of pnode and adopt pnode's two right-most children
    std::shared_ptr<Node> largestNode = std::make_shared<Node>(std::move(pnode->keys_values[2]));
+      
    
    largestNode->connectChild(0, std::move(pnode->children[2])); 
    largestNode->connectChild(1, std::move(pnode->children[3]));
    
    // 2. Make pnode a 2-node. Note: It still retains its two left-most children, 
    pnode->totalItems = 1;
+   
+   Node *pLargest = largestNode.get();
    
    // 3. Insert middle value into parent, or if pnode is the root, create a new root above pnode and 
    // adopt 'pnode' and 'largest' as children.
@@ -1492,9 +1494,15 @@ template<typename Key, typename Value> void tree234<Key, Value>::split(Node *pno
 
    } else {
 
-     // The parent will retain pnode, now downgraded to a 2-node, as its child in its current child position. It will insert the new key value and connect/insert largeNode
+     // The parent retains pnode, now downgraded to a 2-node, as its child in its current child position, and it takes ownership of largestNode
      pnode->parent->insert(std::move(pnode->keys_values[1]), largestNode); 
    }
+
+   // Set the descent cursor.
+  Node *pnext =  (new_key < middle_key) ? pnode : pLargest;
+
+  return {false, pnext};
+        
 }
 
 /*
