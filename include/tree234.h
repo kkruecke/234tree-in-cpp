@@ -1502,16 +1502,18 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
  * https://www.cs.mcgill.ca/~cs251/ClosestPair/2-4trees.html
  * https://algorithmtutor.com/Data-Structures/Tree/2-3-4-Trees/
  *
- * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the deleted key
- * with its in-order successor and then deleting the key moved to its successor's prior position. To prevent deleting it from a two node, which
- * would leave an empty node, as we descend we convert all 2-nodes to 3 or 4-nodes using the stratagies below.
+ * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the key to be deleted
+ * with its in-order successor and then deleting the key from the leaf noden. To prevent deletion from a 2-node leaf, which
+ * would leave an empty node (underflow), we convert all 2-nodes as we descend the tree to 3 or 4-nodes using the stratagies below.
  *  
- * If the key is an internal node, then its successor will be the minimum key in its first right subtree. To ensure that the successor of the
+ * If the key is an internal node, then its successor will be the minimum key of its first right subtree. To ensure that the successor of the
  * internal node is not a 2-node, we again convert all 2-nodes to 3- or 4-nodes as we descend. 
  * 
- * Conversion Strategies:
- * Case 1: If an adjacent sibling has 2 or 3 items (and the parent is a 3- or 4-node), we "steal" an item from sibling by
- * rotating items and moving subtree. See slide #51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ * Conversion of 2-node has two cases:
+ * TODO: Make sure the deletion description matches that in ~/d/notes/tree234.rst.
+
+ * Case 1: If an adjacent sibling has is a 3- or 4-node (so it has 2 or 3 items, respectively), and if the parent -- of which node????--is a 3- or 4-node,
+ * we "steal" an item from sibling by rotating items and moving subtree. See slide #51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
  *         
  * Case 2: If each adjacent sibling (there are at most two) has only one item, we fuse together the two siblings, plus an item we bring down from parent (which we
  * know is not a 2-node), forming a 4-node and shifting all children effected appropriately. 
