@@ -117,7 +117,7 @@ template<typename Key, typename Value> class tree234 {
       */
       std::tuple<bool, typename tree234<Key, Value>::Node *, int>  find(Key key) const noexcept;
       
-      void insert(KeyValue&& key_value, std::shared_ptr<Node>& newChild) noexcept;
+      void insert(KeyValue&& key_value, std::shared_ptr<Node>&& newChild) noexcept;
       
       int insert(Key key, const Value& value) noexcept;
       
@@ -641,7 +641,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(tree2
 
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::initializer_list<std::pair<Key, Value>> il) noexcept : root(nullptr), tree_size{0} 
 {
-    for (auto& x: il) { // simply call tree234<Key, Value>::insert(x)
+    for (auto& x: il) { 
              
            insert(x.first, x.second);
     }
@@ -1206,7 +1206,8 @@ template<typename Key, typename Value> int  tree234<Key, Value>::Node::insert(Ke
 /*
  * Inserts key_value pair into its sorted position in this Node and makes largerNode its right most child.
  */
-template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(KeyValue&& key_value, std::shared_ptr<Node>& largerNode) noexcept 
+//template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(KeyValue&& key_value, std::shared_ptr<Node>& largerNode) noexcept 
+template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(KeyValue&& key_value, std::shared_ptr<Node>&& largerNode) noexcept 
 { 
   // start on right, examine items
   for(auto i = getTotalItems() - 1; i >= 0 ; --i) {
@@ -1406,20 +1407,19 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key new_
  * Called by insert(Key key, const Value& value) to determine if key exits or not.
  * Precondition: pnode is never nullptr.
  *
- * Purpose: Recursive method that searches the tree for 'key', splitting 4-nodes when encountered. If key is not found, the tree descent terminates at
- * the leaf node where the new 'key' should be inserted, and it returns the pair {false, pnode_leaf_where_key_should_be_inserted}. If key was found,
+ * Purpose: Recursive method that searches the tree for 'new_key', splitting 4-nodes when encountered. If key is not found, the tree descent terminates at
+ * the leaf node where the new 'new_key' should be inserted, and it returns the pair {false, pnode_leaf_where_key_should_be_inserted}. If key was found,
  * it returns the pair {true, Node *pnode_where_key_found}.
  */
 template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::insert_descent(Node *pcurrent, Key new_key) noexcept
 {
    if (pcurrent->isFourNode()) { 
        
-       auto[found, pnext] = split(pcurrent, new_key);   //++
+       auto[found, pnext] = split(pcurrent, new_key);  
        
-       if (found) return {true, pnext}; //++
+       if (found) return {true, pnext}; 
        
-       pcurrent = pnext; //++
-       
+       pcurrent = pnext; 
    }
 
    auto i = 0;
@@ -1495,7 +1495,7 @@ template<typename Key, typename Value> std::pair<bool, typename tree234<Key, Val
    } else {
 
      // The parent retains pnode, now downgraded to a 2-node, as its child in its current child position, and it takes ownership of largestNode
-     pnode->parent->insert(std::move(pnode->keys_values[1]), largestNode); 
+     pnode->parent->insert(std::move(pnode->keys_values[1]), std::move(largestNode)); 
    }
 
    // Set the descent cursor.

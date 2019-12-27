@@ -9,7 +9,7 @@
 
 // TODO: Should I add a special levelOrderTraverse() that builds a stack of descent indecies, so the parent pointer can be properly tested?
   
-234tree-in-cpplate<class Tree>
+template<class Tree>
 class levelOrderInvariantReport : public levelOrderDisplay<Tree> {
   public:
      
@@ -23,18 +23,18 @@ class levelOrderInvariantReport : public levelOrderDisplay<Tree> {
    virtual void display_node(std::ostream& ostr, const  typename Tree::node_type& node) noexcept override; 
 };
 
-234tree-in-cpplate<class Tree>
+template<class Tree>
 inline levelOrderInvariantReport<Tree>::levelOrderInvariantReport(const Tree& in_tree, std::ostream& ostr_lhs) : levelOrderDisplay<Tree>(in_tree, ostr_lhs)
 {
 }
 
-234tree-in-cpplate<class Tree>
+template<class Tree>
 inline void levelOrderInvariantReport<Tree>::display_level(std::ostream& ostr, int level) noexcept
 {
    levelOrderDisplay<Tree>::display_level(ostr, level);
 }
 
-234tree-in-cpplate<class Tree>
+template<class Tree>
 inline void levelOrderInvariantReport<Tree>::display_node(std::ostream& ostr, const typename Tree::node_type& node) noexcept
 {
    std::string errors;
