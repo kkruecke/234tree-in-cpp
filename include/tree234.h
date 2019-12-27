@@ -629,6 +629,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const
        return;
    }
    
+  //TODO: We still need to clone the tree--right; otherwise, the children and grandchildren of the new tree's root will only have one reference count?
    root = lhs.root;
 }
 
