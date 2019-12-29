@@ -2,7 +2,7 @@ TODO
 ====
 
 * Double check the logic again now that we are again using a std::unique_ptr<Node>. Do this by finishing the test_invariant() code and runningit. And by compiling the version of tree234.h
-  from Sunday 12/28/2019 and looking at its output.
+  from Sunday 12/28/2019 and looking at its output. Look at the Node::debug_print code in tree23, whose calling code is now partly missing.
 
 * Check if the default ~tree234() works like post-order recursive deletion that destroy_tree() does. And check that destroy_tree() works as expected. 
 

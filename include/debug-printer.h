@@ -1,13 +1,20 @@
-#ifndef DEBUGPRINTER_H
-#define	DEBUGPRINTER_H
+#ifndef _DEBUGPRINTER_H_
+#define	_DEBUGPRINTER_H_
+
 #include <iosfwd>
 #include <string>
 #include <sstream>
 #include <utility>
 
-// TODO: Scrap this in preference to something like the debugPrinter for tree23.
+/*
+ * Use:
+ *  DebugPrinter debug_printer;
+ *  tree.levelOrderTraverse(debug_printer);
+ *  tree.inOrderTraverse(debug_printer);
+ *  
+ */
 
-234tree-in-cpplate<typename Key, typename Value> class tree234;// fwd reference
+template<typename Key, typename Value> class tree234;// fwd reference
 
 class DebugPrinter {
     // TODO: Add tree depth capability somehow. 
@@ -19,11 +26,11 @@ public:
 
     DebugPrinter(const DebugPrinter& tp) : ostr_(tp.ostr_) {}
 
-    234tree-in-cpplate<class Key, class Value> std::ostream& operator()(const std::pair<Key, Value>& k, int index, const typename tree234<Key, Value>::Node234 *current,
+    template<class Key, class Value> std::ostream& operator()(const std::pair<Key, Value>& k, int index, const typename tree234<Key, Value>::Node234 *current,
                                                                const typename tree234<Key, Value>::Node234 *const root);
 };
 
-234tree-in-cpplate<class Key, class Value> inline std::ostream& DebugPrinter::operator()(const std::pair<Key, Value>& pair, int index, const typename tree234<Key, Value>::Node234 *current,
+template<class Key, class Value> inline std::ostream& DebugPrinter::operator()(const std::pair<Key, Value>& pair, int index, const typename tree234<Key, Value>::Node234 *current,
                                                                                   const typename tree234<Key, Value>::Node234 *const root)
 {
     const Key& key = pair.first;
@@ -93,5 +100,4 @@ public:
 
     return ostr_;
 }
-
 #endif	/* DEBUGRINTER_H */

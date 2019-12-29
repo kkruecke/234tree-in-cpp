@@ -2410,6 +2410,10 @@ template<class Key, class Value> bool tree234<Key, Value>::test_invariant() cons
 1. Test validity of parent pointer
 2. Test that each Node contains the correct count of children, that is, the other children are set to nullptr.
 
+  if (!isBalanced()) 
+        std::cout << "Tree is not balanced.\n";
+
+       
   // Compare size with a count of the number of nodes from traversing the tree.
   auto end_iter = end();
 
