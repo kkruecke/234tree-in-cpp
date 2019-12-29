@@ -1,7 +1,8 @@
 TODO 
 ====
 
-* See questions regarding possible memory leak in tree234(const  tree234&) if it fails to explicity first destroy the tree. Do we need to adda pre-order clone method, or will default member-wise copying be equivalent?
+* Does using a shared_ptr have any advantages to unique_ptr? I guess it does only if insert() and deleted() are faster than with unique_ptr. The copy ctor and copy assignment operators
+* still create enitrely new nodes; otherwise, you share tree representations and removing from tree234 x1 will also remove it from a copy of x1.
 * Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
 * Make sure getRemoveSuccessor() is as efficient as possible. If it converts a 2-node to a 3- or 4-node, does the search resume without needless backtracking and needless merging of parent nodes?
 

@@ -306,6 +306,8 @@ template<typename Key, typename Value> class tree234 {
    std::pair<bool, Node *> find_insert_node(Node *pnode, Key new_key) noexcept;  // Called during insert
    
    Node *convert_findmin(Node *pnode) noexcept; // Called during remove()
+
+   void clone_tree(const std::shared_ptr<Node>& src, std::shared_ptr<Node>& dest) const noexcept;
    
  public:
    // Basic STL-required types:
@@ -654,8 +656,62 @@ template<class Key, class Value> int tree234<Key, Value>::Node::getIndexInParent
      cout << t1;
    // Now delete t1 
  */
-template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept : root{lhs.root}
+template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept
+{ 
+   // destroy_tree() first?
+   clone_tree(lhs.root, root);
+}
+/*
+ * pre-order copying of each shared_ptr<Node> in the tree rooted at src_node into the tree rooted at dest_node.
+ *
+ */
+template<typename Key, typename Value> void tree234<Key, Value>::clone_tree(const std::shared_ptr<Node>& src_node, std::shared_ptr<Node>& dest_node) const noexcept
 {
+  if (src_node != nullptr) { 
+                              
+     dest_node = src_node;
+     
+     switch (src_node->totalItems) {
+     
+        case 1: // 2-node
+        {    
+             clone_tree(src_node->children[0], dest_node->children[0]); 
+             
+             clone_tree(src_node->children[1], dest_node->children[1]); 
+     
+             break;
+     
+        }   
+        case 2: // 3-node
+        {
+             clone_tree(src_node->children[0], dest_node->children[0]);
+             
+             clone_tree(src_node->children[1], dest_node->children[1]);
+             
+             clone_tree(src_node->children[2], dest_node->children[2]);
+     
+             break;
+        } 
+        case 3: // 4-node
+        {
+             clone_tree(src_node->children[0], dest_node->children[0]);
+             
+             clone_tree(src_node->children[1], dest_node->children[1]);
+             
+             clone_tree(src_node->children[2], dest_node->children[2]);
+     
+             clone_tree(src_node->children[3], dest_node->children[3]);
+     
+             break;
+        } 
+     
+     }  // end switch
+ } else {
+
+    dest_node = nullptr;
+ } 
+
+
 }
 
 // move constructor
