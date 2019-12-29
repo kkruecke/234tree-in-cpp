@@ -2,7 +2,8 @@ TODO
 ====
 
 * But in tree234(const  tree234&) copy ctor. Fails to clone tree, so we need a private copy or clone method. Clone using ambda.
-* Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst.
+* Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
+* Make sure getRemoveSuccessor()--which also may merge 2-nodes into 3- or 4-nodes--is efficient, that it resumes the search after a merge in the most efficient manner.
 
 * Consider using C++17 sentinel value for value returned by iterator and const_iterator end() methods, to simplify the implementation.
 * reimplement insert and delte after reviewing algorithms and understand them better and what member variables their implementation will use.
