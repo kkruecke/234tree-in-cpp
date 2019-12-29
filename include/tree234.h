@@ -213,7 +213,10 @@ template<typename Key, typename Value> class tree234 {
       std::ostream& ostr;
       int current_level;
       int height;
+
+      std::ostream& (Node::*pmf)(std::ostream&) const noexcept;
       
+
       void display_level(std::ostream& ostr, int level) const noexcept
       {
       ostr << "\n\n" << "current_level = " <<  current_level << ' '; 
@@ -226,13 +229,11 @@ template<typename Key, typename Value> class tree234 {
       ostr << str; 
       }
       
-      std::ostream& (Node::*pmf)(std::ostream&) const noexcept;
-      
       public: 
       
-      NodeLevelOrderPrinter (int hght,  std::ostream& (Node::*pmf_)(std::ostream&) const noexcept, std::ostream& ostr_in): height{hght}, ostr{ostr_in}, current_level{0}, pmf{pmf_} {}
+      NodeLevelOrderPrinter (int hght,  std::ostream& (Node::*pmf_)(std::ostream&) const noexcept, std::ostream& ostr_in):  ostr{ostr_in}, current_level{0}, height{hght}, pmf{pmf_} {}
       
-      NodeLevelOrderPrinter (const NodeLevelOrderPrinter& lhs): height{lhs.height}, ostr{lhs.ostr}, current_level{lhs.current_level}, pmf{lhs.pmf} {}
+      NodeLevelOrderPrinter (const NodeLevelOrderPrinter& lhs): ostr{lhs.ostr}, current_level{lhs.current_level}, height{lhs.height}, pmf{lhs.pmf} {}
       
       void operator ()(const Node *pnode, int level)
       { 
@@ -572,11 +573,11 @@ template<typename Key, typename Value> const int  tree234<Key, Value>::Node::MAX
 * Node constructors. Note: While all children are initialized to nullptr, this is not really necessary. 
 * Instead your can simply set children[0] = nullptr, since a Node is a leaf if and only if children[0] == 0'
 */
-template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node()  noexcept : totalItems{0}, parent{nullptr}, children()
+template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node()  noexcept : parent{nullptr}, totalItems{0},  children()
 { 
 }
 
-template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(Key small, const Value& value_in, Node *parent_in)  noexcept : totalItems{1}, parent{parent_in}, children()
+template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(Key small, const Value& value_in, Node *parent_in)  noexcept : parent{parent_in}, totalItems{1}, children()
 { 
    key(0) = small; 
    value(0) = value_in;
