@@ -1,9 +1,7 @@
 TODO 
 ====
 
-* Does using a shared_ptr have any advantages to unique_ptr? I guess it does only if insert() and deleted() are faster than with unique_ptr. The copy ctor and copy assignment operators
-  If not reimplemnt it using unique_ptr like tree23. Testing Mas, the polist fellows, rbtree implementation using shared_ptr.
-* still create enitrely new nodes; otherwise, you share tree representations and removing from tree234 x1 will also remove it from a copy of x1.
+* Check if the default ~tree234() works like post-order recursive deletion that destroy_tree() does. And check that destroy_tree() works as expected. 
 * Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
 * Make sure getRemoveSuccessor() is as efficient as possible. If it converts a 2-node to a 3- or 4-node, does the search resume without needless backtracking and needless merging of parent nodes?
 

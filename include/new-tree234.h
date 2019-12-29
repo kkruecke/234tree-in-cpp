@@ -1,4 +1,4 @@
-#ifndef	TREE234_H
+#ifndef TREE234_H
 #define	TREE234_H
 #include <utility>
 #include <algorithm>
@@ -129,7 +129,7 @@ template<typename Key, typename Value> class tree234 {
       /*
       * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
       */  
-      std::unique_ptr<Node> disconnectChild(int child_index) noexcept; //???? 
+      std::shared_ptr<Node> disconnectChild(int child_index) noexcept; //???? 
       
       void insertChild(int childNum, std::unique_ptr<Node>&& pChild) noexcept;
       
@@ -157,11 +157,8 @@ template<typename Key, typename Value> class tree234 {
          {
          } 
 
-         explicit Node(KeyValue&& key_value) noexcept;
-
-         // This ctor is used by copy_tree()
-         Node(const std::array<KeyValue, 3>& lhs_keys_values, Node *const lhs_parent, int lhs_totalItems) noexcept;             
-
+         explicit Node(KeyValue&& key_value) noexcept; 
+         
          constexpr const Node *getParent() const noexcept;
       
          constexpr int getTotalItems() const noexcept;
@@ -310,9 +307,7 @@ template<typename Key, typename Value> class tree234 {
    
    Node *convert_findmin(Node *pnode) noexcept; // Called during remove()
 
-   void copy_tree(const std::unique_ptr<Node>& src, std::unique_ptr<Node>& dest, Node *dest_parent=nullptr) const noexcept; 
-
-   void destroy_tree(std::unique_ptr<Node>& root) noexcept;
+   void clone_tree(const std::unique_ptr<Node>& src, std::unique_ptr<Node>& dest) const noexcept; //???
    
  public:
    // Basic STL-required types:
@@ -337,7 +332,12 @@ template<typename Key, typename Value> class tree234 {
    
    constexpr int size() const;
 
-   ~tree234() = default; //TODO: Confirm this does post order recursive-like deletion
+   /*
+    * The default destructor invokes the class member destructors. This will invoke the root's destructor, which will
+    * invoke std::array<KeyValue, 3> destructor for keys_values and children<unique_ptr<Node> 4> for children. 
+    * Question: Is the net result the same as a post-order deletion?
+    */ 
+   ~tree234(); // TODO: Implement like ~tree23() 
    
    // Breadth-first traversal
    template<typename Functor> void levelOrderTraverse(Functor f) const noexcept;
@@ -589,16 +589,6 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(K
 {
    keys_values[0] = std::move(key_value); 
 }
-/*
- * This ctor is used by copy_tree. Does the default ctor for
- *
-     std::array<Node, 3> children
-  */     
-template<class Key, class Value> inline tree234<Key, Value>::Node::Node(const std::array<KeyValue, 3>& lhs_keys_values,\
-	       	Node *const lhs_parent, int lhs_totalItems) noexcept : keys_values{lhs_keys_values}, parent{lhs_parent}, totalItems{lhs_totalItems}
-{
-  // we don't copy the children.   
-}
 
 template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::print(std::ostream& ostr) const noexcept
 {
@@ -638,68 +628,54 @@ template<class Key, class Value> int tree234<Key, Value>::Node::getIndexInParent
        
    throw std::logic_error("Cannot find the parent child index of the node. The node may be the tree's root or the invariant may have been violated.");
 }
- 
-/*
- * Does a post order tree traversal, using recursion and deleting nodes as they are visited.
- */
-  
-template<typename Key, typename Value> void tree234<Key, Value>::destroy_tree(std::unique_ptr<Node>& current) noexcept
-{
-  if (current == nullptr) {
-
-      return;
-  }
-  
-  for(auto i = 0; i < current->totalItems; ++i) {
-
-        destroy_tree(current->children[i]);
-   }
-
-   current.reset(); // deletes the underlying pointer. 
-}
+   
+//TODO: Implement like tree23(const tree23&) 
 
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept
 { 
-   destroy_tree(root); 
-   copy_tree(lhs.root, root);
+   // destroy_tree() first?
+   clone_tree(lhs.root, root);
 }
-
-template<typename Key, typename Value> void tree234<Key, Value>::copy_tree(const std::unique_ptr<Node>& src_node, std::unique_ptr<Node>& dest_node, Node *dest_parent) const noexcept
+/*
+ * Change to be like tree23::clone or maybe return unique_ptr<Node> to new root, calling a helper method to do actual recursive cloneing.
+ *
+ */
+template<typename Key, typename Value> void tree234<Key, Value>::clone_tree(const std::unique_ptr<Node>& src_node, std::shared_ptr<Node>& dest_node) const noexcept
 {
   if (src_node != nullptr) { 
                               
-     dest_node = std::make_unique<Node>(src_node->keys_values, dest_parent, src_node->totalItems);
+     dest_node = src_node;
      
      switch (src_node->totalItems) {
      
         case 1: // 2-node
         {    
-             copy_tree(src_node->children[0], dest_node->children[0], dest_node.get()); 
+             clone_tree(src_node->children[0], dest_node->children[0]); 
              
-             copy_tree(src_node->children[1], dest_node->children[1], dest_node.get()); 
+             clone_tree(src_node->children[1], dest_node->children[1]); 
      
              break;
      
         }   
         case 2: // 3-node
         {
-             copy_tree(src_node->children[0], dest_node->children[0], dest_node.get());
+             clone_tree(src_node->children[0], dest_node->children[0]);
              
-             copy_tree(src_node->children[1], dest_node->children[1], dest_node.get());
+             clone_tree(src_node->children[1], dest_node->children[1]);
              
-             copy_tree(src_node->children[2], dest_node->children[2], dest_node.get());
+             clone_tree(src_node->children[2], dest_node->children[2]);
      
              break;
         } 
         case 3: // 4-node
         {
-             copy_tree(src_node->children[0], dest_node->children[0], dest_node.get());
+             clone_tree(src_node->children[0], dest_node->children[0]);
              
-             copy_tree(src_node->children[1], dest_node->children[1], dest_node.get());
+             clone_tree(src_node->children[1], dest_node->children[1]);
              
-             copy_tree(src_node->children[2], dest_node->children[2], dest_node.get());
+             clone_tree(src_node->children[2], dest_node->children[2]);
      
-             copy_tree(src_node->children[3], dest_node->children[3], dest_node.get());
+             clone_tree(src_node->children[3], dest_node->children[3]);
      
              break;
         } 
@@ -860,16 +836,13 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 // copy assignment
 template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, Value>::operator=(const tree234& lhs) noexcept 
 {
-  if (this == &lhs)  {
-      
-      return *this;
+  if (root == lhs.root) { // are they the same?
+
+       return *this;
   }
-  
-  destroy_tree(root); // free all the nodes of the current tree 
 
-  tree_size = lhs.tree_size;
-
-  copy_tree(lhs.root, root);
+  tree_size = lhs.tree_size;         
+  root = lhs.root;  
 
   return *this;
 }
@@ -1204,7 +1177,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
  *    children[childIndex]->parent = this; 
  *  
  */
-template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::connectChild(int childIndex, std::unique_ptr<Node>&& child)  noexcept
+template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::connectChild(int childIndex, std::shared_ptr<Node>&& child)  noexcept
 {
   children[childIndex] = std::move( child ); 
   
@@ -1244,9 +1217,9 @@ template<class Key, class Value> inline std::tuple<bool, typename tree234<Key, V
  * will have been altered).
  */
 
-template<typename Key, typename Value> inline std::unique_ptr<typename tree234<Key, Value>::Node> tree234<Key, Value>::Node::disconnectChild(int childIndex) noexcept // ok
+template<typename Key, typename Value> inline std::shared_ptr<typename tree234<Key, Value>::Node> tree234<Key, Value>::Node::disconnectChild(int childIndex) noexcept // ok
 {
-  std::unique_ptr<Node> node{ std::move(children[childIndex] ) }; // invokes shared_ptr<Node> move ctor.
+  std::shared_ptr<Node> node{ std::move(children[childIndex] ) }; // invokes shared_ptr<Node> move ctor.
 
   // shift children (whose last 0-based index is totalItems) left to overwrite removed child i.
   for(auto i = childIndex; i < getTotalItems(); ++i) {
@@ -1288,7 +1261,7 @@ template<typename Key, typename Value> int  tree234<Key, Value>::Node::insert(Ke
 /*
  * Inserts key_value pair into its sorted position in this Node and makes largerNode its right most child.
  */
-template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(KeyValue&& key_value, std::unique_ptr<Node>&& largerNode) noexcept 
+template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(KeyValue&& key_value, std::shared_ptr<Node>&& largerNode) noexcept 
 { 
   // start on right, examine items
   for(auto i = getTotalItems() - 1; i >= 0 ; --i) {
@@ -1303,7 +1276,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(Ke
 
         ++totalItems;        // increase the total item count
 
-          insertChild(i + 2, std::move(largerNode)); 
+          insertChild(i + 2, largerNode); 
           return;      // return index of inserted key.
       } 
     } 
@@ -1313,7 +1286,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(Ke
 
   ++totalItems; // increase the total item count
 
-    insertChild(1, std::move(largerNode)); 
+    insertChild(1, largerNode); 
     return;
 }
 /*
@@ -1410,11 +1383,12 @@ template<typename Key, typename Value> inline constexpr  bool tree234<Key, Value
 { 
    return !children[0] ? true : false;
 }
-/*
+/* TODO:
+ *  See comments in todo.rst
 template<typename Key, typename Value> inline tree234<Key, Value>::~tree234()
 {
 }
-*/
+ */ 
 /*
  * Recursive version of find
  */
@@ -1471,7 +1445,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key new_
 { 
    if (root == nullptr) {
            
-      root = std::make_unique<Node>(new_key, value); 
+      root = std::make_shared<Node>(new_key, value); 
     ++tree_size;
       return; 
    } 
@@ -1544,7 +1518,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    Key middle_key = pnode->key(1);
    
    // 1. create a new node from largest key of pnode and adopt pnode's two right-most children
-   auto largestNode = std::make_unique<Node>(std::move(pnode->keys_values[2]));
+   std::shared_ptr<Node> largestNode = std::make_shared<Node>(std::move(pnode->keys_values[2]));
    
    largestNode->connectChild(0, std::move(pnode->children[2])); 
    largestNode->connectChild(1, std::move(pnode->children[3]));
@@ -1558,7 +1532,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    // adopt 'pnode' and 'largest' as children.
    if (root.get() == pnode) {
    
-     auto new_root = std::make_unique<Node>(std::move(pnode->keys_values[1])); // Middle value will become new root
+     std::shared_ptr<Node> new_root = std::make_shared<Node>(std::move(pnode->keys_values[1])); // Middle value will become new root
      
      new_root->connectChild(0, std::move(root)); 
      new_root->connectChild(1, std::move(largestNode)); 
@@ -1824,8 +1798,11 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
   totalItems = 3;
 
-  std::unique_ptr<Node> leftOrphan {std::move(children[0])};  // These two Nodes will be freed upon return. 
-  std::unique_ptr<Node> rightOrphan {std::move(children[1])}; 
+//  This is sufficient and the std::move above is not need because
+//  when connectChild is done below both children[0] and children[1] are reassigned.
+
+  std::shared_ptr<Node> leftOrphan {children[0]};  
+  std::shared_ptr<Node> rightOrphan {children[1]}; 
      
   connectChild(0, std::move(leftOrphan->children[0])); 
   connectChild(1, std::move(leftOrphan->children[1]));
@@ -1852,12 +1829,11 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
   int total_sibling_keys_values = psibling->getTotalItems(); 
 
   // 4. disconnect right-most child of sibling
-  
-  std::unique_ptr<Node> pchild_of_sibling = psibling->disconnectChild(total_sibling_keys_values); 
+  std::shared_ptr<Node> pchild_of_sibling = psibling->disconnectChild(total_sibling_keys_values); 
   
   parent->keys_values[parent_key_index] = std::move(psibling->removeKeyValue(total_sibling_keys_values - 1)); // remove the largest, the right-most, sibling's key, and, then, overwrite parent item with largest sibling key ++
 
-  p2node->insertChild(0, std::move(pchild_of_sibling)); // add former right-most child of sibling as its first child
+  p2node->insertChild(0, pchild_of_sibling); // add former right-most child of sibling as its first child
 
   return p2node;
 }
@@ -1871,13 +1847,13 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
   p2node->totalItems = static_cast<int>(tree234<Key, Value>::Node::NodeType::three_node);// 3. increase total items
 
-  std::unique_ptr<Node> pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
+  std::shared_ptr<Node> pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
 
   // Remove smallest key in sibling
   parent->keys_values[parent_key_index] = std::move(psibling->removeKeyValue(0)); 
 
   // add former first child of silbing as right-most child of our 3-node.
-  p2node->insertChild(p2node->getTotalItems(), std::move(pchild_of_sibling)); 
+  p2node->insertChild(p2node->getTotalItems(), pchild_of_sibling); 
 
   return p2node;
 }
@@ -1914,7 +1890,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
        * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKey() reduces. Therefore,
        * disconnectChild() must always be called before removeKey().
        */
-      std::unique_ptr<Node> psibling = parent->disconnectChild(sibling_index); // This will do #2. 
+      std::shared_ptr<Node> psibling = parent->disconnectChild(sibling_index); // This will do #2. 
       
       KeyValue parent_key_value = parent->removeKeyValue(parent_key_index); //this will do #1
 
@@ -1948,7 +1924,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
        * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKey reduces. Therefore,
        * disconnectChild() must always be called before removeKey(), or children will not be shifted correctly.
        */
-      std::unique_ptr<Node> psibling = parent->disconnectChild(sibling_index); // this does #2
+      std::shared_ptr<Node> psibling = parent->disconnectChild(sibling_index); // this does #2
       
       p2node->keys_values[1] = parent->removeKeyValue(parent_key_index); // this will #1 // 1. bring down parent key 
 
