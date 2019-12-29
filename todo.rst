@@ -2,6 +2,7 @@ TODO
 ====
 
 * Check if the default ~tree234() works like post-order recursive deletion that destroy_tree() does. And check that destroy_tree() works as expected. 
+* Double check the logic again now that we are again using a std::unique_ptr<Node>
 * Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
 * Make sure getRemoveSuccessor() is as efficient as possible. If it converts a 2-node to a 3- or 4-node, does the search resume without needless backtracking and needless merging of parent nodes?
 

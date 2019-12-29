@@ -1945,11 +1945,12 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
       /* Next adjust parent:
          1. Remove parent key (and shift its remaining keys_values and reduce its totalItems)
          2. Reset its children pointers 
-       * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKey reduces. Therefore,
+       TODO: 
+       * Note: There is a potential insidious bug: disconnectChild depends on totalItems, which removeKeyValue reduces. Therefore,
        * disconnectChild() must always be called before removeKey(), or children will not be shifted correctly.
        */
       std::unique_ptr<Node> psibling = parent->disconnectChild(sibling_index); // this does #2
-      
+     
       p2node->keys_values[1] = parent->removeKeyValue(parent_key_index); // this will #1 // 1. bring down parent key 
 
       p2node->keys_values[2] = std::move(psibling->keys_values[0]);// 2. insert sibling's sole key and value. 
