@@ -328,8 +328,13 @@ template<typename Key, typename Value> class tree234 {
    tree234(std::initializer_list<std::pair<Key, Value>> list) noexcept; 
    
    constexpr int size() const;
-   
-   ~tree234(); 
+
+   /*
+    * The default destructor invokes the class member destructors. This will invoke the root's destructor, which will
+    * invoke std::array<KeyValue, 3> destructor for keys_values and children<shared_ptr<Node> 4> for children. 
+    * Question: Is the net result the same as a post-order deletion?
+    */ 
+   ~tree234() = default;  
    
    // Breadth-first traversal
    template<typename Functor> void levelOrderTraverse(Functor f) const noexcept;
@@ -620,17 +625,36 @@ template<class Key, class Value> int tree234<Key, Value>::Node::getIndexInParent
        
    throw std::logic_error("Cannot find the parent child index of the node. The node may be the tree's root or the invariant may have been violated.");
 }
+   
+//TODO: 
+/*
+ * Question: Do we need to call a destroy_tree() method first (which would do a post-order recursive traversal invoking member destructors), or can we omit destroy_tree() and simply do
 
+    tree234::tree234(const tree234<Key, Value>& lhs) : root{lhs.root} {}
 
-template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept 
+    which of course is the default ctor: 'tree234(const tree234<Key, Value>& lhs) = default;'
+
+ * since copying the root triggers the default member-wise copying of all keys_values, ie, all Key_Values in 'array<KeyValue, 3>', and it will also trigger the copying of all
+ * shared_ptr<Node> children in array<shared_ptr<node>, 4>. Is a pre-order copying triggered of the shared_ptr's, and will this cause children to be 'orphaned', will it cause their
+ * underlying memory to leak?
+ * A sample struct/class that prints a message in its ctor and dtor should help visualize what I think is going on.
+
+ * Answer:
+ * Copying the root triggers the std::shared<ptr<Node> assignment operator or copy constructor. This simply bumps the shared_ptr's reference count. It does trigger an assignment call to 
+ * Node's member variables. 
+
+ * Test case:
+ * {
+     tree234 t1 = { {2, 2}, {3, 3}, {4,4}, {5, 5}, {6, 6}, {7, 7}};
+     {
+       tree234 t2{t1};
+       cout << t2;
+     }
+     cout << t1;
+   // Now delete t1 
+ */
+template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept : root{lhs.root}
 {
-   if (root == lhs.root) { // are they the same?
-   
-       return;
-   }
-   
-  //TODO: We still need to clone the tree--right; otherwise, the children and grandchildren of the new tree's root will only have one reference count?
-   root = lhs.root;
 }
 
 // move constructor
@@ -1329,10 +1353,12 @@ template<typename Key, typename Value> inline constexpr  bool tree234<Key, Value
 { 
    return !children[0] ? true : false;
 }
-
+/* TODO:
+ *  See comments in todo.rst
 template<typename Key, typename Value> inline tree234<Key, Value>::~tree234()
 {
 }
+ */ 
 /*
  * Recursive version of find
  */
