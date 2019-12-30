@@ -1748,9 +1748,9 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
   return true;
 }
 /*
- * pnode->key(key_index) has key to be deleted.
+ * parent->key(key_index) == delete_key == key to be deleted.
  */
-template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::new_get_delete_successor(Node *pnode, Key key,int key_index) noexcept
+template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::new_get_delete_successor(Node *parent, Key delete_key,int key_index) noexcept
 {
   // get immediate right subtree.
   Node *pright_subtree = pnode->children[key_index + 1].get();
@@ -1759,10 +1759,11 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
 
      convertTwoNode(pright_subtree); 
     
-     if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) { // did our key move? 
+     if (parent->getTotalItems() - 1 < key_index || parent->key(key_index) != key) { // did our key move? 
              
-         // Q: How can the key to be deleted move? Can it go up level? Shift within pnode. Obviously, the value of pright_subtree changes potentially changes if the 
-         // key to be delete moves. If it does move around, does this categorically mean we have to convert 2-nodes along a different subtree--right?
+         // Q: How can the key to be deleted move? Either a rotation that brings ot down from the parent, or a merge with the parent. Obviously, the value of pright_subtree changes potentially changes if the 
+         // key to be deleted moves. If it does move around, does this categorically mean we have look for the in-order successor in a different subtree?
+         // What are all the steps of the delete algorithm? 
          
          //TODO: Change, confusing because we don't need to all find_delete_node() again as remove() first does.
          return remove(pright_subtree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
@@ -1772,7 +1773,7 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
   // find min and convert 2-nodes as we search.
   Node *pmin = get_delete_successor(pright_subtree);
 
-  pnode->keys_values[key_index] = pmin->keys_values[0]; // overwrite key to be deleted with its successor.
+  parent->keys_values[key_index] = pmin->keys_values[0]; // overwrite key to be deleted with its successor.
 
   pmin->removeKeyValue(0); // Since successor is not in a 2-node, delete it from the leaf.
 }
