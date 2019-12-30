@@ -2042,6 +2042,10 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::printlev
 
 template<typename Key, typename Value> void tree234<Key, Value>::debug_printlevelOrder(std::ostream& ostr) const noexcept
 {
+  ostr << "\n--- First print tree ---\n"
+  ostr << *this;  // calls tree.printlevelOrder(ostr);
+
+  ostr << "\n--- Second print Node relationship info ---\n"
   NodeLevelOrderPrinter tree_printer(height(), &Node::debug_print, ostr);  
   
   levelOrderTraverse(tree_printer);
