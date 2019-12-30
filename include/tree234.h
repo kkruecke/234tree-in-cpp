@@ -1725,9 +1725,13 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
       if (pchildSubTree->isTwoNode()) { // If we need to convert it...
 
          convertTwoNode(pchildSubTree); 
-        
-         if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) { // did our key move?
-             
+
+
+         // Did our key move?
+         // A: We aren't even converting pnode, we are converting its child node. pnode could only move if...what happended?
+       
+         if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) {              
+
              //TODO: Change, confusing because we don't need to all find_delete_node() again as remove() first does.
              return remove(pchildSubTree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
          } 
