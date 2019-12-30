@@ -5,6 +5,8 @@ TODO
 
 * Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
 
+* Simplify remove(). See comments in new_get_delete_successor(). Implementing it will require understanding the delete algorithm better.
+
 * Make sure getRemoveSuccessor() is as efficient as possible. If it converts a 2-node to a 3- or 4-node, does the search resume without needless backtracking and needless merging of parent nodes?
 
 * Consider using C++17 sentinel value for value returned by iterator and const_iterator end() methods, to simplify the implementation.
