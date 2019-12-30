@@ -98,7 +98,8 @@ template<typename Key, typename Value> class tree234 {
       /*
       * For 2-nodes, children[0] is left pointer, children[1] is right pointer.
       * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
-      * For 4-nodes, children[0] is left pointer, children[1] the left middle pointer, and children[2] is the right middle pointer, and children[3] is the right pointer.
+      * For 4-nodes, children[0] is left pointer, children[1] the left middle pointer, and children[2] is the right middle pointer,
+      * and children[3] is the right pointer.
       */
       std::array<std::unique_ptr<Node>, 4> children;
       
@@ -133,8 +134,8 @@ template<typename Key, typename Value> class tree234 {
       
       /* 
       * Called during remove(Key keym, Node *).
-      * Merges the 2-node children of a parent 2-node into the parent, making the parent a 4-node. The parent, then, adopts the "grand children", and the children
-      * after having been adopted by the parent are deallocated. 
+      * Merges the 2-node children of a parent 2-node into the parent, making the parent a 4-node. The parent, then, adopts the "grand children", 
+      * and the children after having been adopted by the parent are deallocated. 
       */
       Node *fuseWithChildren() noexcept; 
       
@@ -236,8 +237,6 @@ template<typename Key, typename Value> class tree234 {
       
       NodeLevelOrderPrinter (int height_in,  std::ostream& (Node::*pmf_)(std::ostream&) const noexcept, std::ostream& ostr_in):  ostr{ostr_in}, current_level{0}, height{height_in}, pmf{pmf_} {}
           
-      //--NodeLevelOrderPrinter(int height_in,  std::ostream& (Node::*pmf_)(std::ostream&, bool) const noexcept, std::ostream& ostr_in) :  ostr{ostr_in}, current_level{0}, height{height_in}, pmf(pmf_) {}
-      
       NodeLevelOrderPrinter (const NodeLevelOrderPrinter& lhs): ostr{lhs.ostr}, current_level{lhs.current_level}, height{lhs.height}, pmf{lhs.pmf} {}
       
       void operator ()(const Node *pnode, int level)
@@ -1882,24 +1881,24 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
  */
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::Node::fuseWithChildren() noexcept
 {
-  // move key of 2-node 
-  keys_values[1] = std::move(keys_values[0]);
-
-  // absorb children's keys_values
-  keys_values[0] = std::move(children[0]->keys_values[0]);    
-  keys_values[2] = std::move(children[1]->keys_values[0]);       
-
-  totalItems = 3;
-
-  std::unique_ptr<Node> leftOrphan {std::move(children[0])};  // These two Nodes will be freed upon return. 
-  std::unique_ptr<Node> rightOrphan {std::move(children[1])}; 
+   // move key of 2-node 
+   keys_values[1] = std::move(keys_values[0]);
+ 
+   // absorb children's keys_values
+   keys_values[0] = std::move(children[0]->keys_values[0]);    
+   keys_values[2] = std::move(children[1]->keys_values[0]);       
+ 
+   totalItems = 3;
+ 
+   std::unique_ptr<Node> leftOrphan {std::move(children[0])};  // These two Nodes will be freed upon return. 
+   std::unique_ptr<Node> rightOrphan {std::move(children[1])}; 
+      
+   connectChild(0, std::move(leftOrphan->children[0])); 
+   connectChild(1, std::move(leftOrphan->children[1]));
+   connectChild(2, std::move(rightOrphan->children[0])); 
+   connectChild(3, std::move(rightOrphan->children[1]));
      
-  connectChild(0, std::move(leftOrphan->children[0])); 
-  connectChild(1, std::move(leftOrphan->children[1]));
-  connectChild(2, std::move(rightOrphan->children[0])); 
-  connectChild(3, std::move(rightOrphan->children[1]));
-    
-  return this;
+   return this;
 }
 
 /* 
@@ -1907,47 +1906,47 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
  */
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::rightRotation(Node *p2node, Node *psibling, Node *parent, int parent_key_index) noexcept
 {    
-  // Add the parent's key to 2-node, making it a 3-node
-
-  // 1. But first shift the 2-node's sole key right one position
-  p2node->keys_values[1] = p2node->keys_values[0];      
-
-  p2node->keys_values[0] = parent->keys_values[parent_key_index];  // 2. Now bring down parent key
-
-  p2node->totalItems = static_cast<int>(tree234<Key, Value>::Node::NodeType::three_node); // 3. increase total items
-
-  int total_sibling_keys_values = psibling->getTotalItems(); 
-
-  // 4. disconnect right-most child of sibling
+   // Add the parent's key to 2-node, making it a 3-node
   
-  std::unique_ptr<Node> pchild_of_sibling = psibling->disconnectChild(total_sibling_keys_values); 
+   // 1. But first shift the 2-node's sole key right one position
+   p2node->keys_values[1] = p2node->keys_values[0];      
   
-  parent->keys_values[parent_key_index] = std::move(psibling->removeKeyValue(total_sibling_keys_values - 1)); // remove the largest, the right-most, sibling's key, and, then, overwrite parent item with largest sibling key ++
+   p2node->keys_values[0] = parent->keys_values[parent_key_index];  // 2. Now bring down parent key
+ 
+   p2node->totalItems = static_cast<int>(tree234<Key, Value>::Node::NodeType::three_node); // 3. increase total items
+ 
+   int total_sibling_keys_values = psibling->getTotalItems(); 
+  
+   // 4. disconnect right-most child of sibling
+   
+   std::unique_ptr<Node> pchild_of_sibling = psibling->disconnectChild(total_sibling_keys_values); 
+   
+   parent->keys_values[parent_key_index] = std::move(psibling->removeKeyValue(total_sibling_keys_values - 1)); // remove the largest, the right-most, sibling's key, and, then, overwrite parent item with largest sibling key ++
+  
+   p2node->insertChild(0, std::move(pchild_of_sibling)); // add former right-most child of sibling as its first child
 
-  p2node->insertChild(0, std::move(pchild_of_sibling)); // add former right-most child of sibling as its first child
-
-  return p2node;
+   return p2node;
 }
 /* Requires: sibling is to the right therefore: parent->children[node2_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
  * Do a left rotation
  */ 
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::leftRotation(Node *p2node, Node *psibling, Node *parent, int parent_key_index) noexcept
 {
-  // pnode2->keys_values[0] doesn't change.
-  p2node->keys_values[1] = parent->keys_values[parent_key_index];  // 1. insert parent key making 2-node a 3-node
-
-  p2node->totalItems = static_cast<int>(tree234<Key, Value>::Node::NodeType::three_node);// 3. increase total items
-
-  std::unique_ptr<Node> pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
-
-  // Remove smallest key in sibling
-  parent->keys_values[parent_key_index] = std::move(psibling->removeKeyValue(0)); 
-
-  // add former first child of silbing as right-most child of our 3-node.
-  p2node->insertChild(p2node->getTotalItems(), std::move(pchild_of_sibling)); 
-
-  return p2node;
-}
+   // pnode2->keys_values[0] doesn't change.
+   p2node->keys_values[1] = parent->keys_values[parent_key_index];  // 1. insert parent key making 2-node a 3-node
+ 
+   p2node->totalItems = static_cast<int>(tree234<Key, Value>::Node::NodeType::three_node);// 3. increase total items
+  
+   std::unique_ptr<Node> pchild_of_sibling = psibling->disconnectChild(0); // disconnect first child of sibling.
+ 
+   // Remove smallest key in sibling
+   parent->keys_values[parent_key_index] = std::move(psibling->removeKeyValue(0)); 
+  
+   // add former first child of silbing as right-most child of our 3-node.
+   p2node->insertChild(p2node->getTotalItems(), std::move(pchild_of_sibling)); 
+  
+   return p2node;
+} 
 /*
  * Requirements: 
  *
@@ -2042,10 +2041,10 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::printlev
 
 template<typename Key, typename Value> void tree234<Key, Value>::debug_printlevelOrder(std::ostream& ostr) const noexcept
 {
-  ostr << "\n--- First print tree ---\n"
+  ostr << "\n--- First: tree printed ---\n"
   ostr << *this;  // calls tree.printlevelOrder(ostr);
 
-  ostr << "\n--- Second print Node relationship info ---\n"
+  ostr << "\n--- Second: Node relationship info ---\n"
   NodeLevelOrderPrinter tree_printer(height(), &Node::debug_print, ostr);  
   
   levelOrderTraverse(tree_printer);
