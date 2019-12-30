@@ -1755,16 +1755,18 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
   // get immediate right subtree.
   Node *pright_subtree = pnode->children[key_index + 1].get();
 
+  //NOTE: We can get successor, converting 2-nodes as we go, and once we have it, we can, then, relocate the 2-node.
+
   if (pright_subtree->isTwoNode()) { // If we need to convert it...
 
      convertTwoNode(pright_subtree); 
     
      if (parent->getTotalItems() - 1 < key_index || parent->key(key_index) != key) { // did our key move? 
-             
-         // Q: How can the key to be deleted move? Either a rotation that brings ot down from the parent, or a merge with the parent. Obviously, the value of pright_subtree changes potentially changes if the 
-         // key to be deleted moves. If it does move around, does this categorically mean we have look for the in-order successor in a different subtree?
-         // What are all the steps of the delete algorithm? 
          
+         // Q: What are the possible positions it could move to, and when do they happen?
+         // A: A rotation that brings ot down from the parent, and a merge we a sibling an a parent key. Draw these out.         
+
+
          //TODO: Change, confusing because we don't need to all find_delete_node() again as remove() first does.
          return remove(pright_subtree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
      } 
