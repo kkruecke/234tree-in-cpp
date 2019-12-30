@@ -310,6 +310,7 @@ template<typename Key, typename Value> class tree234 {
    std::tuple<bool, typename tree234<Key, Value>::Node *, int>  find_delete_node(Node *pcurrent, Key delete_key) noexcept; // New code
    
    Node *get_delete_successor(Node *pnode) noexcept; // Called during remove()
+   Node *new_get_delete_successor(Node *pnode, Key key, int key_index) noexcept; //<-- New code
 
    void copy_tree(const std::unique_ptr<Node>& src, std::unique_ptr<Node>& dest, Node *dest_parent=nullptr) const noexcept; 
 
@@ -1741,6 +1742,35 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
   }
 
   return true;
+}
+/*
+ * pnode->key(key_index) has key to be deleted.
+ */
+template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::new_get_delete_successor(Node *pnode, Key key,int key_index) noexcept
+{
+  // get immediate right subtree.
+  Node *pright_subtree = pnode->children[key_index + 1].get();
+
+  if (pright_subtree->isTwoNode()) { // If we need to convert it...
+
+     convertTwoNode(pright_subtree); 
+    
+     if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) { // did our key move? 
+             
+         // Q: How can the key to be deleted move? Can it go up level? Shift within pnode. Obviously, the value of pright_subtree changes potentially changes if the 
+         // key to be delete moves. If it does move around, does this categorically mean we have to convert 2-nodes along a different subtree--right?
+         
+         //TODO: Change, confusing because we don't need to all find_delete_node() again as remove() first does.
+         return remove(pright_subtree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
+     } 
+  }
+ 
+  // find min and convert 2-nodes as we search.
+  Node *pmin = get_delete_successor(pright_subtree);
+
+  pnode->keys_values[key_index] = pmin->keys_values[0]; // overwrite key to be deleted with its successor.
+
+  pmin->removeKeyValue(0); // Since successor is not in a 2-node, delete it from the leaf.
 }
 /*
  * Called by remove(Key key). Recursively searches for key to delete, converting, if not the root, 2-nodes to 3- or 4-node.
