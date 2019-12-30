@@ -60,7 +60,7 @@ int main(int argc, char** argv)
   tree234<int, int> tree = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}};
 
   cout << tree << flush;
-  tree.debug_printlevelOrder(cout);
+  //++tree.debug_printlevelOrder(cout);
   
   for (auto& pr : append) {
       
@@ -166,9 +166,9 @@ int main(int argc, char** argv)
   tree.printlevelOrder(cout);
   
   {
-  tree234<int, sample_value> x{ {1, sample_value()} , {10, sample_value()}, {20, sample_value()}, {30, sample_value()}, {50, sample_value()}, {-1, sample_value()}, {-10, sample_value()}, {0, sample_value()}, {34, sample_value()}, {2, sample_value()},  {99, sample_value()}, {7, sample_value()}, {4, sample_value()} };
-  auto debug = 10;
-  cout << "==================" << endl;
+   tree234<int, sample_value> x{ {1, sample_value()} , {10, sample_value()}, {20, sample_value()}, {30, sample_value()}, {50, sample_value()}, {-1, sample_value()}, {-10, sample_value()}, {0, sample_value()}, {34, sample_value()}, {2, sample_value()},  {99, sample_value()}, {7, sample_value()}, {4, sample_value()} };
+   auto debug = 10;
+   cout << "==================" << endl;
   }
   
   cout << endl;

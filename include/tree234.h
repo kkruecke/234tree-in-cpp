@@ -271,7 +271,7 @@ template<typename Key, typename Value> class tree234 {
    Node *split(Node *node, Key new_key) noexcept;  // called during insert(Key key) to split 4-nodes when encountered.
    
    // Called during remove(Key key)
-   bool remove(Node *location, Key key); 
+   bool remove(Node *location, Key key);     // new code
    
    // Called during remove(Key key, Node *) to convert two-node to three- or four-node during descent of tree.
    Node *convertTwoNode(Node *node) noexcept;
@@ -306,6 +306,8 @@ template<typename Key, typename Value> class tree234 {
    bool find_(const Node *current, Key key) const noexcept; // called by 'bool find(Key keu) const'
    
    std::pair<bool, Node *> find_insert_node(Node *pnode, Key new_key) noexcept;  // Called during insert
+
+   std::tuple<bool, typename tree234<Key, Value>::Node *, int>  find_delete_node(Node *pcurrent, Key delete_key) noexcept; // New code
    
    Node *convert_findmin(Node *pnode) noexcept; // Called during remove()
 
@@ -1707,60 +1709,72 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)
 
 template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree, Key key)
 {
-  std::tuple<bool, Node *, int> result_tuple;
-
-  // Loop until inner if-test satisfied.
-  for (Node *current = psubtree; true; current = std::get<1>(result_tuple)) { 
-
-    if (current != root.get() && current->isTwoNode()) {
-
-        current = convertTwoNode(current);
-    }
-
-    result_tuple = current->find(key);
-
-    if (std::get<0>(result_tuple)) { // found
-
-        break;
-
-    } else if (current->isLeaf()) { // not in tree
-
-        return false;
-    } 
-  }
-
-  auto [found, pnode, key_index] = result_tuple;
+  auto [found, pnode, key_index] = find_delete_node(psubtree, key); 
 
   if (pnode->isLeaf()) {
 
-     // Remove from leaf node
-     pnode->removeKeyValue(key_index); 
+       // Remove from leaf node
+       pnode->removeKeyValue(key_index); 
 
   } else { // internal node. Find successor, converting 2-nodes as we search.
 
-     // get immediate right subtree.
-     Node *pchildSubTree = pnode->children[key_index + 1].get();
+      // get immediate right subtree.
+      Node *pchildSubTree = pnode->children[key_index + 1].get();
 
-     if (pchildSubTree->isTwoNode()) { // If we need to convert it...
+      if (pchildSubTree->isTwoNode()) { // If we need to convert it...
 
-        convertTwoNode(pchildSubTree); 
+         convertTwoNode(pchildSubTree); 
         
-        if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) { // did our key move?
+         if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) { // did our key move?
 
-            return remove(pchildSubTree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
-        } 
-     }
+             return remove(pchildSubTree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
+         } 
+      }
      
-     // find min and convert 2-nodes as we search.
-     Node *pmin = convert_findmin(pchildSubTree);
+      // find min and convert 2-nodes as we search.
+      Node *pmin = convert_findmin(pchildSubTree);
 
-     pnode->keys_values[key_index] = pmin->keys_values[0]; // overwrite key to be deleted with its successor.
+      pnode->keys_values[key_index] = pmin->keys_values[0]; // overwrite key to be deleted with its successor.
     
-     pmin->removeKeyValue(0); // Since successor is not in a 2-node, delete it from the leaf.
+      pmin->removeKeyValue(0); // Since successor is not in a 2-node, delete it from the leaf.
   }
 
   return true;
 }
+/*
+ * Called by remove(Key key). Recursively searches for key to delete, converting, if not the root, 2-nodes to 3- or 4-node.
+ */
+template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::Node *, int>   tree234<Key, Value>::find_delete_node(Node *pcurrent, Key delete_key) noexcept
+{
+   if (pcurrent != root.get() && pcurrent->isTwoNode()) { 
+
+        pcurrent = convertTwoNode(pcurrent);  
+   }
+   
+   auto i = 0; 
+   
+   for(;i < pcurrent->getTotalItems(); ++i) {
+
+       if (delete_key == pcurrent->key(i)) {
+
+              return {true, pcurrent, i}; // Key to be deleted is at pcurrent->key(i).
+       } 
+
+       if (delete_key < pcurrent->key(i)) {
+
+           if (pcurrent->isLeaf()) return {false, nullptr, 0}; // Key not in tree.
+ 
+           return find_delete_node(pcurrent->children[i].get(), delete_key); // Recurse left subtree of pcurrent->key(i)
+       } 
+   }
+
+   if (pcurrent->isLeaf()) { // key was not found in tree.
+      return {false, pcurrent, 0};
+   } 
+
+   return find_delete_node(pcurrent->children[i].get(), delete_key); // key is greater than all values in pcurrent, search right-most subtree.
+}
+
 /*
  *  Converts 2-nodes to 3- or 4-nodes as we descend to the left-most leaf node of the substree rooted at pnode.
  *  Return min leaf node.
@@ -2041,10 +2055,12 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::printlev
 
 template<typename Key, typename Value> void tree234<Key, Value>::debug_printlevelOrder(std::ostream& ostr) const noexcept
 {
-  ostr << "\n--- First: tree printed ---\n"
+  ostr << "\n--- First: tree printed ---\n";
+  
   ostr << *this;  // calls tree.printlevelOrder(ostr);
 
-  ostr << "\n--- Second: Node relationship info ---\n"
+  ostr << "\n--- Second: Node relationship info ---\n";
+  
   NodeLevelOrderPrinter tree_printer(height(), &Node::debug_print, ostr);  
   
   levelOrderTraverse(tree_printer);

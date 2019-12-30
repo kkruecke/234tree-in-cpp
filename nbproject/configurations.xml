@@ -23,6 +23,7 @@
                    projectFiles="true">
       <logicalFolder name="src" displayName="src" projectFiles="true">
         <itemPath>src/main.cpp</itemPath>
+        <itemPath>src/sample-value.cpp</itemPath>
         <itemPath>src/shared-test-case.cpp.orig</itemPath>
         <itemPath>src/test.cpp</itemPath>
       </logicalFolder>
@@ -78,6 +79,8 @@
       </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/sample-value.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/shared-test-case.cpp.orig" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/test.cpp" ex="false" tool="1" flavor2="0">
@@ -125,6 +128,8 @@
       <item path="include/tree234.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/sample-value.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/shared-test-case.cpp.orig" ex="false" tool="3" flavor2="0">
       </item>
