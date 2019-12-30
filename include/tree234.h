@@ -211,6 +211,9 @@ template<typename Key, typename Value> class tree234 {
          { 
            return node234.print(ostr);
          }
+
+         //--std::ostream& debug_print(std::ostream& ostr, bool show_addresses=false) const noexcept;
+         std::ostream& debug_print(std::ostream& ostr) const noexcept;
       
      }; // end class Tree<Key, Value>::Node  
    
@@ -221,6 +224,7 @@ template<typename Key, typename Value> class tree234 {
       int height;
 
       std::ostream& (Node::*pmf)(std::ostream&) const noexcept;
+      //std::ostream& (Node::*pmf)(std::ostream&, bool) const noexcept;
       
 
       void display_level(std::ostream& ostr, int level) const noexcept
@@ -237,7 +241,9 @@ template<typename Key, typename Value> class tree234 {
       
       public: 
       
-      NodeLevelOrderPrinter (int hght,  std::ostream& (Node::*pmf_)(std::ostream&) const noexcept, std::ostream& ostr_in):  ostr{ostr_in}, current_level{0}, height{hght}, pmf{pmf_} {}
+      NodeLevelOrderPrinter (int height_in,  std::ostream& (Node::*pmf_)(std::ostream&) const noexcept, std::ostream& ostr_in):  ostr{ostr_in}, current_level{0}, height{height_in}, pmf{pmf_} {}
+          
+      //--NodeLevelOrderPrinter(int height_in,  std::ostream& (Node::*pmf_)(std::ostream&, bool) const noexcept, std::ostream& ostr_in) :  ostr{ostr_in}, current_level{0}, height{height_in}, pmf(pmf_) {}
       
       NodeLevelOrderPrinter (const NodeLevelOrderPrinter& lhs): ostr{lhs.ostr}, current_level{lhs.current_level}, height{lhs.height}, pmf{lhs.pmf} {}
       
@@ -366,6 +372,8 @@ template<typename Key, typename Value> class tree234 {
    
    void printlevelOrder(std::ostream&) const noexcept;
    
+   void debug_printlevelOrder(std::ostream& ostr) const noexcept;
+
    void printInOrder(std::ostream&) const noexcept;
    
    void printPreOrder(std::ostream&) const noexcept;
@@ -1351,6 +1359,72 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
   return key_value;
 }
 
+//--template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::debug_print(std::ostream& ostr, bool show_addresses) const noexcept
+template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::debug_print(std::ostream& ostr) const noexcept
+{
+   ostr << " { ["; 
+   
+   if (totalItems == 0) { // remove() situation when merge2Nodes() is called
+
+       ostr << "empty"; 
+
+   } else {
+
+        for (auto i = 0; i < totalItems; ++i) {
+
+            ostr << keys_values[i].key(); // or to print both keys and values do: ostr << keys_values[i]
+
+            if (i + 1 == totalItems)  {
+                continue;
+
+            } else { 
+                ostr << ", ";
+            }
+        }
+   }
+
+   ostr << "] : parent(" << parent << "), " << this;
+
+   if (parent == this) { 
+      
+      ostr << " BUG: parent == this " << std::flush;
+      
+      std::ostringstream oss;
+      
+      oss << "parent == this for node [";
+      
+      for (auto i = 0; i < totalItems; ++i) {
+
+         ostr << keys_values[i] << "}, ";
+       }
+      
+      oss << "]";
+   } 
+
+   //--if (show_addresses) {
+
+      ostr << ' ';
+
+      for (auto i = 0; i < getChildCount(); ++i) {
+          
+   
+               if (children[i] == nullptr) {
+   
+                    ostr <<  "nullptr" << ", ";
+   
+               } else {
+     
+                   ostr <<  children[i].get() << ", ";
+               }
+      }
+   
+   //--}
+   ostr << "] }";
+
+   return ostr;
+}
+
+
 /*
  * Returns: pair<bool, int>
  * first --  if first true is there is a 3 or 4 node sibling; otherwise, false implies all siblings are 2-nodes 
@@ -1971,12 +2045,23 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::printlevelOrder(std::ostream& ostr) const noexcept
 {
+    /*
   NodeLevelOrderPrinter tree_printer(height(), (&Node::print), ostr);  
+  
+  levelOrderTraverse(tree_printer);
+  */
+  ostr << std::flush;
+}
+
+template<typename Key, typename Value> void tree234<Key, Value>::debug_printlevelOrder(std::ostream& ostr) const noexcept
+{
+  NodeLevelOrderPrinter tree_printer(height(), &Node::debug_print, ostr);  
   
   levelOrderTraverse(tree_printer);
   
   ostr << std::flush;
 }
+
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::printInOrder(std::ostream& ostr) const noexcept
 {
