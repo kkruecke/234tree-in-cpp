@@ -16,12 +16,6 @@
 
 template<typename Key, typename Value> class tree234;  // Forward declaration
 
-class DebugPrinter;  
-
-/*
-TODO: Add a test_invariant() method to tree234
-*/
-
 template<typename Key, typename Value> class tree234 {
    
    /*
@@ -90,7 +84,6 @@ template<typename Key, typename Value> class tree234 {
       */
       private:  
       friend class tree234<Key, Value>;             
-      friend class DebugPrinter;
       static const int MAX_KEYS;   
       
       enum class NodeType : int { two_node=1, three_node=2, four_node=3 };
@@ -264,8 +257,6 @@ template<typename Key, typename Value> class tree234 {
    };
    
    private:
-   
-   friend class DebugPrinter;
    
    std::unique_ptr<Node>  root; 
    
@@ -1361,7 +1352,7 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
 //--template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::debug_print(std::ostream& ostr, bool show_addresses) const noexcept
 template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::debug_print(std::ostream& ostr) const noexcept
 {
-   ostr << " { ["; 
+   ostr << "\n{ ["; 
    
    if (totalItems == 0) { // remove() situation when merge2Nodes() is called
 
@@ -1418,7 +1409,7 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::debug_
       }
    
    //--}
-   ostr << "] }";
+   ostr << "] }\n";
 
    return ostr;
 }
@@ -1977,8 +1968,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
  */
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::fuseSiblings(Node *parent, int node2_index, int sibling_index) noexcept
 {
-  //--Node *psibling;
-
   Node *p2node = parent->children[node2_index].get();
 
   // First get the index of the parent's key value to be stolen and added into the 2-node
