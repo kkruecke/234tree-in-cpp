@@ -229,14 +229,14 @@ template<typename Key, typename Value> class tree234 {
 
       void display_level(std::ostream& ostr, int level) const noexcept
       {
-      ostr << "\n\n" << "current_level = " <<  current_level << ' '; 
+        ostr << "\n\n" << "current_level = " <<  current_level << ' '; 
          
-      // Provide some basic spacing to tree appearance.
-      std::size_t num = height - current_level + 1;
+        // Provide some basic spacing to tree appearance.
+        std::size_t num = height - current_level + 1;
       
-      std::string str( num, ' ');
+        std::string str( num, ' ');
       
-      ostr << str; 
+        ostr << str; 
       }
       
       public: 
@@ -388,8 +388,8 @@ template<typename Key, typename Value> class tree234 {
    
    friend std::ostream& operator<<(std::ostream& ostr, const tree234<Key, Value>& tree)
    {
-   tree.printlevelOrder(ostr);
-   return ostr;
+     tree.printlevelOrder(ostr);
+     return ostr;
    }
    
    // Bidirectional stl-compatible constant iterator
@@ -1358,7 +1358,6 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
 
   return key_value;
 }
-
 //--template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::debug_print(std::ostream& ostr, bool show_addresses) const noexcept
 template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::debug_print(std::ostream& ostr) const noexcept
 {
@@ -1383,7 +1382,7 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::debug_
         }
    }
 
-   ostr << "] : parent(" << parent << "), " << this;
+   ostr << "] : parent(" << parent << "), " << "this(" << this << ')';
 
    if (parent == this) { 
       
@@ -1403,7 +1402,7 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::debug_
 
    //--if (show_addresses) {
 
-      ostr << ' ';
+      ostr << " children[";
 
       for (auto i = 0; i < getChildCount(); ++i) {
           
@@ -2045,11 +2044,10 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
 template<typename Key, typename Value> inline void tree234<Key, Value>::printlevelOrder(std::ostream& ostr) const noexcept
 {
-    /*
   NodeLevelOrderPrinter tree_printer(height(), (&Node::print), ostr);  
   
   levelOrderTraverse(tree_printer);
-  */
+ 
   ostr << std::flush;
 }
 
