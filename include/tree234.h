@@ -271,7 +271,7 @@ template<typename Key, typename Value> class tree234 {
    Node *split(Node *node, Key new_key) noexcept;  // called during insert(Key key) to split 4-nodes when encountered.
    
    // Called during remove(Key key)
-   bool remove(Node *location, Key key);     // new code
+   bool remove(Node *location, Key key);     
    
    // Called during remove(Key key, Node *) to convert two-node to three- or four-node during descent of tree.
    Node *convertTwoNode(Node *node) noexcept;
@@ -309,7 +309,7 @@ template<typename Key, typename Value> class tree234 {
 
    std::tuple<bool, typename tree234<Key, Value>::Node *, int>  find_delete_node(Node *pcurrent, Key delete_key) noexcept; // New code
    
-   Node *convert_findmin(Node *pnode) noexcept; // Called during remove()
+   Node *get_delete_successor(Node *pnode) noexcept; // Called during remove()
 
    void copy_tree(const std::unique_ptr<Node>& src, std::unique_ptr<Node>& dest, Node *dest_parent=nullptr) const noexcept; 
 
@@ -1726,13 +1726,14 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
          convertTwoNode(pchildSubTree); 
         
          if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) { // did our key move?
-
+             
+             //TODO: Change, confusing because we don't need to all find_delete_node() again as remove() first does.
              return remove(pchildSubTree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
          } 
       }
      
       // find min and convert 2-nodes as we search.
-      Node *pmin = convert_findmin(pchildSubTree);
+      Node *pmin = get_delete_successor(pchildSubTree);
 
       pnode->keys_values[key_index] = pmin->keys_values[0]; // overwrite key to be deleted with its successor.
     
@@ -1779,22 +1780,17 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
  *  Converts 2-nodes to 3- or 4-nodes as we descend to the left-most leaf node of the substree rooted at pnode.
  *  Return min leaf node.
  */
-template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::convert_findmin(Node *pnode) noexcept
+template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::get_delete_successor(Node *pnode) noexcept
 {
- while (true) {
- 
-    if (pnode->isTwoNode()) {
-    
-        pnode = convertTwoNode(pnode);                                    
-    }
-    
-    if (pnode->isLeaf())
-         break; 
-    
-    pnode = pnode->children[0].get();
- }
+  if (pnode->isTwoNode()) {
 
-  return pnode;
+      pnode = convertTwoNode(pnode);
+  }
+
+  if (pnode->isLeaf())
+      return pnode;
+
+  return get_delete_successor(pnode->children[0].get());
 }
 
 /*
