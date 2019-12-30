@@ -1,7 +1,7 @@
 TODO 
 ====
 
-* Compare default ~tree234() with a version that calls destroy_tree() by using a Sample class whose dtort prints to cout. 
+* Compare default ~tree234() with a version that calls destroy_tree() by using the sample_value class in include/sample-value.h whose dtort prints to cout. 
 
 * Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
 
