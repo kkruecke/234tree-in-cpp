@@ -1720,25 +1720,21 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
   } else { // internal node. Find successor, converting 2-nodes as we search.
 
       // get immediate right subtree.
-      Node *pchildSubTree = pnode->children[key_index + 1].get();
+      Node *rightSubtree = pnode->children[key_index + 1].get();
 
-      if (pchildSubTree->isTwoNode()) { // If we need to convert it...
+      if (rightSubtree->isTwoNode()) { // If we need to convert it...
 
-         convertTwoNode(pchildSubTree); 
+           convertTwoNode(rightSubtree); 
 
-
-         // Did our key move?
-         // A: We aren't even converting pnode, we are converting its child node. pnode could only move if...what happended?
-       
+         // Check if, when we converted the rightSubtree, the key may have moved.  
          if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) {              
 
-             //TODO: Change, confusing because we don't need to all find_delete_node() again as remove() first does.
-             return remove(pchildSubTree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
+             return remove(rightSubtree, key);   // <--Assumes it was brought down. Could it have only shifted in parent?
          } 
       }
      
       // find min and convert 2-nodes as we search.
-      Node *pmin = get_delete_successor(pchildSubTree);
+      Node *pmin = get_delete_successor(rightSubtree);
 
       pnode->keys_values[key_index] = pmin->keys_values[0]; // overwrite key to be deleted with its successor.
     
@@ -1768,7 +1764,7 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
 
 
          //TODO: Change, confusing because we don't need to all find_delete_node() again as remove() first does.
-         return remove(pright_subtree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
+         return find_delete_node(pright_subtree, key);     // ...if it did, recurse, passing the new subtree to remove(psubtree, key).
      } 
   }
  
@@ -1795,7 +1791,7 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
 
        if (delete_key == pcurrent->key(i)) {
 
-              return {true, pcurrent, i}; // Key to be deleted is at pcurrent->key(i).
+           return {true, pcurrent, i}; // Key to be deleted is at pcurrent->key(i).
        } 
 
        if (delete_key < pcurrent->key(i)) {
@@ -1819,10 +1815,8 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
  */
 template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::get_delete_successor(Node *pnode) noexcept
 {
-  if (pnode->isTwoNode()) {
-
+  if (pnode->isTwoNode()) 
       pnode = convertTwoNode(pnode);
-  }
 
   if (pnode->isLeaf())
       return pnode;
