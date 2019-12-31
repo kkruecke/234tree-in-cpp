@@ -1779,12 +1779,13 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
   return true;
 }
 /*
- * parent->key(key_index) == delete_key == key to be deleted.
+ * Input: 
+ * pdelete points to the Node that has the key to be deleted and pdelete->key(delete_key_index) == delete_key == key to be deleted.
  *
- *  Returns tuple where:
-    0 - Node* of key to be deleted
-    1- The child index in it of key to be deleted.
-    2- Node* of leaf successor
+ *  Returns tuple consisting of:
+ *  0 - Node* of key to be deleted, which may have changed.
+ *  1- The child index in the Node *of key to be deleted.
+ *  2- Node* of leaf node successor
  */
 template<class Key, class Value> std::tuple<typename tree234<Key, Value>::Node *, int, typename tree234<Key, Value>::Node *> 
 tree234<Key, Value>::new_get_successor(Node *pdelete, Key delete_key, int delete_key_index) noexcept
@@ -1797,11 +1798,14 @@ tree234<Key, Value>::new_get_successor(Node *pdelete, Key delete_key, int delete
        convertTwoNode(rightSubtree); 
     /*
       Check if, when we converted the rightSubtree, the key may have moved.  
-      Comments: If the root of the right subtree was converted, and a key was borrowed from a sbilbing, then the key to be deleted (regardless of what position the key was
-      in the parent) it brought down as the first key of the converted node. This is true is the parent was a 3-node. I believe it is also true for a 4-node, but I need to check.
-      If the parent was a 3-node, and a merge or fusion with the parent (and an adjacent sibling 2-node) occurred, then the key to be deleted is brought down and become the 2nd key.  
-      I believe the same holds for a 4-node parent, but check.
-      Conclusion: We would not have to recurse. We could simply do:
+      Comments: If the root of the right subtree had to be converted, then either a left or right rotation occurred, or a fusion with the parent and a sibling occurred. In this case,
+      delete_key would only move down to the converted right subtree becoming the 2nd key. If a left rotation occurred (that "steals" a key from the left sibling and brings down the delete_key),
+      the delete_key would become the first key in the converted rightSubtree.
+      
+      If a right rotation occurred, delete_key is unaffected.
+      This reasoning applies both when pdelete is a 3-node and when it is a 4-node.
+
+      Conclusion: Therefore we need only check delete_key to the first two keys of rightSubtree.
      */
      if (delete_key == rightSubtree->key(0) || delete_key == rightSubtree->key(1)) {              
 
@@ -1809,16 +1813,18 @@ tree234<Key, Value>::new_get_successor(Node *pdelete, Key delete_key, int delete
          
          delete_key_index == rightSubtree->key(0) ? 0 : 1;
          
-         if (rightSubtree->isLeaf()) {
+         if (rightSubtree->isLeaf()) { // If the rightSubtree is a leaf, we have found the sucessor node....
 
               return {pdelete, delete_key_index, rightSubtree};
          }  
-
+         // ...otherwise, we start over, passing new pdelete and delete_key_index, by recursing
          return new_get_successor(pdelete, delete_key, delete_key_index); 
      } 
   }
-  
-  // find min and convert 2-nodes as we search.
+ 
+  // We get here if rightSubtree was not a leaf.
+ 
+  // find left-most node of right subtree, converting 2-nodes as we search.
   Node *psuccessor = get_delete_successor(rightSubtree);
 
   return {pdelete, delete_key_index, psuccessor};
