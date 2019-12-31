@@ -1725,10 +1725,16 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
       if (rightSubtree->isTwoNode()) { // If we need to convert it...
 
            convertTwoNode(rightSubtree); 
-
-         // Check if, when we converted the rightSubtree, the key may have moved.  
+        /*
+          Check if, when we converted the rightSubtree, the key may have moved.  
+          Comments: If the root of the right subtree was converted, and a key was borrowed from a sbilbing, then the key to be deleted (regardless of what position the key was
+          in the parent) it brought down as the first key of the converted node. This is true is the parent was a 3-node. I believe it is also true for a 4-node, but I need to check.
+          If the parent was a 3-node, and a merge or fusion with the parent (and an adjacent sibling 2-node) occurred, then the key to be deleted is brought down and become the 2nd key.  
+          I believe the same holds for a 4-node parent, but check.
+          Conclusion: We would not have to recurse. We could simply do:
+         */
          if (pnode->getTotalItems() - 1 < key_index || pnode->key(key_index) != key) {              
-
+          
              return remove(rightSubtree, key);   // <--Assumes it was brought down. Could it have only shifted in parent?
          } 
       }
