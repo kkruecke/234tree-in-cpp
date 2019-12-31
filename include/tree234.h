@@ -206,7 +206,6 @@ template<typename Key, typename Value> class tree234 {
            return node234.print(ostr);
          }
 
-         //--std::ostream& debug_print(std::ostream& ostr, bool show_addresses=false) const noexcept;
          std::ostream& debug_print(std::ostream& ostr) const noexcept;
       
      }; // end class Tree<Key, Value>::Node  
@@ -380,8 +379,8 @@ template<typename Key, typename Value> class tree234 {
    
    friend std::ostream& operator<<(std::ostream& ostr, const tree234<Key, Value>& tree)
    {
-     tree.printlevelOrder(ostr);
-     return ostr;
+      tree.printlevelOrder(ostr);
+      return ostr;
    }
    
    // Bidirectional stl-compatible constant iterator
@@ -645,7 +644,6 @@ template<class Key, class Value> int tree234<Key, Value>::Node::getIndexInParent
 /*
  * Does a post order tree traversal, using recursion and deleting nodes as they are visited.
  */
-  
 template<typename Key, typename Value> void tree234<Key, Value>::destroy_tree(std::unique_ptr<Node>& current) noexcept
 {
   if (current == nullptr) {
@@ -682,7 +680,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::copy_tree(const
              copy_tree(src_node->children[1], dest_node->children[1], dest_node.get()); 
      
              break;
-     
         }   
         case 2: // 3-node
         {
@@ -953,7 +950,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, 
 }
 /*
  * F is a functor whose function call operator takes a 1.) const Node * and an 2.) int, indicating the depth of the node from the root,
-   which has depth 1.
+ * which has depth 1.
  */
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::levelOrderTraverse(Functor f) const noexcept
 {
@@ -1151,7 +1148,6 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 /*
  * Calls functor on each node in in-order traversal. Uses recursion.
  */
-
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoInOrderTraverse(Functor f, const Node *current) const noexcept
 {     
    if (current == nullptr) return;
@@ -1245,7 +1241,6 @@ template<class Key, class Value> inline std::tuple<bool, typename tree234<Key, V
  * Note: disconnectChild() must always be called before removeItem(); otherwise, it will not work correctly (because totalItems
  * will have been altered).
  */
-
 template<typename Key, typename Value> inline std::unique_ptr<typename tree234<Key, Value>::Node> tree234<Key, Value>::Node::disconnectChild(int childIndex) noexcept // ok
 {
   std::unique_ptr<Node> node{ std::move(children[childIndex] ) }; // invokes shared_ptr<Node> move ctor.
@@ -1262,7 +1257,6 @@ template<typename Key, typename Value> inline std::unique_ptr<typename tree234<K
  * Preconditions: node is not a four node, and key is not present in node.
  * Purpose: Shifts keys_values needed so key is inserted in sorted position. Returns index of inserted key.
  */
-
 template<typename Key, typename Value> int  tree234<Key, Value>::Node::insert(Key lhs_key, const Value& lhs_value)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
 { 
   // start on right, examine items
@@ -1349,7 +1343,7 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
 
   return key_value;
 }
-//--template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::debug_print(std::ostream& ostr, bool show_addresses) const noexcept
+
 template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::debug_print(std::ostream& ostr) const noexcept
 {
    ostr << "\n{ ["; 
@@ -1474,11 +1468,7 @@ template<typename Key, typename Value> inline constexpr  bool tree234<Key, Value
 { 
    return !children[0] ? true : false;
 }
-/*
-template<typename Key, typename Value> inline tree234<Key, Value>::~tree234()
-{
-}
-*/
+
 /*
  * Recursive version of find
  */
@@ -2380,7 +2370,7 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
 /*
  */
 
-// TODO: Can we use C++17 range-base for __end by simply having end() be nullptr.
+// TODO: Can we use C++17 sentinel for __end by simply having end() be nullptr.
 template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(const iterator& lhs) const
 {
  if (&lhs.tree == &tree) {
@@ -2520,39 +2510,7 @@ template<class Key, class Value> int tree234<Key, Value>::height(const Node* pno
       return 1 + max; // add one to it.
    }
 }
-/*
-template<class Key, class Value> bool tree234<Key, Value>::test_invariant() const noexcept
-{
 
-1. Tree is balanced
-2. The size reflects the actual number of Nodes
-3. The invariant of each Node in the tree is satisfied. Add Node invariant of:
-
-1. Test validity of parent pointer
-2. Test that each Node contains the correct count of children, that is, the other children are set to nullptr.
-
-  if (!isBalanced()) 
-        std::cout << "Tree is not balanced.\n";
-
-       
-  // Compare size with a count of the number of nodes from traversing the tree.
-  auto end_iter = end();
-
-  auto  count = 0;
-  for (auto iter : *this)  {
-
-      ++count; 
-  }
-
-  if (size_ != count) {
-
-      std::cout << "The manual node count is " << count << ", and the value of size_ is " << size_  << '.' << std::endl;
-  }
-
-  return (size_ == count) ? true : false;
-
-}
-*/
 /*
   Input: pnode must be in tree
  */
