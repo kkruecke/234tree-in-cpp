@@ -66,7 +66,7 @@ int main(int argc, char** argv)
       
       tree.insert(pr.first, pr.second);
   }
-  
+  /*
   vector< pair<int, int> > vec_pairs[] = {   {{ 20, 20 },  { 40, 40 },  { 60, 60 },  { 70, 70 },  { 80, 80 },  { 90, 90 },  {100, 100}, {120, 120} }, {{ 20, 20 },  { 40, 40 },  { 60, 60 },  { 41, 41 },  { 42, 42 },  { 43, 43 },  {44, 44}}, {{ 20, 20 }, { 40, 40 }, { 60, 60 }, {  0,  0 }, {  1,  1 }, {  2,  2 }, {  3,  3 }} };
   
   for (auto& vec : vec_pairs) {
@@ -107,6 +107,7 @@ int main(int argc, char** argv)
   cout << "\nUsing traverse methods to print tree in-order:" << endl;
  
   tree.inOrderTraverse(print_keys);
+*/
   
   cout << "\nPrinting the keys to be removed\n\n";
   
