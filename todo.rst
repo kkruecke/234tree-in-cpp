@@ -5,14 +5,7 @@ TODO
 
 * Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
 
-* Simplify remove(). See comments in new_get_delete_successor(). Implementing it will require understanding the delete algorithm better.
-
-* Make sure getRemoveSuccessor() is as efficient as possible. If it converts a 2-node to a 3- or 4-node, does the search resume without needless backtracking and needless merging of parent nodes?
-
-* Consider using C++17 sentinel value for value returned by iterator and const_iterator end() methods, to simplify the implementation.
-* reimplement insert and delte after reviewing algorithms and understand them better and what member variables their implementation will use.
-  See the website urls by ::insert and ::delete. Read them, see how they compare or differ and then write out a canonical example and run it
-  using the animation website. From this create pseudo code.
+* See comments in new_get_delete_successor(). 
 
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
