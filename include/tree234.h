@@ -1650,21 +1650,21 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
  * https://algorithmtutor.com/Data-Structures/Tree/2-3-4-Trees/
  *
  * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the key to be deleted
- * with its in-order successor and then deleting the key from the leaf noden. To prevent deletion from a 2-node leaf, which
+ * with its in-order successor and then deleting the key from the leaf. To prevent deletion from a 2-node leaf, which
  * would leave an empty node (underflow), we convert all 2-nodes as we descend the tree to 3 or 4-nodes using the stratagies below.
  *  
  * If the key is an internal node, then its successor will be the minimum key of its first right subtree. To ensure that the successor of the
- * internal node is not a 2-node, we again convert all 2-nodes to 3- or 4-nodes as we descend. 
+ * internal node is not a 2-node, we again convert all 2-nodes to 3- or 4-nodes as we descend. If the right subtree root is itself a 2-node, when it
+ * is converted, the key to be delete may move down into it (as its first or second key), so we check for this.
  * 
  * Conversion of 2-node has two cases:
- * TODO: Make sure the deletion description matches that in ~/d/notes/tree234.rst.
 
- * Case 1: If an adjacent sibling has is a 3- or 4-node (so it has 2 or 3 items, respectively), and if the parent -- of which node????--is a 3- or 4-node,
- * we "steal" an item from sibling by rotating items and moving subtree. See slide #51 at www.serc.iisc.ernet.in/~viren/Courses/2009/SE286/2-3Trees-Mod.ppt 
+ * Case 1: If an adjacent sibling has is a 3- or 4-node, we "steal" a sibling key by rotating it into the parent and bringing down a parent key into the 2-node,
  *         
- * Case 2: If each adjacent sibling (there are at most two) has only one item, we fuse together the two siblings, plus an item we bring down from parent (which we
- * know is not a 2-node), forming a 4-node and shifting all children effected appropriately. 
+ * Case 2: If each adjacent sibling (there are at most two) is a 2-node, we canvert the 2-node into a 4-node by merging into it a sibling key and a key from parent (which we
+ * know is not a 2-node). The children affected are shifted and adopted(see code). 
  *
+ * Special case: If the root holds the key to be deleted, we meris a 2-node
  */
 template<class Key, class Value> bool tree234<Key, Value>::remove(Key key) 
 {
@@ -1683,7 +1683,7 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Key key)
                            
              if (root->isEmpty()) {
 
-                root.reset(); // delete root if tree now empty. 
+                destroy_tree(root); 
             }  
 
              --tree_size;
