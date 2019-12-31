@@ -5,7 +5,7 @@ TODO
 
 * Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
 
-* See comments in new_get_delete_successor(). 
+* new remove code in ~/temp has a bug: it is deleting the wrong key. At least one version of the code, ~/t4 or ~/temp is wrong. 
 
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
