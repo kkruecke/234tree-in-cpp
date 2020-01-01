@@ -19,13 +19,13 @@ template<typename Key, typename Value> class tree234;  // Forward declaration
 template<typename Key, typename Value> class tree234 {
    
    /*
-   * This union eliminates always having to do: const_cast<Key>(p.first) = some_noconst_key;
-   * by holding two different types of pairs: _constkey_pair, where member first is 'const Key'; and _pair, where member 
+   * This union eliminates repetitive const_cast<Node*>: const_cast<Key>(p.first) = some_noconst_key;
+   * by holding two different types of pairs: _constkey_pair, where member first is 'const Key'; and _pair, where  
    * first is 'Key'.
    *
-   * Note 1: Anonymous unions do not implicitly destruct their members. Therefore we must explicitly call their destructors within 
+   * Note 1: Since anonymous unions do not implicitly destruct their members, we must explicitly call their destructors in 
    *         KeyValue::~KeyValue().
-   * Note 2: A user-declared destructor by default causes the move constructor and move assignment to be not declared, so
+   * Note 2: Defining a user-declared destructor causes the default move constructor and move assignment to be created, so
    *         we explictily declare and defined them.
    */
    
@@ -77,10 +77,10 @@ template<typename Key, typename Value> class tree234 {
    
    class Node; // Forward feference. 
    
-   class Node { // The tree node class. 
+   class Node { 
       /*
-      Note: Since Node depends on both of tree234's template parameters, on both Key and Value, we can 
-      make it a nested class. Had it depended on only one template parameter, it could not be a nested class.
+      Note: Node depends on both of tree234's template parameters, Key and Value, so we can 
+      make it a nested class.
       */
       private:  
       friend class tree234<Key, Value>;             
@@ -108,9 +108,9 @@ template<typename Key, typename Value> class tree234 {
       int getChildIndex() const noexcept;
       
       /* 
-      * Returns {true, Node * pnode, int index} if key is found in node and sets pnode and index such that pnode->keys_values[index] == key
-      * Returns {false, Node * pnode, int index} if key is if not found, and sets pnode and index such that pnode->keys_values[index] is the
-      * next prospective node to be searched one level lower in the tree.
+      * Returns {true, Node * pnode, int index} if key is found and pnode->keys_values[index] == found_key
+      * Returns {false, Node * pnode, int index} if key is not found, pnode and index set to next prospective Node to be searched, ie,
+      * pnode->keys_values[index] is the next prospective node one level lower in the tree.
       */
       std::tuple<bool, typename tree234<Key, Value>::Node *, int>  find(Key key) const noexcept;
       
@@ -118,24 +118,23 @@ template<typename Key, typename Value> class tree234 {
       
       int insert(Key key, const Value& value) noexcept;
       
-      // Remove key at index, if found, from node, shifting remaining keys_values to fill the gap.
+      // Remove key and value at index, if found, from node, shifting remaining keys_values to fill the gap and shifting children.
       KeyValue removeKeyValue(int index) noexcept; 
-      
+     
+      // Take ownership of child, inserting it a childNum. 
+      void insertChild(int childNum, std::unique_ptr<Node>&& pChild) noexcept;
+
       void connectChild(int childNum, std::unique_ptr<Node>&& child) noexcept;
       
       /*
       * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
       */  
-      std::unique_ptr<Node> disconnectChild(int child_index) noexcept; //???? 
-      
-      void insertChild(int childNum, std::unique_ptr<Node>&& pChild) noexcept;
-      
+      std::unique_ptr<Node> disconnectChild(int child_index) noexcept; 
+
       std::pair<bool, int> chooseSibling(int child_index) const noexcept;
       
       /* 
-      * Called during remove(Key keym, Node *).
-      * Merges the 2-node children of a parent 2-node into the parent, making the parent a 4-node. The parent, then, adopts the "grand children", 
-      * and the children after having been adopted by the parent are deallocated. 
+      * Called during remove(Key keym, Node *) if a parent key needs to be merged with convert a 2-node to a 4-node.
       */
       Node *fuseWithChildren() noexcept; 
       
@@ -156,7 +155,7 @@ template<typename Key, typename Value> class tree234 {
 
          explicit Node(KeyValue&& key_value) noexcept;
 
-         // This ctor is used by copy_tree()
+         // This cconstructor is called by copy_tree()
          Node(const std::array<KeyValue, 3>& lhs_keys_values, Node *const lhs_parent, int lhs_totalItems) noexcept;             
 
          constexpr const Node *getParent() const noexcept;
@@ -166,7 +165,7 @@ template<typename Key, typename Value> class tree234 {
       
          constexpr const Node *getRightMostChild() const noexcept { return children[getTotalItems()].get(); }
       
-         // method to help in debugging
+         // Helps in debugging
          void printKeys(std::ostream&);
       
          constexpr Key& key(int i) { return keys_values[i].key(); } 
@@ -387,10 +386,10 @@ template<typename Key, typename Value> class tree234 {
    class iterator { 
 					       
       public:
-      using difference_type   = std::ptrdiff_t; 
-      using value_type        = tree234<Key, Value>::value_type; 
-      using reference	        = value_type&; 
-      using pointer           = value_type*;
+      using difference_type  = std::ptrdiff_t; 
+      using value_type       = tree234<Key, Value>::value_type; 
+      using reference        = value_type&; 
+      using pointer          = value_type*;
       
       using iterator_category = std::bidirectional_iterator_tag; 
 				          
@@ -2370,26 +2369,21 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
 /*
  */
 
-// TODO: Can we use C++17 sentinel for __end by simply having end() be nullptr.
 template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(const iterator& lhs) const
 {
- if (&lhs.tree == &tree) {
-   /*
-     The first if-test, checks for "at end".
-     If current is nullptr, that signals the iterator is "one past the end.". If current is not nullptr, then current will equal cached_cursor.fist. current is either nullptr or cursor. cached_cursor never 
-     becomes nullptr.
-     In the else-if block block, we must check 'current == lhs.current' and not 'cursor == lhs.cursor' because 'cursor' never signals the end of the range, it never becomes nullptr,
-     but the iterator returned by tree234::end()'s iterator always sets current to nullptr (to signal "one past the end").
-     current to nullptr.
-   */
+   //
+   // The first if-test, checks for "at end".
+   // If current is nullptr, that signals the iterator is "one past the end.". If current is not nullptr, then current will equal cached_cursor.fist. current is either nullptr or cursor. cached_cursor never 
+   // becomes nullptr.
+   // In the else-if block block, we must check 'current == lhs.current' and not 'cursor == lhs.cursor' because 'cursor' never signals the end of the range, it never becomes nullptr,
+   // but the iterator returned by tree234::end()'s iterator always sets current to nullptr (to signal "one past the end").
+   // current to nullptr.
+   //
 
    if (current == nullptr && lhs.current == nullptr) return true; 
    else if (current == lhs.current && key_index == lhs.key_index) { 
-       
        return true;
-   }    
- } 
- return false;
+   } else return false;
 }
 
 /*
@@ -2481,12 +2475,7 @@ template<class Key, class Value> int tree234<Key, Value>::depth(const Node *pnod
 
     return -1; // not found
 }
-/*
-template<class Key, class Value> inline int tree234<Key, Value>::height() const noexcept
-{
-   return height(root);
-}
-*/
+
 template<class Key, class Value> int tree234<Key, Value>::height(const Node* pnode) const noexcept
 {
    if (pnode == nullptr) {
