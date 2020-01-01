@@ -35,13 +35,30 @@ function: delete(Key key)
          return
       } 
    }
-   find_successor(pnode, key)
+   preplace =find_successor(pnode, key)
    //....
 }
 
-function: find_successor(pnode, key)
+function: tuple<Node *pdelete, int delete_index, Node*psuccessor> find_successor(pdelete, delete_key, delet_index)
 {
+  psuccessor = pdelete->children[key_index + 1].get()
 
+  if (psuccessor is 2-node) {
 
+      psuccessor convert it
+      if (delete_key moved)
+          set delete_index
+          return find_successor(psuccessor, delete_key, delete_index) 
 
+  } 
+  while(true) {
+     if two node
+        psuccessor = convert 2-node
+     if leaf
+       break
+ 
+  }
+  return {pdelete, delete_index, psuccessor}
+}
+  }
 }
