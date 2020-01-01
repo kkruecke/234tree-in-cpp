@@ -3,7 +3,9 @@ TODO
 
 BUG: Code blows up when we try to remove from a tree that has a 2-node root and only one child is a 2-node. Prospective code in ~/w/test/include and ./src. 
 
-See Caranno and other links.
+Use the animations at http://www.cs.armstrong.edu/liang/animation/web/24Tree.html and https://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree.
+
+See Caranno and https://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree. 
 
 .. code-block:: cpp
 
