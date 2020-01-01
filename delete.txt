@@ -3,7 +3,8 @@ https://en.wikipedia.org/wiki/2%E2%80%933%E2%80%934_tree: Wikipedia delete algor
 The following algorithm can be followed to remove a value from the 2–3–4 tree:
 
     Find the element to be deleted.
-        If the element is not in a leaf node, remember its location and continue searching until a leaf, which will contain the element's successor, is reached. The successor can be either the largest key that is smaller than the one to be removed, or the smallest key that is larger than the one to be removed. It is simplest to make adjustments to the tree from the top down such that the leaf node found is not a 2-node. That way, after the swap, there will not be an empty leaf node.
+        If the element is not in a leaf node, remember its location and continue searching until a leaf, which will contain the element's successor, is reached. The successor can be either the largest key that is smaller than the one to be removed,
+            or the smallest key that is larger than the one to be removed. It is simplest to make adjustments to the tree from the top down such that the leaf node found is not a 2-node. That way, after the swap, there will not be an empty leaf node.
         If the element is in a 2-node leaf, just make the adjustments below.
 
 Make the following adjustments when a 2-node – except the root node – is encountered on the way to the leaf we want to remove:
@@ -12,7 +13,8 @@ Make the following adjustments when a 2-node – except the root node – is enc
         The key from the other sibling closest to this node moves up to the parent key that overlooks the two nodes.
         The parent key moves down to this node to form a 3-node.
         The child that was originally with the rotated sibling key is now this node's additional child.
-    If the parent is a 2-node and the sibling is also a 2-node, combine all three elements to form a new 4-node and shorten the tree. (This rule can only trigger if the parent 2-node is the root, since all other 2-nodes along the way will have been modified to not be 2-nodes. This is why "shorten the tree" here preserves balance; this is also an important assumption for the fusion operation.)
+    If the parent is a 2-node and the sibling is also a 2-node, combine all three elements to form a new 4-node and shorten the tree. (This rule can only trigger if the parent 2-node is the root, since all other 2-nodes along the way will have been modified to not be 2-nodes. This is
+        why "shorten the tree" here preserves balance; this is also an important assumption for the fusion operation.)
     If the parent is a 3-node or a 4-node and all adjacent siblings are 2-nodes, do a fusion operation with the parent and an adjacent sibling:
         The adjacent sibling and the parent key overlooking the two sibling nodes come together to form a 4-node.
         Transfer the sibling's children to this node.
@@ -24,18 +26,19 @@ Code changes:
 
 function: delete(Key key)
 {
-  auto[found, pnode, index] = find(Key key)
+  auto[found, pnode, key_index] = find(Key key)
 
   if (!found) return false;
-
+  /*  
   if (pnode is root)
-     if (root is 2-node with two 2-node children) {
+     if (root is 2-node with two 2-node children) { 
          fuse root with children
          delete key from root  
          return
       } 
    }
-   psuccessor = find_successor(pnode, key)
+   */
+   auto[pdelete, key_index] = find_successor(pnode, key)
    //....
 }
 
@@ -45,12 +48,14 @@ function: tuple<Node *pdelete, int delete_index, Node*psuccessor> find_successor
 
   if (psuccessor is 2-node) {
 
-      psuccessor convert it
+      convert_2node(psuccessor)
+
       if (delete_key moved)
           set delete_index
           return find_successor(psuccessor, delete_key, delete_index) 
 
   } 
+
   while(true) {
      if two node
         psuccessor = convert 2-node
@@ -62,12 +67,13 @@ function: tuple<Node *pdelete, int delete_index, Node*psuccessor> find_successor
 }
 convert_2node(Node* pnode)
 {
+   if (sibling is also a 2-node and parent is 2-node) // then the parent is the root
+         pnode = fuseRootWithChildren()
 
-
-
-
-
-
-
-
+   if (pnode->has3or4NodeSibling()) {
+        pnode = barrowKey(...)  
+   } else {
+        pnode = fuseWithSilbing()
+   }
+   return pnode
 }
