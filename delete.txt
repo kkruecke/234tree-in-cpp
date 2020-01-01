@@ -23,7 +23,7 @@ Once the sought value is reached, it can now be placed at the removed entry's lo
 Code changes:
 
 function: delete(Key key)
-
+{
   auto[found, pnode, index] = find(Key key)
 
   if (!found) return false;
@@ -35,7 +35,7 @@ function: delete(Key key)
          return
       } 
    }
-   preplace =find_successor(pnode, key)
+   psuccessor = find_successor(pnode, key)
    //....
 }
 
@@ -55,10 +55,19 @@ function: tuple<Node *pdelete, int delete_index, Node*psuccessor> find_successor
      if two node
         psuccessor = convert 2-node
      if leaf
-       break
+        break
  
   }
   return {pdelete, delete_index, psuccessor}
 }
-  }
+convert_2node(Node* pnode)
+{
+
+
+
+
+
+
+
+
 }
