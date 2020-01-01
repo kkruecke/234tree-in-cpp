@@ -5,7 +5,15 @@ TODO
 
 * Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
 
-* new remove code in ~/temp has a bug: it is deleting the wrong key. At least one version of the code, ~/t4 or ~/temp is wrong. 
+* BUG: Code blows up when we try to remove from a tree that has a 2-node root and two 2-node children. For example
+
+  tree234<int, int> stree = { {5, 5}, {40, 40}, {70, 70}, {120, 120}};
+  stree.remove(40);
+  cout << stree;
+  stree.remove(70); //<-- BUG: Delete root of tree with 2-node root with two 2-node children. We failed to special case the root being a 2-node with 2-node children
+
+
+  tree234<int, int> tree = { { 
 
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------

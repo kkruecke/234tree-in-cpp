@@ -723,7 +723,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(tree2
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::initializer_list<std::pair<Key, Value>> il) noexcept : root(nullptr), tree_size{0} 
 {
     for (auto& x: il) { 
-             
+                    
          insert(x.first, x.second);
     }
 }
@@ -1717,6 +1717,41 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
   return true;
 }
 /*
+ * Called by remove(Key key). Recursively searches for key to delete, converting, if not the root, 2-nodes to 3- or 4-node.
+ */
+template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::Node *, int>   tree234<Key, Value>::find_delete_node(Node *pcurrent, Key delete_key) noexcept
+{
+   if (pcurrent != root.get() && pcurrent->isTwoNode()) { 
+
+        pcurrent = convertTwoNode(pcurrent);  
+   }
+   
+   auto i = 0; 
+   
+   for(;i < pcurrent->getTotalItems(); ++i) {
+
+       if (delete_key == pcurrent->key(i)) {
+
+           return {true, pcurrent, i}; // Key to be deleted is at pcurrent->key(i).
+       } 
+
+       if (delete_key < pcurrent->key(i)) {
+
+           if (pcurrent->isLeaf()) return {false, nullptr, 0}; // Key not in tree.
+ 
+           return find_delete_node(pcurrent->children[i].get(), delete_key); // Recurse left subtree of pcurrent->key(i)
+       } 
+   }
+
+   if (pcurrent->isLeaf()) { // key was not found in tree.
+      return {false, pcurrent, 0};
+   } 
+
+   return find_delete_node(pcurrent->children[i].get(), delete_key); // key is greater than all values in pcurrent, search right-most subtree.
+}
+
+
+/*
  * Input: 
  * pdelete points to the Node that has the key to be deleted and pdelete->key(delete_key_index) == delete_key == key to be deleted.
  *
@@ -1768,40 +1803,6 @@ tree234<Key, Value>::get_delete_successor(Node *pdelete, Key delete_key, int del
 
   return {pdelete, delete_key_index, psuccessor};
 }
-/*
- * Called by remove(Key key). Recursively searches for key to delete, converting, if not the root, 2-nodes to 3- or 4-node.
- */
-template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::Node *, int>   tree234<Key, Value>::find_delete_node(Node *pcurrent, Key delete_key) noexcept
-{
-   if (pcurrent != root.get() && pcurrent->isTwoNode()) { 
-
-        pcurrent = convertTwoNode(pcurrent);  
-   }
-   
-   auto i = 0; 
-   
-   for(;i < pcurrent->getTotalItems(); ++i) {
-
-       if (delete_key == pcurrent->key(i)) {
-
-           return {true, pcurrent, i}; // Key to be deleted is at pcurrent->key(i).
-       } 
-
-       if (delete_key < pcurrent->key(i)) {
-
-           if (pcurrent->isLeaf()) return {false, nullptr, 0}; // Key not in tree.
- 
-           return find_delete_node(pcurrent->children[i].get(), delete_key); // Recurse left subtree of pcurrent->key(i)
-       } 
-   }
-
-   if (pcurrent->isLeaf()) { // key was not found in tree.
-      return {false, pcurrent, 0};
-   } 
-
-   return find_delete_node(pcurrent->children[i].get(), delete_key); // key is greater than all values in pcurrent, search right-most subtree.
-}
-
 /*
  *  Converts 2-nodes to 3- or 4-nodes as we descend to the left-most leaf node of the substree rooted at pnode.
  *  Return min leaf node.
