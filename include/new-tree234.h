@@ -1836,15 +1836,12 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
  */
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convert_if_needed(Node *pnode)  noexcept
 {   
-   // If parent is a 2-node and the other sibling, whose child_index would be 'pnode == parent->children[0]) : 1 : 0; is also 2-node, then parent
-   // is the root, and this is a special case. 
+   // If pnode's parent is a 2-node and its other sibling (whose child_index would be 'pnode == parent->children[0]) : 1 : 0) is also 2-node, 
+   // then the parent is the root. This is the only case in which we convert a 2-node root. 
+   // Note: We DON'T convert the root unless BOTH children are also 2-nodes.
    if (pnode == root.get()) {
 
-        if (pnode->children[0]->isTwoNode() && pnode->children[1]->isTwoNode()) {
-   
-          return pnode->fuseWithChildren();
-        } else 
-            return pnode; // <-- Don't convert root unless both children are 2-nodes. 
+        return (pnode->children[0]->isTwoNode() && pnode->children[1]->isTwoNode()) ? pnode->fuseWithChildren() : pnode;
    }
 
    // Return the parent->children[node2_index] such that pnode is root of the left subtree of 
