@@ -1836,10 +1836,17 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
  */
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertTwoNode(Node *pnode)  noexcept
 {   
-   if (pnode == root) {
-       
-       return convertRoot();
-   } 
+   // If parent is a 2-node and the other sibling, whose child_index would be 'pnode == parent->children[0]) : 1 : 0; is also 2-node, then parent
+   // is the root, and this is a special case. 
+   if (pnode == root.get()) {
+
+        if (pnode->children[0]->isTwoNode() && pnode->children[1]->isTwoNode()) {
+   
+          return pnode->fuseWithChildren();
+        } else 
+            return pnode; // <-- Don't convert root unless both children are 2-nodes. 
+   }
+
    // Return the parent->children[node2_index] such that pnode is root of the left subtree of 
    auto child_index = pnode->getChildIndex(); 
 
@@ -1853,18 +1860,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    auto parent = pnode->getParent();
 
    if (has3or4NodeSibling == false) { 
-        /* 
-        if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
-
-            convertedNode = parent->fuseWithChildren();
-
-        } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
-
-           convertedNode = fuseSiblings(parent, child_index, sibling_index);
-        } 
-         */
-
-        convertedNode = parent->fuseWithChildren();
 
         convertedNode = fuseSiblings(parent, child_index, sibling_index);
 
@@ -1908,15 +1903,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    }
    
    return convertedNode;
-}
-/*
- * Converts 2-node root by merging it with its children
- */
-template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertRoot()  noexcept
-{   
-    Node *proot = root.get();
-   
-    return proot;
 }
 
 /*

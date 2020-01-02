@@ -68,8 +68,12 @@ function: tuple<Node *pdelete, int delete_index, Node*psuccessor> find_successor
 }
 convert_2node(Node* pnode)
 {
-   if (sibling is also a 2-node and parent is 2-node) // then the parent is the root
-        pnode = fuseRootWithChildren()
+   if (pnode is root) {
+
+        if (both children are a 2-nodes) // Only convert two for special case of 2-node root with two 2-node children.
+           pnode = fuseRootWithChildren()
+        return pnode;  
+   }
    else if (pnode->has3or4NodeSibling()) {
         pnode = barrowKey(...)  
     else 
