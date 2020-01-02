@@ -1721,7 +1721,8 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
  */
 template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::Node *, int>   tree234<Key, Value>::find_delete_node(Node *pcurrent, Key delete_key) noexcept
 {
-   if (pcurrent != root.get() && pcurrent->isTwoNode()) { 
+   //--if (pcurrent != root.get() && pcurrent->isTwoNode()) { 
+   if (pcurrent->isTwoNode()) { 
 
         pcurrent = convertTwoNode(pcurrent);  
    }
@@ -1834,7 +1835,11 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
  * 
  */
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertTwoNode(Node *pnode)  noexcept
-{                                                                         
+{   
+   if (pnode == root) {
+       
+       return convertRoot();
+   } 
    // Return the parent->children[node2_index] such that pnode is root of the left subtree of 
    auto child_index = pnode->getChildIndex(); 
 
@@ -1848,7 +1853,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    auto parent = pnode->getParent();
 
    if (has3or4NodeSibling == false) { 
-
+        /* 
         if (parent->isTwoNode()) { //... as is the parent, which must be root; otherwise, it would have already been converted.
 
             convertedNode = parent->fuseWithChildren();
@@ -1856,7 +1861,12 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
         } else { // parent is 3- or 4-node and there a no 3- or 4-node adjacent siblings 
 
            convertedNode = fuseSiblings(parent, child_index, sibling_index);
-        }
+        } 
+         */
+
+        convertedNode = parent->fuseWithChildren();
+
+        convertedNode = fuseSiblings(parent, child_index, sibling_index);
 
    } else { // it has a 3- or 4-node sibling.
 
@@ -1898,6 +1908,15 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    }
    
    return convertedNode;
+}
+/*
+ * Converts 2-node root by merging it with its children
+ */
+template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convertRoot()  noexcept
+{   
+    Node *proot = root.get();
+   
+    return proot;
 }
 
 /*

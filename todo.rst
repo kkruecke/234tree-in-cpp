@@ -5,15 +5,7 @@ TODO
 
 * Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
 
-* BUG: Code blows up when we try to remove from a tree that has a 2-node root and two 2-node children. For example
-
-  tree234<int, int> stree = { {5, 5}, {40, 40}, {70, 70}, {120, 120}};
-  stree.remove(40);
-  cout << stree;
-  stree.remove(70); //<-- BUG: Delete root of tree with 2-node root with two 2-node children. We failed to special case the root being a 2-node with 2-node children
-
-
-  tree234<int, int> tree = { { 
+* Test: Building a tree234 and then removing till empty the max value, and then do the sam thing with min value.
 
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
