@@ -47,7 +47,6 @@ template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, os
 
 int main(int argc, char** argv)
 {
-//  vector<int> keys = { 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 0, 27, 62, 87, 37, 92, 79, 23, 17, 97, 55, 51, 69, 1, 2, 33, 26, 5};
   vector keys = { 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 0, 27, 62, 87, 37, 92, 79, 23, 17, 97, 55, 51, 69, 1, 2, 33, 26, 5};
 
   vector< pair<int,int> > append  = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}}; 
@@ -57,12 +56,46 @@ int main(int argc, char** argv)
       ++pr.second;
   }
   // Start sp-case
-  tree234<int, int> stree = { {5, 5}, {40, 40}, {70, 70}, {120, 120}};
-  stree.remove(40);
-  cout << stree;
-  stree.remove(70); //<-- BUG: We failed to speical case the root being a 2-node with 2-node children
-  return 0;
+  tree234<int, int> tree1 = { {5, 5}, {40, 40}, {70, 70}, {120, 120}};
+  cout << "tree1: \n" << tree1;
+  tree1.remove(40);
   
+  tree234<int, int> tree11{tree1};
+  
+  cout << "\ntree11:  " << tree11;
+  
+  tree11.remove(5);
+  
+  cout << "\ntree11 after tree11.remove(5):  " << tree11;
+
+  tree234<int, int> tree2{tree1};
+  tree2.insert(999, 999);
+  tree2.insert(-999, -999);
+
+  tree234<int, int> tree3{tree1};
+  
+  cout << "\ntree1 after tree1.remove(40):" << tree1;
+
+  tree1.remove(70); //<-- BUG: We failed to speical case the root being a 2-node with 2-node children
+
+  cout << "\ntree1 after tree1.remove(70):"  << tree1;
+
+  // Try deleting min and max value from a tree234.
+
+  cout << "\ntree2:" << tree2;
+  tree2.remove(999);
+
+  cout << "\ntree2 after tree2.remove(999):" << tree2;
+  
+  tree2.remove(-999);
+  
+  cout << "\ntree2 after tree2.remove(-999):" << tree2;
+  
+  cout << "\ntree3:" << tree3;
+  tree3.remove(-999);
+
+  cout << "\ntree3 after tree3.remove(-999):" << tree3;
+ 
   // End sp-case
   tree234<int, int> tree = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}};
 

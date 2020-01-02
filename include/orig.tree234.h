@@ -301,7 +301,7 @@ template<typename Key, typename Value> class tree234 {
    
    bool find_(const Node *current, Key key) const noexcept; // called by 'bool find(Key keu) const'
    
-   std::tuple<bool, Node *, int> find_insert_node(Node *pnode, Key new_key) noexcept;  // Called during insert
+   std::pair<bool, Node *> find_insert_node(Node *pnode, Key new_key) noexcept;  // Called during insert
 
    std::tuple<bool, typename tree234<Key, Value>::Node *, int>  find_delete_node(Node *pcurrent, Key delete_key) noexcept; // New code
    
@@ -1528,7 +1528,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key new_
       return; 
    } 
    
-   auto [bool_found, current, index] = find_insert_node(root.get(), new_key);  
+   auto [bool_found, current] = find_insert_node(root.get(), new_key);  
    
    if (bool_found) return;
 
@@ -1545,12 +1545,12 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(Key new_
  * the leaf node where the new 'new_key' should be inserted, and it returns the pair {false, pnode_leaf_where_key_should_be_inserted}. If key was found,
  * it returns the pair {true, Node *pnode_where_key_found}.
  */
-template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::Node *, int>  tree234<Key, Value>::find_insert_node(Node *pcurrent, Key new_key) noexcept
+template<class Key, class Value> std::pair<bool, typename tree234<Key, Value>::Node *>  tree234<Key, Value>::find_insert_node(Node *pcurrent, Key new_key) noexcept
 {
    if (pcurrent->isFourNode()) { 
 
        if (pcurrent->key(1) == new_key) // First check the middle key, before split() moves it up a level.
-            return {true, pcurrent, 1};
+            return {true, pcurrent};
 
        pcurrent = split(pcurrent, new_key);  
    }
@@ -1561,19 +1561,19 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
 
        if (new_key < pcurrent->key(i)) {
 
-           if (pcurrent->isLeaf()) return {false, pcurrent, i};
+           if (pcurrent->isLeaf()) return {false, pcurrent};
  
            return find_insert_node(pcurrent->children[i].get(), new_key); // Recurse left subtree of pcurrent->key(i)
        } 
 
        if (new_key == pcurrent->key(i)) {
 
-           return {true, pcurrent, i};  // key located at std::pair{pcurrent, i};  
+           return {true, pcurrent};  // key located at std::pair{pcurrent, i};  
        }
    }
 
    if (pcurrent->isLeaf()) {
-      return {false, pcurrent, 0};
+      return {false, pcurrent};
    } 
 
    return find_insert_node(pcurrent->children[i].get(), new_key); // key is greater than all values in pcurrent, search right-most subtree.
