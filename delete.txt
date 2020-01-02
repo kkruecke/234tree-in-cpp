@@ -41,7 +41,15 @@ function: delete(Key key)
    auto[pdelete, key_index] = find_successor(pnode, key)
    //....
 }
+function: delete(Key key)
+{
+  auto[found, pnode, key_index] = find(Key key) // normal find
 
+  if (!found) return false;
+
+  auto[pdelete, key_index] = find_successor(pnode, key)
+   //....
+}
 function: tuple<Node *pdelete, int delete_index, Node*psuccessor> find_successor(pdelete, delete_key, delete_index)
 {
   psuccessor = pdelete->children[key_index + 1].get()
@@ -70,7 +78,7 @@ convert_2node(Node* pnode)
 {
    if (pnode is root) {
 
-        if (both children are a 2-nodes) // Only convert two for special case of 2-node root with two 2-node children.
+        if (both children are a 2-nodes) // Only converts root if if it has two 2-node children.
            pnode = fuseRootWithChildren()
         return pnode;  
    }
