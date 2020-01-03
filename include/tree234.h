@@ -1549,10 +1549,11 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
 {
    if (pcurrent->isFourNode()) { 
 
-       if (pcurrent->key(1) == new_key) // First check the middle key, before split() moves it up a level.
-            return {true, pcurrent, 1};
+       if (pcurrent->key(1) == new_key) // First check the middle key because split() will move it into its parent.
+            return {true, pcurrent, 1}; 
 
-       pcurrent = split(pcurrent, new_key);  
+       // split pcurrent into two 2-nodes and set pcurrent to the correct on for examining next.
+       pcurrent = split(pcurrent, new_key); 
    }
 
    auto i = 0;
@@ -1582,14 +1583,15 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
 /* 
  *  split pseudocode: 
  *  
- *  pnode is a 4-node that is is split follows:
- *  
- *  1. Create a new 2-node holding pnode's largest key and adopt pnode's two right-most children.
- *  2. Convert pnode into a 2-node by setting totalItems to 1, effectively keeping only its smallest key and its two left-most chidren, 
- *  3. Move the middle key up to the parent (which we know is not a 4-node. If it was, it has already been split), and connect the new
- *    2-node step from #1 to it as a new child.
+ *  Input: pnode is a 4-node that is is split follows:
+ *  Output:  
+ *  1. A new 2-node containing pnode's largest key(the 3rd key) is created, it adopts pnode's two right-most children.
+ *  2. pnode is downsized to a 2-node (by setting totalItems to 1) containing its smallest key and its two left-most chidren, 
+ *  3. pnode's middle key moves up to its parent (which we know is not a 4-node, since, if it were, it has already been split), and we connect the new
+ *    2-node step from #1 to it as its right most child.
  *
- *  Special case: if pnode is the root, we special case this by creating a new root above the current root.
+ *  Special case: if pnode is the root, we special case this and create a new root above the current root.
+ *
  */ 
 template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::split(Node *pnode, Key new_key) noexcept
 {
@@ -1619,12 +1621,12 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
 
    } else {
 
-     // The parent retains pnode, now downgraded to a 2-node, as its child in its current child position, and it takes ownership of largestNode
+     // Insert pnode's middle KeyValue pair into its parent, and make largestNode its child.
      pnode->parent->insert(std::move(pnode->keys_values[1]), std::move(largestNode)); 
    }
 
-   // Set descent cursor to next lower level.
-  Node *pnext =  (new_key < middle_key) ? pnode : pLargest;
+  // We already checked 'if (new_key == middle_key)' in the caller, in find_insert_node(), so we only need check 'new_key < middle_key' in order to set pnext.
+  Node *pnext = (new_key < middle_key) ? pnode : pLargest;
 
   return pnext;
 }
