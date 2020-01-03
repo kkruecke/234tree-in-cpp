@@ -299,7 +299,7 @@ template<typename Key, typename Value> class tree234 {
    int  depth(const Node *pnode) const noexcept;
    bool isBalanced(const Node *pnode) const noexcept;
    
-   bool find_(const Node *current, Key key) const noexcept; // called by 'bool find(Key keu) const'
+   bool find_(const Node *current, Key key) const noexcept; 
    
    std::tuple<bool, Node *, int> find_insert_node(Node *pnode, Key new_key) noexcept;  // Called during insert
 
