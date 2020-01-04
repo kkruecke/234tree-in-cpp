@@ -134,7 +134,8 @@ template<typename Key, typename Value> class tree234 {
       std::pair<bool, int> chooseSibling(int child_index) const noexcept;
       
       /* 
-      * Called during remove(Key keym, Node *) if a parent key needs to be merged with convert a 2-node to a 4-node.
+      * TODO: 
+      * Called during ????? remove(Key keym, Node *) if a parent key needs to be merged with convert a 2-node to a 4-node.
       */
       Node *fuseWithChildren() noexcept; 
       
@@ -273,8 +274,11 @@ template<typename Key, typename Value> class tree234 {
    Node *convert_if_needed(Node *node) noexcept;
    
    // These methods are called by convert_if_needed()
-   Node *fuseSiblings(Node *parent, int node2_id, int sibling_id) noexcept;
+   Node *make4Node(Node *parent, int node2_id, int sibling_id) noexcept;
    
+   Node *make3Node(Node *p2node, int child_index, int sibling_index) noexcept;
+
+   // Two subroutines of make3Node():
    Node *leftRotation(Node *p2node, Node *psibling, Node *parent, int parent_key_index) noexcept;
    
    Node *rightRotation(Node *p2node, Node *psibling, Node *parent, int parent_key_index) noexcept;
@@ -562,11 +566,8 @@ template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyV
 
 template<typename Key, typename Value> inline typename tree234<Key, Value>::KeyValue& tree234<Key, Value>::KeyValue::operator=(KeyValue&& lhs) noexcept
 {
-   if (this != &lhs) { 
+   pair() = std::move(lhs.pair());
    
-      pair() = std::move(lhs.pair());
-   
-   }
    return *this;
 }
 
@@ -1552,7 +1553,7 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
        if (pcurrent->key(1) == new_key) // First check the middle key because split() will move it into its parent.
             return {true, pcurrent, 1}; 
 
-       // split pcurrent into two 2-nodes and set pcurrent to the correct on for examining next.
+       // split pcurrent into two 2-nodes and set pcurrent to the correct one to examine next below.
        pcurrent = split(pcurrent, new_key); 
    }
 
@@ -1852,57 +1853,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    // Determine if any adjacent sibling has a 3- or 4-node, giving preference to the right adjacent sibling first.
    auto [has3or4NodeSibling, sibling_index] = pnode->chooseSibling(child_index);
 
-   // Determine whether to rotate or fuse based on whether the parent is a two node, 
-
-   // If all adjacent siblings are also 2-nodes...
-   Node *convertedNode = nullptr;
-
-   if (has3or4NodeSibling == false) { 
-
-        convertedNode = fuseSiblings(pnode->getParent(), child_index, sibling_index);
-
-   } else { // it has a 3- or 4-node sibling.
-
-      auto parent = pnode->getParent();
-
-      Node *psibling = parent->children[sibling_index].get();
-    
-      Node *p2node = parent->children[child_index].get();
-      
-      // First we get the index of the parent's key value such that either 
-      // 
-      //   parent->children[child_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
-      // 
-      // or 
-      // 
-      //   parent->children[sibling_id]->keys_values[0]  <  parent->keys_values[index] <  parent->children[child_index]->keys_values[0]
-      //
-      // by taking the minimum of the indecies.
-      
-    
-      int parent_key_index = std::min(child_index, sibling_index); 
-
-      /*   If sibling is to the left, then this relation holds
-       *
-       *      parent->children[sibling_id]->keys_values[0] < parent->keys_values[index] < parent->children[child_index]->keys_values[0]
-       * 
-       *   and we do a right rotation
-       */ 
-      if (child_index > sibling_index) { 
-                                  
-          convertedNode = rightRotation(p2node, psibling, parent, parent_key_index);
-    
-      } else { /* else sibling is to the right and this relation holds
-                * 
-                *    parent->children[child_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
-                *
-                * therefore we do a left rotation
-                */ 
-          convertedNode = leftRotation(p2node, psibling, parent, parent_key_index);
-      }
-   }
-   
-   return convertedNode;
+   return has3or4NodeSibling ? make3Node(pnode, child_index, sibling_index) : make4Node(pnode->getParent(), child_index, sibling_index); 
 }
 
 /*
@@ -1939,6 +1890,42 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    connectChild(3, std::move(rightOrphan->children[1]));
      
    return this;
+}
+
+template<typename Key, typename Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::make3Node(Node *p2node, int child_index, int sibling_index) noexcept
+{
+  Node *convertedNode = nullptr;
+
+  auto parent = p2node->getParent();
+
+  Node *psibling = parent->children[sibling_index].get();
+ 
+  // First we get the index of the parent's key value such that either 
+  // 
+  //   parent->children[child_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
+  // 
+  // or 
+  // 
+  //   parent->children[sibling_id]->keys_values[0]  <  parent->keys_values[index] <  parent->children[child_index]->keys_values[0]
+  //
+  // by taking the minimum of the indecies.
+ 
+  int parent_key_index = std::min(child_index, sibling_index); 
+
+  /*   If sibling is to the left, then this relation holds
+   *
+   *      parent->children[sibling_id]->keys_values[0] < parent->keys_values[index] < parent->children[child_index]->keys_values[0]
+   * 
+   *   and we do a right rotation
+   *
+   *   else sibling is to the right and this relation holds
+   *   
+   *      parent->children[child_index]->keys_values[0]  <  parent->keys_values[index] <  parent->children[sibling_id]->keys_values[0] 
+   *  
+   *   therefore we do a left rotation
+   */ 
+    
+  return  (child_index > sibling_index) ? rightRotation(p2node, psibling, parent, parent_key_index) : leftRotation(p2node, psibling, parent, parent_key_index);
 }
 
 /* 
@@ -2006,7 +1993,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
  * 4. The parent becomes either a 2-node, if it was a 3-node, or a 2-node if it was a 4-node?
  *
  */
-template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::fuseSiblings(Node *parent, int node2_index, int sibling_index) noexcept
+template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::make4Node(Node *parent, int node2_index, int sibling_index) noexcept
 {
   Node *p2node = parent->children[node2_index].get();
 
