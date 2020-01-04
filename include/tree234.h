@@ -137,7 +137,7 @@ template<typename Key, typename Value> class tree234 {
       * TODO: 
       * Called during ????? remove(Key keym, Node *) if a parent key needs to be merged with convert a 2-node to a 4-node.
       */
-      Node *fuseWithChildren() noexcept; 
+      Node *makeRoot4Node() noexcept; 
       
       public:
            
@@ -1844,7 +1844,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    // Note: We DON'T convert the root unless BOTH children are also 2-nodes.
    if (pnode == root.get()) {
 
-        return (pnode->children[0]->isTwoNode() && pnode->children[1]->isTwoNode()) ? pnode->fuseWithChildren() : pnode;
+        return (pnode->children[0]->isTwoNode() && pnode->children[1]->isTwoNode()) ? pnode->makeRoot4Node() : pnode;
    }
 
    // Return the parent->children[node2_index] such that pnode is root of the left subtree of 
@@ -1870,7 +1870,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
  * 1. Absorbs its children's keys_values as its own. 
  * 2. Makes its grandchildren its children.
  */
-template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::Node::fuseWithChildren() noexcept
+template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::Node::makeRoot4Node() noexcept
 {
    // move key of 2-node 
    keys_values[1] = std::move(keys_values[0]);
