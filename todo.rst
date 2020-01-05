@@ -5,7 +5,7 @@ TODO
 
 * Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
 
-* Test: Building a tree234 and then removing till empty the max value, and then do the sam thing with min value.
+* Test: Keep current logic, but add back older cold that used std::shared_ptr<Node>--but forgot to copy tree in copy ctor. Do a kdiff between the versions. 
 
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
