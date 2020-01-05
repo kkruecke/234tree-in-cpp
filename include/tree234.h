@@ -673,45 +673,15 @@ template<typename Key, typename Value> void tree234<Key, Value>::copy_tree(const
   if (src_node != nullptr) { 
                               
      dest_node = std::make_unique<Node>(src_node->keys_values, dest_parent, src_node->totalItems);
-     
-     switch (src_node->totalItems) {
-     
-        case 1: // 2-node
-        {    
-             copy_tree(src_node->children[0], dest_node->children[0], dest_node.get()); 
-             
-             copy_tree(src_node->children[1], dest_node->children[1], dest_node.get()); 
-     
-             break;
-        }   
-        case 2: // 3-node
-        {
-             copy_tree(src_node->children[0], dest_node->children[0], dest_node.get());
-             
-             copy_tree(src_node->children[1], dest_node->children[1], dest_node.get());
-             
-             copy_tree(src_node->children[2], dest_node->children[2], dest_node.get());
-     
-             break;
-        } 
-        case 3: // 4-node
-        {
-             copy_tree(src_node->children[0], dest_node->children[0], dest_node.get());
-             
-             copy_tree(src_node->children[1], dest_node->children[1], dest_node.get());
-             
-             copy_tree(src_node->children[2], dest_node->children[2], dest_node.get());
-     
-             copy_tree(src_node->children[3], dest_node->children[3], dest_node.get());
-     
-             break;
-        } 
-     
-     }  // end switch
+
+     for(auto i = 0; i < dest_node->getChildCount(); ++i) {    
+
+          copy_tree(src_node->children[i], dest_node->children[i], dest_node.get()); 
+     }
  } else {
 
     dest_node = nullptr;
- } 
+ }
 }
 
 // move constructor
