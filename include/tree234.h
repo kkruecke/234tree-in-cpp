@@ -134,9 +134,8 @@ template<typename Key, typename Value> class tree234 {
       std::pair<bool, int> chooseSibling(int child_index) const noexcept;
       
       /* 
-      * TODO: 
-      * Called during ????? remove(Key keym, Node *) if a parent key needs to be merged with convert a 2-node to a 4-node.
-      */
+       * Called during convert_if_needed.
+       */
       Node *makeRoot4Node() noexcept; 
       
       public:
