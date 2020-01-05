@@ -1694,6 +1694,8 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
 /*
  * Called by remove(Key key). Recursively searches for key to delete, converting, if not the root, 2-nodes to 3- or 4-node.
  */
+//TODO: pass into find_delete_node the child_index in the parent of pnode such that 'pnode ==pnode->parent->children[child_index]'
+// so it can in turn be passed to convert_if_needed, and removed the getChildIndex call from convert_if_needed.
 template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::Node *, int>   tree234<Key, Value>::find_delete_node(Node *pcurrent, Key delete_key) noexcept
 {
    if (pcurrent->isTwoNode()) { 
