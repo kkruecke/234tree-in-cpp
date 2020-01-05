@@ -126,6 +126,7 @@ template<typename Key, typename Value> class tree234 {
       void insertChild(int childNum, std::shared_ptr<Node>& pChild) noexcept;
 
       void connectChild(int childNum, std::shared_ptr<Node>& child) noexcept;
+      Node *makeRoot4Node() noexcept;
       
       /*
       * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
@@ -134,11 +135,7 @@ template<typename Key, typename Value> class tree234 {
 
       std::pair<bool, int> chooseSibling(int child_index) const noexcept;
       
-      /* 
-       * Called during convert_if_needed.
-       */
-      Node *makeRoot4Node() noexcept; 
-      
+            
       public:
            
          Node() noexcept;
@@ -271,9 +268,9 @@ template<typename Key, typename Value> class tree234 {
    bool remove(Node *location, Key key);     
    
    // Called during remove(Key key, Node *) to convert two-node to three- or four-node during descent of tree.
-   Node *convert_if_needed(Node *node) noexcept;
-   
-   // These methods are called by convert_if_needed()
+   Node *convert2Node(Node *node) noexcept;
+
+   // These methods are called by convert2Node()
    Node *make4Node(Node *parent, int node2_id, int sibling_id) noexcept;
    
    Node *make3Node(Node *p2node, int child_index, int sibling_index) noexcept;
@@ -1695,12 +1692,20 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
  * Called by remove(Key key). Recursively searches for key to delete, converting, if not the root, 2-nodes to 3- or 4-node.
  */
 //TODO: pass into find_delete_node the child_index in the parent of pnode such that 'pnode ==pnode->parent->children[child_index]'
-// so it can in turn be passed to convert_if_needed, and removed the getChildIndex call from convert_if_needed.
+// so it can in turn be passed to convert2Node, and removed the getChildIndex call from convert2Node.
 template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::Node *, int>   tree234<Key, Value>::find_delete_node(Node *pcurrent, Key delete_key) noexcept
 {
    if (pcurrent->isTwoNode()) { 
 
-       pcurrent = convert_if_needed(pcurrent);  
+       if (pcurrent != root.get())
+             pcurrent = convert2Node(pcurrent);  
+
+       else if (pcurrent->children[0]->isTwoNode() && pcurrent->children[1]->isTwoNode())
+
+             // If pnode's parent is a 2-node and its other sibling (whose child_index would be 'pnode == parent->children[0]) : 1 : 0) is also 2-node, 
+             // then the parent is the root. This is the only case in which we convert a 2-node root. 
+             // Note: We DON'T convert the root unless BOTH children are also 2-nodes.
+             pcurrent = pcurrent->makeRoot4Node(); 
    }
    
    auto i = 0; 
@@ -1745,7 +1750,7 @@ tree234<Key, Value>::get_delete_successor(Node *pdelete, Key delete_key, int del
 
   if (rightSubtree->isTwoNode()) { 
 
-       convert_if_needed(rightSubtree); 
+       convert2Node(rightSubtree); 
     /*
       Check if, when we converted the rightSubtree, delete_key moved.  
       Comments: If the root of the right subtree had to be converted, either a rotation occurred, or a fusion (with the parent, rightSubtree and a
@@ -1786,7 +1791,7 @@ tree234<Key, Value>::get_delete_successor(Node *pdelete, Key delete_key, int del
 template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree234<Key, Value>::get_successor_node(Node *pnode) noexcept
 {
   if (pnode->isTwoNode()) 
-      pnode = convert_if_needed(pnode);
+      pnode = convert2Node(pnode);
 
   if (pnode->isLeaf())
       return pnode;
@@ -1809,16 +1814,8 @@ template<class Key, class Value> inline typename tree234<Key, Value>::Node *tree
  * we fuse the three together into a 4-node. In either case, we shift the children as required.
  * 
  */
-template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convert_if_needed(Node *pnode)  noexcept
+template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::convert2Node(Node *pnode)  noexcept
 {   
-   // If pnode's parent is a 2-node and its other sibling (whose child_index would be 'pnode == parent->children[0]) : 1 : 0) is also 2-node, 
-   // then the parent is the root. This is the only case in which we convert a 2-node root. 
-   // Note: We DON'T convert the root unless BOTH children are also 2-nodes.
-   if (pnode == root.get()) {
-
-        return (pnode->children[0]->isTwoNode() && pnode->children[1]->isTwoNode()) ? pnode->makeRoot4Node() : pnode;
-   }
-
    // Return the parent->children[node2_index] such that pnode is root of the left subtree of 
    auto child_index = pnode->getChildIndex(); 
 
