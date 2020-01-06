@@ -747,7 +747,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
     pnode = cursor;
  }
 
- return {const_cast<Node *>(pnode), 0};
+ return {pnode, 0};
 }
 
 /*
@@ -769,7 +769,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
   auto current_key = pnode->key(key_index);
   
   // Handle the case: pnode is the right-most child of its parent... 
-  if (pnode->parent->children[child_index].get() == pnode->parent->getRightMostChild()) { 
+  if (pnode == pnode->parent->getRightMostChild()) { 
 
   /*
    pnode is a leaf node, and pnode is the right-most child of its parent, and key_index is the right-most index or last index into pnode->keys(). To find the successor, we need the first ancestor node that contains
@@ -791,11 +791,11 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
          child = parent;
      }
      // We select the ancestor's smallest key that is larger than current_key.
-     auto successor_index = 0;
+     auto i = 0;
 
-     for (; successor_index < parent->getTotalItems() && current_key > parent->key(successor_index); ++successor_index);
+     for (; i < parent->getTotalItems() && current_key > parent->key(i); ++i);
      
-     return {parent, successor_index};
+     return {parent, i};
 
   } else { // Handle the case: pnode is not the right-most child of its parent. 
       /* 
