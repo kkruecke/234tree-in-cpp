@@ -822,7 +822,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
          throw std::logic_error("child_index was not between 0 and 3 in getLeafNodeSuccessor()");
      }
 
-     return {pnode->parent, child_index};
+     return {pnode->parent, child_index}; // So child_index constitutes the index in the parent that holds the next largest key.
   }  
 }
 

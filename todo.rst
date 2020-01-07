@@ -5,12 +5,6 @@ TODO
 
 * Make sure the deletion description for tree234 matches that of the remove() code in ~/d/notes/tree234.rst. 
 
-* The code to iterator and get the successor should also pass in the child_index, so I can eliminate the Node::getChildIndex() method. getSuccessor() is called from two places.
-  One is the iterative in-order traversal. This can be changed to directly use the nested iterator class, so the change is isolated to the iterator class, to which can be added
-  a child_node member variable as a possible solution.
-
-  At any rate, the pseudo code for the iterator needs to be revisited. 
-
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
 
