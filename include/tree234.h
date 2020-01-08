@@ -2348,8 +2348,8 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
   auto [successor, index] = tree.getSuccessor(cursor, key_index);
 
-  if (successor == nullptr) { // nullptr implies there is no successor to cursor->keys_values[key_index].key().
-                             // Therefore cursor already points to last key/value in tree.
+  if (successor == nullptr) { // nullptr implies cursor->keys_values[key_index].key() is the max key,
+                              // the last key/value in tree.
 
        current = nullptr; // We are now at the end. 
 
