@@ -27,13 +27,13 @@ template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, os
    
    auto iter = tree.rbegin();
    
-   while( iter != end) {
+   while(iter != end) {
  
-      auto& pr = *iter;
+      auto&& pr = *iter;
 
       ostr << pr.first << ", " << flush;
       
-      if (pr.first == 1 ) {
+      if (pr.first == 88) {
           
           int debug = 10;
           ++debug;
@@ -94,18 +94,33 @@ int main(int argc, char** argv)
   cout << "\ntree3:" << tree3;
   tree3.remove(-999);
 
-  cout << "\ntree3 after tree3.remove(-999):" << tree3;
+  cout << "\ntree3 after tree3.remove(-999):" << tree3 << "\n";
  
-  // End sp-case
   tree234<int, int> tree = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}};
 
-  cout << tree << flush;
-  //++tree.debug_printlevelOrder(cout);
-  
   for (auto& pr : append) {
       
       tree.insert(pr.first, pr.second);
   }
+
+  cout << tree << flush;
+  
+  cout << "\nTest of new code: ===========\n";
+  auto iter = tree.begin();
+  auto end = tree.end();
+
+  for(auto&& x : tree) {
+      
+      
+      cout << x.first << ", " << flush;
+  }
+ 
+  cout << flush << "\n";
+/*
+ for(;iter != begin(); --iter) {
+       cout << iter->first << ", " << flush;
+ }
+*/
   /*
   vector< pair<int, int> > vec_pairs[] = {   {{ 20, 20 },  { 40, 40 },  { 60, 60 },  { 70, 70 },  { 80, 80 },  { 90, 90 },  {100, 100}, {120, 120} }, {{ 20, 20 },  { 40, 40 },  { 60, 60 },  { 41, 41 },  { 42, 42 },  { 43, 43 },  {44, 44}}, {{ 20, 20 }, { 40, 40 }, { 60, 60 }, {  0,  0 }, {  1,  1 }, {  2,  2 }, {  3,  3 }} };
   
