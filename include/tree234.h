@@ -1822,56 +1822,14 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
       // find min and convert 2-nodes as we search.
       auto[pdelete_new, key_index_new, pmin] = get_delete_successor(pdelete, key, key_index);
 
-      pdelete_new->keys_values[key_index_new] = pmin->keys_values[0]; // overwrite key to be deleted with its successor.
+      pdelete_new->keys_values[key_index_new] = pmin->keys_values[0]; // simply overwrite key to be deleted with its successor.
     
-      pmin->removeKeyValue(0); // Since successor is not in a 2-node, delete it from the leaf.
+      pmin->removeKeyValue(0); // Since successor is not in a 2-node, we can delete it from the leaf.
   }
 
   return true;
 }
-/*
- * Called by remove(Key key). Recursively searches for key to delete, converting, if not the root, 2-nodes to 3- or 4-node.
- */
-/*
-template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::Node *, int>   tree234<Key, Value>::find_delete_node(Node *pcurrent, Key delete_key) noexcept
-{
-   if (pcurrent->isTwoNode()) { 
 
-       if (pcurrent != root.get())
-             pcurrent = convert2Node(pcurrent);  
-
-       else if (pcurrent->children[0]->isTwoNode() && pcurrent->children[1]->isTwoNode())
-
-             // If pnode's parent is a 2-node and its other sibling (whose child_index would be 'pnode == parent->children[0]) : 1 : 0) is also 2-node, 
-             // then the parent is the root. This is the only case in which we convert a 2-node root. 
-             // Note: We DON'T convert the root unless BOTH children are also 2-nodes.
-             pcurrent = pcurrent->makeRoot4Node(); 
-   }
-   
-   auto i = 0; 
-   
-   for(;i < pcurrent->getTotalItems(); ++i) {
-
-       if (delete_key == pcurrent->key(i)) {
-
-           return {true, pcurrent, i}; // Key to be deleted is at pcurrent->key(i).
-       } 
-
-       if (delete_key < pcurrent->key(i)) {
-
-           if (pcurrent->isLeaf()) return {false, nullptr, 0}; // Key not in tree.
- 
-           return find_delete_node(pcurrent->children[i].get(), delete_key); // Recurse left subtree of pcurrent->key(i)
-       } 
-   }
-
-   if (pcurrent->isLeaf()) { // key was not found in tree.
-      return {false, pcurrent, 0};
-   } 
-
-   return find_delete_node(pcurrent->children[i].get(), delete_key); // key is greater than all values in pcurrent, search right-most subtree.
-}
-*/
 /*
   Input: Node * and its child index in parent
   Return: {bool: found/not found, Node *pFound, int key_index within pFound}
@@ -1884,12 +1842,12 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
 
   if (pcurrent->isTwoNode()) {
 
-       if (pcurrent == root.get() && root->children[0]->isTwoNode() &&  root->children[1]->isTwoNode()) {
+       if (pcurrent == root.get() && root->children[0]->isTwoNode() && root->children[1]->isTwoNode()) {
 
-            /*pcurrent =*/ pcurrent->makeRoot4Node();
+            pcurrent->makeRoot4Node();
 
        } else if (pcurrent != root.get()) {
-             /*pcurrent =*/ convert2Node(pcurrent, child_index);
+            convert2Node(pcurrent, child_index);
        }
   }
 
@@ -1898,22 +1856,20 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
   
   for(;i < pcurrent->getTotalItems(); ++i) {
 
-      if (delete_key == pcurrent->key(i)) {
+      if (delete_key == pcurrent->key(i)) 
 
-          return {true, pcurrent, i}; // Found dlete_key to be deleted is at pcurrent->key(i).
-      } 
+         // Found dlete_key to be deleted is at pcurrent->key(i).
+          return {true, pcurrent, i}; 
 
-      if (delete_key < pcurrent->key(i)) {
+      if (delete_key < pcurrent->key(i)) 
 
           // Recurse with left child of pcurrent. 
           return find_delete_node(pcurrent->children[i].get(), delete_key, i);
-      } 
   }
 
   // If not found and delete_key is larger than all keys, recurse with right most child
   return find_delete_node(pcurrent->children[i].get(), delete_key, i);
 }
-
 
 /*
  * Input: 
@@ -1939,11 +1895,10 @@ tree234<Key, Value>::get_delete_successor(Node *pdelete, Key delete_key, int del
       Check if, when we converted the rightSubtree, delete_key moved.  
       Comments: If the root of the right subtree had to be converted, either a rotation occurred, or a fusion (with the parent, rightSubtree and a
       sibling occurred). If a left rotation occurred (that "stold" a key from the left sibling and brought down the delete_key), then delete_key
-      becomes the first key rightSubtree.
-      
-      If a right rotation occurred, delete_key is unaffected. This applies regardless whether pdelete is a 3-node or a 4-node.
+      becomes the first key rightSubtree. If a right rotation occurred, delete_key is unaffected. This applies regardless whether pdelete is a 3-node
+      or a 4-node.
 
-      If a fusion of a parent keye and a sibling key with righSubtree occurred, delete_key becomes the 2nd key in rightSubtree. 
+      If a fusion of the rightSubtree with a parent key and a sibling key occurred, delete_key becomes the 2nd key in rightSubtree. 
 
       Therefore we check if delete_key is now the first or second key of rightSubtree, and...
      */
