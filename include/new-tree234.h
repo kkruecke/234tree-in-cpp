@@ -436,7 +436,9 @@ template<typename Key, typename Value> class tree234 {
           if (child_indexes.empty()) {
               throw(std::logic_error("iterator popping empty stack"));
           }
-          return child_indexes.top();
+          auto i = child_indexes.top();
+          child_indexes.pop();
+          return i; 
        }
    
       public:
@@ -776,15 +778,16 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  auto child_index = key_index + 1;
 
  // Get first right subtree of pnode, and descend to its left most left node.
- for (const Node *cursor =  pnode->children[child_index].get(); cursor != nullptr; cursor = cursor->children[child_index].get()) {  
+ for (const Node *pcurrent =  pnode->children[child_index].get(); pcurrent != nullptr; pcurrent = pcurrent->children[child_index].get()) {  
 
     push(child_index);
-    pnode = cursor;
-    child_index = 0; // Do after push()
+
+    pnode = pcurrent;
+
+    child_index = 0; // Set only after push(child_index)
  }
 
- return {const_cast<Node *>(pnode), 0};
-
+ return {pnode, 0};
 }
 
 /*
@@ -835,12 +838,12 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
      }
      */
 
-     const Node *parent = pnode;
+     const Node *parent = pnode->parent;
 
      // Ascend upward the parent pointer as long as the child continues to be the right most child (of its parent). 
      for(;child_index == parent->getTotalItems(); parent = pnode->parent)  { 
         
-         // child is still the right most child, but if it is also the root, then, there is no successor. child holds the largest keys in the tree. 
+         // If child is still the right most child, and if it is also the root, then, there is no successor. pnode holds the largest keys in the tree. 
          if (parent == root.get()) {
           
              return {nullptr, 0};  // To indicate "no-successor" we return the pair: {nullptr, 0}. 
@@ -948,11 +951,13 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
  auto child_index = key_index;
 
- for (const Node *cursor = pnode->children[key_index].get(); cursor != nullptr; cursor = cursor->children[child_index].get()) {
+ for (const Node *pcurrent = pnode->children[key_index].get(); pcurrent != nullptr; pcurrent = pcurrent->children[child_index].get()) {
 
     push(child_index);
-    pnode = cursor;
-    child_index = cursor->getTotalItems();
+
+    pnode = pcurrent;
+
+    child_index = pcurrent->getTotalItems();  
  }
 
  return {pnode, pnode->totalItems - 1}; 
@@ -976,7 +981,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
   // Determine child_index such that pnode == pnode->parent->children[child_index]
   //--int child_index = pnode->getChildIndex(); //<-- TODO: Eliminate
-  auto child_index = pop();
+  auto child_index = pop(); // TODO: Does this work if root is leaf?
 
   if (child_index != 0) { // If pnode is not the left-most child, the predecessor is in the parent
 
