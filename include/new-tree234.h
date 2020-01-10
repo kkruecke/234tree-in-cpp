@@ -400,7 +400,8 @@ template<typename Key, typename Value> class tree234 {
        const Node *current;
        const Node *cursor; //  points to "current" node.
        int key_index;
-       std::stack<int> child_indexes; 
+
+       std::shared_ptr<std::stack<int>> child_indexes; 
        
        int getChildIndex(const typename tree234<Key, Value>::Node *p) const noexcept;
       
@@ -428,16 +429,16 @@ template<typename Key, typename Value> class tree234 {
 
        void push(int child_index)
        {
-           child_indexes.push(child_index);
+           child_indexes->push(child_index);
        }
 
        int pop()
        {
-          if (child_indexes.empty()) {
+          if (child_indexes->empty()) {
               throw(std::logic_error("iterator popping empty stack"));
           }
-          auto i = child_indexes.top();
-          child_indexes.pop();
+          auto i = child_indexes->top();
+          child_indexes->pop();
           return i; 
        }
 
@@ -838,6 +839,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
      }
      /* 
         We know that pnode now is NOT the right most child of its parent. 
+
         We need to ascertain the next index, next_index, such that parent->key(next_index) > current_key. We know 'pnode == parent->children[child_index]'. child_index is therefore
         also the index of the successor key in the parent: successor-key == parent->key(child_index). We can see this by looking these possiblities. First, a 3-node. 
         If we ascende from the leaf node of the right-most subtree of key 5,then 36 is the successor, and 36 == parent->key(child_index)
@@ -846,12 +848,14 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
           /        /   \
         [1, 2]  [4, 5]  [47]
         /   \   / | \   / \
+
         and a 4-node can be viewed as three catenated 2-nodes in which the two middle child are shared
           
            [2,   4,   36]  
           /     / \     \
         [1]  [3]   [5]  [37] 
         / \  / \   / \   / \
+
         Again, if ascend, say, the leaf of the right subtree root at key 3, then 4 is the successor; and if ascend, say, the leaf of the right subtree whose root is key 5, then 36 is the successor, and
         36 = parent->key(child_index);
       */
@@ -869,11 +873,13 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
            /  \     / \
           /    \   /   \
         [1, 2]  [4, 5]  [7]
+
         and a 4-node can be viewed as three catenated 2-nodes in which the two middle child are shared
           
            [2,   4,   6]  
           /  \  / \  / \
         [1]  [3]   [5]  [7] 
+
         If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is the last, current_key == pnode->getTotalItems() - 1. So the we simply go up on level to find the in order successor.    
         We know pnode == parent->children[child_index]. child_index also is index of the successor key in the parent: successor-key == parent->key(child_index).
       */
@@ -1811,6 +1817,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
  * is converted, the key to be delete may move down into it (as its first or second key), so we check for this.
  * 
  * Conversion of 2-node has two cases:
+
  * Case 1: If an adjacent sibling has is a 3- or 4-node, we "steal" a sibling key by rotating it into the parent and bringing down a parent key into the 2-node,
  *         
  * Case 2: If each adjacent sibling (there are at most two) is a 2-node, we canvert the 2-node into a 4-node by merging into it a sibling key and a key from parent (which we
@@ -1950,7 +1957,9 @@ tree234<Key, Value>::get_delete_successor(Node *pdelete, Key delete_key, int del
       sibling occurred). If a left rotation occurred (that "stold" a key from the left sibling and brought down the delete_key), then delete_key
       becomes the first key rightSubtree. If a right rotation occurred, delete_key is unaffected. This applies regardless whether pdelete is a 3-node
       or a 4-node.
+
       If a fusion of the rightSubtree with a parent key and a sibling key occurred, delete_key becomes the 2nd key in rightSubtree. 
+
       Therefore we check if delete_key is now the first or second key of rightSubtree, and...
      */
      if (delete_key == rightSubtree->key(0) || delete_key == rightSubtree->key(1)) {              
@@ -2268,6 +2277,8 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::printInO
 	
 template<class Key, class Value> tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree) : tree{lhs_tree} 
 {
+  child_indexes = std::make_shared<std::stack<int>>();
+
   current = (!tree.isEmpty()) ? get_min() : nullptr;
 
   cursor = current;
@@ -2304,13 +2315,13 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
 {
 }
 
-// non const tree234<Key, Value>& passed to ctor. Called only by end()
-template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree, int i) :  tree{lhs_tree} 
-{
+// Called only by end()
+template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree, int i) :  tree{lhs_tree}, child_indexes{nullptr} 
+{   
   // If the tree is empty, there is nothing over which to iterate...
    if (!tree.isEmpty()) {
 
-      cursor = get_max(); // Go to largest node.
+      cursor = tree.max(tree.root.get()); // Go to largest node.
       key_index = cursor->getTotalItems() - 1;
 
       current = nullptr; 
@@ -2404,8 +2415,9 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
       key_index = index;
 
   } else {
-    // TODO: Do we need an else statement like in iterator::increment() that sets current to nullptr? I need to create a test case for this.
-     current = nullptr; // TODO: New else-block. Untested.
+
+    // Indicates we are at the beginning of map 
+     current = nullptr; 
   }
   return *this;
 }
@@ -2416,8 +2428,6 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
    lhs.cursor = lhs.current = nullptr; 
    child_indexes = std::move(lhs.child_indexes);
 }
-/*
- */
 
 template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(const iterator& lhs) const
 {
