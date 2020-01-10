@@ -33,7 +33,7 @@ template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, os
 
       ostr << pr.first << ", " << flush;
       
-      if (pr.first == 88) {
+      if (pr.first == 93) {
           
           int debug = 10;
           ++debug;

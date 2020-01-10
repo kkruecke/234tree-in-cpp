@@ -454,6 +454,11 @@ template<typename Key, typename Value> class tree234 {
        iterator(const iterator& lhs); 
       
        iterator(iterator&& lhs); 
+       ~iterator()
+       {
+    	   auto debug = 10;
+    	   ++debug;
+       }
       
        bool operator==(const iterator& lhs) const;
        
@@ -2316,15 +2321,17 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
 }
 
 // Called only by end()
-template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree, int i) :  tree{lhs_tree}, child_indexes{nullptr} 
+template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree, int i) :  tree{lhs_tree}
 {   
+  child_indexes = std::make_shared<std::stack<int>>();
+
   // If the tree is empty, there is nothing over which to iterate...
-   if (!tree.isEmpty()) {
+  if (!tree.isEmpty()) {
 
-      cursor = tree.max(tree.root.get()); // Go to largest node.
-      key_index = cursor->getTotalItems() - 1;
+     cursor = get_max(); // Go to largest node.
+     key_index = cursor->getTotalItems() - 1;
 
-      current = nullptr; 
+     current = nullptr; 
 
   } else {
 
@@ -2439,7 +2446,6 @@ template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(
    // but the iterator returned by tree234::end()'s iterator always sets current to nullptr (to signal "one past the end").
    // current to nullptr.
    //
-
    if (current == nullptr && lhs.current == nullptr) return true; 
    else if (current == lhs.current && key_index == lhs.key_index) { 
        return true;

@@ -2299,11 +2299,6 @@ template<typename Key, typename Value> inline const typename tree234<Key, Value>
    return pnode;
 }
 
-template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(const iterator& lhs) : tree{lhs.tree}, current{lhs.current},\
-        cursor{lhs.cursor}, key_index{lhs.key_index}, child_indexes{lhs.child_indexes}
-{
-}
-
 // non const tree234<Key, Value>& passed to ctor. Called only by end()
 template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(tree234<Key, Value>& lhs_tree, int i) :  tree{lhs_tree} 
 {
