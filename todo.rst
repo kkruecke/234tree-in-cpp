@@ -3,9 +3,10 @@ TODO
 
 * Compare default ~tree234() with a version that calls destroy_tree() by using the sample_value class in include/sample-value.h whose dtort prints to cout. 
 
-* Bug: The iterator class is not efficient. The stack member variable causes the stack to be repeated copied and destroyed in 
+* Bugs: 
 
-The new version new-tree234 has a bug. See bug.cpp. 
+   * The iterator class is not efficient: the stack member variable causes the stack to be repeated copied and destroyed when the iterator is copied. 
+   * And the new version new-tree234 has a bug: see details in bug.cpp. 
 
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
