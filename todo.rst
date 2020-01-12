@@ -6,9 +6,8 @@ TODO
 * Issue: 
 
    * The iterator class itself is efficient because it uses a stack of int's, but this in turns makes its copy constructor less efficient because the stack is copied. ``reverse_iterator::operator++()``, for example, copies the underlying iterator each time it executes. 
-     The solution is to remove the stack and the ``iterator::push()`` and ``iterator::pop()`` calls, and to replace the line ``auto child_index = pop();`` in ``iterator::getLeafNodeSuccessor()`` and ``iterator::getLeafNodeSuccessor()`` with a ``auto child_index = pnode->getChildIndex()``. 
-     Thius will make the iterator's copy constructor efficient but its performance a bit slow.
-
+     The solution is to remove the stack from class iterator and also the ``iterator::push()`` and ``iterator::pop()`` methods, and to replace the line ``auto child_index = pop();`` in ``iterator::getLeafNodeSuccessor()`` and ``iterator::getLeafNodeSuccessor()`` with 
+     ``auto child_index = pnode->getChildIndex()``.  This will make the iterator's copy constructor efficient but its performance a bit slower.
 
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
