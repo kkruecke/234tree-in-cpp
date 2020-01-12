@@ -404,8 +404,6 @@ template<typename Key, typename Value> class tree234 {
 
        std::stack<int> child_indexes; 
        
-       int getChildIndex(const typename tree234<Key, Value>::Node *p) const noexcept;
-      
        std::pair<const typename tree234<Key, Value>::Node *, int> findLeftChildAncestor() noexcept;
       
        iterator& increment() noexcept; 
@@ -2484,27 +2482,6 @@ template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(
    else if (current == lhs.current && key_index == lhs.key_index) { 
        return true;
    } else return false;
-}
-
-/*
- int getChildIndex(Node *cursor)
- Requires: cursor is not root, and  cursor is a node in the tree for which we want child_index such that
-      current->parent->children[child_index] == current
- Returns: child_index as shown above. 
- */
-
-template<class Key, class Value> int tree234<Key, Value>::iterator::getChildIndex(const typename tree234<Key, Value>::Node *p) const noexcept
-{
-  // Determine child_index such that current == current->parent->children[child_index]
-  int child_index = 0;
-
-  for (; child_index <= current->parent->getTotalItems(); ++child_index) {
-
-       if (current == current->parent->children[child_index].get())
-              break;
-  }
-
-  return child_index;
 }
 
 /*

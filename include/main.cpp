@@ -43,7 +43,9 @@ template<class Key, class Value> void test(const tree234<Key, Value>& tree, ostr
 
     	  auto debug = 10;
     	  ++debug;
-     }   
+
+
+      }   
      cout << "\n==================\nBefore doing ++riter: " << riter.base();
      ++riter;
      cout << "\n==================\nAfter ++riter: " << riter.base();
@@ -65,7 +67,7 @@ template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, os
 
       ostr << pr.first << ", " << flush;
       
-      if (pr.first == 93) {
+      if (pr.first == 87) {
           
           int debug = 10;
           ++debug;
