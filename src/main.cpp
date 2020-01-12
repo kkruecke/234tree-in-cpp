@@ -19,6 +19,36 @@ template<class Key, class Value> void print(const tree234<Key, Value>& tree, ost
    
    ostr << endl;
 }
+/*
+ This causes the bug in new-tree234.h
+ */
+template<class Key, class Value> void test(const tree234<Key, Value>& tree, ostream& ostr)
+{
+   // This has a  bug. 
+   auto rend = tree.rend();
+   
+   auto riter = tree.rbegin();
+   
+   auto i = 1;
+   
+   while (riter != rend) {
+
+      cout << riter.base();
+
+          auto&& pr = *riter;
+
+      ostr << pr.first << ", " << flush;
+      
+      if (pr.first == 87) {
+
+    	  auto debug = 10;
+    	  ++debug;
+      }   
+
+     ++riter;
+     ++i;
+   }
+}
 
 template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, ostream& ostr)
 {
@@ -48,6 +78,8 @@ template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, os
 int main(int argc, char** argv)
 {
   vector keys = { 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 0, 27, 62, 87, 37, 92, 79, 23, 17, 97, 55, 51, 69, 1, 2, 33, 26, 5};
+  
+  tree234<int, int> tree = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}};
 
   vector< pair<int,int> > append  = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}}; 
   
@@ -96,14 +128,7 @@ int main(int argc, char** argv)
 
   cout << "\ntree3 after tree3.remove(-999):" << tree3 << "\n";
  
-  tree234<int, int> tree = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}};
-
-  for (auto& pr : append) {
-      
-      tree.insert(pr.first, pr.second);
-  }
-
-  cout << tree << flush;
+  cout << tree3 << flush;
   
   cout << "\nTest of new code: ===========\n";
   auto iter = tree.begin();
@@ -111,11 +136,14 @@ int main(int argc, char** argv)
 
   for(auto&& x : tree) {
       
-      
       cout << x.first << ", " << flush;
   }
  
   cout << flush << "\n";
+
+  tree.printlevelOrder(cout);
+
+  test(tree, cout); 
 /*
  for(;iter != begin(); --iter) {
        cout << iter->first << ", " << flush;
@@ -200,7 +228,10 @@ int main(int argc, char** argv)
     cout << "\n\n========== Print of tree using for loop ===================" << endl;
 
     print(tree, cout);
- 
+
+    cout << "\n====== BUG =========\n";
+
+    test(tree, cout); 
     cout << "\n\n========== Test of reverse_iterator class ===================" << endl;
 
     rprint(tree, cout); 
