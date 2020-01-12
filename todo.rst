@@ -1,7 +1,7 @@
 TODO 
 ====
 
-* Compare default ~tree234() with a version that calls destroy_tree() by using the sample_value class in include/sample-value.h whose dtort prints to cout. 
+* Compare default ~tree234() with a version that calls destroy_tree() by using the sample_value class in include/sample-value.h whose destructor prints to std::cout. 
 
 * Issue: 
 
