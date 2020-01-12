@@ -12,9 +12,9 @@ using namespace std;
 
 template<class Key, class Value> void print(const tree234<Key, Value>& tree, ostream& ostr)
 {
-   for(auto& pr : tree) {
-       
-      ostr << pr.first << ", " << flush;
+   for(auto&& [key, value] : tree) {
+      
+      ostr << key << ", " << flush;
    }
    
    ostr << endl;
@@ -33,13 +33,11 @@ template<class Key, class Value> void test(const tree234<Key, Value>& tree, ostr
    
    while (riter != rend) {
 
+      auto&& [key, value] = *riter;
 
-
-      auto&& pr = *riter;
-
-      ostr << pr.first << ", " << flush;
+      ostr << key << ", " << flush;
       
-      if (pr.first == 87) {
+      if (key == 87) {
 
     	  auto debug = 10;
     	  ++debug;
@@ -61,11 +59,11 @@ template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, os
    
    while(iter != end) {
  
-      auto&& pr = *iter;
+      auto&& [key, value] = *iter;
 
-      ostr << pr.first << ", " << flush;
+      ostr << key << ", " << flush;
       
-      if (pr.first == 93) {
+      if (key == 93) {
           
           int debug = 10;
           ++debug;
@@ -85,13 +83,17 @@ int main(int argc, char** argv)
 
   vector< pair<int,int> > append  = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}}; 
   
-  for (auto& pr : append) {
-      ++pr.first;
-      ++pr.second;
+  for (auto&& [key, value] /*pr*/ : append) {
+
+      ++key;
+      ++value;
   }
+
   // Start sp-case
   tree234<int, int> tree1 = { {5, 5}, {40, 40}, {70, 70}, {120, 120}};
+
   cout << "tree1: \n" << tree1;
+
   tree1.remove(40);
   
   tree234<int, int> tree11{tree1};
@@ -103,7 +105,9 @@ int main(int argc, char** argv)
   cout << "\ntree11 after tree11.remove(5):  " << tree11;
 
   tree234<int, int> tree2{tree1};
+
   tree2.insert(999, 999);
+
   tree2.insert(-999, -999);
 
   tree234<int, int> tree3{tree1};
@@ -136,21 +140,24 @@ int main(int argc, char** argv)
   auto iter = tree.begin();
   auto end = tree.end();
 
+ /*
   for(auto&& x : tree) {
       
       cout << x.first << ", " << flush;
   }
+ */
  
+  for(auto&& [key, value] : tree) {
+      
+      cout << key << ", " << flush;
+  }
+
   cout << flush << "\n";
 
   tree.printlevelOrder(cout);
 
   test(tree, cout); 
-/*
- for(;iter != begin(); --iter) {
-       cout << iter->first << ", " << flush;
- }
-*/
+
   /*
   vector< pair<int, int> > vec_pairs[] = {   {{ 20, 20 },  { 40, 40 },  { 60, 60 },  { 70, 70 },  { 80, 80 },  { 90, 90 },  {100, 100}, {120, 120} }, {{ 20, 20 },  { 40, 40 },  { 60, 60 },  { 41, 41 },  { 42, 42 },  { 43, 43 },  {44, 44}}, {{ 20, 20 }, { 40, 40 }, { 60, 60 }, {  0,  0 }, {  1,  1 }, {  2,  2 }, {  3,  3 }} };
   
@@ -250,8 +257,11 @@ int main(int argc, char** argv)
 
     cout << "\ntree.isBalanced() == " << str_balanced << endl;
   }
+
   cout << "\n==== Final Tree ========\n" << endl;
+
   //tree.levelOrderTraverse(BasicTreePrinter{});
+
   tree.printlevelOrder(cout);
   
   {

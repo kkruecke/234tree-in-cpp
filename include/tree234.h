@@ -740,9 +740,9 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(tree2
 
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::initializer_list<std::pair<Key, Value>> il) noexcept : root(nullptr), tree_size{0} 
 {
-    for (auto& x: il) { 
+    for (auto&& [key, value]: il) { 
                     
-         insert(x.first, x.second);
+         insert(key, value);
     }
 }
 
@@ -1171,10 +1171,15 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
  
       f(current->pair(key_index)); 
 
-      std::pair<const Node *, int> pair = getSuccessor(current, key_index);  
+      //std::pair<const Node *, int> pair = getSuccessor(current, key_index);  
+      auto &&[pnode_next, next_index] = getSuccessor(current, key_index);  
   
+      /*
       current = pair.first;
       key_index = pair.second;
+       */
+      current = pnode_next; 
+      key_index = next_index;
   }
 }
 /*
