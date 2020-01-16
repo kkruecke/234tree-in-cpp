@@ -1224,10 +1224,7 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
  */
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoPostOrderTraverse(Functor f, const Node *current) const noexcept
 {  
-   if (current == nullptr) {
-
-        return;
-   }
+   if (current == nullptr) return;
 
    switch (current->getTotalItems()) {
 
@@ -1278,7 +1275,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
    if (current == nullptr) return;
 
-   f(current->constkey_pair(0)); // Visit Node::keys_values[0]
+   f(current->constkey_pair(0)); // Visit keys_values[0] 
 
    switch (current->getTotalItems()) {
 
