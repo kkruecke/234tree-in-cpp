@@ -717,8 +717,8 @@ template<typename Key, typename Value> void tree234<Key, Value>::copy_tree(const
                                                                            std::shared_ptr<Node>& dest_node, Node *dest_parent) const noexcept
 {
   if (src_node != nullptr) { 
-                              
-     dest_node = std::make_unique<Node>(src_node->keys_values, dest_parent, src_node->totalItems);
+          
+     dest_node = std::make_shared<Node>(src_node->keys_values, dest_parent, src_node->totalItems);
 
      for(auto i = 0; i < dest_node->getChildCount(); ++i) {    
 
