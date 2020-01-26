@@ -1,13 +1,13 @@
 TODO 
 ====
 
-* Compare default ~tree234() with a version that calls destroy_tree() by using the sample_value class in include/sample-value.h whose destructor prints to std::cout. 
+Design Bug
+----------
 
-* Issue: 
+Using shared_ptr<Node> improves efficiency. For example, when we copy a tree, we only have to copy a shared_ptr, but there is a drawback. For the details see:
 
-   * The iterator class itself is efficient because it uses a stack of int's, but this in turns makes its copy constructor less efficient because the stack is copied. ``reverse_iterator::operator++()``, for example, copies the underlying iterator each time it executes. 
-     The solution is to remove the stack from class iterator and also the ``iterator::push()`` and ``iterator::pop()`` methods, and to replace the line ``auto child_index = pop();`` in ``iterator::getLeafNodeSuccessor()`` and ``iterator::getLeafNodeSuccessor()`` with 
-     ``auto child_index = pnode->getChildIndex()``.  This will make the iterator's copy constructor efficient but its performance a bit slower.
+* `C++11 Smart Pointer – Part 5: shared_ptr, Binary trees and the problem of Cyclic References <https://thispointer.com/shared_ptr-binary-trees-and-the-problem-of-cyclic-references/>`_
+* `Implementation of Binary Search Trees ViaSmart Pointer <https://thispointer.com/shared_ptr-binary-trees-and-the-problem-of-cyclic-references/>`_
 
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
