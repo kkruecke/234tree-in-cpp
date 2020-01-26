@@ -154,6 +154,7 @@ template<typename Key, typename Value> class tree234 {
 
          explicit Node(KeyValue&& key_value) noexcept;
 
+         // This cconstructor is called by copy_tree()
          Node(const std::array<KeyValue, 3>& lhs_keys_values, Node *const lhs_parent, int lhs_totalItems) noexcept;             
 
          constexpr const Node *getParent() const noexcept;
@@ -307,8 +308,6 @@ template<typename Key, typename Value> class tree234 {
 
    std::tuple<Node *, int, Node *> get_delete_successor(Node *pdelete, Key delete_key, int delete_key_index) noexcept;
 
-   //--void copy_tree(const std::shared_ptr<Node>& src, std::shared_ptr<Node>& dest, Node *dest_parent=nullptr) const noexcept; 
-   void copy_tree(const tree234<Key, Value>& lhs) const noexcept;
    void copy_tree(const std::shared_ptr<Node>& src, std::shared_ptr<Node>& dest, Node *dest_parent=nullptr) const noexcept; 
 
    void destroy_tree(std::shared_ptr<Node>& root) noexcept;
@@ -709,36 +708,17 @@ template<typename Key, typename Value> void tree234<Key, Value>::destroy_tree(st
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept
 { 
    destroy_tree(root); 
-   //--copy_tree(lhs.root, root);
-   copy_tree(lhs);
+   copy_tree(lhs.root, root);
 }
 /*
  * Copies a Node, then recursively copies its children from left to right.
  */
-//--template<typename Key, typename Value> void tree234<Key, Value>::copy_tree(const std::shared_ptr<Node>& src_node,\
-//--                                                                           std::shared_ptr<Node>& dest_node, Node *dest_parent) const noexcept
-template<typename Key, typename Value> inline void tree234<Key, Value>::copy_tree(const tree234<Key, Value>& lhs) const noexcept
-{
-   copy_tree(root, lhs.root);
-   
-   tree_size = lhs.tree_size; // We also need to copy the other essential state variable, the tree size.
-}
-
 template<typename Key, typename Value> void tree234<Key, Value>::copy_tree(const std::shared_ptr<Node>& src_node,\
                                                                            std::shared_ptr<Node>& dest_node, Node *dest_parent) const noexcept
 {
-  if (src_node != nullptr) {  // TODO: How to terminate the copy?
-     /*
-        Note: We do not want to call make_shared
-
-            dest_node = std::make_shared<Node>(src_node->keys_values, dest_parent, src_node->totalItems);
-
-        as this does ::new(src_node->keys_values, dest_parent, src_node->totalItems), resulting in a needless heap allocation. We only
-        want to increase the reference count to the shared Node that has already been heap-allocated on the heap; otherwise, there is no
-        advantage over using unique_ptr<Node>.              
-      */      
-     //--dest_node = std::make_shared<Node>(src_node->keys_values, dest_parent, src_node->totalItems);
-     dest_node = src_node;
+  if (src_node != nullptr) { 
+          
+     dest_node = std::make_shared<Node>(src_node->keys_values, dest_parent, src_node->totalItems);
 
      for(auto i = 0; i < dest_node->getChildCount(); ++i) {    
 
@@ -1063,6 +1043,8 @@ template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, 
   }
   
   destroy_tree(root); // free all the nodes of the current tree 
+
+  tree_size = lhs.tree_size;
 
   copy_tree(lhs.root, root);
 
