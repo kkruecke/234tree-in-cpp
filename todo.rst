@@ -1,6 +1,11 @@
 TODO 
 ====
 
+"Bug"s
+------
+
+destroy_tree is not needed because 'root.reset()' is sufficient.
+
 Design Bug
 ----------
 
@@ -21,6 +26,9 @@ Questions about the first article:
 * Why does weak_ptr exist, what does doe it do exactly, and when must it be used?
 
 * What are the issues with shared_ptr in terms of its effect on not managing memory properly?
+
+A: Problem: See comments in ~/bst/todo.rst 
+
 
 Resources for Understanding in-place construction using C++17
 -------------------------------------------------------------
