@@ -1,11 +1,6 @@
 TODO 
 ====
 
-"Bug"s
-------
-
-destroy_tree is not needed because 'root.reset()' is sufficient.
-
 Design Bug
 ----------
 
