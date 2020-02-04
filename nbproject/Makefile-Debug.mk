@@ -36,7 +36,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/src/main.o \
-	${OBJECTDIR}/src/sample-value.o \
 	${OBJECTDIR}/src/test.o
 
 
@@ -68,11 +67,6 @@ ${OBJECTDIR}/src/main.o: src/main.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/main.o src/main.cpp
-
-${OBJECTDIR}/src/sample-value.o: src/sample-value.cpp
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} "$@.d"
-	$(COMPILE.cc) -g -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/sample-value.o src/sample-value.cpp
 
 ${OBJECTDIR}/src/test.o: src/test.cpp
 	${MKDIR} -p ${OBJECTDIR}/src

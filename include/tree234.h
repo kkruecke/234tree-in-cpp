@@ -742,6 +742,9 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
     for (auto&& [key, value]: il) { 
                     
          insert(key, value);
+         std::cout << "In tree234(std::initializer_list " << *this << std::endl; // Debug only
+         auto debug = 10;
+         ++debug;
     }
 }
 

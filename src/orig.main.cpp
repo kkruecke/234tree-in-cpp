@@ -6,6 +6,7 @@
 #include <vector>
 #include "tree234.h"
 #include "test.h"
+#include "sample-value.h"
 
 using namespace std;
 
@@ -129,7 +130,7 @@ int main(int argc, char** argv)
   cout << "\ntree2 after tree2.remove(-999):" << tree2;
   
   cout << "\ntree3:" << tree3;
-//tree3.remove(-999);
+  tree3.remove(-999);
 
   cout << "\ntree3 after tree3.remove(-999):" << tree3 << "\n";
  
@@ -205,7 +206,7 @@ int main(int argc, char** argv)
   copy(keys.rbegin(), keys.rend(), ostream_iterator<int>(cout, ", "));
   
   cout << flush;
-  /*
+  
   for (auto iter = keys.rbegin(); iter != keys.rend(); ++iter) {
     
     auto item = *iter;
@@ -218,7 +219,6 @@ int main(int argc, char** argv)
           ++debug; 
     }
     
-  
     bool rc = tree.remove(item);
        
     string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
@@ -272,6 +272,6 @@ int main(int argc, char** argv)
   
   cout << endl;
   cout << flush;
-  */
+
   return 0;
 }

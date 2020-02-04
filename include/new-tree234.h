@@ -114,7 +114,7 @@ template<typename Key, typename Value> class tree234 {
             // std::cout << "~Node(): " << *this << std::endl; 
          }
           
-         explicit Node(const Key& small, const Value& value, Node *in_parent=nullptr) noexcept : parent{in_parent}
+         explicit Node(const Key& small, const Value& value, Node *in_parent=nullptr) noexcept : parent{in_parent}, totalItems{1}
          {
             keys_values[0] = {small, value};      
             // TODO: Does this implicitly set children to nullptr 
@@ -596,7 +596,7 @@ template<class Key, class Value> std::ostream& tree234<Key, Value>::Node::print(
            
            const auto& pair = keys_values[i].__get_value();
            
-           ostr << pair.first << ", " << pair.second; // or to print both keys and values do: ostr << keys_values[i];
+           ostr << pair.first; /* << ", " << pair.second; */ // or to print both keys and values do: ostr << keys_values[i];
        
            if (i + 1 == getTotalItems())  {
                continue;
@@ -648,6 +648,9 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
     for (auto&& [key, value]: il) { 
                     
          insert(key, value);
+         std::cout << "In tree234(std::initializer_list " << *this << std::endl; // Debug only
+         auto debug = 10;
+         ++debug;
     }
 }
 
@@ -730,8 +733,6 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
   // Get child_index such that parent->children[child_index] == pnode.
   auto child_index = pop();
-  
-  auto current_key = pnode->key(key_index);
   
   // Handle the case: pnode is the right-most child of its parent... 
   if (pnode->parent->children[child_index].get() == pnode->parent->getRightMostChild()) { 
@@ -1815,8 +1816,6 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
  */
 template<typename Key, typename Value> int tree234<Key, Value>::make3Node(Node *p2node, int child_index, int sibling_index) noexcept
 {
-  Node *convertedNode = nullptr;
-
   auto parent = p2node->getParent();
 
   Node *psibling = parent->children[sibling_index].get();
@@ -2020,7 +2019,6 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(const Ke
    if (root == nullptr) {
            
       root = std::make_unique<Node>(new_key, value); 
-                                                    
     ++tree_size;
       return; 
    } 
