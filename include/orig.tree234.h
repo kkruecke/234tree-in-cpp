@@ -369,20 +369,18 @@ template<typename Key, typename Value> class tree234 {
           return i; 
        }
 
-       constexpr reference dereference() const noexcept 
+       constexpr reference dereference() noexcept 
        { 
-           auto non_const_current = const_cast<Node *>(current);
-
-           return non_const_current->keys_values[key_index].__get_value(); 
+           return const_cast<Node *>(cursor)->keys_values[key_index].__get_value(); 
        } 
    
       public:
 
-       explicit iterator(tree234<Key, Value>&); 
-
        iterator(const iterator& lhs) = default; 
       
        iterator(iterator&& lhs); 
+
+       explicit iterator(tree234<Key, Value>&); 
       
        bool operator==(const iterator& lhs) const;
        
@@ -414,15 +412,17 @@ template<typename Key, typename Value> class tree234 {
           return tmp;
        } 
        
-       reference operator*() const noexcept 
+       reference operator*() noexcept 
        { 
            return dereference(); 
        } 
       
-       pointer operator->() const noexcept
+       const std::pair<const Key, Value>& operator*() const noexcept 
        { 
-          return const_cast<const pointer>( &(dereference()) );
-       } 
+           return dereference(); 
+       }
+       
+       typename tree234<Key, Value>::value_type *operator->() noexcept;
        
        friend std::ostream& operator<<(std::ostream& ostr, const iterator& iter)
        {
@@ -437,8 +437,8 @@ template<typename Key, typename Value> class tree234 {
       public:
       using difference_type   = std::ptrdiff_t; 
       using value_type        = tree234<Key, Value>::value_type; 
-      using reference	      = const tree234<Key, Value>::value_type&; 
-      using pointer           = const tree234<Key, Value>::value_type*;
+      using reference	      = const value_type&; 
+      using pointer           = const value_type*;
       
       using iterator_category = std::bidirectional_iterator_tag; 
 				          
@@ -449,8 +449,10 @@ template<typename Key, typename Value> class tree234 {
       
        const_iterator(const tree234<Key, Value>& lhs, int i); // called by end()
           
-       reference dereference() const noexcept 
+       constexpr const std::pair<const Key, Value>& dereference() const noexcept 
        { 
+           
+           //return iter.cursor->constkey_pair(iter.key_index); 
            return iter.cursor->keys_values[iter.key_index].__get_value(); 
        }
        
@@ -468,16 +470,6 @@ template<typename Key, typename Value> class tree234 {
        bool operator==(const const_iterator& lhs) const;
        bool operator!=(const const_iterator& lhs) const;
        
-       reference  operator*() const noexcept 
-       {
-          return dereference(); 
-       } 
-      
-       pointer operator->() const noexcept
-       {
-         return &this->operator*(); 
-       } 
- 
        const_iterator& operator++() noexcept 
        {
           iter.increment();
@@ -503,11 +495,19 @@ template<typename Key, typename Value> class tree234 {
           iter.decrement();
           return tmp;
        }
-            
+      
+       const std::pair<const Key,Value>&  operator*() const noexcept 
+       {
+         return dereference(); 
+       } 
+      
+       const std::pair<const Key, Value> *operator->() const noexcept { return &this->operator*(); } 
+       
        friend std::ostream& operator<<(std::ostream& ostr, const const_iterator& it)
        {
           return it.iter.print(ostr);  
        } 
+
    };
    
    iterator begin() noexcept;  
