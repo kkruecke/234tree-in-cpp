@@ -97,7 +97,6 @@ template<class  Key, class Value> void test_iterators(const tree234<Key, Value>&
     
     auto firstyy = iter->first;
     auto& secondyy = iter->second;
-        
     
     secondyy = v;
     

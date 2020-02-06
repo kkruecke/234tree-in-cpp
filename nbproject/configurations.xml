@@ -7,6 +7,7 @@
       <logicalFolder name="include" displayName="include" projectFiles="true">
         <itemPath>include/test.h</itemPath>
         <itemPath>include/tree234.h</itemPath>
+        <itemPath>include/value-type.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -56,6 +57,8 @@
       </item>
       <item path="include/tree234.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/value-type.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
@@ -86,6 +89,8 @@
       <item path="include/test.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/tree234.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/value-type.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="0">
       </item>

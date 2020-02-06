@@ -75,9 +75,19 @@ template<typename Key, typename Value> class tree234 {
       int insert(const Key& key, const Value& value) noexcept;
       
       void insert(__value_type<Key, Value>&& key_value, std::unique_ptr<Node>& newChild) noexcept;
-
-      // Remove key and value at index, if found, from node, shifting remaining keys_values to fill the gap and shifting children.
+      
+      // Wrapper for std::pair<con Key, Value>. Allows easy updating.
       __value_type<Key, Value> removeKeyValue(int index) noexcept; 
+
+      value_type& get_value(int i) noexcept
+      {
+         return keys_values[i].__get_value();            
+      } 
+
+      const value_type& get_value(int i) const noexcept
+      {
+         return keys_values[i].__get_value();            
+      } 
 
       // Take ownership of child, inserting it a childNum. 
       void insertChild(int childNum, std::unique_ptr<Node>& pChild) noexcept;
@@ -225,8 +235,7 @@ template<typename Key, typename Value> class tree234 {
    Node *leftRotation(Node *p2node, Node *psibling, Node *parent, int parent_key_index) noexcept;
    
    Node *rightRotation(Node *p2node, Node *psibling, Node *parent, int parent_key_index) noexcept;
-   
- 
+    
    // Returns node with smallest value of tree whose root is 'root'
    const Node *min(const Node* root) const noexcept; 
    const Node *max(const Node* root) const noexcept; 
@@ -632,12 +641,9 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(tree2
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::initializer_list<std::pair<Key, Value>> il) noexcept : root(nullptr), tree_size{0} 
 {
     for (auto&& [key, value]: il) { 
-                    
+   
          insert(key, value);
-         std::cout << "In tree234(std::initializer_list " << *this << std::endl; // Debug only
-         auto debug = 10;
-         ++debug;
-    }
+   }
 }
 
 /*
@@ -1126,7 +1132,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
             DoPostOrderTraverse(f, current->children[1].get());
 
-            f(current->constkey_pair(0));
+            f(current->get_value(0));
             break;
 
       case 2: // three node
@@ -1134,11 +1140,11 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
             DoPostOrderTraverse(f, current->children[1].get());
 
-            f(current->constkey_pair(0));
+            f(current->get_value(0));
 
             DoPostOrderTraverse(f, current->children[2].get());
 
-            f(current->constkey_pair(1));
+            f(current->get_value(1));
             break;
 
       case 3: // four node
@@ -1146,15 +1152,15 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
             DoPostOrderTraverse(f, current->children[1].get());
 
-            f(current->constkey_pair(0));
+            f(current->get_value(0));
 
             DoPostOrderTraverse(f, current->children[2].get());
 
-            f(current->constkey_pair(1));
+            f(current->get_value(1));
 
             DoPostOrderTraverse(f, current->children[3].get());
 
-            f(current->constkey_pair(1));
+            f(current->get_value(1));
  
             break;
    }
@@ -1168,7 +1174,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
    if (current == nullptr) return;
 
-   f(current->constkey_pair(0)); // Visit keys_values[0] 
+   f(current->get_value(0)); // Visit keys_values[0] 
 
    switch (current->getTotalItems()) {
 
@@ -1186,7 +1192,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
         DoPreOrderTraverse(f, current->children[1].get());
 
-        f(current->constkey_pair(1));// Visit Node::keys_values[1]
+        f(current->get_value(1));// Visit Node::keys_values[1]
 
         DoPreOrderTraverse(f, current->children[2].get());
 
@@ -1198,11 +1204,11 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 
         DoPreOrderTraverse(f, current->children[1].get());
 
-        f(current->constkey_pair(1));// Visit Node::keys_values[1]
+        f(current->get_value(1));// Visit Node::keys_values[1]
 
         DoPreOrderTraverse(f, current->children[2].get());
 
-        f(current->constkey_pair(2));// Visit Node::keys_values[2]
+        f(current->get_value(2));// Visit Node::keys_values[2]
 
         DoPreOrderTraverse(f, current->children[3].get());
 
@@ -1222,7 +1228,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
       case 1: // two node
         DoInOrderTraverse(f, current->children[0].get());
 
-        f(current->constkey_pair(0));
+        f(current->get_value(0));
 
         DoInOrderTraverse(f, current->children[1].get());
         break;
@@ -1230,11 +1236,11 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
       case 2: // three node
         DoInOrderTraverse(f, current->children[0].get());
 
-        f(current->constkey_pair(0));
+        f(current->get_value(0));
 
         DoInOrderTraverse(f, current->children[1].get());
  
-        f(current->constkey_pair(1));
+        f(current->get_value(1));
 
         DoInOrderTraverse(f, current->children[2].get());
         break;
@@ -1242,15 +1248,15 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
       case 3: // four node
         DoInOrderTraverse(f, current->children[0].get());
 
-        f(current->constkey_pair(0));
+        f(current->get_value(0));
 
         DoInOrderTraverse(f, current->children[1].get());
  
-        f(current->constkey_pair(1));
+        f(current->get_value(1));
 
         DoInOrderTraverse(f, current->children[2].get());
 
-        f(current->constkey_pair(2));
+        f(current->get_value(2));
 
         DoInOrderTraverse(f, current->children[3].get());
  
