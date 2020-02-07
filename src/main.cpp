@@ -6,7 +6,7 @@
 #include <vector>
 #include "tree234.h"
 #include "test.h"
-
+#include "sample-value.h"
 
 using namespace std;
 
@@ -77,13 +77,9 @@ template<class Key, class Value> void rprint(const tree234<Key, Value>& tree, os
 
 int main(int argc, char** argv)
 {
-  vector<int> keys = { 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 0, 27, 62, 87, 37, 92, 79, 23, 17, 97, 55, 51, 69, 1, 2, 33, 26, 5};
+  vector keys = { 60, 30, 10, 20, 50, 40, 70, 80, 15, 90, 0, 27, 62, 87, 37, 92, 79, 23, 17, 97, 55, 51, 69, 1, 2, 33, 26, 5};
   
   tree234<int, int> tree = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}};
-
-  tree.inOrderTraverse([](const auto& vt) { cout << vt.first << ", "; });
-
-  cout << "tree = " << tree << endl;
 
   vector< pair<int,int> > append  = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}}; 
   
@@ -134,7 +130,7 @@ int main(int argc, char** argv)
   cout << "\ntree2 after tree2.remove(-999):" << tree2;
   
   cout << "\ntree3:" << tree3;
-//tree3.remove(-999);
+  tree3.remove(-999);
 
   cout << "\ntree3 after tree3.remove(-999):" << tree3 << "\n";
  
@@ -210,7 +206,7 @@ int main(int argc, char** argv)
   copy(keys.rbegin(), keys.rend(), ostream_iterator<int>(cout, ", "));
   
   cout << flush;
-  /*
+  
   for (auto iter = keys.rbegin(); iter != keys.rend(); ++iter) {
     
     auto item = *iter;
@@ -223,7 +219,6 @@ int main(int argc, char** argv)
           ++debug; 
     }
     
-  
     bool rc = tree.remove(item);
        
     string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
@@ -277,11 +272,6 @@ int main(int argc, char** argv)
   
   cout << endl;
   cout << flush;
-  */
-  
-  tree234<int, int> test_tree = { {60, 60}, {30, 30}, {10, 10}, {20, 20}, {50, 50}, {40, 40}, {70, 70}, {80, 80}, {15, 15}, {90, 90}, {0, 0}, {27, 27}, {62, 62}, {87, 87}, {37, 37}, {92, 92}, {79, 79}, {23, 23}, {17, 17}, {97, 97}, {55, 55}, {51, 51}, {69, 69}, {1, 1}, {2, 2}, {33, 33}, {26, 26}, {15, 15}, {5, 5}};
 
-  test_iterators(test_tree);
-  
   return 0;
 }

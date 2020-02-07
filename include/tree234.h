@@ -537,7 +537,7 @@ template<typename Key, typename Value> class tree234 {
 
 template<class Key, class Value> inline bool tree234<Key, Value>::isEmpty() const noexcept
 {
-   return root == nullptr ? true : false;
+   return !root ? true : false;
 }
 
 template<typename Key, typename Value> const int  tree234<Key, Value>::Node::MAX_KEYS = 3; 
@@ -558,7 +558,7 @@ template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(_
 
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(const Node& lhs)  noexcept : totalItems{lhs.totalItems},  keys_values{lhs.keys_values}
 {
-  if (lhs.parent == nullptr) // If lhs is the root, then set parent to nullptr.
+  if (!lhs.parent) // If lhs is the root, then set parent to nullptr.
       parent = nullptr;
 
   if (lhs.isLeaf()) { // A leaf node's children are all nullptr
@@ -696,7 +696,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  auto child_index = key_index + 1;
 
  // Get first right subtree of pnode, and descend to its left most left node.
- for (const Node *pcurrent =  pnode->children[child_index].get(); pcurrent != nullptr; pcurrent = pcurrent->children[child_index].get()) {  
+ for (const Node *pcurrent =  pnode->children[child_index].get(); pcurrent; pcurrent = pcurrent->children[child_index].get()) {  
 
     push(child_index);
 
@@ -829,7 +829,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 {
  auto child_index = key_index;
 
- for (const Node *pcurrent = pnode->children[key_index].get(); pcurrent != nullptr; pcurrent = pcurrent->children[child_index].get()) {
+ for (const Node *pcurrent = pnode->children[key_index].get(); pcurrent; pcurrent = pcurrent->children[child_index].get()) {
 
     push(child_index);
 
@@ -1007,7 +1007,7 @@ template<typename Key, typename Value> inline int tree234<Key, Value>::height() 
 {
   int depth = 0;
 
-  for (auto current = root.get(); current != nullptr; current = current->children[0].get()) {
+  for (auto current = root.get(); current; current = current->children[0].get()) {
 
        ++depth;
   }
@@ -1031,7 +1031,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, 
  */
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::levelOrderTraverse(Functor f) const noexcept
 {
-   if (root.get() == nullptr) return;
+   if (!root.get()) return;
    
    // pair of: 1. const Node * and 2. level of tree.
    std::queue<std::pair<const Node*, int>> queue; 
@@ -1065,7 +1065,7 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
    const Node *current = min(root.get());
    int key_index = 0;
 
-   while (current != nullptr)  {
+   while (current)  {
  
       f(current->pair(key_index)); 
 
@@ -1081,7 +1081,7 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
  */
 template<typename Key, typename Value> inline const typename tree234<Key, Value>::Node *tree234<Key, Value>::min(const Node *current) const noexcept
 {
-   while (current->children[0].get() != nullptr) {
+   while (current->children[0]) {
 
         current = current->children[0].get();
    }
@@ -1092,7 +1092,7 @@ template<typename Key, typename Value> inline const typename tree234<Key, Value>
  */
 template<typename Key, typename Value> inline const typename tree234<Key, Value>::Node *tree234<Key, Value>::max(const Node *current) const noexcept
 {
-   while (current->getRightMostChild() != nullptr) {
+   while (current->getRightMostChild()) {
 
         current = current->getRightMostChild();
    }
@@ -1123,7 +1123,7 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
  */
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoPostOrderTraverse(Functor f, const Node *current) const noexcept
 {  
-   if (current == nullptr) return;
+   if (!current) return;
 
    switch (current->getTotalItems()) {
 
@@ -1172,7 +1172,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoPreOrderTraverse(Functor f, const Node *current) const noexcept
 {  
 
-   if (current == nullptr) return;
+   if (!current) return;
 
    f(current->get_value(0)); // Visit keys_values[0] 
 
@@ -1221,7 +1221,7 @@ template<typename Key, typename Value> template<typename Functor> void tree234<K
  */
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoInOrderTraverse(Functor f, const Node *current) const noexcept
 {     
-   if (current == nullptr) return;
+   if (!current) return;
 
    switch (current->getTotalItems()) {
 
@@ -1277,7 +1277,7 @@ template<typename Key, typename Value> inline void  tree234<Key, Value>::Node::c
 {
   children[childIndex] = std::move( child ); 
   
-  if (children[childIndex] != nullptr) { 
+  if (children[childIndex]) { 
 
        children[childIndex]->parent = this; 
   }
@@ -1361,7 +1361,7 @@ template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key
  */
 template<typename Key, typename Value> bool tree234<Key, Value>::find(const Node *pnode, Key key) const noexcept
 {
-   if (pnode == nullptr) return false;
+   if (!pnode) return false;
    
    auto i = 0;
    
@@ -1482,7 +1482,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insertChi
  */
 template<class Key, class Value> bool tree234<Key, Value>::remove(Key key) 
 {
-   if (root == nullptr) return false; 
+   if (!root) return false; 
 
    else if (root->isLeaf()) { 
        
@@ -1966,7 +1966,7 @@ template<typename Key, typename Value> int tree234<Key, Value>::make4Node(Node *
  */
 template<typename Key, typename Value> void tree234<Key, Value>::insert(const Key& new_key, const Value& value) noexcept 
 { 
-   if (root == nullptr) {
+   if (!root) {
            
       root = std::make_unique<Node>(new_key, value); 
     ++tree_size;
@@ -2176,7 +2176,7 @@ template<typename Key, typename Value> inline const typename tree234<Key, Value>
 {
    const Node *pnode = tree.root.get();
 
-   for (auto child_index = pnode->getTotalItems(); pnode->children[child_index] != nullptr; child_index = pnode->getTotalItems()) {
+   for (auto child_index = pnode->getTotalItems(); pnode->children[child_index]; child_index = pnode->getTotalItems()) {
 
         push(child_index);
         pnode = pnode->children[child_index].get();
@@ -2189,7 +2189,7 @@ template<typename Key, typename Value> inline const typename tree234<Key, Value>
 {
    const Node *pnode = tree.root.get();
 
-   for(auto child_index = 0; pnode->children[child_index].get() != nullptr; pnode = pnode->children[child_index].get()) {
+   for(auto child_index = 0; pnode->children[child_index].get(); pnode = pnode->children[child_index].get()) {
 
         push(child_index);
    }
@@ -2264,7 +2264,7 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
 
   auto [successor, index] = getSuccessor(cursor, key_index);
 
-  if (successor == nullptr) { // nullptr implies cursor->keys_values[key_index].key() is the max key,
+  if (!successor) { // nullptr implies cursor->keys_values[key_index].key() is the max key,
                               // the last key/value in tree.
 
        current = nullptr; // We are now at the end. 
@@ -2284,14 +2284,14 @@ template<class Key, class Value> typename tree234<Key, Value>::iterator& tree234
      return *this; 
   }
    
-  if (current == nullptr) { // If already at the end, then simply return the cached value and don't call getPredecessor()
+  if (!current) { // If already at the end, then simply return the cached value and don't call getPredecessor()
       current = cursor; 
       return *this;
   }
   
   auto [predecessor, index] = getPredecessor(cursor, key_index);
 
-  if (predecessor != nullptr) { // nullptr implies there is no predecessor cursor->key(key_index).
+  if (predecessor) { // nullptr implies there is no predecessor cursor->key(key_index).
       
       cursor = current = predecessor; 
       key_index = index;
@@ -2323,7 +2323,7 @@ template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(
    // current to nullptr.
    //
 
-   if (current == nullptr && lhs.current == nullptr) return true; 
+   if (!current && !lhs.current) return true; 
    else if (current == lhs.current && key_index == lhs.key_index) { 
        return true;
    } else return false;
@@ -2374,11 +2374,11 @@ template<class Key, class Value> inline  bool tree234<Key, Value>::const_iterato
  */
 template<class Key, class Value> int tree234<Key, Value>::depth(const Node *pnode) const noexcept
 {
-    if (pnode == nullptr) return -1;
+    if (!pnode) return -1;
 
     int depth = 0;
       
-    for (const Node *current = root; current != nullptr; ++depth) {
+    for (const Node *current = root; current; ++depth) {
 
       if (current->key() == pnode->key()) {
 
@@ -2399,7 +2399,7 @@ template<class Key, class Value> int tree234<Key, Value>::depth(const Node *pnod
 
 template<class Key, class Value> int tree234<Key, Value>::height(const Node* pnode) const noexcept
 {
-   if (pnode == nullptr) {
+   if (!pnode) {
 
        return -1;
 
@@ -2426,7 +2426,7 @@ template<class Key, class Value> int tree234<Key, Value>::height(const Node* pno
  */
 template<class Key, class Value> bool tree234<Key, Value>::isBalanced(const Node* pnode) const noexcept
 {
-    if (pnode == nullptr) return false; 
+    if (!pnode) return false; 
 
     std::array<int, 4> heights; // four is max number of children.
     
@@ -2467,7 +2467,7 @@ template<class Key, class Value> bool tree234<Key, Value>::isBalanced() const no
        // push its children onto the stack 
        for (auto i = 0; i < current->getChildCount(); ++i) {
           
-           if (current->children[i] != nullptr) {
+           if (current->children[i]) {
                
                nodes.push(current->children[i].get());
            }   
