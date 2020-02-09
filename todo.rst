@@ -1,6 +1,8 @@
 TODO 
 ====
 
+See TODOes and adopt remove to use sbtree's remove() algorithm.
+
 Design Bug
 ----------
 

@@ -172,10 +172,10 @@ template<typename Key, typename Value> class tree234 {
 
       void display_level(std::ostream& ostr, int level) const noexcept
       {
-        ostr << "\n\n" << "current_level = " <<  current_level << ' '; 
+        ostr << "\n\n" << "current level = " <<  level << ' '; 
          
         // Provide some basic spacing to tree appearance.
-        std::size_t num = height - current_level + 1;
+        std::size_t num = height - level + 1;
       
         std::string str( num, ' ');
       
@@ -1354,7 +1354,7 @@ template<typename Key, typename Value> inline constexpr  bool tree234<Key, Value
  */
 template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key key) const noexcept
 {
-    return find(root.get(), key); 
+    return find(root.get(), key); // TODO: Raw pointer--and .get()-- is not neeed!!!!!!  
 } 
 /*
  * find helper method.
