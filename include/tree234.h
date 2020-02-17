@@ -255,6 +255,8 @@ template<typename Key, typename Value> class tree234 {
 
    std::tuple<Node *, int, Node *> get_delete_successor(Node *pdelete, Key delete_key, int delete_key_index) noexcept;
 
+  void destroy_subtree(std::unique_ptr<Node>& current) noexcept;
+
  public:
    
    using node_type = Node; 
@@ -273,8 +275,10 @@ template<typename Key, typename Value> class tree234 {
    
    constexpr int size() const;
 
-   ~tree234() = default; 
-   
+   ~tree234() //--= default; 
+   {
+       destroy_subtree(root);
+   }
    // Breadth-first traversal
    template<typename Functor> void levelOrderTraverse(Functor f) const noexcept;
    
@@ -941,7 +945,7 @@ template<typename Key, typename Value> inline tree234<Key, Value>& tree234<Key, 
       return *this;
   }
   
-  destroy_tree(root); // free all the nodes of the current tree 
+  destroy_subtree(root); // free all the nodes of the current tree 
 
   tree_size = lhs.tree_size;
 
@@ -1106,7 +1110,8 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
 
 template<typename Key, typename Value> template<typename Functor> inline void tree234<Key, Value>::postOrderTraverse(Functor f) const noexcept
 {
-   DoPostOrderTraverse(f, root.get());
+   //--DoPostOrderTraverse(f, root.get());
+   DoPostOrderTraverse(f, root);
 }
 
 template<typename Key, typename Value> template<typename Functor> inline void tree234<Key, Value>::preOrderTraverse(Functor f) const noexcept
@@ -1121,6 +1126,47 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
 /*
  * Calls functor on each node in post order. Uses recursion.
  */
+template<typename Key, typename Value> void tree234<Key, Value>::destroy_subtree(std::unique_ptr<Node>& current) noexcept
+{  
+   if (!current) return;
+
+   switch (current->getTotalItems()) {
+
+      case 1: // two node
+            destroy_subtree(current->children[0]);
+
+            destroy_subtree(current->children[1]);
+
+            current.reset();
+            break;
+
+      case 2: // three node
+            destroy_subtree(current->children[0]);
+
+            destroy_subtree(current->children[1]);
+
+            destroy_subtree(current->children[2]);
+
+            current.reset();
+            break;
+
+      case 3: // four node
+            destroy_subtree(current->children[0]);
+
+            destroy_subtree(current->children[1]);
+
+            destroy_subtree(current->children[2]);
+
+            destroy_subtree(current->children[3]);
+
+            current.reset();
+            break;
+   }
+}
+/*
+ * Calls functor on each node in post order. Uses recursion.
+ */
+
 template<typename Key, typename Value> template<typename Functor> void tree234<Key, Value>::DoPostOrderTraverse(Functor f, const Node *current) const noexcept
 {  
    if (!current) return;
