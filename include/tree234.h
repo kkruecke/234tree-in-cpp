@@ -99,7 +99,7 @@ template<typename Key, typename Value> class tree234 {
       */  
       std::unique_ptr<Node> disconnectChild(int child_index) noexcept; 
 
-      Node *makeRoot4Node() noexcept;
+      Node *make4Node() noexcept;
       
       std::pair<bool, int> chooseSibling(int child_index) const noexcept;
             
@@ -1348,7 +1348,6 @@ template<typename Key, typename Value> inline std::unique_ptr<typename tree234<K
   return node; 
 }
 
-
 /*
  * Returns tuple of three values: <bool, Node *, int>. 
  * If key found n this Node, we return this tuple: {true, pointer to node containing key, the index into Node::key_values of the key}.
@@ -1400,7 +1399,7 @@ template<typename Key, typename Value> inline constexpr  bool tree234<Key, Value
  */
 template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key key) const noexcept
 {
-    return find(root.get(), key); // TODO: Raw pointer--and .get()-- is not neeed!!!!!!  
+    return find(root.get(), key); 
 } 
 /*
  * find helper method.
@@ -1621,7 +1620,7 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
        // Special case: root is a 2-node with two 2-node children.
        if (pcurrent == root.get() && root->children[0]->isTwoNode() && root->children[1]->isTwoNode()) {
 
-            pcurrent->makeRoot4Node();
+            pcurrent->make4Node();
 
        } else if (pcurrent != root.get()) {
             convert2Node(pcurrent, child_index);
@@ -1778,7 +1777,7 @@ template<typename Key, typename Value> inline std::pair<bool, int>  tree234<Key,
  * 1. Absorbs its children's keys_values as its own. 
  * 2. Makes its grandchildren its children.
  */
-template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::Node::makeRoot4Node() noexcept
+template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree234<Key, Value>::Node::make4Node() noexcept
 {
    // move key of 2-node 
    keys_values[1] = std::move(keys_values[0]);
@@ -2181,7 +2180,9 @@ template<class Key, class Value> tree234<Key, Value>::iterator::iterator(tree234
 
 template<class Key, class Value> std::ostream& tree234<Key, Value>::iterator::print(std::ostream& ostr) const noexcept
 {
-   ostr << "\n-------------------------------------\niterator settings:\ncurrent = " << current << "\n" << "cursor =  " << cursor <<  '\n';
+   ostr << "\n-------------------------------------\niterator settings:\ncurrent = " <<\
+           current << "\n" << "cursor =  " << cursor <<  '\n';
+
    ostr << *cursor;      // print the node
    ostr << "\nkey_index = " << key_index << '\n';
 
