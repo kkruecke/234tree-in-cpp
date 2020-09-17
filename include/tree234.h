@@ -1084,10 +1084,10 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
  */
 template<typename Key, typename Value> inline const typename tree234<Key, Value>::Node *tree234<Key, Value>::min(const Node *current) const noexcept
 {
-   while (current->children[0]) {
+   while (current->children[0]) 
 
         current = current->children[0].get();
-   }
+
    return current;
 }
 /*
@@ -1095,10 +1095,10 @@ template<typename Key, typename Value> inline const typename tree234<Key, Value>
  */
 template<typename Key, typename Value> inline const typename tree234<Key, Value>::Node *tree234<Key, Value>::max(const Node *current) const noexcept
 {
-   while (current->getRightMostChild()) {
+   while (current->getRightMostChild()) 
 
-        current = current->getRightMostChild();
-   }
+          current = current->getRightMostChild();
+   
    return current;
 }
 
