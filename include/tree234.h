@@ -76,7 +76,7 @@ template<typename Key, typename Value> class tree234 {
       
       void insert(__value_type<Key, Value>&& key_value, std::unique_ptr<Node>& newChild) noexcept;
       
-      // Wrapper for std::pair<con Key, Value>. Allows easy updating.
+      // __value_type<class Key, class Value> is a wrapper for std::pair<const Key, Value> that alows easy updating of the const member.
       __value_type<Key, Value> removeKeyValue(int index) noexcept; 
 
       value_type& get_value(int i) noexcept
@@ -547,7 +547,7 @@ template<class Key, class Value> inline bool tree234<Key, Value>::isEmpty() cons
 
 /*
 * Node constructors. Note: While all children are initialized to nullptr, this is not really necessary. 
-* Instead your can simply set children[0] = nullptr, since a Node is a leaf if and only if children[0] == 0'
+* Instead you can simply set children[0] = nullptr, since a Node is a leaf if and only if children[0] == nullptr.
 */
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node()  noexcept : parent{nullptr}, totalItems{0}
 {
@@ -2489,7 +2489,7 @@ template<class Key, class Value> bool tree234<Key, Value>::isBalanced(const Node
     // Get absolute value of difference between max height and min of height of children.
     int diff = std::abs(maxHeight - minHeight);
 
-    return (diff == 1 || diff ==0) ? true : false; // return true is absolute value is 0 or 1.
+    return (diff == 1 || diff ==0) ? true : false; // return true if absolute value is 0 or 1.
 }
 
 // Visits each Node in level order, testing whether it is balanced. Returns false if any node is not balanced.
