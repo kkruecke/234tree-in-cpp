@@ -27,7 +27,7 @@ template<typename Key, typename Value> class tree234 {
       using key_type   = Key;
       using mapped_type = Value;
   
-      using value_type = __value_type<Key, Value>::value_type;// = std::pair<const Key, Value>;  
+      using value_type = __value_type<Key, Value>::value_type;// = std::pair<const Key, Value> within value_type.h  
       using difference_type = long int;
       using pointer         = value_type*; 
       using reference       = value_type&; 
@@ -66,9 +66,9 @@ template<typename Key, typename Value> class tree234 {
       int getChildIndex() const noexcept;
       
       /* 
-      * Returns {true, Node * pnode, int index} if key is found and pnode->keys_values[index] == found_key
-      * Returns {false, Node * pnode, int index} if key is not found, and sets pnode and index so is the next prospective node and key
-      * one level lower in the tree.
+      * Returns either:
+        1. {true, Node * pnode, int index}  -- if key is found. pnode->keys_values[index] == found_key
+        2. {false, Node * pnode, int index} -- if key is not found. pnode and index set to the next to key in next prospective node to search one level down in the tree.
       */
       std::tuple<bool, typename tree234<Key, Value>::Node *, int>  find(Key key) const noexcept;
       
@@ -76,8 +76,8 @@ template<typename Key, typename Value> class tree234 {
       
       void insert(__value_type<Key, Value>&& key_value, std::unique_ptr<Node>& newChild) noexcept;
       
-      // __value_type<class Key, class Value> is a wrapper for std::pair<const Key, Value> that alows easy updating of the const member.
-      __value_type<Key, Value> removeKeyValue(int index) noexcept; 
+      __value_type<Key, Value> removeKeyValue(int index) noexcept; // __value_type<class Key, class Value> is a wrapper for std::pair<const Key, Value>
+                                                                   // that alows easy updating of the const member.
 
       value_type& get_value(int i) noexcept
       {
@@ -650,17 +650,22 @@ template<typename Key, typename Value> inline tree234<Key, Value>::tree234(std::
 }
 
 /*
+*
+* Pseudo code for getting the successor is from: http://ee.usc.edu/~redekopp/cs104/slides/L19_BalancedBST_23.pdf:
+*
 Finding the successor of a given node 
 -------------------------------------
 Requires:
-    1. If position is beg, Node *current and key_index MUST point to first key in tree. 
-    2. If position is end, Node *current and key_index MUST point to last key in tree.
-      
-    3. If position is in_between, current and key_index do not point to either the first key in the tree or last key. If the tree has only one node,
-       the state can only be in_between if the first node is a 3-node.
-    Returns:
-    pair<const Node *, int>, where pnode->key(key_index) is next in-order key. Note, if the last key has already been visited, the pointer returned will be nullptr.
-    The pseudo code for getting the successor is from: http://ee.usc.edu/~redekopp/cs104/slides/L19_BalancedBST_23.pdf:
+*    1. If position is beg, Node *current and key_index MUST point to first key in tree. 
+*    2. If position is end, Node *current and key_index MUST point to last key in tree.
+*      
+*    3. If position is in_between, current and key_index does not point to either the first key in the tree or last key. If the tree has only one node,
+*          the state can only be in_between if the first node is a 3-node.
+*
+*    Returns:
+*     pair<const Node *, int>, where pnode->key(key_index) is next in-order key. 
+*     If the last key has already been visited, the pointer returned will be nullptr.
+*
 */
 template<class Key, class Value> std::pair<const typename tree234<Key, Value>::Node *, int> tree234<Key, Value>::iterator::getSuccessor(const Node *current, int key_index) noexcept
 {
@@ -668,10 +673,10 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
      const auto& root = tree.root; 
 
-     if (current == root.get()) { // special case: current is root, which is a leaf      
+     if (current == root.get()) { // special case: current is root and root is a leaf      
 
          // If root has more than one value--it is not a 2-node--and key_index is not the right-most key/value pair in the node,
-         // return the key--the index of the key--immediately to the right. 
+         // return the index of the key immediately to the right. 
          if (!root->isTwoNode() && key_index != root->get_lastkey_index()) { 
 
              return {current, key_index + 1};
@@ -679,10 +684,10 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
                   
          return {nullptr, 0}; // There is no successor because key_index is the right-most index.
  
-     } else {
+     } else 
 
         return getLeafNodeSuccessor(current, key_index);
-     }
+     
 
   } else { // else internal node successor
 
@@ -1577,7 +1582,7 @@ template<typename Key, typename Value> inline __value_type<Key, Value> tree234<K
 
 /*
  * Input: right subtree from which to remove key. 
- * Return: true if key remove. false if key not found.
+ * Return: true if key removed. false if key not found.
  */
 template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree, Key key)
 {
@@ -1616,13 +1621,13 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
   if (pcurrent->isTwoNode()) {
 
        // Special case: root is a 2-node with two 2-node children.
-       if (pcurrent == root.get() && root->children[0]->isTwoNode() && root->children[1]->isTwoNode()) {
+       if (pcurrent == root.get() && root->children[0]->isTwoNode() && root->children[1]->isTwoNode()) 
 
             pcurrent->make4Node();
 
-       } else if (pcurrent != root.get()) {
+       else if (pcurrent != root.get()) 
+
             convert2Node(pcurrent, child_index);
-       }
   }
 
   // Search for it, and if found, return it.
