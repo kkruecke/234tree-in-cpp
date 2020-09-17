@@ -14,7 +14,7 @@
 #include <iosfwd>
 #include <string>
 #include <iostream>
-#include "value-type.h"
+#include "value-type.h" // Barrowed from clang's STL implementation
 
 template<typename Key, typename Value> class tree234;  // Forward declaration
 
@@ -42,7 +42,7 @@ template<typename Key, typename Value> class tree234 {
       */
       private:  
       friend class tree234<Key, Value>;             
-      static const int MAX_KEYS;   
+      inline static const int MAX_KEYS;   
       
       enum class NodeType : int { two_node=1, three_node=2, four_node=3 };
       
@@ -131,6 +131,7 @@ template<typename Key, typename Value> class tree234 {
          constexpr const Node *getParent() const noexcept;
       
          constexpr int getTotalItems() const noexcept;
+         constexpr int get_lastkey_index() const noexcept { return getTotalItems() - 1; }
          constexpr int getChildCount() const noexcept;
       
          constexpr const Node *getRightMostChild() const noexcept { return children[getTotalItems()].get(); }
@@ -277,7 +278,7 @@ template<typename Key, typename Value> class tree234 {
 
    ~tree234() //--= default; 
    {
-       destroy_subtree(root);
+       destroy_subtree(root); // The default dtor is recursive
    }
    // Breadth-first traversal
    template<typename Functor> void levelOrderTraverse(Functor f) const noexcept;
@@ -544,8 +545,6 @@ template<class Key, class Value> inline bool tree234<Key, Value>::isEmpty() cons
    return !root ? true : false;
 }
 
-template<typename Key, typename Value> const int  tree234<Key, Value>::Node::MAX_KEYS = 3; 
-
 /*
 * Node constructors. Note: While all children are initialized to nullptr, this is not really necessary. 
 * Instead your can simply set children[0] = nullptr, since a Node is a leaf if and only if children[0] == 0'
@@ -628,14 +627,14 @@ template<class Key, class Value> int tree234<Key, Value>::Node::getIndexInParent
 
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(const tree234<Key, Value>& lhs) noexcept
 {
-   // The Node(const Node&) will copy the entire tree rooted at lhs.get(). 
+   // Node(const Node&) will copy the entire tree rooted at lhs.get(). 
 
    root = std::make_unique<Node>(*lhs.root); 
    tree_size = lhs.tree_size;
 }
 
 
-// The Node(Node&&) will copy the entire tree rooted at lhs.get(). 
+// Node(Node&&) will copy the entire tree rooted at lhs.get(). 
 template<typename Key, typename Value> inline tree234<Key, Value>::tree234(tree234&& lhs) noexcept : root{std::move(lhs.root)}, tree_size{lhs.tree_size}  
 {
     root->parent = nullptr;
@@ -673,7 +672,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
 
          // If root has more than one value--it is not a 2-node--and key_index is not the right-most key/value pair in the node,
          // return the key--the index of the key--immediately to the right. 
-         if (!root->isTwoNode() && key_index != (root->getTotalItems() - 1)) { 
+         if (!root->isTwoNode() && key_index != root->get_lastkey_index()) { 
 
              return {current, key_index + 1};
          } 
@@ -720,7 +719,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
  const auto& root = tree.root;
 
   // Handle the easy case: a 3- or 4-node in which key_index is not the right most value in the node.
-  if (!pnode->isTwoNode() && (pnode->getTotalItems() - 1) != key_index) { 
+  if (!pnode->isTwoNode() && (pnode->get_lastkey_index()) != key_index) { 
 
       return {pnode, key_index + 1};  
   }
@@ -790,7 +789,7 @@ template<class Key, class Value> std::pair<const typename tree234<Key, Value>::N
            [2,   4,   6]  
           /  \  / \  / \
         [1]  [3]   [5]  [7] 
-        If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is the last, current_key == pnode->getTotalItems() - 1. So the we simply go up on level to find the in order successor.    
+        If the leaft node is a 3- or 4-node, we already know (from the first if-test) that the current key is the last, current_key == pnode->get_lastkey_index(). So the we simply go up on level to find the in order successor.    
         We know pnode == parent->children[child_index]. child_index also is index of the successor key in the parent: successor-key == parent->key(child_index).
       */
 
@@ -963,7 +962,7 @@ template<typename Key, typename Value> inline void tree234<Key, Value>::Node::pr
 
       ostr << keys_values[i].__get_value().first;
 
-      if (i < getTotalItems() - 1)       {
+      if (i < get_lastkey_index()) { //getTotalItems() - 1)       {
 
          ostr << ", ";
       } 
@@ -1110,7 +1109,6 @@ template<typename Key, typename Value> template<typename Functor> inline void tr
 
 template<typename Key, typename Value> template<typename Functor> inline void tree234<Key, Value>::postOrderTraverse(Functor f) const noexcept
 {
-   //--DoPostOrderTraverse(f, root.get());
    DoPostOrderTraverse(f, root);
 }
 
@@ -1430,7 +1428,7 @@ template<typename Key, typename Value> bool tree234<Key, Value>::find(const Node
 template<typename Key, typename Value> int  tree234<Key, Value>::Node::insert(const Key& lhs_key, const Value& lhs_value)  noexcept // ok. Maybe add a move version, too: insertKey(Key, Value&&)
 { 
    // start on right, examine items
-   for(auto i = getTotalItems() - 1; i >= 0 ; --i) {
+   for(auto i = get_lastkey_index(); i >= 0 ; --i) {
  
        if (lhs_key < key(i)) { // if key[i] is bigger
            
@@ -1458,7 +1456,7 @@ template<typename Key, typename Value> int  tree234<Key, Value>::Node::insert(co
 template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(__value_type<Key, Value>&& vt_in, std::unique_ptr<Node>& largerNode) noexcept 
 { 
   // start on right, examine items
-  for(auto i = getTotalItems() - 1; i >= 0 ; --i) {
+  for(auto i = get_lastkey_index(); i >= 0 ; --i) {
 
       if (vt_in.__ref().first < key(i)) { // if key[i] is bigger
 
@@ -1489,10 +1487,10 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insert(__
  */
 template<typename Key, typename Value> void tree234<Key, Value>::Node::insertChild(int insert_index, std::unique_ptr<Node>& newChild) noexcept
 {
-   int last_index = getTotalItems() - 1;  // While totalItems reflects the correct number of keys, the number of children currently is also equal to the number of keys.
+   // While Node::totalItems reflects the correct number of keys, the number of children currently is also equal to the number of keys.
 
    // ...move its children right, starting from its last child index and stopping just before insert_index.
-   for(auto i = last_index; i >= insert_index; i--)  {
+   for(auto i = get_lastkey_index(); i >= insert_index; i--)  {
 
        connectChild(i + 1, children[i]);       
    }
@@ -1567,7 +1565,7 @@ template<typename Key, typename Value> inline __value_type<Key, Value> tree234<K
   __value_type<Key, Value> key_value = std::move(keys_values[index]);  // What is this all about
 
   // shift to the left all keys_values to the right of index to the left
-  for(auto i = index; i < getTotalItems() - 1; ++i) {
+  for(auto i = index; i < get_lastkey_index(); ++i) {
 
       keys_values[i] = std::move(keys_values[i + 1]); 
   } 
@@ -2251,7 +2249,7 @@ template<class Key, class Value> inline tree234<Key, Value>::iterator::iterator(
    if (!tree.isEmpty()) {
 
       cursor = get_max(); // Go to largest node.
-      key_index = cursor->getTotalItems() - 1;
+      key_index = cursor->get_lastkey_index();
 
       current = nullptr; 
 
@@ -2369,7 +2367,7 @@ template<class Key, class Value> bool tree234<Key, Value>::iterator::operator==(
    // but the iterator returned by tree234::end()'s iterator always sets current to nullptr (to signal "one past the end").
    // current to nullptr.
    //
-
+   // TODO: Does this logic properly hand reverse iterators, too, even when they are empty? 
    if (!current && !lhs.current) return true; 
    else if (current == lhs.current && key_index == lhs.key_index) { 
        return true;
