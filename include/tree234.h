@@ -14,7 +14,8 @@
 #include <iosfwd>
 #include <string>
 #include <iostream>
-#include "value-type.h" // Barrowed from clang's STL implementation
+#include "value-type.h" // This header barrowed from clang's STL implementation. It works like a union for the two
+                        // types std::pair<Key, Value> and std::pair<const Key, Value>.  
 
 template<typename Key, typename Value> class tree234;  // Forward declaration
 
@@ -22,12 +23,11 @@ template<typename Key, typename Value> class tree234 {
 
    public:
   
-      // Basic STL-required types:
       // Container typedef's used by STL.
       using key_type   = Key;
       using mapped_type = Value;
   
-      using value_type = __value_type<Key, Value>::value_type;// = std::pair<const Key, Value> within value_type.h  
+      using value_type = __value_type<Key, Value>::value_type; // = std::pair<const Key, Value> within value_type.h  
       using difference_type = long int;
       using pointer         = value_type*; 
       using reference       = value_type&; 
@@ -37,8 +37,7 @@ template<typename Key, typename Value> class tree234 {
    
    class Node { 
       /*
-      Note: Node depends on both of tree234's template parameters, Key and Value, so we can 
-      make it a nested class.
+         Node depends on both of tree234's template parameters, Key and Value, so we make it a nested class.
       */
       private:  
       friend class tree234<Key, Value>;             
@@ -48,22 +47,21 @@ template<typename Key, typename Value> class tree234 {
       
       int totalItems; /* If 1, two node; if 2, three node; if 3, four node. */
       
-      Node *parent; /* parent is only used for navigation of the tree. It never owns the memory
-           		      it points to. */
+      Node *parent; /* parent never owns the memory it points to. It is used to ease tree navigation. */
 
-      std::array<__value_type<Key, Value>, 3> keys_values;
+      std::array<__value_type<Key, Value>, 3> keys_values; // Fix size of 3 __value_type<Key, Value>'s.
       
       /*
-      * For 2-nodes, children[0] is left pointer, children[1] is right pointer.
+      * For 2-nodes, children[0] is left pointeri and children[1] is right pointer.
       * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
       * For 4-nodes, children[0] is left pointer, children[1] the left middle pointer, and children[2] is the right middle pointer,
-      * and children[3] is the right pointer.
+      *     and children[3] is the right pointer.
       */
-      std::array<std::unique_ptr<Node>, 4> children;
+      std::array<std::unique_ptr<Node>, 4> children; // Node owns the memory of the children it points to.
       
       constexpr Node *getParent() noexcept { return parent; }
       
-      int getChildIndex() const noexcept;
+      int getChildIndex() const noexcept;  // Returns int value i such that parent->children[i] == this.
       
       /* 
       * Returns either:
@@ -76,10 +74,9 @@ template<typename Key, typename Value> class tree234 {
       
       void insert(__value_type<Key, Value>&& key_value, std::unique_ptr<Node>& newChild) noexcept;
       
-      __value_type<Key, Value> removeKeyValue(int index) noexcept; // __value_type<class Key, class Value> is a wrapper for std::pair<const Key, Value>
-                                                                   // that alows easy updating of the const member.
+      __value_type<Key, Value> removeKeyValue(int index) noexcept; 
 
-      value_type& get_value(int i) noexcept
+      value_type& get_value(int i) noexcept  // simply helpers
       {
          return keys_values[i].__get_value();            
       } 
@@ -89,17 +86,17 @@ template<typename Key, typename Value> class tree234 {
          return keys_values[i].__get_value();            
       } 
 
-      // Take ownership of child, inserting it a childNum. 
+      // Takes ownership of unique_ptr<Node>, making it child number childNum. 
       void insertChild(int childNum, std::unique_ptr<Node>& pChild) noexcept;
 
       void connectChild(int childNum, std::unique_ptr<Node>& child) noexcept;
  
       /*
-      * Removes child node (implictly using move ctor) and shifts its children to fill the gap. Returns child pointer.
+      * Removes unique_ptr<Node> at child_index and shifts children to fill the gap. Returns unique_ptr<Node>.
       */  
       std::unique_ptr<Node> disconnectChild(int child_index) noexcept; 
 
-      Node *make4Node() noexcept;
+      Node *make4Node() noexcept; // Called during a special case of remove() algorithm.
       
       std::pair<bool, int> chooseSibling(int child_index) const noexcept;
             
@@ -1405,7 +1402,7 @@ template<typename Key, typename Value> inline bool tree234<Key, Value>::find(Key
     return find(root.get(), key); 
 } 
 /*
- * find helper method.
+ * Recursive main find method. Return true if found, false otherwise.
  */
 template<typename Key, typename Value> bool tree234<Key, Value>::find(const Node *pnode, Key key) const noexcept
 {
@@ -1424,7 +1421,6 @@ template<typename Key, typename Value> bool tree234<Key, Value>::find(const Node
 
    return find(pnode->children[i].get(), key);
 }
-
 
 /*
  * Preconditions: node is not a four node, and key is not present in node.
@@ -1448,7 +1444,7 @@ template<typename Key, typename Value> int  tree234<Key, Value>::Node::insert(co
        } 
    } 
  
-     // key is smaller than all keys_values, so insert it at position 0
+   // key is smaller than all keys_values, so insert it at position 0
    keys_values[0].__ref() = std::make_pair<const key_type&, const mapped_type&>(lhs_key, lhs_value);  
  
    ++totalItems; // increase the total item count
@@ -1505,7 +1501,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insertChi
 }
 
 /*
- * Insert and Delete based on
+ * Insert and Delete algorithms are based on these link
  * 
  * https://www.cs.ubc.ca/~liorma/cpsc320/files/B-trees.pdf
  * https://www.cs.purdue.edu/homes/ayg/CS251/slides/chap13a.pdf
@@ -1514,7 +1510,7 @@ template<typename Key, typename Value> void tree234<Key, Value>::Node::insertChi
  *
  * We reduce deletion of an internal node's key to deletion of a leaf node's key by swapping the key to be deleted
  * with its in-order successor and then deleting the key from the leaf. To prevent deletion from a 2-node leaf, which
- * would leave an empty node (underflow), we convert all 2-nodes as we descend the tree to 3 or 4-nodes using the stratagies below.
+ * would leave an empty node (underflow), we convert all 2-nodes as we descend the tree to 3- or 4-nodes using the stratagies below.
  *  
  * If the key is an internal node, then its successor will be the minimum key of its first right subtree. To ensure that the successor of the
  * internal node is not a 2-node, we again convert all 2-nodes to 3- or 4-nodes as we descend. If the right subtree root is itself a 2-node, when it
@@ -1695,7 +1691,7 @@ tree234<Key, Value>::get_delete_successor(Node *pdelete, Key delete_key, int del
  
   // We get here if rightSubtree was not a leaf.
  
-  // Finds the left-most node (of right subtree) and convert 2-nodes encountered.
+  // Finds the left-most node of the right subtree and converts 2-nodes encountered.
   Node *psuccessor = get_successor_node(rightSubtree, child_index);
 
   return {pdelete, delete_key_index, psuccessor};
