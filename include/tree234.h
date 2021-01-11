@@ -2099,7 +2099,7 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
    largestNode->connectChild(0, pnode->children[2]); 
    largestNode->connectChild(1, pnode->children[3]);
    
-   // 2. Make pnode a 2-node. Note: It still retains its two left-most children, 
+   // 2. Make pnode a 2-node by setting totalItmes. Note: It still retains its two left-most children, 
    pnode->totalItems = 1;
    
    Node *pLargest = largestNode.get();
@@ -2122,8 +2122,8 @@ template<typename Key, typename Value> typename tree234<Key, Value>::Node *tree2
      pnode->parent->insert(std::move(pnode->keys_values[1]), largestNode); 
    }
 
-  // Since we already did 'if (new_key == middle_key)' in the caller ( in find_insert_node() ), we only need to check if 'new_key < middle_key' in order to set pnext to the node
-  // to for find_insert_node() to examine.
+  // Set pnext. Since we already checked 'if (new_key == middle_key)' in the caller--in find_insert_node()--we need only check if 'new_key < middle_key', in order to set pnext to the node
+  // for find_insert_node() to examine next.
   Node *pnext = (new_key < middle_key) ? pnode : pLargest;
 
   return pnext;
