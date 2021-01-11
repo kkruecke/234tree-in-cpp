@@ -14,7 +14,7 @@
 #include <iosfwd>
 #include <string>
 #include <iostream>
-#include "value-type.h" // This header barrowed from clang's STL implementation. It works like a union for the two
+#include "value-type.h" // This header was taken from clang's STL implementation. It works like a union for the two
                         // types std::pair<Key, Value> and std::pair<const Key, Value>.  
 
 template<typename Key, typename Value> class tree234;  // Forward declaration
@@ -52,7 +52,7 @@ template<typename Key, typename Value> class tree234 {
       std::array<__value_type<Key, Value>, 3> keys_values; // Fix size of 3 __value_type<Key, Value>'s.
       
       /*
-      * For 2-nodes, children[0] is left pointeri and children[1] is right pointer.
+      * For 2-nodes, children[0] is left pointer  and children[1] is right pointer.
       * For 3-nodes, children[0] is left pointer, children[1] the middle pointer, and children[2] the right pointer.
       * For 4-nodes, children[0] is left pointer, children[1] the left middle pointer, and children[2] is the right middle pointer,
       *     and children[3] is the right pointer.
@@ -548,7 +548,7 @@ template<class Key, class Value> inline bool tree234<Key, Value>::isEmpty() cons
 */
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node()  noexcept : parent{nullptr}, totalItems{0}
 {
- // Note: Uses default member construction for keys_values and children 
+ // Note: Default member construction used for keys_values and children 
 }
 
 template<typename Key, typename Value> inline  tree234<Key, Value>::Node::Node(__value_type<Key, Value>&& key_value) noexcept : totalItems{1},  parent{nullptr}
@@ -1648,6 +1648,7 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
 
 /*
  * Input: 
+ * pdelete is such that:  
  * pdelete->key(delete_key_index) == delete_key == 'key to be deleted.'
  *
  *  Returns tuple consisting of:
@@ -1686,11 +1687,11 @@ tree234<Key, Value>::get_delete_successor(Node *pdelete, Key delete_key, int del
          // ...reset delete_key_index, and...
          delete_key_index = (delete_key == rightSubtree->key(0)) ? 0 : 1;
          
-         if (rightSubtree->isLeaf()) { // ...if rightSubtree is a leaf, we're done; otherwise, ...
+         if (rightSubtree->isLeaf()) { // ...if rightSubtree is a leaf, we're done; otherwise, we...  
 
               return {rightSubtree, delete_key_index, rightSubtree};
          }  
-         // ...we recurse, passing the converted prightSubtree and the new delete_key_index value.
+         // ... recurse, passing the just-converted rightSubtree and the new delete_key_index value.
          return get_delete_successor(rightSubtree, delete_key, delete_key_index); 
      } 
   }
