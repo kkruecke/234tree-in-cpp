@@ -1594,10 +1594,10 @@ template<class Key, class Value> bool tree234<Key, Value>::remove(Node *psubtree
   } else { // Internal node. Find successor, converting 2-nodes as we search and resetting pdelete and key_index if necessary.
     
       // find min and convert 2-nodes as we search.
-      auto[pdelete_new, key_index_new, pmin] = get_delete_successor(pdelete, key, key_index);
+      auto[pdelete_, key_index_, pmin] = get_delete_successor(pdelete, key, key_index);
 
-      pdelete_new->keys_values[key_index_new] = pmin->keys_values[0]; // simply overwrite key to be deleted with its successor.
-    
+      pdelete_->keys_values[key_index_] = pmin->keys_values[0]; // simply overwrite key to be deleted with its successor.
+
       pmin->removeKeyValue(0); // Since successor is not in a 2-node, we can delete it from the leaf.
   }
 
@@ -1649,10 +1649,11 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
 /*
  * Input: pdelete->key(delete_key_index) is key to be deleted.
  * 
+ * Returns tuple with location of delete node and key to be delete (as it may have moved) and the delete successor node (which will be a leaf node)
  * Returns three element tuple:
- *   - pointer to node with key to be deleted. 
- *   - index of key to be deleted,
- *   - pointer to leaf node successor.
+ *   - pointer to node with key to be deleted (as it may have moved in the tree). 
+ *   - along with the index of key to be deleted,
+ *   - pointer to successor.
  */
 template<class Key, class Value> std::tuple<typename tree234<Key, Value>::Node *, int, typename tree234<Key, Value>::Node *> 
 tree234<Key, Value>::get_delete_successor(Node *pdelete, Key delete_key, int delete_key_index) noexcept
