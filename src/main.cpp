@@ -24,6 +24,8 @@ template<class Key, class Value> void print(const tree234<Key, Value>& tree, ost
  */
 template<class Key, class Value> void test(const tree234<Key, Value>& tree, ostream& ostr)
 {
+   return;
+
    // This has a  bug. 
    auto rend = tree.rend();
    
@@ -219,31 +221,38 @@ int main(int argc, char** argv)
           ++debug; 
     }
     
+    if (item == 17) {
+	  auto debug = 10;
+	  ++debug;
+    }
+
     bool rc = tree.remove(item);
        
-    string str_remove_status = rc ? string(" successfully removed ") : string(" not successfully removed ");
+    string str_remove_status = rc ? string(" successfully removed ") : string(" <==== NOT SUCCESSFULLY REMOVED");
     
     cout<< "\nitem " << item << str_remove_status;
     
     cout << "\nTree size is " << tree.size() << " after attempting to remove item " << item << "\n" << endl;
+    
     cout << "\n\n=======Tree level order print =====================" << endl;
         
     tree.printlevelOrder(cout);
+    
     cout << flush;
+    
     cout << "\n\n=================== Normal Tree Print =======================\n" << endl;
   
     tree.printInOrder(cout);
 
-    cout << "\n\n========== Print of tree using for loop ===================" << endl;
+    //--cout << "\n\n========== Print of tree using for loop ===================" << endl;
 
-    print(tree, cout);
-
-    cout << "\n====== BUG =========\n";
+    //--print(tree, cout);
 
     test(tree, cout); 
-    cout << "\n\n========== Test of reverse_iterator class ===================" << endl;
 
-    rprint(tree, cout); 
+    //--cout << "\n\n========== Test of reverse_iterator class ===================" << endl;
+
+    //--rprint(tree, cout); 
   
     if (rc == false) {
          
