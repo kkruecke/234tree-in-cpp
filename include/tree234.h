@@ -1647,11 +1647,11 @@ template<class Key, class Value> std::tuple<bool, typename tree234<Key, Value>::
 /*
  * Input: pdelete->key(delete_key_index) is key to be deleted.
  *
- * Locates the in-order successor node and converts 2-nodes encountered into 3- or 4-nodes to ensure that the in-order successor key/value can be removed 
- * without leaving an empty node.
+ * finds the in-order successor node and converts 2-nodes encountered into 3- or 4-nodes to ensure that the in-order successor key/value can be removed 
+ * without leaving an empty node resulting in unbalanced tree.
  *
- * Returns tuple with location of delete node and key to be delete (as it may have moved) and the delete successor node (which will be a leaf node)
- * Returns these are a 3-element tuple:
+ * Returns 3-element tuple with location of delete node and key to be deleted (as it may have moved) and the delete successor node (which will be a leaf
+ * node):
  *   - pointer to node with key to be deleted (as it may have moved in the tree). 
  *   - along with the index of key to be deleted,
  *   - pointer to successor.
