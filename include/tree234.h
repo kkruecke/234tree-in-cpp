@@ -104,16 +104,11 @@ template<typename Key, typename Value> class tree234 {
            
          Node() noexcept;
          
-        ~Node() // For debug purposes only
-         { 
-            // std::cout << "~Node(): " << *this << std::endl; 
-         }
-          
          Node(const Key& small, const Value& value, Node *in_parent=nullptr) noexcept : totalItems{1}, parent{in_parent}
          {
             keys_values[0] = {small, value};      
 
-            // Note: This ctor implicitly set children to nullptr 
+            // Note: This ctor implicitly sets children to nullptr 
          } 
       
          Node(const Node& node) noexcept;
@@ -1683,8 +1678,8 @@ tree234<Key, Value>::get_delete_successor(Node *pdelete, Key delete_key, int del
        Thus: If a fusion of the rightSubtree with a parent key and a sibling key occurred, delete_key becomes the 2nd key in rightSubtree. If a left rotation occurred, 
        delete_key becomes the first key of rightSubtree.
      */
-
-     if (delete_key == rightSubtree->key(0) || delete_key == rightSubtree->key(1)) {              
+     
+      if (delete_key == rightSubtree->key(0) || delete_key == rightSubtree->key(1)) {              
 
          // ...reset delete_key_index, and...
          delete_key_index = (delete_key == rightSubtree->key(0)) ? 0 : 1;
@@ -1695,7 +1690,7 @@ tree234<Key, Value>::get_delete_successor(Node *pdelete, Key delete_key, int del
          }  
          // ... recurse, passing the just-converted rightSubtree and the new delete_key_index value.
          return get_delete_successor(rightSubtree, delete_key, delete_key_index); 
-     } 
+      } 
   }
  
   // We only get here if rightSubtree was not a leaf.
