@@ -91,14 +91,15 @@ template <class _Key, class _Value> struct __value_type {
 
     
     /*
-       The assigment operator for lvalues or rvalues of type 'pair<const key_type, mapped_type>' or const/volatile or reference to these types.  
+       The template assigment operator below is called for lvalues or rvalues of type 'pair<const key_type, mapped_type>' or const/volatile or reference to these types.  
 
        To see this is the case, observe that...
 
            __is_same_uncvref<typename T1, typename T2> 
 
-       returns true if T1 and T2 are the same type after removing 'const', 'volatile' and any reference from them.  Therefore, __is_same_uncvref<_ValueTp, value_type> returns true if _ValueTp is of the same type as
-       std::pair<const key_type, mapped_type>, after removing const/volatile/reference. And thus, __is_same_uncvref<_ValueTp, value_type> returns true if _ValueTp is of same type as __value_type::value_type, which is 'pair<const key_type, mapped_type>'. 
+       returns true if T1 and T2 are the same type after removing 'const', 'volatile' and any reference from them. Thus, __is_same_uncvref<_ValueTp, value_type> returns true if _ValueTp
+       is of the same type as std::pair<const key_type, mapped_type>, after removing const/volatile/reference. And thus, __is_same_uncvref<_ValueTp, value_type> returns true if _ValueTp
+       is of same type as __value_type::value_type, which is 'pair<const key_type, mapped_type>'. 
        
        Thus, the template assignment operator 
 
@@ -111,8 +112,10 @@ template <class _Key, class _Value> struct __value_type {
        It invokes the template move-assigment operator of std::pair.
      */
 
+    // TODO: Can I get rid of enable_if<> with C++20--is it supported yet?
+    //
     template <class _ValueTp,                            
-              class = typename std::enable_if<
+              class = typename std::enable_if<         
                     __is_same_uncvref<_ValueTp, value_type>::value  // where value_type = std::pair<const key_type, mapped_type> 
                  >::type
              >
