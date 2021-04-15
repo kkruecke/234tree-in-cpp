@@ -284,6 +284,7 @@ template<typename Key, typename Value> class tree234 {
    {
        destroy_subtree(root); // The default dtor is recursive
    }
+
    // Breadth-first traversal
    template<typename Functor> void levelOrderTraverse(Functor f) const noexcept;
    
@@ -2028,9 +2029,9 @@ template<typename Key, typename Value> void tree234<Key, Value>::insert(const Ke
 { 
    if (!root) {
            
-      root = std::make_unique<Node>(new_key, value); 
-    ++tree_size;
-      return; 
+       root = std::make_unique<Node>(new_key, value); 
+     ++tree_size;
+       return; 
    } 
    
    auto [bool_found, current, index] = find_insert_node(root.get(), new_key);  
