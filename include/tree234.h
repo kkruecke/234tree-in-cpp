@@ -50,13 +50,15 @@ template<typename Key, typename Value> class tree234 {
       Node *parent; /* parent never owns the memory it points to. It is used to ease tree navigation. */
 
       /*
-       * Note: __value_type<Key, Value> contains std::pair<const Key, Value> and provides operations to return:
+       * Note: __value_type<Key, Value> contains a std::pair<const Key, Value> and provides operations to return:
        *
-       * a pair of lvalues reference to the underlying Key and Value members of the pair: std::pair<key_type&, mapped_type&>
+       *   __ref()
+       *   a pair of lvalues reference to the underlying Key and Value members of the pair: std::pair<key_type&, mapped_type&>
        *
-       * a pair of rvalue references to the underlying Key and Value members of the pair: std::pair<key_type&&, mapped_type&&>
+       *   ??Is this an actual class method--or just a utilty??
+       *   a pair of rvalue references to the underlying Key and Value members of the pair: std::pair<key_type&&, mapped_type&&>
        *
-       * a assignment operator and a move assigment operator 
+       *   a assignment operator and a move assigment operator 
        *
        */
 
